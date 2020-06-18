@@ -1,0 +1,72 @@
+[
+  {
+    "directory": "C:/D/描画プログラミング/3dgp.00",
+    "command": "clang-tool -fms-extensions -fms-compatibility -fms-compatibility-version=19  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include\"  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/atlmfc/include\"  -isystem \"C:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/um\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/shared\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/winrt\"  -D _DEBUG  -D _MT  -D _DLL  -D _WINDOWS  -D _UNICODE  -D UNICODE -std=c++14  \"C:/D/描画プログラミング/3dgp.00/camera.cpp\"",
+    "file": "C:/D/描画プログラミング/3dgp.00/camera.cpp"
+  },
+  {
+    "directory": "C:/D/描画プログラミング/3dgp.00",
+    "command": "clang-tool -fms-extensions -fms-compatibility -fms-compatibility-version=19  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include\"  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/atlmfc/include\"  -isystem \"C:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/um\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/shared\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/winrt\"  -D _DEBUG  -D _MT  -D _DLL  -D _WINDOWS  -D _UNICODE  -D UNICODE -std=c++14  \"C:/D/描画プログラミング/3dgp.00/Geometric_primitive.cpp\"",
+    "file": "C:/D/描画プログラミング/3dgp.00/Geometric_primitive.cpp"
+  },
+  {
+    "directory": "C:/D/描画プログラミング/3dgp.00",
+    "command": "clang-tool -fms-extensions -fms-compatibility -fms-compatibility-version=19  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include\"  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/atlmfc/include\"  -isystem \"C:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/um\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/shared\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/winrt\"  -D _DEBUG  -D _MT  -D _DLL  -D _WINDOWS  -D _UNICODE  -D UNICODE -std=c++14  \"C:/D/描画プログラミング/3dgp.00/main.cpp\"",
+    "file": "C:/D/描画プログラミング/3dgp.00/main.cpp"
+  },
+  {
+    "directory": "C:/D/描画プログラミング/3dgp.00",
+    "command": "clang-tool -fms-extensions -fms-compatibility -fms-compatibility-version=19  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include\"  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/atlmfc/include\"  -isystem \"C:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/um\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/shared\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/winrt\"  -D _DEBUG  -D _MT  -D _DLL  -D _WINDOWS  -D _UNICODE  -D UNICODE -std=c++14  \"C:/D/描画プログラミング/3dgp.00/framework.cpp\"",
+    "file": "C:/D/描画プログラミング/3dgp.00/framework.cpp"
+  },
+  {
+    "directory": "C:/D/描画プログラミング/3dgp.00",
+    "command": "clang-tool -fms-extensions -fms-compatibility -fms-compatibility-version=19  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include\"  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/atlmfc/include\"  -isystem \"C:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/um\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/shared\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/winrt\"  -D _DEBUG  -D _MT  -D _DLL  -D _WINDOWS  -D _UNICODE  -D UNICODE -std=c++14  \"C:/D/描画プログラミング/3dgp.00/MainCamera.cpp\"",
+    "file": "C:/D/描画プログラミング/3dgp.00/MainCamera.cpp"
+  },
+  {
+    "directory": "C:/D/描画プログラミング/3dgp.00",
+    "command": "clang-tool -fms-extensions -fms-compatibility -fms-compatibility-version=19  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include\"  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/atlmfc/include\"  -isystem \"C:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/um\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/shared\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/winrt\"  -D _DEBUG  -D _MT  -D _DLL  -D _WINDOWS  -D _UNICODE  -D UNICODE -std=c++14  \"C:/D/描画プログラミング/3dgp.00/Skinned_mesh.cpp\"",
+    "file": "C:/D/描画プログラミング/3dgp.00/Skinned_mesh.cpp"
+  },
+  {
+    "directory": "C:/D/描画プログラミング/3dgp.00",
+    "command": "clang-tool -fms-extensions -fms-compatibility -fms-compatibility-version=19  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include\"  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/atlmfc/include\"  -isystem \"C:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/um\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/shared\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/winrt\"  -D _DEBUG  -D _MT  -D _DLL  -D _WINDOWS  -D _UNICODE  -D UNICODE -std=c++14  \"C:/D/描画プログラミング/3dgp.00/sprite.cpp\"",
+    "file": "C:/D/描画プログラミング/3dgp.00/sprite.cpp"
+  },
+  {
+    "directory": "C:/D/描画プログラミング/3dgp.00",
+    "command": "clang-tool -fms-extensions -fms-compatibility -fms-compatibility-version=19  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include\"  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/atlmfc/include\"  -isystem \"C:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/um\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/shared\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/winrt\"  -D _DEBUG  -D _MT  -D _DLL  -D _WINDOWS  -D _UNICODE  -D UNICODE -std=c++14  \"C:/D/描画プログラミング/3dgp.00/static_mesh.cpp\"",
+    "file": "C:/D/描画プログラミング/3dgp.00/static_mesh.cpp"
+  },
+  {
+    "directory": "C:/D/描画プログラミング/3dgp.00",
+    "command": "clang-tool -fms-extensions -fms-compatibility -fms-compatibility-version=19  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include\"  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/atlmfc/include\"  -isystem \"C:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/um\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/shared\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/winrt\"  -D _DEBUG  -D _MT  -D _DLL  -D _WINDOWS  -D _UNICODE  -D UNICODE -std=c++14  \"C:/D/描画プログラミング/3dgp.00/imgui/imgui.cpp\"",
+    "file": "C:/D/描画プログラミング/3dgp.00/imgui/imgui.cpp"
+  },
+  {
+    "directory": "C:/D/描画プログラミング/3dgp.00",
+    "command": "clang-tool -fms-extensions -fms-compatibility -fms-compatibility-version=19  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include\"  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/atlmfc/include\"  -isystem \"C:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/um\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/shared\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/winrt\"  -D _DEBUG  -D _MT  -D _DLL  -D _WINDOWS  -D _UNICODE  -D UNICODE -std=c++14  \"C:/D/描画プログラミング/3dgp.00/imgui/imgui_demo.cpp\"",
+    "file": "C:/D/描画プログラミング/3dgp.00/imgui/imgui_demo.cpp"
+  },
+  {
+    "directory": "C:/D/描画プログラミング/3dgp.00",
+    "command": "clang-tool -fms-extensions -fms-compatibility -fms-compatibility-version=19  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include\"  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/atlmfc/include\"  -isystem \"C:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/um\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/shared\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/winrt\"  -D _DEBUG  -D _MT  -D _DLL  -D _WINDOWS  -D _UNICODE  -D UNICODE -std=c++14  \"C:/D/描画プログラミング/3dgp.00/imgui/imgui_draw.cpp\"",
+    "file": "C:/D/描画プログラミング/3dgp.00/imgui/imgui_draw.cpp"
+  },
+  {
+    "directory": "C:/D/描画プログラミング/3dgp.00",
+    "command": "clang-tool -fms-extensions -fms-compatibility -fms-compatibility-version=19  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include\"  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/atlmfc/include\"  -isystem \"C:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/um\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/shared\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/winrt\"  -D _DEBUG  -D _MT  -D _DLL  -D _WINDOWS  -D _UNICODE  -D UNICODE -std=c++14  \"C:/D/描画プログラミング/3dgp.00/imgui/imgui_impl_dx11.cpp\"",
+    "file": "C:/D/描画プログラミング/3dgp.00/imgui/imgui_impl_dx11.cpp"
+  },
+  {
+    "directory": "C:/D/描画プログラミング/3dgp.00",
+    "command": "clang-tool -fms-extensions -fms-compatibility -fms-compatibility-version=19  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include\"  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/atlmfc/include\"  -isystem \"C:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/um\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/shared\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/winrt\"  -D _DEBUG  -D _MT  -D _DLL  -D _WINDOWS  -D _UNICODE  -D UNICODE -std=c++14  \"C:/D/描画プログラミング/3dgp.00/imgui/imgui_impl_win32.cpp\"",
+    "file": "C:/D/描画プログラミング/3dgp.00/imgui/imgui_impl_win32.cpp"
+  },
+  {
+    "directory": "C:/D/描画プログラミング/3dgp.00",
+    "command": "clang-tool -fms-extensions -fms-compatibility -fms-compatibility-version=19  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include\"  -isystem \"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/atlmfc/include\"  -isystem \"C:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/um\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/shared\"  -isystem \"C:/Program Files (x86)/Windows Kits/8.1/Include/winrt\"  -D _DEBUG  -D _MT  -D _DLL  -D _WINDOWS  -D _UNICODE  -D UNICODE -std=c++14  \"C:/D/描画プログラミング/3dgp.00/imgui/imgui_widgets.cpp\"",
+    "file": "C:/D/描画プログラミング/3dgp.00/imgui/imgui_widgets.cpp"
+  }
+]

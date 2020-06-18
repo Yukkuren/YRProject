@@ -1,0 +1,9 @@
+*.exe
+.vs/
+*.db
+ipch/
+Debug/
+Release/
+DirectXTK-master/
+FBX SDK/
+*.opendb
