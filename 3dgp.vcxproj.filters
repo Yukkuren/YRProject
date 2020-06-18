@@ -38,6 +38,24 @@
     <Filter Include="Shaders\Sprite_Shader">
       <UniqueIdentifier>{a2273b39-fdae-4943-895d-baedc5737258}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Player">
+      <UniqueIdentifier>{c1e1a9af-0496-4604-abec-57206e26ebbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Player\Header">
+      <UniqueIdentifier>{c77e2dd0-c9b9-4f15-8e08-8c5a66a2032a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Player\Sources">
+      <UniqueIdentifier>{e113aea0-64c9-4c28-9f75-9f1b02792a6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assistance">
+      <UniqueIdentifier>{4cc5847a-ccdd-4340-a746-caf7545327fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assistance\Headers">
+      <UniqueIdentifier>{970e5ba5-991a-424b-9a14-004cad88d678}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assistance\Sources">
+      <UniqueIdentifier>{ed9cb2df-010c-4f37-b266-2e3d8d1888d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="framework.cpp">
@@ -93,6 +111,18 @@
     </ClCompile>
     <ClCompile Include="SceneTitle.cpp">
       <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneLoad.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="YR_VECTOR3.cpp">
+      <Filter>assistance\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="CoList.cpp">
+      <Filter>assistance\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="1PGamePad.cpp">
+      <Filter>assistance\Sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -158,6 +188,21 @@
     </ClInclude>
     <ClInclude Include="collision.h">
       <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerBase.h">
+      <Filter>Game\Player\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Tracking.h">
+      <Filter>assistance\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="YR_VECTOR3.h">
+      <Filter>assistance\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CoList.h">
+      <Filter>assistance\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="YRGamePad.h">
+      <Filter>assistance\Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -156,6 +156,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="CoList.cpp" />
+    <ClCompile Include="1PGamePad.cpp" />
     <ClCompile Include="Geometric_primitive.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
@@ -168,17 +170,21 @@
     <ClCompile Include="MainCamera.cpp" />
     <ClCompile Include="SceneClear.cpp" />
     <ClCompile Include="SceneGame.cpp" />
+    <ClCompile Include="SceneLoad.cpp" />
     <ClCompile Include="SceneOver.cpp" />
     <ClCompile Include="SceneTitle.cpp" />
     <ClCompile Include="Skinned_mesh.cpp" />
     <ClCompile Include="sprite.cpp" />
     <ClCompile Include="static_mesh.cpp" />
+    <ClCompile Include="YR_VECTOR3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="brend.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="CoList.h" />
     <ClInclude Include="collision.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="YRGamePad.h" />
     <ClInclude Include="Geometric_primitive.h" />
     <ClInclude Include="high_resolution_timer.h" />
     <ClInclude Include="imgui\imconfig.h" />
@@ -191,11 +197,14 @@
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="Key.h" />
     <ClInclude Include="misc.h" />
+    <ClInclude Include="PlayerBase.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Skinned_mesh.h" />
     <ClInclude Include="sprite.h" />
     <ClInclude Include="static_mesh.h" />
+    <ClInclude Include="Tracking.h" />
     <ClInclude Include="YRMouse.h" />
+    <ClInclude Include="YR_VECTOR3.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="geometric_primitive.hlsli" />

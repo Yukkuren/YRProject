@@ -8,6 +8,7 @@
 #include<memory>
 #include<Windows.h>
 
+
 class SceneBase
 {
 public:
@@ -53,6 +54,15 @@ public:
 };
 
 class SceneOver : public SceneBase
+{
+public:
+	int timer;
+	void Init();
+	void Update(float elapsed_time);
+	void Draw(float elapsed_time);
+};
+
+class SceneLoad : public SceneBase
 {
 public:
 	int timer;
