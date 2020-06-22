@@ -56,6 +56,9 @@
     <Filter Include="assistance\Sources">
       <UniqueIdentifier>{ed9cb2df-010c-4f37-b266-2e3d8d1888d3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="assistance\Input">
+      <UniqueIdentifier>{cd90e49e-3b66-4fb9-8c19-3201df262baa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="framework.cpp">
@@ -122,6 +125,21 @@
       <Filter>assistance\Sources</Filter>
     </ClCompile>
     <ClCompile Include="1PGamePad.cpp">
+      <Filter>assistance\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="HitBox.cpp">
+      <Filter>assistance\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="AttackBox.cpp">
+      <Filter>assistance\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSelect.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="2Pgamepad.cpp">
+      <Filter>assistance\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="HitCheak.cpp">
       <Filter>assistance\Sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -186,9 +204,6 @@
     <ClInclude Include="Key.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="collision.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="PlayerBase.h">
       <Filter>Game\Player\Header</Filter>
     </ClInclude>
@@ -201,7 +216,19 @@
     <ClInclude Include="CoList.h">
       <Filter>assistance\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="HitBox.h">
+      <Filter>assistance\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="collision.h">
+      <Filter>assistance\Headers</Filter>
+    </ClInclude>
     <ClInclude Include="YRGamePad.h">
+      <Filter>assistance\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="AttackBox.h">
+      <Filter>assistance\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="HitCheak.h">
       <Filter>assistance\Headers</Filter>
     </ClInclude>
   </ItemGroup>

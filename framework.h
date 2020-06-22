@@ -33,6 +33,8 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wparam
 enum SCENE_TABLE
 {
 	SCENE_TITLE,
+	SCENE_SELECT,
+	SCENE_LOAD,
 	SCENE_GAME,
 	SCENE_CLEAR,
 	SCENE_OVER,
@@ -61,16 +63,20 @@ public:
 	//std::unique_ptr<Skinned_mesh>					ground;
 
 	SceneGame scenegame;
+	SceneLoad sceneload;
 	SceneTitle scenetitle;
 	SceneClear sceneclear;
 	SceneOver sceneover;
+	SceneSelect sceneselect;
 	//SceneBase scenetutorial;
 
 	SceneBase* scene;
 	SceneBase* Nscene;
 
-	SceneBase*	scene_tbl[SCENE_END] = {
+	SceneBase* scene_tbl[SCENE_END] = {
 		&scenetitle,
+		&sceneselect;
+		&sceneload,
 		&scenegame,
 		&sceneclear,
 		&sceneover,
@@ -83,6 +89,9 @@ public:
 		{
 		case SCENE_TITLE:
 			Nscene = scene_tbl[SCENE_TABLE::SCENE_TITLE];
+			break;
+		case SCENE_LOAD:
+			Nscene = scene_tbl[SCENE_TABLE::SCENE_LOAD];
 			break;
 		case SCENE_GAME:
 			Nscene = scene_tbl[SCENE_TABLE::SCENE_GAME];

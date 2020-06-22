@@ -3,13 +3,7 @@
 //#include	"Common.h"
 #include	"HitCheak.h"
 
-InputListor::InputListor(int n)
-{
-	kind = n;
-}
-
-
-void GamePad1::Init()
+void GamePad2::Init()
 {
 	/*GetJoypadXInputState(DX_INPUT_PAD1, &input);
 	if (GetJoypadXInputState(DX_INPUT_PAD1, &input) != -1)
@@ -35,7 +29,7 @@ void GamePad1::Init()
 	dash_trigger = false;
 }
 
-void GamePad1::UnInit()
+void GamePad2::UnInit()
 {
 	if (!que.empty())
 	{
@@ -46,7 +40,7 @@ void GamePad1::UnInit()
 	}
 }
 
-void GamePad1::Update()
+void GamePad2::Update()
 {
 #pragma region hei
 
@@ -58,7 +52,7 @@ void GamePad1::Update()
 			x_input[i] = 0;
 		}*/
 
-		if (pKeyState.hflg > 0)
+		if (pKeyState.k1flg > 0)
 		{
 			x_input[static_cast<int>(PAD::X)]++;
 		}
@@ -69,7 +63,7 @@ void GamePad1::Update()
 
 
 
-		if (pKeyState.jflg > 0)
+		if (pKeyState.k2flg > 0)
 		{
 			x_input[static_cast<int>(PAD::Y)]++;
 		}
@@ -80,7 +74,7 @@ void GamePad1::Update()
 
 
 
-		if (pKeyState.kflg > 0)
+		if (pKeyState.k3flg > 0)
 		{
 			x_input[static_cast<int>(PAD::B)]++;
 		}
@@ -91,7 +85,7 @@ void GamePad1::Update()
 
 
 
-		if (pKeyState.lflg > 0)
+		if (pKeyState.k4flg > 0)
 		{
 			x_input[static_cast<int>(PAD::A)]++;
 		}
@@ -101,7 +95,7 @@ void GamePad1::Update()
 		}
 
 
-		if (pKeyState.qflg > 0)
+		if (pKeyState.k5flg > 0)
 		{
 			x_input[static_cast<int>(PAD::L_TRIGGER)]++;
 		}
@@ -111,7 +105,7 @@ void GamePad1::Update()
 		}
 
 
-		if (pKeyState.eflg > 0)
+		if (pKeyState.k6flg > 0)
 		{
 			x_input[static_cast<int>(PAD::R_TRIGGER)]++;
 		}
@@ -123,7 +117,7 @@ void GamePad1::Update()
 
 
 
-		if (pKeyState.aflg > 0)
+		if (pKeyState.leftflg > 0)
 		{
 			if (dash_trigger)
 			{
@@ -153,7 +147,7 @@ void GamePad1::Update()
 
 
 
-		if (pKeyState.dflg > 0)
+		if (pKeyState.rightflg > 0)
 		{
 			if (dash_trigger)
 			{
@@ -189,7 +183,7 @@ void GamePad1::Update()
 
 
 
-		if (pKeyState.tflg > 0)
+		if (pKeyState.k7flg > 0)
 		{
 			x_input[static_cast<int>(PAD::START)]++;
 		}
@@ -200,7 +194,7 @@ void GamePad1::Update()
 
 
 
-		if (pKeyState.wflg > 0)
+		if (pKeyState.upflg > 0)
 		{
 			x_input[scastI(PAD::STICK_U)]++;
 		}
@@ -211,7 +205,7 @@ void GamePad1::Update()
 
 
 
-		if (pKeyState.sflg > 0)
+		if (pKeyState.downflg > 0)
 		{
 			x_input[scastI(PAD::STICK_D)]++;
 		}
@@ -221,7 +215,7 @@ void GamePad1::Update()
 		}
 
 
-		if (pKeyState.wflg == 1 && pKeyState.dflg > 0)
+		if (pKeyState.upflg == 1 && pKeyState.rightflg > 0)
 		{
 			x_input[scastI(PAD::STICK_U)] = 0;
 			x_input[scastI(PAD::STICK_R)] = 0;
@@ -235,7 +229,7 @@ void GamePad1::Update()
 		}
 
 
-		if (pKeyState.wflg == 1 && pKeyState.aflg > 0)
+		if (pKeyState.upflg == 1 && pKeyState.leftflg > 0)
 		{
 			x_input[scastI(PAD::STICK_U)] = 0;
 			x_input[scastI(PAD::STICK_L)] = 0;
@@ -250,7 +244,7 @@ void GamePad1::Update()
 
 
 
-		if (pKeyState.sflg > 0 && pKeyState.dflg > 0)
+		if (pKeyState.downflg > 0 && pKeyState.rightflg > 0)
 		{
 			x_input[scastI(PAD::STICK_D)] = 0;
 			x_input[scastI(PAD::STICK_R)] = 0;
@@ -264,7 +258,7 @@ void GamePad1::Update()
 		}
 
 
-		if (pKeyState.sflg > 0 && pKeyState.aflg > 0)
+		if (pKeyState.downflg > 0 && pKeyState.leftflg > 0)
 		{
 			x_input[scastI(PAD::STICK_D)] = 0;
 			x_input[scastI(PAD::STICK_L)] = 0;
@@ -306,7 +300,7 @@ void GamePad1::Update()
 	}
 }
 
-void GamePad1::InputSave()
+void GamePad2::InputSave()
 {
 	for (int i = 0; i < scastI(PAD::PAD_END); i++)
 	{
@@ -339,7 +333,7 @@ void GamePad1::InputSave()
 		}
 	}
 }
-void GamePad1::InputUpdate()
+void GamePad2::InputUpdate()
 {
 	if (!que.empty())
 	{

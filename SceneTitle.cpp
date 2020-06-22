@@ -1,6 +1,12 @@
 #include "Scene.h"
 #include "framework.h"
 
+//-------------------------------------------------------------
+// **シーン概要**
+//・ボタンを押すとコントローラー設定が出るようにして
+//　1P,2Pの入力を決定する
+//・設定したら暗転。SceneSelectへ遷移する
+//-------------------------------------------------------------
 
 void SceneTitle::Init()
 {
@@ -11,10 +17,10 @@ void SceneTitle::Init()
 void SceneTitle::Update(float elapsed_time)
 {
 	//timer++;
-	/*if (pKeyState.zflg == 1)
+	if (pKeyState.zflg == 1)
 	{
-		pFRAMEWORK.SetScene(SCENE_TABLE::SCENE_GAME);
-	}*/
+		FRAMEWORK.SetScene(SCENE_TABLE::SCENE_SELECT);
+	}
 }
 
 void SceneTitle::Draw(float elapsed_time)

@@ -155,10 +155,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="2Pgamepad.cpp" />
+    <ClCompile Include="AttackBox.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="CoList.cpp" />
     <ClCompile Include="1PGamePad.cpp" />
     <ClCompile Include="Geometric_primitive.cpp" />
+    <ClCompile Include="HitBox.cpp" />
+    <ClCompile Include="HitCheak.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -172,6 +176,7 @@
     <ClCompile Include="SceneGame.cpp" />
     <ClCompile Include="SceneLoad.cpp" />
     <ClCompile Include="SceneOver.cpp" />
+    <ClCompile Include="SceneSelect.cpp" />
     <ClCompile Include="SceneTitle.cpp" />
     <ClCompile Include="Skinned_mesh.cpp" />
     <ClCompile Include="sprite.cpp" />
@@ -179,11 +184,14 @@
     <ClCompile Include="YR_VECTOR3.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AttackBox.h" />
     <ClInclude Include="brend.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="CoList.h" />
     <ClInclude Include="collision.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="HitBox.h" />
+    <ClInclude Include="HitCheak.h" />
     <ClInclude Include="YRGamePad.h" />
     <ClInclude Include="Geometric_primitive.h" />
     <ClInclude Include="high_resolution_timer.h" />

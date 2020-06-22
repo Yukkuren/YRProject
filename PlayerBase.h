@@ -4,9 +4,27 @@
 #define PLAYERBASE_H_
 
 #include "YR_VECTOR3.h"
+#include"HitBox.h"
+#include"AttackBox.h"
 #include "Tracking.h"
 #include <memory>
 #include "YRGamePad.h"
+
+
+#define		POS_Y	(0.0f)
+
+#define		GAUGE_MAX	(100.0f)
+
+
+//--------------------------------------
+//	**キャラ名設定
+//	・新しいキャラを追加するならここに記入
+//--------------------------------------
+enum class PLSELECT :int
+{
+	KNIGHT = 0,
+	KEN
+};
 
 //---------------------------------------------
 // **スピードクラス**
@@ -19,8 +37,22 @@ class Speed
 public:
 	float speedY = 0;
 
-	void Set(float speed);
-	float Update();
+	void Set(float speed)
+	{
+		speedY = speed;
+	};
+	float Update()
+	{
+		if (speedY > 0)
+		{
+			speedY--;
+		}
+		else
+		{
+			speedY = 0;
+		}
+		return speedY;
+	};
 };
 
 
