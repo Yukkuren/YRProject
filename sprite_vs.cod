@@ -35,7 +35,7 @@
     dcl_texcoord1 v1  // color<0,1,2,3>
     dcl_texcoord2 v2  // texcoord<0,1>
 
-#line 6 "C:\Users\2180099.MAETEL\Desktop\ÂÄã‰∫∫Ë£Ω‰Ωú\sprite_vs.hlsl"
+#line 6 "E:\„Ç≤„Éº„É†Âà∂‰Ωú\YRProject\sprite_vs.hlsl"
     mov r0, v0  // ::vout<0,1,2,3>
     mov r1, v1  // ::vout<4,5,6,7>
     mov r2.xy, v2  // ::vout<8,9>
@@ -67,7 +67,7 @@ dcl_temps 3
 //   o1.x <- <main return value>.color.x; o1.y <- <main return value>.color.y; o1.z <- <main return value>.color.z; o1.w <- <main return value>.color.w; 
 //   o0.x <- <main return value>.pos.x; o0.y <- <main return value>.pos.y; o0.z <- <main return value>.pos.z; o0.w <- <main return value>.pos.w
 //
-#line 6 "C:\Users\2180099.MAETEL\Desktop\å¬êlêªçÏ\sprite_vs."
+#line 6 "E:\ÉQÅ[ÉÄêßçÏ\YRProject\sprite_vs"
 mov r0.xyzw, v0.xyzw  // r0.x <- vout.pos.x; r0.y <- vout.pos.y; r0.z <- vout.pos.z; r0.w <- vout.pos.w
 mov r1.xyzw, v1.xyzw  // r1.x <- vout.color.x; r1.y <- vout.color.y; r1.z <- vout.color.z; r1.w <- vout.color.w
 mov r2.xy, v2.xyxx  // r2.x <- vout.texcoord.x; r2.y <- vout.texcoord.y
