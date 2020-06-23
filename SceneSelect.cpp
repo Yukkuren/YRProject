@@ -40,18 +40,18 @@ void SceneSelect::LoadData()
 	}
 	if (knight_icon == nullptr)
 	{
-		knight_icon = std::make_unique<Sprite>(L"./Data/Image/Character/Ryu/icon.png");
-		knight_icon->LoadGraph(64.0f, 64.0f);
+		knight_icon = std::make_unique<Sprite>(L"./Data/Image/Character/Ryu/icon.png", 64.0f, 64.0f);
+		//knight_icon->LoadGraph(64.0f, 64.0f);
 	}
 	if (ken_icon == nullptr)
 	{
-		ken_icon = std::make_unique<Sprite>(L"./Data/Image/Character/Ken/icon.png");
-		ken_icon->LoadGraph(64.0f, 64.0f);
+		ken_icon = std::make_unique<Sprite>(L"./Data/Image/Character/Ken/icon.png", 64.0f, 64.0f);
+		//ken_icon->LoadGraph(64.0f, 64.0f);
 	}
 	if (select_img == nullptr)
 	{
-		select_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameSelect/select.png");
-		select_img->LoadGraph(64.0f, 64.0f);
+		select_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameSelect/select.png", 64.0f, 64.0f);
+		//select_img->LoadGraph(64.0f, 64.0f);
 	}
 
 	load_state = 3;
@@ -61,9 +61,9 @@ void SceneSelect::Update(float elapsedTime)
 {
 	if (load_fin)
 	{
-		if (timer < 1000)
+		if (timer < 1000.0f)
 		{
-			timer++;
+			timer += elapsedTime;
 		}
 		else
 		{
@@ -198,7 +198,91 @@ void SceneSelect::Update(float elapsedTime)
 
 void SceneSelect::Draw(float elapsedTime)
 {
+#if USE_IMGUI
+	//ImGui
+	{
+		ImGui::Text("time : %d", time);
+		ImGui::Text("select");
+	}
+#endif
+	if (load_fin)
+	{
+		//ƒeƒXƒg•`‰æ‚È‚Ì‚ÅŒã‚Åíœ
+		//”wŒi
+		back_img->DrawRotaGraph(
+			FRAMEWORK.SCREEN_WIDTH / 2.0f,
+			FRAMEWORK.SCREEN_HEIGHT / 2.0f,
+			0.0f,
+			1.0f);
+		//ƒAƒCƒRƒ“•`‰æ
+		knight_icon->DrawRotaGraph(
+			knight_pos.x,
+			knight_pos.y,
+			0.0f,
+			Rato
+		);
+		ken_icon->DrawRotaGraph(
+			kenpos.x,
+			kenpos.y,
+			0.0f,
+			Rato
+		);
 
+		//‘I‘ð‰æ‘œ•`‰æ
+		//1P
+		if (p1Enter)
+		{
+			select_img->DrawRotaGraph
+			(
+				p1.x,
+				p1.y,
+				0.0f,
+				Rato,
+				DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
+			);
+		}
+		else
+		{
+			if (static_cast<int>(timer * 10.0f) % 5 > 0)
+			{
+				select_img->DrawRotaGraph
+				(
+					p1.x,
+					p1.y,
+					0.0f,
+					Rato,
+					DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
+				);
+			}
+		}
+
+		//2P
+		if (p2Enter)
+		{
+			select_img->DrawRotaGraph
+			(
+				p2.x,
+				p2.y,
+				0.0f,
+				Rato,
+				DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)
+			);
+		}
+		else
+		{
+			if (static_cast<int>(timer * 10.0f) % 5 > 0)
+			{
+				select_img->DrawRotaGraph
+				(
+					p2.x,
+					p2.y,
+					0.0f,
+					Rato,
+					DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)
+				);
+			}
+		}
+	}
 }
 
 YR_Vector3 SceneSelect::PosSet(int select)

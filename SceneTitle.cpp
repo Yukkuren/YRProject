@@ -25,5 +25,11 @@ void SceneTitle::Update(float elapsed_time)
 
 void SceneTitle::Draw(float elapsed_time)
 {
-
+#if USE_IMGUI
+	//ImGui
+	{
+		ImGui::Text("time : %d",time);
+		ImGui::Text("title");
+	}
+#endif
 }

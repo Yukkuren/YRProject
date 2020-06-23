@@ -9,6 +9,11 @@
 #include "./imgui/imgui_impl_win32.h"
 #include "./imgui/imgui_impl_dx11.h"
 #include <d3d11.h>
+//別スレッド用インクルード
+#include <roapi.h>
+#include <windows.foundation.h>
+
+#pragma comment(lib,"runtimeobject.lib")
 
 LRESULT CALLBACK fnWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
@@ -21,6 +26,14 @@ INT WINAPI wWinMain(HINSTANCE instance, HINSTANCE prev_instance, LPWSTR cmd_line
 #if defined(DEBUG) | defined(_DEBUG)
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
+
+	HRESULT hr = Windows::Foundation::Initialize(RO_INIT_MULTITHREADED);
+	if (FAILED(hr))
+	{
+		assert(!"multi threed error");
+		return -1;
+	}
+
 	WNDCLASSEX wcex;
 	wcex.cbSize = sizeof(WNDCLASSEX);
 	wcex.style = CS_HREDRAW | CS_VREDRAW;

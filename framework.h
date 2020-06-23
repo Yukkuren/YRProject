@@ -45,9 +45,10 @@ class framework
 {
 public:
 	CONST HWND hwnd;
-	static CONST LONG SCREEN_WIDTH = 1280;
-	static CONST LONG SCREEN_HEIGHT = 720;
+	static CONST LONG SCREEN_WIDTH = 1920;
+	static CONST LONG SCREEN_HEIGHT = 1080;
 
+	std::unique_ptr<Sprite>							fedo_img;
 
 	Microsoft::WRL::ComPtr<ID3D11Device>			device;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>		context;
@@ -85,29 +86,37 @@ public:
 
 	void SetScene(SCENE_TABLE next)
 	{
-		switch (next)
+		//switch (next)
+		//{
+		//case SCENE_TITLE:
+		//	Nscene = scene_tbl[SCENE_TABLE::SCENE_TITLE];
+		//	break;
+		//case SCENE_SELECT:
+		//	Nscene = scene_tbl[SCENE_TABLE::SCENE_SELECT];
+		//	break;
+		//case SCENE_LOAD:
+		//	Nscene = scene_tbl[SCENE_TABLE::SCENE_LOAD];
+		//	break;
+		//case SCENE_GAME:
+		//	Nscene = scene_tbl[SCENE_TABLE::SCENE_GAME];
+		//	break;
+		//case SCENE_CLEAR:
+		//	Nscene = scene_tbl[SCENE_TABLE::SCENE_CLEAR];
+		//	break;
+		//case SCENE_OVER:
+		//	Nscene = scene_tbl[SCENE_TABLE::SCENE_OVER];
+		//	break;
+		//case SCENE_END:
+		//	//scene = scene_tbl[SCENE_TABLE::SCENE_TITLE];
+		//	break;
+		//default:
+		//	break;
+		//}
+		if (next < SCENE_END)
 		{
-		case SCENE_TITLE:
-			Nscene = scene_tbl[SCENE_TABLE::SCENE_TITLE];
-			break;
-		case SCENE_LOAD:
-			Nscene = scene_tbl[SCENE_TABLE::SCENE_LOAD];
-			break;
-		case SCENE_GAME:
-			Nscene = scene_tbl[SCENE_TABLE::SCENE_GAME];
-			break;
-		case SCENE_CLEAR:
-			Nscene = scene_tbl[SCENE_TABLE::SCENE_CLEAR];
-			break;
-		case SCENE_OVER:
-			Nscene = scene_tbl[SCENE_TABLE::SCENE_OVER];
-			break;
-		case SCENE_END:
-			//scene = scene_tbl[SCENE_TABLE::SCENE_TITLE];
-			break;
-		default:
-			break;
+			Nscene = scene_tbl[next];
 		}
+		
 		if (Nscene) {
 			scene = Nscene;
 			Nscene = nullptr;

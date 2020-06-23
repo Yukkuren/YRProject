@@ -230,6 +230,9 @@ public:
 
 	}
 	Sprite(const wchar_t* wchar/*Texture file name*/);
+	Sprite(const wchar_t* wchar, float sw, float sh);
+	Sprite(const wchar_t* wchar, float sw, float sh, int numX, int numY, int n_x, int n_y);
+	void Init(const wchar_t* whar);
 	~Sprite();
 	
 	

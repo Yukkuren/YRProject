@@ -130,7 +130,7 @@ namespace TextureALL
 	}
 }
 
-Sprite::Sprite( const wchar_t* wchar)
+void Sprite::Init(const wchar_t* wchar)
 {
 	vertex vertics[] = {
 		{ DirectX::XMFLOAT3(0,0,0),DirectX::XMFLOAT4(1,1,1,1), DirectX::XMFLOAT2(0,0) },
@@ -138,7 +138,7 @@ Sprite::Sprite( const wchar_t* wchar)
 		{ DirectX::XMFLOAT3(0,0,0),DirectX::XMFLOAT4(1,1,1,1), DirectX::XMFLOAT2(0,0) },
 		{ DirectX::XMFLOAT3(0,0,0),DirectX::XMFLOAT4(1,1,1,1), DirectX::XMFLOAT2(0,0) },
 	};
-	
+
 	HRESULT hr = S_OK;
 	//ID3DBlob* pVSBlob = NULL;
 
@@ -155,7 +155,7 @@ Sprite::Sprite( const wchar_t* wchar)
 	//ZeroMemory(&InitData, sizeof(InitData));
 	InitData.pSysMem = vertics;
 	InitData.SysMemPitch = 0;
-	InitData.SysMemSlicePitch = 0;	
+	InitData.SysMemSlicePitch = 0;
 
 	hr = FRAMEWORK.device->CreateBuffer(&bd, &InitData, buffer.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
@@ -171,7 +171,7 @@ Sprite::Sprite( const wchar_t* wchar)
 	TextureALL::create_vertex_file(FRAMEWORK.device.Get(), "./Data/Shader/sprite_vs.cso", vert.GetAddressOf(), layout, numElements, input.GetAddressOf());
 
 	TextureALL::CreatePixel_files(FRAMEWORK.device.Get(), "./Data/Shader/sprite_ps.cso", pixel.GetAddressOf());
-	
+
 	D3D11_RASTERIZER_DESC pRaster = {};
 	pRaster.FillMode = D3D11_FILL_SOLID;
 	pRaster.CullMode = D3D11_CULL_NONE;
@@ -188,17 +188,17 @@ Sprite::Sprite( const wchar_t* wchar)
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 	//ID3D11ShaderResourceView *shaderview;
-	
+
 	//.pushback等を使って一度ロードしたものを記録していき、記録になければ新しく記録していく形にする
 	//hr = DirectX::CreateWICTextureFromFile(device, wchar, &pResouse, &shader);
 	TextureALL::TextureLoad(FRAMEWORK.device.Get(), wchar, &texture2d_desc, shader.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-	
+
 
 
 	D3D11_SAMPLER_DESC sample;
 	//ID3D11SamplerState *samplestate;
-	
+
 	sample.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 	sample.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	sample.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -209,16 +209,16 @@ Sprite::Sprite( const wchar_t* wchar)
 	memcpy(sample.BorderColor, &DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), sizeof(DirectX::XMFLOAT4));
 	sample.MinLOD = 0;
 	sample.MaxLOD = D3D11_FLOAT32_MAX;
-	
-	
+
+
 	/*FLOAT color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	sample.BorderColor[0] = color[0];
 	sample.BorderColor[1] = color[1];
 	sample.BorderColor[2] = color[2];
 	sample.BorderColor[3] = color[3];*/
-	
 
-	hr= FRAMEWORK.device->CreateSamplerState(&sample, sampler.GetAddressOf());
+
+	hr = FRAMEWORK.device->CreateSamplerState(&sample, sampler.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 	D3D11_DEPTH_STENCIL_DESC depth_desc;
@@ -237,7 +237,7 @@ Sprite::Sprite( const wchar_t* wchar)
 
 	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, depthstate.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-	
+
 	/*D3D11_BLEND_DESC blend_desc;
 
 	blend_desc.AlphaToCoverageEnable = TRUE;
@@ -254,7 +254,24 @@ Sprite::Sprite( const wchar_t* wchar)
 	//hr = device->CreateBlendState(&blend_desc, &blendstate);
 
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+}
 
+Sprite::Sprite( const wchar_t* wchar)
+{
+	Init(wchar);
+}
+
+
+Sprite::Sprite(const wchar_t* wchar, float sw, float sh)
+{
+	Init(wchar);
+	LoadGraph(sw, sh);
+}
+
+Sprite::Sprite(const wchar_t* wchar, float sw, float sh, int numX, int numY, int n_x, int n_y)
+{
+	Init(wchar);
+	LoadDivGraph(sw, sh, numX, numY, n_x, n_y);
 }
 
 Sprite::~Sprite()

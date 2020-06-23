@@ -338,7 +338,7 @@ bool framework::initialize()
 	sprite[1] = new Sprite(device, L"Assets/Image/fire.png");
 	sprite[2] = new Sprite(device, L"Assets/Image/fire2.png");*/
 
-	SetScene(SCENE_TABLE::SCENE_GAME);
+	SetScene(SCENE_TABLE::SCENE_TITLE);
 	scene->Init();
 
 	//ƒJƒƒ‰‰ŠúÝ’è
@@ -627,6 +627,7 @@ void framework::render(float elapsed_time/*Elapsed seconds from last frame*/)
 			skin->AnimReset();
 			skin2->AnimReset();
 		}*/
+	BlendSet(Blend::ALPHA);
 	scene->Draw(elapsed_time);
 #if USE_IMGUI
 	ImGui::Render();

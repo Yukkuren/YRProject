@@ -92,7 +92,7 @@ public:
 	GamePad2			g2;
 	bool				p1Enter;
 	bool				p2Enter;
-	int					timer;
+	float				timer;
 	bool				end;
 	int					fedoTimer;
 	int					Fedotimer;
