@@ -8,6 +8,7 @@
 #include<wrl.h>
 #include<Shlwapi.h>
 #include <memory>
+#include "framework.h"
 
 
 namespace TextureALL
