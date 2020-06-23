@@ -212,6 +212,7 @@
     <ClInclude Include="static_mesh.h" />
     <ClInclude Include="Tracking.h" />
     <ClInclude Include="YRMouse.h" />
+    <ClInclude Include="YRShader.h" />
     <ClInclude Include="YR_VECTOR3.h" />
   </ItemGroup>
   <ItemGroup>

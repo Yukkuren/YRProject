@@ -231,6 +231,9 @@
     <ClInclude Include="HitCheak.h">
       <Filter>assistance\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="YRShader.h">
+      <Filter>assistance\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="geometric_primitive.hlsli">
