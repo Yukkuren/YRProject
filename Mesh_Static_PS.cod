@@ -41,7 +41,7 @@
     dcl t1.xy  // pin<8,9>
     dcl_2d s0
 
-#line 7 "E:\„Ç≤„Éº„É†Âà∂‰Ωú\YRProject\Mesh_Static_PS.hlsl"
+#line 7 "C:\Users\2180099.MAETEL\Desktop\ÂÄã‰∫∫Ë£Ω‰Ωú\Mesh_Static_PS.hlsl"
     texld r0, t1, s0
     mul r0, r0, t0  // ::main<0,1,2,3>
     mov oC0, r0  // ::main<0,1,2,3>
@@ -61,7 +61,7 @@ dcl_temps 1
 //   v2.x <- pin.texcoord.x; v2.y <- pin.texcoord.y; 
 //   o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
 //
-#line 7 "E:\ÉQÅ[ÉÄêßçÏ\YRProject\Mesh_Static_PS"
+#line 7 "C:\Users\2180099.MAETEL\Desktop\å¬êlêªçÏ\Mesh_Static_PS."
 sample r0.xyzw, v2.xyxx, t0.xyzw, s0
 mul o0.xyzw, r0.xyzw, v1.xyzw
 ret 

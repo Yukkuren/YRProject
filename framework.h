@@ -75,7 +75,7 @@ public:
 
 	SceneBase* scene_tbl[SCENE_END] = {
 		&scenetitle,
-		&sceneselect,
+		&sceneselect;
 		&sceneload,
 		&scenegame,
 		&sceneclear,

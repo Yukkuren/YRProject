@@ -23,7 +23,7 @@
     ps_2_x
     dcl t0  // pin<4,5,6,7>
 
-#line 5 "E:\„Ç≤„Éº„É†Âà∂‰Ωú\YRProject\geometric_primitive_ps.hlsl"
+#line 5 "C:\Users\2180099.MAETEL\Desktop\ÂÄã‰∫∫Ë£Ω‰Ωú\geometric_primitive_ps.hlsl"
     mov r0, t0  // ::main<0,1,2,3>
     mov oC0, r0  // ::main<0,1,2,3>
 
@@ -37,7 +37,7 @@ dcl_output o0.xyzw
 //   v1.x <- pin.color.x; v1.y <- pin.color.y; v1.z <- pin.color.z; v1.w <- pin.color.w; 
 //   o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
 //
-#line 5 "E:\ÉQÅ[ÉÄêßçÏ\YRProject\geometric_primitive_ps"
+#line 5 "C:\Users\2180099.MAETEL\Desktop\å¬êlêªçÏ\geometric_primitive_ps."
 mov o0.xyzw, v1.xyzw
 ret 
 // Approximately 2 instruction slots used

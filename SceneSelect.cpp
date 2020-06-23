@@ -35,22 +35,22 @@ void SceneSelect::LoadData()
 {
 	if (back_img == nullptr)
 	{
-		back_img = std::make_unique<Sprite>(L"./Data/Image/BG/select.png");
+		back_img = std::make_unique<Sprite>("./Data/Image/BG/select.png");
 		back_img->LoadGraph(1920.0f, 1080.0f);
 	}
 	if (knight_icon == nullptr)
 	{
-		knight_icon = std::make_unique<Sprite>(L"./Data/Image/Character/Ryu/icon.png");
+		knight_icon = std::make_unique<Sprite>("./Data/Image/Character/Ryu/icon.png");
 		knight_icon->LoadGraph(64.0f, 64.0f);
 	}
 	if (ken_icon == nullptr)
 	{
-		ken_icon = std::make_unique<Sprite>(L"./Data/Image/Character/Ken/icon.png");
+		ken_icon = std::make_unique<Sprite>("./Data/Image/Character/Ken/icon.png");
 		ken_icon->LoadGraph(64.0f, 64.0f);
 	}
 	if (select_img == nullptr)
 	{
-		select_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameSelect/select.png");
+		select_img = std::make_unique<Sprite>("./Data/Image/UI/GameSelect/select.png");
 		select_img->LoadGraph(64.0f, 64.0f);
 	}
 

@@ -7,7 +7,7 @@
 #include<map>
 #include<string>
 #include<vector>
-//#include "framework.h"
+#include "framework.h"
 
 //-------------------------------------------------------------
 //			¶¬‚µ‚È‚ª‚ç“Ç‚İ‚Ş‚Ì‚Í–³—‚¾‚Á‚½‚½‚ßŠÖ”‚Å‘ã—p

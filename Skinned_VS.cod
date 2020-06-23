@@ -93,7 +93,7 @@ dcl_temps 7
 //   o1.x <- <main return value>.normal.x; o1.y <- <main return value>.normal.y; o1.z <- <main return value>.normal.z; o1.w <- <main return value>.normal.w; 
 //   o0.x <- <main return value>.position.x; o0.y <- <main return value>.position.y; o0.z <- <main return value>.position.z; o0.w <- <main return value>.position.w
 //
-#line 21 "E:\ÉQÅ[ÉÄêßçÏ\YRProject\Skinned_VS"
+#line 21 "C:\Users\2180099.MAETEL\Desktop\å¬êlêªçÏ\Skinned_VS."
 itof r0.xyz, l(0, 0, 0, 0)  // r0.x <- p.x; r0.y <- p.y; r0.z <- p.z
 itof r1.xyz, l(0, 0, 0, 0)  // r1.x <- n.x; r1.y <- n.y; r1.z <- n.z
 
