@@ -193,7 +193,7 @@ public:
 
 	//分割画像アニメーション描画(コンテキスト、描画位置X,Y、回転角度、画像拡大率、アニメーション速度、カラー)
 	void DrawRotaDivGraph(
-		float x, float y, float angle, float size, int frame, DirectX::XMFLOAT4 color = { 1,1,1,1 })
+		float x, float y, float angle, float size, int frame,float elapsed_speed, DirectX::XMFLOAT4 color = { 1,1,1,1 })
 	{
 		//x,y:描画位置
 		//nx,ny:描画する画像の縦、横の分割数
@@ -201,7 +201,7 @@ public:
 
 		/*static int num = 0;
 		static int time = 0;*/
-		time++;
+		time += elapsed_speed;
 		if (time > frame)
 		{
 			num++;

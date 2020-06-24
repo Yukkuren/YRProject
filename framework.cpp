@@ -349,6 +349,11 @@ bool framework::initialize()
 
 	depth_stencil_buffer->Release();
 
+	if (fedo_img == nullptr)
+	{
+		fedo_img = std::make_unique<Sprite>(L"./Data/Shader/white_bourd.png", 1920.0f, 1080.0f);
+	}
+
 	return true;
 }
 void framework::update(float elapsed_time/*Elapsed seconds from last frame*/)

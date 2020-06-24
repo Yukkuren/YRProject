@@ -113,6 +113,8 @@ public:
 	void				Update(float elapsed_time);
 	void				Draw(float elapsed_time);
 
+	void				UnInit();
+
 	void				LoadData();
 
 	YR_Vector3			PosSet(int select);

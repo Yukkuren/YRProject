@@ -57,6 +57,19 @@ void SceneSelect::LoadData()
 	load_state = 3;
 }
 
+
+void SceneSelect::UnInit()
+{
+	back_img.reset(back_img.get());
+	back_img = nullptr;
+	knight_icon.reset(knight_icon.get());
+	knight_icon = nullptr;
+	ken_icon.reset(ken_icon.get());
+	ken_icon = nullptr;
+	select_img.reset(select_img.get());
+	select_img = nullptr;
+}
+
 void SceneSelect::Update(float elapsedTime)
 {
 	if (load_fin)
@@ -153,13 +166,8 @@ void SceneSelect::Update(float elapsedTime)
 		if (end)
 		{
 			//フェードアウトが終わったらロード画面へ
-			FRAMEWORK.SetScene(SCENE_LOAD);
-			//if (Fedo())
-			//{
-			//	/*SetDrawBright(255, 255, 255);
-			//	SetScene(SCENE_GAME);
-			//	Uninit();*/
-			//}
+			//FRAMEWORK.SetScene(SCENE_LOAD);
+			FRAMEWORK.SetScene(SCENE_TITLE);
 		}
 	}
 	else

@@ -48,7 +48,7 @@ public:
 	static CONST LONG SCREEN_WIDTH = 1920;
 	static CONST LONG SCREEN_HEIGHT = 1080;
 
-	std::unique_ptr<Sprite>							fedo_img;
+	std::unique_ptr<Sprite>							fedo_img = nullptr;
 
 	Microsoft::WRL::ComPtr<ID3D11Device>			device;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>		context;
