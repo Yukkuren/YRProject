@@ -28,7 +28,9 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wparam
 
 //#define SPRITE_MAX	(1024)
 
-#define USE_IMGUI	(1)
+#define		USE_IMGUI	(1)
+#define		FEDO_MIX( x )		( x * 3.0f)
+//#define		ToRadian( x )		( x * ( PI / 180.0f ) )
 
 enum SCENE_TABLE
 {

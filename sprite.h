@@ -38,7 +38,7 @@ public:
 	float numX;						//画像横分割数
 	float numY;						//画像縦分割数
 	int	num = 0;
-	int time = 0;
+	float time = 0;
 public:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader>			vert;
 	Microsoft::WRL::ComPtr<ID3D11PixelShader>			pixel;
@@ -193,7 +193,7 @@ public:
 
 	//分割画像アニメーション描画(コンテキスト、描画位置X,Y、回転角度、画像拡大率、アニメーション速度、カラー)
 	void DrawRotaDivGraph(
-		float x, float y, float angle, float size, int frame,float elapsed_speed, DirectX::XMFLOAT4 color = { 1,1,1,1 })
+		float x, float y, float angle, float size, float frame,float elapsed_speed, DirectX::XMFLOAT4 color = { 1,1,1,1 })
 	{
 		//x,y:描画位置
 		//nx,ny:描画する画像の縦、横の分割数
@@ -231,6 +231,7 @@ public:
 	}
 	Sprite(const wchar_t* wchar/*Texture file name*/);
 	Sprite(const wchar_t* wchar, float sw, float sh);
+	//画像分割読み込み(画像横サイズ,画像縦サイズ,画像横分割数,画像縦分割数,分割した画像一枚の横サイズ,縦サイズ)
 	Sprite(const wchar_t* wchar, float sw, float sh, int numX, int numY, int n_x, int n_y);
 	void Init(const wchar_t* whar);
 	~Sprite();

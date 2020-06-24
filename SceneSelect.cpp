@@ -20,6 +20,8 @@ void SceneSelect::Init()
 	Rato = 3.0f;
 	g1.Init();
 	g2.Init();
+	fedo_start = false;
+	fedo_alpha = 1.0f;
 
 	//将来的に消す
 	select_p1 = scastI(PLSELECT::KNIGHT);
@@ -28,15 +30,14 @@ void SceneSelect::Init()
 	p1Enter = false;
 	p2Enter = false;
 	end = false;
-	Fedotimer = 255;
 }
 
 void SceneSelect::LoadData()
 {
 	if (back_img == nullptr)
 	{
-		back_img = std::make_unique<Sprite>(L"./Data/Image/BG/select.png");
-		back_img->LoadGraph(1920.0f, 1080.0f);
+		back_img = std::make_unique<Sprite>(L"./Data/Image/BG/select.png", 1920.0f, 1080.0f);
+		//back_img->LoadGraph(1920.0f, 1080.0f);
 	}
 	if (knight_icon == nullptr)
 	{
@@ -60,20 +61,22 @@ void SceneSelect::LoadData()
 
 void SceneSelect::UnInit()
 {
-	back_img.reset(back_img.get());
-	back_img = nullptr;
-	knight_icon.reset(knight_icon.get());
+	knight_icon.reset();
 	knight_icon = nullptr;
-	ken_icon.reset(ken_icon.get());
+	back_img.reset();
+	back_img = nullptr;
+	ken_icon.reset();
 	ken_icon = nullptr;
-	select_img.reset(select_img.get());
+	select_img.reset();
 	select_img = nullptr;
 }
 
 void SceneSelect::Update(float elapsedTime)
 {
+	//ロード終了
 	if (load_fin)
 	{
+		//timerはフローしないようにリセットする
 		if (timer < 1000.0f)
 		{
 			timer += elapsedTime;
@@ -86,6 +89,7 @@ void SceneSelect::Update(float elapsedTime)
 		g1.Update();
 		g2.Update();
 
+		//プレイヤー1のカーソル移動処理
 		if (p1Enter)
 		{
 			if (g1.x_input[scastI(PAD::B)] == 1)
@@ -119,6 +123,7 @@ void SceneSelect::Update(float elapsedTime)
 			}
 		}
 
+		//プレイヤー2のカーソル移動処理
 		if (p2Enter)
 		{
 			if (g2.x_input[scastI(PAD::B)] == 1)
@@ -155,6 +160,7 @@ void SceneSelect::Update(float elapsedTime)
 		p1 = PosSet(select_p1);
 		p2 = PosSet(select_p2);
 
+		//両方のプレイヤーが決定したら
 		if (p1Enter && p2Enter)
 		{
 			if (g1.x_input[scastI(PAD::START)] == 1 || g2.x_input[scastI(PAD::START)] == 1)
@@ -165,10 +171,29 @@ void SceneSelect::Update(float elapsedTime)
 		}
 		if (end)
 		{
-			//フェードアウトが終わったらロード画面へ
-			//FRAMEWORK.SetScene(SCENE_LOAD);
-			FRAMEWORK.SetScene(SCENE_TITLE);
+			//フェードアウトをスタートさせる
+			fedo_start = true;
 		}
+		if (fedo_start)
+		{
+			if (FedoOut(elapsedTime))
+			{
+				//フェードアウトが終わったらロード画面へ
+				FRAMEWORK.SetScene(SCENE_LOAD);
+				//FRAMEWORK.SetScene(SCENE_TITLE);
+				UnInit();
+				return;
+			}
+		}
+		else
+		{
+			//フェードアウトがスタートしてない場合は画面を映す
+			if (fedo_alpha > 0.0f)
+			{
+				fedo_alpha -= FEDO_MIX(elapsedTime);
+			}
+		}
+
 	}
 	else
 	{
@@ -182,8 +207,8 @@ void SceneSelect::Update(float elapsedTime)
 			}
 			break;
 		case 1:
-			t = new std::thread(&SceneSelect::LoadData, this);
 			load_state = 2;
+			t = new std::thread(&SceneSelect::LoadData, this);
 		case 2:
 			break;
 		case 3:
@@ -209,10 +234,11 @@ void SceneSelect::Draw(float elapsedTime)
 #if USE_IMGUI
 	//ImGui
 	{
-		ImGui::Text("time : %d", time);
+		ImGui::Text("time : %f", timer);
 		ImGui::Text("select");
 	}
 #endif
+	//画像はロードが終わるまで描画しない
 	if (load_fin)
 	{
 		//テスト描画なので後で削除
@@ -291,6 +317,8 @@ void SceneSelect::Draw(float elapsedTime)
 			}
 		}
 	}
+	//フェード用画像
+	FRAMEWORK.fedo_img->DrawRotaGraph(FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fedo_alpha));
 }
 
 YR_Vector3 SceneSelect::PosSet(int select)
@@ -305,4 +333,16 @@ YR_Vector3 SceneSelect::PosSet(int select)
 		break;
 	}
 	return YR_Vector3(0.0f, 0.0f);
+}
+
+bool SceneSelect::FedoOut(float elapsed_time)
+{
+	fedo_alpha += FEDO_MIX(elapsed_time);
+
+	if (fedo_alpha > 1.0f)
+	{
+		return true;
+	}
+
+	return false;
 }

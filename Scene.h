@@ -17,6 +17,12 @@
 class SceneBase
 {
 public:
+
+	//fedo_alphaの値を0.0f~1.0fに動かしてフェードさせる
+	//fedo_startはフェードアウトするかどうかのフラグ。falseの場合はfedo_alhaを下げ続ける
+	float fedo_alpha;
+	bool fedo_start;
+
 	virtual void Init() {};
 	virtual void Update(float elapsed_time) {};
 	virtual void Draw(float elapsed_time) {};
@@ -27,12 +33,15 @@ class SceneGame : public SceneBase
 private:
 	POINT mouse_pos;
 public:
-
+	float timer;
 	int sco[6];
-	//std::unique_ptr<Collision> test;
+
 	void Init();
 	void Update(float elapsed_time);
 	void Draw(float elapsed_time);
+	void UnInit();
+	void LoadData();
+	bool FedoOut(float elapsed_time);
 
 	DirectX::XMFLOAT2 Distance(DirectX::XMFLOAT2& s_pos, DirectX::XMFLOAT2& e_pos);
 	void ScoreImageSet();
@@ -41,10 +50,20 @@ public:
 class SceneTitle : public SceneBase
 {
 public:
+	std::unique_ptr<Sprite> test;
+	std::thread* t = NULL;
+	int					load_state;
+	bool				load_fin;
+
+
 	int timer;
 	void Init();
 	void Update(float elapsed_time);
 	void Draw(float elapsed_time);
+	void LoadData();
+	void UnInit();
+
+	bool FedoOut(float elapsed_time);
 };
 
 class SceneClear : public SceneBase
@@ -70,19 +89,34 @@ public:
 class SceneLoad : public SceneBase
 {
 public:
-	int timer;
+	//ロード関係
+	std::thread* t = NULL;
+	int					load_state;
+	bool				load_fin;
+	bool				Game_load_fin;
+
+	//ロード時の画像
+	std::unique_ptr<Sprite>	load_img = nullptr;
+
+	float timer;
 	void Init();
 	void Update(float elapsed_time);
 	void Draw(float elapsed_time);
+	void UnInit();
+	void LoadData();
+	bool FedoOut(float elapsed_time);
+
 };
 
 class SceneSelect : public SceneBase
 {
 public:
-	std::thread*		t = NULL;
+	//ロード関係
+	std::thread* t = NULL;
 	int					load_state;
 	bool				load_fin;
 
+	//画像描画関係
 	YR_Vector3			p1;
 	YR_Vector3			p2;
 	YR_Vector3			knight_pos;
@@ -94,9 +128,7 @@ public:
 	bool				p2Enter;
 	float				timer;
 	bool				end;
-	int					fedoTimer;
-	int					Fedotimer;
-
+	
 	int					select_p1;
 	int					select_p2;
 
@@ -112,11 +144,9 @@ public:
 	void				Init();
 	void				Update(float elapsed_time);
 	void				Draw(float elapsed_time);
-
 	void				UnInit();
-
 	void				LoadData();
+	bool				FedoOut(float elapsed_time);
 
 	YR_Vector3			PosSet(int select);
-	bool				Fedo();
 };

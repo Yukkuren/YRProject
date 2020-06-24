@@ -3,17 +3,28 @@
 #include <stdlib.h>
 #include <time.h>
 #include "YRMouse.h"
+#include "framework.h"
 
 //------------------------------------------------
 // **シーン概要**
-//・このシーンでプレイヤーモデルのロードは行わない
+//・このシーンの処理でプレイヤーモデルのロードは行わない
 //
 //------------------------------------------------
 
 
 void SceneGame::Init()
 {
-	
+	timer = 0.0f;
+	fedo_alpha = 1.0f;
+	fedo_start = false;
+}
+
+void SceneGame::LoadData()
+{
+	//モデル等のロード
+	//この関数はSceneLoadで別スレッドとして動かす
+
+	FRAMEWORK.sceneload.load_state = 7;
 }
 
 void SceneGame::Update(float elapsed_time)
