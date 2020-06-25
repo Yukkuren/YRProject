@@ -5,7 +5,7 @@
 #include "./imgui/imgui_impl_dx11.h"
 #include "Key.h"
 #include <directxmath.h>
-#include <memory>
+//#include <memory>
 #include< Windows.h>
 #include "YR_VECTOR3.h"
 #include "YRGamePad.h"
@@ -13,6 +13,12 @@
 #include "PlayerBase.h"
 #include "sprite.h"
 
+enum class INPUT_PLAYER : int
+{
+	P1 = 0,
+	NONE,
+	P2
+};
 
 class SceneBase
 {
@@ -28,6 +34,24 @@ public:
 	virtual void Draw(float elapsed_time) {};
 };
 
+//ÉvÉåÉCÉÑÅ[êßå‰ç\ë¢ëÃ
+struct PlayerALL
+{
+	float HP_MAX1P = 0.0f;
+	float HP_MAX2P = 0.0f;
+	float ratio1P = 0.0f;
+	float ratio2P = 0.0f;
+	int power1P = 0;
+	int power2P = 0;
+	float correction_value = 0.0f;
+	float gauge1P = 0.0f;
+	float gauge2P = 0.0f;
+	YR_Vector3 pos1P{ 0.0f,0.0f };
+	YR_Vector3 pos2P{ 1.0f,0.0f };
+
+	
+};
+
 class SceneGame : public SceneBase
 {
 private:
@@ -36,6 +60,12 @@ public:
 	float timer;
 	int sco[6];
 
+	PlayerALL PL;
+	std::unique_ptr<Player> player1p;
+	std::unique_ptr<Player> player2p;
+	std::unique_ptr<GamepadBase> pad1;
+	std::unique_ptr<GamepadBase> pad2;
+
 	void Init();
 	void Update(float elapsed_time);
 	void Draw(float elapsed_time);
@@ -43,20 +73,50 @@ public:
 	void LoadData();
 	bool FedoOut(float elapsed_time);
 
+	void PadSet(int select1);
+
 	DirectX::XMFLOAT2 Distance(DirectX::XMFLOAT2& s_pos, DirectX::XMFLOAT2& e_pos);
 	void ScoreImageSet();
+
+public:
+	//ÉQÅ[ÉÄèàóùä÷êî
+	void SetPlayerCharacter(std::unique_ptr<Player>& player, int select);
 };
+
+
 
 class SceneTitle : public SceneBase
 {
+	
 public:
 	std::unique_ptr<Sprite> test;
 	std::thread* t = NULL;
 	int					load_state;
 	bool				load_fin;
 
+	GamePad1			g1;
+	GamePad2			g2;
 
-	int timer;
+	//âÊëúï`âÊä÷åW
+	YR_Vector3			p1;
+	YR_Vector3			p2;
+	YR_Vector3			none_pos;
+	YR_Vector3			p1_pos;
+	YR_Vector3			p2_pos;
+	float				Rato;
+	bool				p1Enter;
+	bool				p2Enter;
+	float				timer;
+	bool				end;
+
+	int					select_p1;
+	int					select_p2;
+
+public:
+	std::unique_ptr<Sprite>	knight_icon = nullptr;
+	std::unique_ptr<Sprite>	ken_icon = nullptr;
+	std::unique_ptr<Sprite>	select_img = nullptr;
+
 	void Init();
 	void Update(float elapsed_time);
 	void Draw(float elapsed_time);
@@ -64,6 +124,7 @@ public:
 	void UnInit();
 
 	bool FedoOut(float elapsed_time);
+	YR_Vector3			PosSet(int select);
 };
 
 class SceneClear : public SceneBase
@@ -122,8 +183,6 @@ public:
 	YR_Vector3			knight_pos;
 	YR_Vector3			kenpos;
 	float				Rato;
-	GamePad1			g1;
-	GamePad2			g2;
 	bool				p1Enter;
 	bool				p2Enter;
 	float				timer;

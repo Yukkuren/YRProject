@@ -169,6 +169,8 @@
     <ClCompile Include="imgui\imgui_impl_dx11.cpp" />
     <ClCompile Include="imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="Knight.cpp" />
+    <ClCompile Include="KnightATK.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="framework.cpp" />
     <ClCompile Include="MainCamera.cpp" />
@@ -192,6 +194,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="HitBox.h" />
     <ClInclude Include="HitCheak.h" />
+    <ClInclude Include="Knight.h" />
     <ClInclude Include="YRGamePad.h" />
     <ClInclude Include="Geometric_primitive.h" />
     <ClInclude Include="high_resolution_timer.h" />

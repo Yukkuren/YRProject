@@ -14,6 +14,8 @@ public:
 	YR_Vector3(const YR_Vector3 &v) : x(v.x), y(v.y), z(v.z) {};
 	YR_Vector3(const XMFLOAT3& v) : x(v.x), y(v.y), z(v.z) {};
 	YR_Vector3(float xx, float yy) : x(xx), y(yy), z(0.0f) {};
+	explicit YR_Vector3(_In_reads_(3) const float* pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
+
 
 	YR_Vector3& operator = (const YR_Vector3& R);
 	YR_Vector3& operator = (const XMFLOAT3& R);

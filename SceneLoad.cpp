@@ -34,7 +34,14 @@ void SceneLoad::LoadData()
 	//「ロード画面で表示する画像等」をロードする
 	if (load_img == nullptr)
 	{
-		load_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/load_image.png", 480.0f, 384.0f, 5, 4, 96.0f, 96.0f);
+		load_img = std::make_unique<Sprite>(
+			L"./Data/Image/UI/GameScene/load_image.png",
+			480.0f,
+			384.0f,
+			5,
+			4,
+			96.0f,
+			96.0f);
 	}
 
 	load_state = 2;
@@ -109,7 +116,10 @@ void SceneLoad::Update(float elapsedTime)
 			break;
 		case 3:
 			//一度スレッドを開放する
-			t->join();
+			if (t->joinable())
+			{
+				t->join();
+			}
 			delete t;
 			load_fin = true;
 			load_state = 4;
@@ -121,7 +131,7 @@ void SceneLoad::Update(float elapsedTime)
 		case 5:
 			//次に「ゲームメイン画面で使用するモデル等」のロード
 			load_state = 6;
-			t = new std::thread(&SceneGame::LoadData, FRAMEWORK.scenegame);
+			t = new std::thread(&SceneGame::LoadData, &FRAMEWORK.scenegame);
 			break;
 		case 6:
 			//ゲームモデルロード中
@@ -132,7 +142,10 @@ void SceneLoad::Update(float elapsedTime)
 			break;
 		case 8:
 			//スレッド解放
-			t->join();
+			if (t->joinable())
+			{
+				t->join();
+			}
 			delete t;
 			Game_load_fin = true;
 			break;

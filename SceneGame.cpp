@@ -5,12 +5,28 @@
 #include "YRMouse.h"
 #include "framework.h"
 
+#include "Knight.h"
+
 //------------------------------------------------
 // **シーン概要**
 //・このシーンの処理でプレイヤーモデルのロードは行わない
 //
 //------------------------------------------------
 
+
+void SceneGame::SetPlayerCharacter(std::unique_ptr<Player>& player, int select)
+{
+	switch (select)
+	{
+	case scastI(PLSELECT::KNIGHT):
+		player = std::make_unique<Knight>();
+		break;
+	case scastI(PLSELECT::KEN):
+		player = std::make_unique<Knight>();
+		break;
+
+	}
+}
 
 void SceneGame::Init()
 {
@@ -23,8 +39,37 @@ void SceneGame::LoadData()
 {
 	//モデル等のロード
 	//この関数はSceneLoadで別スレッドとして動かす
+	SetPlayerCharacter(player1p, FRAMEWORK.sceneselect.select_p1);
+	SetPlayerCharacter(player2p, FRAMEWORK.sceneselect.select_p2);
+	player1p->Init(PL.pos1P);
+	player1p->Init(PL.pos1P);
+	player2p->Init(PL.pos2P);
+	PL.HP_MAX1P = player1p->hp;
+	PL.HP_MAX2P = player2p->hp;
+	PL.ratio1P = player1p->hp / PL.HP_MAX1P * 800.0f;
+	PL.ratio2P = player2p->hp / PL.HP_MAX2P * 800.0f;
+	PL.correction_value = 800.0f - PL.ratio1P;
+	if (FRAMEWORK.sceneselect.select_p1 == scastI(INPUT_PLAYER::P1))
+	{
+		player1p->pad = std::make_unique<GamePad1>();
+		player2p->pad = std::make_unique<GamePad2>();
+	}
+	else
+	{
+		player1p->pad = std::make_unique<GamePad1>();
+		player2p->pad = std::make_unique<GamePad2>();
+	}
+	player1p->pad->Init();
+	player2p->pad->Init();
 
 	FRAMEWORK.sceneload.load_state = 7;
+}
+
+void SceneGame::UnInit()
+{
+	//プレイヤーのUninit関数を回す
+	player1p->Uninit();
+	player2p->Uninit();
 }
 
 void SceneGame::Update(float elapsed_time)
@@ -82,6 +127,32 @@ void SceneGame::Draw(float elapsed_time)
 
 }
 
+bool SceneGame::FedoOut(float elapsed_time)
+{
+	fedo_alpha += FEDO_MIX(elapsed_time);
+
+	if (fedo_alpha > 1.0f)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+void SceneGame::PadSet(int select1p)
+{
+	if (select1p == scastI(INPUT_PLAYER::P1))
+	{
+		pad1 = std::make_unique<GamePad1>();
+		pad2 = std::make_unique<GamePad2>();
+	}
+	else
+	{
+		pad1 = std::make_unique<GamePad1>();
+		pad2 = std::make_unique<GamePad2>();
+	}
+}
 
 DirectX::XMFLOAT2 SceneGame::Distance(DirectX::XMFLOAT2& s_pos, DirectX::XMFLOAT2& e_pos)
 {
@@ -99,8 +170,6 @@ DirectX::XMFLOAT2 SceneGame::Distance(DirectX::XMFLOAT2& s_pos, DirectX::XMFLOAT
 	}
 	return distance;
 }
-
-
 
 void SceneGame::ScoreImageSet()
 {

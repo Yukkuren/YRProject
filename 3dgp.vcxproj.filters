@@ -59,6 +59,15 @@
     <Filter Include="assistance\Input">
       <UniqueIdentifier>{cd90e49e-3b66-4fb9-8c19-3201df262baa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Character">
+      <UniqueIdentifier>{1169b490-8ef7-4e6d-b287-415e792f2498}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Character\Header">
+      <UniqueIdentifier>{88b0b026-0c42-4641-bb93-112136b1eba1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Character\Sources">
+      <UniqueIdentifier>{c73775c3-1ab3-41c6-9872-1a0e6ebfe606}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="framework.cpp">
@@ -141,6 +150,12 @@
     </ClCompile>
     <ClCompile Include="HitCheak.cpp">
       <Filter>assistance\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Knight.cpp">
+      <Filter>Game\Character\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="KnightATK.cpp">
+      <Filter>Game\Character\Sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -233,6 +248,9 @@
     </ClInclude>
     <ClInclude Include="YRShader.h">
       <Filter>assistance\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Knight.h">
+      <Filter>Game\Character\Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

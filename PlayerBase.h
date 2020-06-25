@@ -3,9 +3,11 @@
 #ifndef PLAYERBASE_H_
 #define PLAYERBASE_H_
 
+#include "Skinned_mesh.h"
+
 #include "YR_VECTOR3.h"
-#include"HitBox.h"
-#include"AttackBox.h"
+#include "HitBox.h"
+#include "AttackBox.h"
 #include "Tracking.h"
 #include <memory>
 #include "YRGamePad.h"
@@ -23,7 +25,8 @@
 enum class PLSELECT :int
 {
 	KNIGHT = 0,
-	KEN
+	KEN,
+	PLSELECT_END,
 };
 
 //---------------------------------------------
@@ -59,6 +62,7 @@ public:
 class Player
 {
 public:
+	//ゲーム内処理用変数
 	float		hp = 0;
 	int			jumpcount;
 	bool		jumpflag;
@@ -83,19 +87,37 @@ public:
 	int			steal_escape;	//投げ抜け可能時間
 	int			combo_count;	//コンボカウント
 
-
+public:
+	//モデル用変数
+	std::unique_ptr<Skinned_mesh>	base = nullptr;
+public:
+	//座標、モデル描画用変数
 	YR_Vector3		pos;
+	YR_Vector3		scale;
+	YR_Vector3		angle;
 	YR_Vector3		speed;
 	YR_Vector3		stop_pos;
-	Tracking	tracking;
-	Speed		speed_Y;
-
+	Tracking		tracking;
+	Speed			speed_Y;
 	std::unique_ptr<GamepadBase> pad;
-	//Vector2 pos;
+
+public:
+	//基本処理関数
 	virtual void Init(YR_Vector3 InitPos) = 0;
+	virtual void LoadData() = 0;
 	virtual void Uninit() = 0;
 	virtual void Update(float decision) = 0;
-	virtual void Draw() = 0;
+	virtual void Draw(
+		const DirectX::XMMATRIX& view,
+		const DirectX::XMMATRIX& projection,
+		const DirectX::XMFLOAT4& light_direction,
+		const DirectX::XMFLOAT4& light_color,
+		const DirectX::XMFLOAT4& ambient_color,
+		float						elapsed_time ) = 0;
+
+public:
+	//行動系関数
+	
 	virtual void Move(float decision) = 0;
 	virtual bool Step() = 0;
 	virtual void Jump() = 0;

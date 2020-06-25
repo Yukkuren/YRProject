@@ -18,8 +18,8 @@ void SceneSelect::Init()
 	p1 = knight_pos;
 	p2 = kenpos;
 	Rato = 3.0f;
-	g1.Init();
-	g2.Init();
+	FRAMEWORK.scenegame.pad1->Init();
+	FRAMEWORK.scenegame.pad2->Init();
 	fedo_start = false;
 	fedo_alpha = 1.0f;
 
@@ -30,6 +30,7 @@ void SceneSelect::Init()
 	p1Enter = false;
 	p2Enter = false;
 	end = false;
+	timer = 0.0f;
 }
 
 void SceneSelect::LoadData()
@@ -86,20 +87,20 @@ void SceneSelect::Update(float elapsedTime)
 			timer = 0;
 		}
 
-		g1.Update();
-		g2.Update();
+		FRAMEWORK.scenegame.pad1->Update();
+		FRAMEWORK.scenegame.pad2->Update();
 
 		//プレイヤー1のカーソル移動処理
 		if (p1Enter)
 		{
-			if (g1.x_input[scastI(PAD::B)] == 1)
+			if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::B)] == 1)
 			{
 				p1Enter = false;
 			}
 		}
 		else
 		{
-			if (g1.x_input[scastI(PAD::STICK_R)] == 1)
+			if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::STICK_R)] == 1)
 			{
 				select_p1++;
 				if (select_p1 > scastI(PLSELECT::KEN))
@@ -107,7 +108,7 @@ void SceneSelect::Update(float elapsedTime)
 					select_p1 = scastI(PLSELECT::KEN);
 				}
 			}
-			if (g1.x_input[scastI(PAD::STICK_L)] == 1)
+			if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::STICK_L)] == 1)
 			{
 				select_p1--;
 				if (select_p1 < 0)
@@ -116,7 +117,7 @@ void SceneSelect::Update(float elapsedTime)
 				}
 			}
 
-			if (g1.x_input[scastI(PAD::A)] == 1)
+			if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::A)] == 1)
 			{
 				p1Enter = true;
 				//PlaySE(SE_ENTER);
@@ -126,14 +127,14 @@ void SceneSelect::Update(float elapsedTime)
 		//プレイヤー2のカーソル移動処理
 		if (p2Enter)
 		{
-			if (g2.x_input[scastI(PAD::B)] == 1)
+			if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::B)] == 1)
 			{
 				p2Enter = false;
 			}
 		}
 		else
 		{
-			if (g2.x_input[scastI(PAD::STICK_R)] == 1)
+			if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::STICK_R)] == 1)
 			{
 				select_p2++;
 				if (select_p2 > scastI(PLSELECT::KEN))
@@ -141,7 +142,7 @@ void SceneSelect::Update(float elapsedTime)
 					select_p2 = scastI(PLSELECT::KEN);
 				}
 			}
-			if (g2.x_input[scastI(PAD::STICK_L)] == 1)
+			if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::STICK_L)] == 1)
 			{
 				select_p2--;
 				if (select_p2 < 0)
@@ -149,7 +150,7 @@ void SceneSelect::Update(float elapsedTime)
 					select_p2 = scastI(PLSELECT::KNIGHT);
 				}
 			}
-			if (g2.x_input[scastI(PAD::A)] == 1)
+			if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::A)] == 1)
 			{
 				p2Enter = true;
 				//PlaySE(SE_ENTER);
@@ -163,7 +164,8 @@ void SceneSelect::Update(float elapsedTime)
 		//両方のプレイヤーが決定したら
 		if (p1Enter && p2Enter)
 		{
-			if (g1.x_input[scastI(PAD::START)] == 1 || g2.x_input[scastI(PAD::START)] == 1)
+			if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::START)] == 1 ||
+				FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::START)] == 1)
 			{
 				end = true;
 				//PlaySE(SE_ENTER);

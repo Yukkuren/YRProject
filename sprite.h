@@ -77,7 +77,7 @@ public:
 		this->sh = sh;
 	}
 	//画像分割読み込み(画像横サイズ,画像縦サイズ,画像横分割数,画像縦分割数,分割した画像一枚の横サイズ,縦サイズ)
-	void LoadDivGraph(float sw, float sh, int numX, int numY, int n_x, int n_y)
+	void LoadDivGraph(float sw, float sh, int numX, int numY, float n_x, float n_y)
 	{
 		this->sw = sw;
 		this->sh = sh;
@@ -96,8 +96,8 @@ public:
 		}
 		this->numX = static_cast<float>(numX);
 		this->numY = static_cast<float>(numY);
-		nsx = static_cast<float>(n_x);
-		nsy = static_cast<float>(n_y);
+		nsx = n_x;
+		nsy = n_y;
 	}
 
 	//画像通常描画(コンテキスト、描画位置X、描画位置Y)
@@ -232,7 +232,14 @@ public:
 	Sprite(const wchar_t* wchar/*Texture file name*/);
 	Sprite(const wchar_t* wchar, float sw, float sh);
 	//画像分割読み込み(画像横サイズ,画像縦サイズ,画像横分割数,画像縦分割数,分割した画像一枚の横サイズ,縦サイズ)
-	Sprite(const wchar_t* wchar, float sw, float sh, int numX, int numY, int n_x, int n_y);
+	Sprite(
+		const wchar_t* wchar,
+		float sw,
+		float sh,
+		int numX,
+		int numY,
+		float n_x,
+		float n_y);
 	void Init(const wchar_t* whar);
 	~Sprite();
 	

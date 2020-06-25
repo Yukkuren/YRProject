@@ -5,7 +5,9 @@
 #include<wrl.h>
 #include<vector>
 #include<array>
-#include "framework.h"
+#include<memory>
+#include<d3d11.h>
+//#include "framework.h"
 
 
 #define MAX_BONE_INFLUENCES 4

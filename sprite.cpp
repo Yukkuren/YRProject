@@ -268,7 +268,7 @@ Sprite::Sprite(const wchar_t* wchar, float sw, float sh)
 	LoadGraph(sw, sh);
 }
 
-Sprite::Sprite(const wchar_t* wchar, float sw, float sh, int numX, int numY, int n_x, int n_y)
+Sprite::Sprite(const wchar_t* wchar, float sw, float sh, int numX, int numY, float n_x, float n_y)
 {
 	Init(wchar);
 	LoadDivGraph(sw, sh, numX, numY, n_x, n_y);
