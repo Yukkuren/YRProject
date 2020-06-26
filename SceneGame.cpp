@@ -39,9 +39,11 @@ void SceneGame::LoadData()
 {
 	//モデル等のロード
 	//この関数はSceneLoadで別スレッドとして動かす
+
+	//選択したキャラクターをそれぞれ生成する
 	SetPlayerCharacter(player1p, FRAMEWORK.sceneselect.select_p1);
 	SetPlayerCharacter(player2p, FRAMEWORK.sceneselect.select_p2);
-	player1p->Init(PL.pos1P);
+	//生成後初期化する(座標系、HP、UI座標など)
 	player1p->Init(PL.pos1P);
 	player2p->Init(PL.pos2P);
 	PL.HP_MAX1P = player1p->hp;
@@ -49,19 +51,12 @@ void SceneGame::LoadData()
 	PL.ratio1P = player1p->hp / PL.HP_MAX1P * 800.0f;
 	PL.ratio2P = player2p->hp / PL.HP_MAX2P * 800.0f;
 	PL.correction_value = 800.0f - PL.ratio1P;
-	if (FRAMEWORK.sceneselect.select_p1 == scastI(INPUT_PLAYER::P1))
-	{
-		player1p->pad = std::make_unique<GamePad1>();
-		player2p->pad = std::make_unique<GamePad2>();
-	}
-	else
-	{
-		player1p->pad = std::make_unique<GamePad1>();
-		player2p->pad = std::make_unique<GamePad2>();
-	}
+	//タイトルで決定したパッドの順番をこちらにも設定して初期化
+	PadSet(FRAMEWORK.sceneselect.select_p1, FRAMEWORK.sceneselect.select_p2);
 	player1p->pad->Init();
 	player2p->pad->Init();
 
+	//ロード終了
 	FRAMEWORK.sceneload.load_state = 7;
 }
 
@@ -70,6 +65,7 @@ void SceneGame::UnInit()
 	//プレイヤーのUninit関数を回す
 	player1p->Uninit();
 	player2p->Uninit();
+	//SceneGameの画像などを解放する
 }
 
 void SceneGame::Update(float elapsed_time)
@@ -149,7 +145,27 @@ void SceneGame::PadSet(int select1p)
 	}
 	else
 	{
+		pad1 = std::make_unique<GamePad2>();
+		pad2 = std::make_unique<GamePad1>();
+	}
+}
+void SceneGame::PadSet(int select1p,int select2p)
+{
+	if (select1p == scastI(INPUT_PLAYER::P1))
+	{
 		pad1 = std::make_unique<GamePad1>();
+	}
+	else
+	{
+		pad1 = std::make_unique<GamePad2>();
+	}
+
+	if (select2p == scastI(INPUT_PLAYER::P1))
+	{
+		pad2 = std::make_unique<GamePad1>();
+	}
+	else
+	{
 		pad2 = std::make_unique<GamePad2>();
 	}
 }

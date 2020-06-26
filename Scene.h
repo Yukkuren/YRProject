@@ -74,6 +74,7 @@ public:
 	bool FedoOut(float elapsed_time);
 
 	void PadSet(int select1);
+	void PadSet(int select1, int select2);
 
 	DirectX::XMFLOAT2 Distance(DirectX::XMFLOAT2& s_pos, DirectX::XMFLOAT2& e_pos);
 	void ScoreImageSet();
