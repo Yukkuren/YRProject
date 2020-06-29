@@ -10,6 +10,7 @@ using namespace fbxsdk;
 #include<Shlwapi.h>
 #include <codecvt>
 #include <locale>
+
 #include "framework.h"
 
 using convert_t = std::codecvt_utf8<wchar_t>;
@@ -720,15 +721,7 @@ Skinned_mesh::Skinned_mesh(const char *fbx_filename)
 	// Initialize Direct3D COM objects 
 
 
-
-
-
-
-
-
-
-
-	D3D11_INPUT_ELEMENT_DESC element_desc[] =
+	/*D3D11_INPUT_ELEMENT_DESC element_desc[] =
 	{
 		{ "POSITION",	0,	DXGI_FORMAT_R32G32B32_FLOAT,	0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA ,	0	},
 		{ "NORMAL",		0,	DXGI_FORMAT_R32G32B32_FLOAT,	0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0	},
@@ -740,7 +733,7 @@ Skinned_mesh::Skinned_mesh(const char *fbx_filename)
 	UINT numElements = ARRAYSIZE(element_desc);
 
 	ALL_SkinSet::create_vertex("./Data/Shader/Skinned_VS.cso", vertex_shader.GetAddressOf(), element_desc, numElements, input_layout.GetAddressOf());
-	ALL_SkinSet::CreatePixel("./Data/Shader/Skinned_PS.cso", pixel_shader.GetAddressOf());
+	ALL_SkinSet::CreatePixel("./Data/Shader/Skinned_PS.cso", pixel_shader.GetAddressOf());*/
 
 	D3D11_RASTERIZER_DESC rasterizer_desc;
 
@@ -1033,9 +1026,9 @@ void Skinned_mesh::Render(
 	FRAMEWORK.context->OMSetDepthStencilState(depth_state.Get(), 1);
 
 	FRAMEWORK.context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	FRAMEWORK.context->IASetInputLayout(input_layout.Get());
+	/*FRAMEWORK.context->IASetInputLayout(input_layout.Get());
 	FRAMEWORK.context->VSSetShader(vertex_shader.Get(), NULL, 0);
-	FRAMEWORK.context->PSSetShader(pixel_shader.Get(), NULL, 0);
+	FRAMEWORK.context->PSSetShader(pixel_shader.Get(), NULL, 0);*/
 
 	//定数バッファのバインド
 	for (auto& mesh : meshes)
@@ -1194,9 +1187,9 @@ void Skinned_mesh::Render(
 	FRAMEWORK.context->OMSetDepthStencilState(depth_state.Get(), 1);
 
 	FRAMEWORK.context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	FRAMEWORK.context->IASetInputLayout(input_layout.Get());
+	/*FRAMEWORK.context->IASetInputLayout(input_layout.Get());
 	FRAMEWORK.context->VSSetShader(vertex_shader.Get(), NULL, 0);
-	FRAMEWORK.context->PSSetShader(pixel_shader.Get(), NULL, 0);
+	FRAMEWORK.context->PSSetShader(pixel_shader.Get(), NULL, 0);*/
 
 	//定数バッファのバインド
 	for (auto& mesh : meshes)

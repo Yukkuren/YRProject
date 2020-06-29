@@ -160,6 +160,9 @@
     <ClCompile Include="YRMotion.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="YRShader.cpp">
+      <Filter>assistance\Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">

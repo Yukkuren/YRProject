@@ -4,13 +4,75 @@
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 #include<wrl.h>
+#include <vector>
 using namespace DirectX;
+
+
+//INPUT_ELEMENT_DESC管理用クラス
+class INPUT_ELEMENT_DESC
+{
+private:
+
+	D3D11_INPUT_ELEMENT_DESC pos		=	{ "POSITION",	0,	DXGI_FORMAT_R32G32B32_FLOAT,	0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0 };
+	D3D11_INPUT_ELEMENT_DESC normal		=	{ "NORMAL",		0,	DXGI_FORMAT_R32G32B32_FLOAT,	0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0 };
+	D3D11_INPUT_ELEMENT_DESC tex		=	{ "TEXCOORD",	0,	DXGI_FORMAT_R32G32_FLOAT,		0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0 };
+	D3D11_INPUT_ELEMENT_DESC wight		=	{ "WEIGHTS",	0,	DXGI_FORMAT_R32G32B32A32_FLOAT,	0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0 };
+	D3D11_INPUT_ELEMENT_DESC bone		=	{ "BONES",		0,	DXGI_FORMAT_R32G32B32A32_UINT,	0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0 };
+	D3D11_INPUT_ELEMENT_DESC color		=	{ "COLOR",		0,	DXGI_FORMAT_R32G32B32A32_FLOAT, 0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0 };
+
+
+	//コンストラクタで頂点データを作成
+	INPUT_ELEMENT_DESC()
+	{
+		//skineed_mesh(FBX)
+		skin_element_desc.push_back(pos);
+		skin_element_desc.push_back(normal);
+		skin_element_desc.push_back(tex);
+		skin_element_desc.push_back(wight);
+		skin_element_desc.push_back(bone);
+
+		//static_mesh(OBJ)
+		static_element_desc.push_back(pos);
+		static_element_desc.push_back(normal);
+		static_element_desc.push_back(tex);
+
+		//sprite(png)
+		sprite_element_desc.push_back(pos);
+		sprite_element_desc.push_back(color);
+		sprite_element_desc.push_back(tex);
+
+		//geometric
+		geometric_element_desc.push_back(pos);
+		geometric_element_desc.push_back(normal);
+	};
+public:
+	enum ShaderType
+	{
+		SKIN,
+		STATIC,
+		SPRITE,
+		GEO,
+	};
+
+	std::vector<D3D11_INPUT_ELEMENT_DESC> skin_element_desc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> static_element_desc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> sprite_element_desc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> geometric_element_desc;
+
+	static INPUT_ELEMENT_DESC &getInstance()
+	{
+		static INPUT_ELEMENT_DESC instance;
+		return instance;
+	}
+
+};
+#define				YRINPUT_ELEMENT_DESC (INPUT_ELEMENT_DESC::getInstance())
 
 class YRShader
 {
 public:
 private:
-	bool motion_on = false;
+	INPUT_ELEMENT_DESC::ShaderType type;
 protected:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader>		VSShader = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11PixelShader>		PSShader = nullptr;
@@ -22,9 +84,17 @@ protected:
 	
 public:
 	//YRShader() {};
-	YRShader(bool motion_on) : motion_on(motion_on) {};
-	virtual ~YRShader();
+	YRShader(INPUT_ELEMENT_DESC::ShaderType type) : type(type) {};
+	virtual ~YRShader() {};
 
+private:
+	HRESULT create_vertex(const char* cso_file, ID3D11VertexShader** vert, D3D11_INPUT_ELEMENT_DESC* layout, UINT numElements, ID3D11InputLayout** input);
+	HRESULT CreatePixel(const char* ps_file, ID3D11PixelShader** pixel);
+	HRESULT create_gs_from_cso(const char* cso_name, ID3D11GeometryShader** geometry_shader);
+	HRESULT create_ds_from_cso(const char* cso_name, ID3D11DomainShader** domain_shader);
+	HRESULT create_hs_from_cso(const char* cso_name, ID3D11HullShader** hull_shader);
+
+public:
 	bool Create(const char* VS_cso_file, const char* PS_cso_file);
 	bool Create(const char* VS_cso_file, const char* PS_cso_file, const char* GS_cso_file);
 	bool Create(const char* VS_cso_file, const char* PS_cso_file, const char* DS_cso_file, const char* HS_cso_file);

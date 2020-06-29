@@ -2,11 +2,10 @@
 
 #include<Windows.h>
 #include<directxmath.h>
-#include<wrl.h>
-#include<vector>
+#include "YRShader.h"
 #include<array>
 #include<memory>
-#include<d3d11.h>
+
 //#include "framework.h"
 
 
@@ -89,6 +88,7 @@ public:
 
 	//基本的にこっちを使う(position,scale,angle直入力型)
 	void Render(
+		YRShader					*shader,
 		DirectX::XMFLOAT3			&pos,
 		DirectX::XMFLOAT3			&scale,
 		DirectX::XMFLOAT3			&angle,
@@ -105,6 +105,7 @@ public:
 	);
 
 	void Render(
+		YRShader					*shader,
 		DirectX::XMFLOAT3			&pos,
 		DirectX::XMFLOAT3			&scale,
 		DirectX::XMVECTOR			&orientation,
@@ -261,6 +262,7 @@ public:
 
 	//一回のみ描画(アニメーションが終わるとtrue)
 	bool Draw(
+		YRShader			*shader,
 		DirectX::XMFLOAT3& pos,
 		DirectX::XMFLOAT3& scale,
 		DirectX::XMFLOAT3& angle,
@@ -275,6 +277,7 @@ public:
 
 	//連続描画
 	void DrawContinue(
+		YRShader		*shader,
 		DirectX::XMFLOAT3& pos,
 		DirectX::XMFLOAT3& scale,
 		DirectX::XMFLOAT3& angle,
@@ -289,6 +292,7 @@ public:
 
 	//アニメーション無し用
 	void DrawMesh(
+		YRShader		*shader,
 		DirectX::XMFLOAT3 pos,
 		DirectX::XMFLOAT3& scale,
 		DirectX::XMFLOAT3& angle,
@@ -302,6 +306,7 @@ public:
 
 	//現在のアニメーションの状態で停止描画
 	void DrawStop(
+		YRShader		*shader,
 		DirectX::XMFLOAT3 pos,
 		DirectX::XMFLOAT3& scale,
 		DirectX::XMFLOAT3& angle,
@@ -319,6 +324,7 @@ public:
 
 	//一回のみ描画(アニメーションが終わるとtrue)
 	bool Draw(
+		YRShader		*shader,
 		DirectX::XMFLOAT3& pos,
 		DirectX::XMFLOAT3& scale,
 		DirectX::XMVECTOR& orientation,
@@ -333,6 +339,7 @@ public:
 
 	//連続描画
 	void DrawContinue(
+		YRShader		*shader,
 		DirectX::XMFLOAT3& pos,
 		DirectX::XMFLOAT3& scale,
 		DirectX::XMVECTOR& orientation,
@@ -347,6 +354,7 @@ public:
 
 	//アニメーション無し用
 	void DrawMesh(
+		YRShader* shader,
 		DirectX::XMFLOAT3 pos,
 		DirectX::XMFLOAT3& scale,
 		DirectX::XMVECTOR& orientation,
@@ -360,6 +368,7 @@ public:
 
 	//現在のアニメーションの状態で停止描画
 	void DrawStop(
+		YRShader		*shader,
 		DirectX::XMFLOAT3 pos,
 		DirectX::XMFLOAT3& scale,
 		DirectX::XMVECTOR& orientation,
