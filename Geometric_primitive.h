@@ -8,22 +8,18 @@
 class geometric_primitive
 {
 public:
-	ID3D11VertexShader		*vertex_shader;
-	ID3D11PixelShader		*pixel_shader;
-	ID3D11InputLayout		*input_layout;
-	ID3D11Buffer			*vertex_buffer;			//頂点バッファ
-	ID3D11Buffer			*index_buffer;			//インデックスバッファ
-	ID3D11Buffer			*constant_buffer;		//定数バッファ
-	ID3D11RasterizerState	*line_state;			//線描画
-	ID3D11RasterizerState	*filling_state;			//塗りつぶし描画
-	ID3D11DepthStencilState	*depth_state;
-	ID3D11Resource *pResouce;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>			vertex_buffer;			//頂点バッファ
+	Microsoft::WRL::ComPtr<ID3D11Buffer>			index_buffer;			//インデックスバッファ
+	Microsoft::WRL::ComPtr<ID3D11Buffer>			constant_buffer;		//定数バッファ
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState>	line_state;			//線描画
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState>	filling_state;			//塗りつぶし描画
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>	depth_state;
 
 	geometric_primitive();
 
 	~geometric_primitive()
 	{
-		vertex_shader->Release();
+		/*vertex_shader->Release();
 		pixel_shader->Release();
 		input_layout->Release();
 		vertex_buffer->Release();
@@ -32,16 +28,19 @@ public:
 		line_state->Release();
 		filling_state->Release();
 		depth_state->Release();
-		pResouce->Release();
+		pResouce->Release();*/
 	};
 
 	void render(
-		YRShader					*shader,
-		const DirectX::XMFLOAT4X4	&world_view,		//ワールド・ビュー・プロジェクション合成行列
-		const DirectX::XMFLOAT4X4	&world_matrix,		//ワールド変換行列
-		const DirectX::XMFLOAT4		&light_direction,	//ライト進行方向
-		const DirectX::XMFLOAT4		&material_color,	//材質色
-		bool						viewflag			//線・塗りつぶし描画フラグ
+		YRShader		*shader,
+		DirectX::XMFLOAT3& pos,
+		DirectX::XMFLOAT3& scale,
+		DirectX::XMFLOAT3& angle,
+		const DirectX::XMMATRIX& view,
+		const DirectX::XMMATRIX& projection,
+		//UNIT.23
+		const DirectX::XMFLOAT4			material_color = { 1.0f,1.0f,1.0f,1.0f },
+		const bool						viewflag = true
 	);
 
 	struct vertex
@@ -55,7 +54,6 @@ public:
 		DirectX::XMFLOAT4X4		world_view_projection;	//ワールド・ビュー・プロジェクション合成行列
 		DirectX::XMFLOAT4X4		world;					//ワールド変換行列
 		DirectX::XMFLOAT4		material_color;			//材質色
-		DirectX::XMFLOAT4		light_direction;		//ライト進行方向
 	};
 };
 

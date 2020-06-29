@@ -13,6 +13,7 @@
 #include "PlayerBase.h"
 #include "sprite.h"
 #include "YRShader.h"
+#include "Geometric_primitive.h"
 
 enum class INPUT_PLAYER : int
 {
@@ -61,12 +62,28 @@ public:
 	float timer;
 	int sco[6];
 
+	std::unique_ptr<geometric_primitive> geo = nullptr;
 	//画像
-	std::unique_ptr<Sprite> test;
+	std::unique_ptr<Sprite> test = nullptr;
+	std::unique_ptr<Sprite> HP_img = nullptr;
+	std::unique_ptr<Sprite> win1P_img = nullptr;
+	std::unique_ptr<Sprite> win2P_img = nullptr;
+	std::unique_ptr<Sprite> draw_img = nullptr;
+	std::unique_ptr<Sprite> HPbar_img = nullptr;
+	std::unique_ptr<Sprite> KO_img = nullptr;
+	std::unique_ptr<Sprite> gauge_img = nullptr;
+	std::unique_ptr<Sprite> gaugecase_img = nullptr;
+	std::unique_ptr<Sprite> font_img = nullptr;
+	std::unique_ptr<Sprite> call_img = nullptr;
+	std::unique_ptr<Sprite> effect_img = nullptr;
+	std::shared_ptr<Sprite> p1combo_img = nullptr;
+	std::shared_ptr<Sprite> p2combo_img = nullptr;
+
 
 	//シェーダー
 	std::unique_ptr<YRShader> skinShader;
 	std::unique_ptr<YRShader> spriteShader;
+	std::unique_ptr<YRShader> geoShader;
 
 	PlayerALL PL;
 	std::unique_ptr<Player> player1p;
@@ -83,6 +100,9 @@ public:
 
 	void PadSet(int select1);
 	void PadSet(int select1, int select2);
+	int Winjudge();
+	int ColorSet(int power);
+	void ComboImageSet();
 
 	DirectX::XMFLOAT2 Distance(DirectX::XMFLOAT2& s_pos, DirectX::XMFLOAT2& e_pos);
 	void ScoreImageSet();

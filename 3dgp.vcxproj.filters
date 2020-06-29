@@ -68,6 +68,9 @@
     <Filter Include="Game\Character\Sources">
       <UniqueIdentifier>{c73775c3-1ab3-41c6-9872-1a0e6ebfe606}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\board_Shader">
+      <UniqueIdentifier>{258ebb60-446d-432f-b609-20316afdc9c7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="framework.cpp">
@@ -272,6 +275,9 @@
     <None Include="sprite.hlsli">
       <Filter>Shaders\Sprite_Shader</Filter>
     </None>
+    <None Include="board.hlsli">
+      <Filter>Shaders\board_Shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="geometric_primitive_ps.hlsl">
@@ -297,6 +303,12 @@
     </FxCompile>
     <FxCompile Include="sprite_vs.hlsl">
       <Filter>Shaders\Sprite_Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="board_vs.hlsl">
+      <Filter>Shaders\board_Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="board_ps.hlsl">
+      <Filter>Shaders\board_Shader</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

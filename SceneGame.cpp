@@ -4,7 +4,9 @@
 #include <time.h>
 #include "YRMouse.h"
 #include "framework.h"
+#include "HitCheak.h"
 
+//キャラクターインクルード
 #include "Knight.h"
 
 //------------------------------------------------
@@ -28,6 +30,12 @@ void SceneGame::SetPlayerCharacter(std::unique_ptr<Player>& player, int select)
 	}
 }
 
+
+
+
+
+
+
 void SceneGame::Init()
 {
 	timer = 0.0f;
@@ -39,24 +47,81 @@ void SceneGame::Init()
 	spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
 	skinShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SKIN);
 	skinShader->Create("./Data/Shader/Skinned_VS.cso", "./Data/Shader/Skinned_PS.cso");
+	geoShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::GEO);
+	geoShader->Create("./Data/Shader/board_vs.cso", "./Data/Shader/board_ps.cso");
 
 	//カメラ初期設定
-	YRCamera.SetEye(DirectX::XMFLOAT3(10, 5, -25));			//視点
+	YRCamera.SetEye(DirectX::XMFLOAT3(0, 0, -25));			//視点
 	YRCamera.SetFocus(DirectX::XMFLOAT3(0, 0, 0));			//注視点
 	YRCamera.SetUp(DirectX::XMFLOAT3(0, 1, 0));				//上方向
 	YRCamera.SetPerspective(30 * 0.01745f, 1280.0f / 720.0f, 0.0001f, 1000000);
 }
 
+
+
+
+
+
+
 void SceneGame::LoadData()
 {
 	//モデル等のロード
 	//この関数はSceneLoadで別スレッドとして動かす
+	if (geo == nullptr)
+	{
+		geo = std::make_unique<geometric_primitive>();
+	}
 
 	//画像のロード
 	if (test == nullptr)
 	{
-		test = std::make_unique<Sprite>(L"./Data/Image/BG/mementos.png", 1920.0f, 1080.0f);
+		test = std::make_unique<Sprite>(L"./Data/Image/BG/stage1.png", 3840.0f, 2160.0f);
 	}
+	if (HP_img == nullptr)
+	{
+		HP_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/HP.png", 800.0f, 100.0f);
+	}
+	if (win1P_img == nullptr)
+	{
+		win1P_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/1PWIN.png", 960.0f, 384.0f);
+	}
+	if (win2P_img == nullptr)
+	{
+		win2P_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/2PWIN.png", 960.0f, 384.0f);
+	}
+	if (draw_img == nullptr)
+	{
+		draw_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/DRAW.png", 960.0f, 384.0f);
+	}
+	if (HPbar_img == nullptr)
+	{
+		HPbar_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/HPbar.png", 850.0f, 150.0f);
+	}
+	if (KO_img == nullptr)
+	{
+		KO_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/KO.png", 640.0f, 384.0f);
+	}
+	if (gauge_img == nullptr)
+	{
+		gauge_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gauge.png", 640.0f, 64.0f);
+	}
+	if (gaugecase_img == nullptr)
+	{
+		gaugecase_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gaugecase.png", 640.0f, 64.0f);
+	}
+	if (font_img == nullptr)
+	{
+		font_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/font.png", 640.0f, 64.0f, 10, 1, 64.0f, 64.0f);
+	}
+	if (call_img == nullptr)
+	{
+		call_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/call.png", 1024.0f, 512.0f, 1, 2, 1024.0f, 256.0f);
+	}
+	if (effect_img == nullptr)
+	{
+		effect_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/effect.png", 192.0f, 128.0f, 3, 2, 64.0f, 64.0f);
+	}
+	
 
 	//選択したキャラクターをそれぞれ生成する
 	SetPlayerCharacter(player1p, FRAMEWORK.sceneselect.select_p1);
@@ -80,6 +145,11 @@ void SceneGame::LoadData()
 	FRAMEWORK.sceneload.load_state = 7;
 }
 
+
+
+
+
+
 void SceneGame::UnInit()
 {
 	//プレイヤーのUninit関数を回す
@@ -89,6 +159,12 @@ void SceneGame::UnInit()
 	test.reset();
 	test = nullptr;
 }
+
+
+
+
+
+
 
 void SceneGame::Update(float elapsed_time)
 {
@@ -106,6 +182,12 @@ void SceneGame::Update(float elapsed_time)
 		}
 	}
 }
+
+
+
+
+
+
 
 void SceneGame::Draw(float elapsed_time)
 {
@@ -156,10 +238,36 @@ void SceneGame::Draw(float elapsed_time)
 	DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(1, 1, 1, 1);
 
 	
-	test->DrawGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f);
+	//仮背景
+	test->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 0.5f);
 	
+	//プレイヤー描画
 	player1p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
 	player2p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+
+	geo->render(
+		geoShader.get(),
+		DirectX::XMFLOAT3(3.0f, 0.0f, 0.0f),
+		DirectX::XMFLOAT3(5.0f, 3.0f, 0.0f),
+		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+		V,
+		P,
+		DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.5f)
+	);
+
+
+	//UI描画
+
+	//体力バー表示
+	PL.ratio1P = player1p->hp / PL.HP_MAX1P * 800.0f;
+	PL.ratio2P = player2p->hp / PL.HP_MAX2P * 800.0f;
+	PL.correction_value = 800.0f - PL.ratio1P;
+
+
+	//コンボ表示
+	
+
+
 
 	//フェード用画像描画
 	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fedo_alpha));
@@ -230,6 +338,43 @@ DirectX::XMFLOAT2 SceneGame::Distance(DirectX::XMFLOAT2& s_pos, DirectX::XMFLOAT
 	return distance;
 }
 
+
+
+int SceneGame::ColorSet(int power)
+{
+	//ゲージの量からフォントの色を決め、ハンドル用の値を返す
+	switch (power)
+	{
+	case 0:
+		//SetDrawBright(255, 100, 0);
+		return 0;
+		break;
+	case 1:
+		//SetDrawBright(100, 255, 100);
+		return 1;
+		break;
+	case 2:
+		//SetDrawBright(0, 0, 255);
+		return 2;
+		break;
+	case 3:
+		//SetDrawBright(0, 255, 0);
+		return 3;
+		break;
+	case 4:
+		//SetDrawBright(255, 0, 0);
+		return 4;
+		break;
+	case 5:
+		//SetDrawBright(255, 255, 255);
+		return 5;
+		break;
+
+	}
+	return 0;
+}
+
+
 void SceneGame::ScoreImageSet()
 {
 	int s[6];
@@ -283,3 +428,124 @@ void SceneGame::ScoreImageSet()
 		}
 	}
 }
+
+
+
+int SceneGame::Winjudge()
+{
+	if (player1p->hp <= 0 && player2p->hp <= 0)
+	{
+		player1p->hp = 0;
+		player2p->hp = 0;
+		return 3;
+	}
+	if (player1p->hp <= 0)
+	{
+		player1p->hp = 0;
+		return 2;
+	}
+	if (player2p->hp <= 0)
+	{
+		player2p->hp = 0;
+		return 1;
+	}
+
+	return 0;
+}
+
+
+
+
+//---------------------------------------------------------------------------------------
+//				コンボの画像セット
+void SceneGame::ComboImageSet()
+{
+	int s[3];
+	int v[3];
+	int dScore = player1p->combo_count;
+	int dVcore = player2p->combo_count;
+	s[0] = dScore / 100;
+	dScore = dScore % 100;
+	s[1] = dScore / 10;
+	dScore = dScore % 10;
+	s[2] = dScore;
+
+	v[0] = dVcore / 100;
+	dVcore = dVcore % 100;
+	v[1] = dVcore / 10;
+	dVcore = dVcore % 10;
+	v[2] = dVcore;
+
+	for (int i = 0; i < 3; i++)
+	{
+		switch (s[i])
+		{
+		case 0:
+			//IMG::p1combo[i] = IMG::font[0];
+			break;
+		case 1:
+			//IMG::p1combo[i] = IMG::font[1];
+			break;
+		case 2:
+			//IMG::p1combo[i] = IMG::font[2];
+			break;
+		case 3:
+			//IMG::p1combo[i] = IMG::font[3];
+			break;
+		case 4:
+			//IMG::p1combo[i] = IMG::font[4];
+			break;
+		case 5:
+			//IMG::p1combo[i] = IMG::font[5];
+			break;
+		case 6:
+			//IMG::p1combo[i] = IMG::font[6];
+			break;
+		case 7:
+			//IMG::p1combo[i] = IMG::font[7];
+			break;
+		case 8:
+			//IMG::p1combo[i] = IMG::font[8];
+			break;
+		case 9:
+			//IMG::p1combo[i] = IMG::font[9];
+			break;
+		}
+
+		switch (v[i])
+		{
+		case 0:
+			//IMG::p2combo[i] = IMG::font[0];
+			break;
+		case 1:
+			//IMG::p2combo[i] = IMG::font[1];
+			break;
+		case 2:
+			//IMG::p2combo[i] = IMG::font[2];
+			break;
+		case 3:
+			//IMG::p2combo[i] = IMG::font[3];
+			break;
+		case 4:
+			//IMG::p2combo[i] = IMG::font[4];
+			break;
+		case 5:
+			//IMG::p2combo[i] = IMG::font[5];
+			break;
+		case 6:
+			//IMG::p2combo[i] = IMG::font[6];
+			break;
+		case 7:
+			//IMG::p2combo[i] = IMG::font[7];
+			break;
+		case 8:
+			//IMG::p2combo[i] = IMG::font[8];
+			break;
+		case 9:
+			//IMG::p2combo[i] = IMG::font[9];
+			break;
+		}
+	}
+}
+//
+//----------------------------------------------------------------------------------------------

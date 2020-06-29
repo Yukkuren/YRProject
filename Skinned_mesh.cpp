@@ -1008,7 +1008,7 @@ void Skinned_mesh::Render(
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 
-		//ワールド・ビュー・プロジェクション行列作成
+	//ワールド・ビュー・プロジェクション行列作成
 	DirectX::XMFLOAT4X4 world_view_projection;
 	DirectX::XMStoreFloat4x4(&world_view_projection, world_matrix*view*projection);
 	//context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

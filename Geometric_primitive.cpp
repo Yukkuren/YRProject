@@ -123,7 +123,7 @@ geometric_primitive::geometric_primitive()
 	rasterizer_desc.MultisampleEnable = FALSE;
 	rasterizer_desc.AntialiasedLineEnable = FALSE;
 
-	hr = FRAMEWORK.device->CreateRasterizerState(&rasterizer_desc, &line_state);
+	hr = FRAMEWORK.device->CreateRasterizerState(&rasterizer_desc, line_state.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 	rasterizer_desc.FillMode = D3D11_FILL_SOLID;
@@ -136,7 +136,7 @@ geometric_primitive::geometric_primitive()
 	rasterizer_desc.ScissorEnable = FALSE;
 	rasterizer_desc.MultisampleEnable = FALSE;
 	rasterizer_desc.AntialiasedLineEnable = FALSE;
-	hr = FRAMEWORK.device->CreateRasterizerState(&rasterizer_desc, &filling_state);
+	hr = FRAMEWORK.device->CreateRasterizerState(&rasterizer_desc, filling_state.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 
@@ -157,7 +157,7 @@ geometric_primitive::geometric_primitive()
 	depth_desc.FrontFace.StencilFailOp = depth_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
 
 	
-	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, &depth_state);
+	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, depth_state.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 
@@ -232,7 +232,7 @@ geometric_primitive::geometric_primitive()
 	subresource.SysMemPitch = 0;
 	subresource.SysMemSlicePitch = 0;
 
-	hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, &subresource, &vertex_buffer);
+	hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, &subresource, vertex_buffer.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 	//インデックス情報セット
@@ -248,7 +248,7 @@ geometric_primitive::geometric_primitive()
 	subresource.SysMemPitch = 0;
 	subresource.SysMemSlicePitch = 0;
 	
-	hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, &subresource, &index_buffer);
+	hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, &subresource, index_buffer.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 	ZeroMemory(&buffer_desc, sizeof(D3D11_BUFFER_DESC));
@@ -265,49 +265,69 @@ geometric_primitive::geometric_primitive()
 
 	//subresource.pSysMem = NULL;
 
-	hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, nullptr/*&subresource*/, &constant_buffer);
+	hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, nullptr/*&subresource*/, constant_buffer.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 }
 
 
 void  geometric_primitive::render(
-	YRShader					*shader,
-	const DirectX::XMFLOAT4X4	&world_view,		//ワールド・ビュー・プロジェクション合成行列
-	const DirectX::XMFLOAT4X4	&world_matrix,		//ワールド変換行列
-	const DirectX::XMFLOAT4		&light_direction,	//ライト進行方向
-	const DirectX::XMFLOAT4		&material_color,	//材質色
-	bool						viewflag			//線・塗りつぶし描画フラグ
+	YRShader		*shader,
+	DirectX::XMFLOAT3& pos,
+	DirectX::XMFLOAT3& scale,
+	DirectX::XMFLOAT3& angle,
+	const DirectX::XMMATRIX& view,
+	const DirectX::XMMATRIX& projection,
+	//UNIT.23
+	const DirectX::XMFLOAT4			material_color,
+	const bool						viewflag
 )
 {
+	//ワールド変換行列の初期化
+	DirectX::XMMATRIX s, r, t;
+	//拡大行列作成
+	s = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
+	//回転行列作成
+	r = DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z);
+	//移動行列作成
+	t = DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
+	//行列合成と変換
+	DirectX::XMMATRIX world_matrix = s * r * t;
+	DirectX::XMFLOAT4X4 world;
+	DirectX::XMStoreFloat4x4(&world, world_matrix);
+	//ワールド・ビュー・プロジェクション行列作成
+	DirectX::XMFLOAT4X4 world_view_projection;
+	DirectX::XMStoreFloat4x4(&world_view_projection, world_matrix * view * projection);
+
+
 	UINT stride = sizeof(vertex);
 	UINT offset = 0;
 	//頂点バッファのバインド
-	FRAMEWORK.context->IASetVertexBuffers(0, 1, &vertex_buffer, &stride, &offset);
+	FRAMEWORK.context->IASetVertexBuffers(0, 1, vertex_buffer.GetAddressOf(), &stride, &offset);
 	
 	//インデックスバッファのバインド
-	FRAMEWORK.context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R32_UINT, offset);
+	FRAMEWORK.context->IASetIndexBuffer(index_buffer.Get(), DXGI_FORMAT_R32_UINT, offset);
 
 	FRAMEWORK.context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	//定数バッファのバインド
 	cbuffer cb = {};
-	cb.world = world_matrix;
-	cb.world_view_projection = world_view;
-	cb.light_direction = light_direction;
+	cb.world = world;
+	cb.world_view_projection = world_view_projection;
 	cb.material_color = material_color;
-	FRAMEWORK.context->UpdateSubresource(constant_buffer,0,0,&cb,0,0);
-	FRAMEWORK.context->VSSetConstantBuffers(NULL, 1, &constant_buffer);
+	FRAMEWORK.context->UpdateSubresource(constant_buffer.Get(),0,0,&cb,0,0);
+	FRAMEWORK.context->VSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
+	FRAMEWORK.context->PSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
 
 
 	//ステート・シェーダー設定
 	if (viewflag)
 	{
-		FRAMEWORK.context->RSSetState(line_state);
+		FRAMEWORK.context->RSSetState(filling_state.Get());
 	}
 	else
 	{
-		FRAMEWORK.context->RSSetState(filling_state);
+		FRAMEWORK.context->RSSetState(line_state.Get());
 	}
 	/*FRAMEWORK.context->IASetInputLayout(input_layout);
 	FRAMEWORK.context->VSSetShader(vertex_shader, NULL, 0);

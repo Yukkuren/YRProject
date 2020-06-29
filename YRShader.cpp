@@ -226,11 +226,11 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file)
 		break;
 	case INPUT_ELEMENT_DESC::GEO:
 	{
-		UINT numElements = YRINPUT_ELEMENT_DESC.sprite_element_desc.size();
+		UINT numElements = YRINPUT_ELEMENT_DESC.geometric_element_desc.size();
 		create_vertex(
 			VS_cso_file,
 			VSShader.GetAddressOf(),
-			YRINPUT_ELEMENT_DESC.sprite_element_desc.data(),
+			YRINPUT_ELEMENT_DESC.geometric_element_desc.data(),
 			numElements,
 			VertextLayout.GetAddressOf());
 	}
@@ -281,11 +281,11 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file, const ch
 	break;
 	case INPUT_ELEMENT_DESC::GEO:
 	{
-		UINT numElements = YRINPUT_ELEMENT_DESC.sprite_element_desc.size();
+		UINT numElements = YRINPUT_ELEMENT_DESC.geometric_element_desc.size();
 		create_vertex(
 			VS_cso_file,
 			VSShader.GetAddressOf(),
-			YRINPUT_ELEMENT_DESC.sprite_element_desc.data(),
+			YRINPUT_ELEMENT_DESC.geometric_element_desc.data(),
 			numElements,
 			VertextLayout.GetAddressOf());
 	}
@@ -337,11 +337,11 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file, const ch
 	break;
 	case INPUT_ELEMENT_DESC::GEO:
 	{
-		UINT numElements = YRINPUT_ELEMENT_DESC.sprite_element_desc.size();
+		UINT numElements = YRINPUT_ELEMENT_DESC.geometric_element_desc.size();
 		create_vertex(
 			VS_cso_file,
 			VSShader.GetAddressOf(),
-			YRINPUT_ELEMENT_DESC.sprite_element_desc.data(),
+			YRINPUT_ELEMENT_DESC.geometric_element_desc.data(),
 			numElements,
 			VertextLayout.GetAddressOf());
 	}
@@ -394,11 +394,11 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file, const ch
 	break;
 	case INPUT_ELEMENT_DESC::GEO:
 	{
-		UINT numElements = YRINPUT_ELEMENT_DESC.sprite_element_desc.size();
+		UINT numElements = YRINPUT_ELEMENT_DESC.geometric_element_desc.size();
 		create_vertex(
 			VS_cso_file,
 			VSShader.GetAddressOf(),
-			YRINPUT_ELEMENT_DESC.sprite_element_desc.data(),
+			YRINPUT_ELEMENT_DESC.geometric_element_desc.data(),
 			numElements,
 			VertextLayout.GetAddressOf());
 	}
