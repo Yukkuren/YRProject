@@ -422,19 +422,19 @@ Static_mesh::Static_mesh(const wchar_t* obj_name)
 {
 	HRESULT hr = S_OK;
 
-	D3D11_INPUT_ELEMENT_DESC element_desc[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0 , DXGI_FORMAT_R32G32_FLOAT , 0 , D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-	UINT numElements = ARRAYSIZE(element_desc);
-	
-	//頂点シェーダーオブジェクト生成
-	//入力レイアウトオブジェクト生成
-	//ピクセルシェーダーオブジェクト生成
-	MeshTexShader::create_vertex("./Data/Shader/Mesh_Static_VS.cso", &vertex_shader, element_desc, numElements, &input_layout);
-	MeshTexShader::CreatePixel("./Data/Shader/Mesh_Static_PS.cso", &pixel_shader);
+	//D3D11_INPUT_ELEMENT_DESC element_desc[] =
+	//{
+	//	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	//	{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	//	{ "TEXCOORD", 0 , DXGI_FORMAT_R32G32_FLOAT , 0 , D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	//};
+	//UINT numElements = ARRAYSIZE(element_desc);
+	//
+	////頂点シェーダーオブジェクト生成
+	////入力レイアウトオブジェクト生成
+	////ピクセルシェーダーオブジェクト生成
+	//MeshTexShader::create_vertex("./Data/Shader/Mesh_Static_VS.cso", &vertex_shader, element_desc, numElements, &input_layout);
+	//MeshTexShader::CreatePixel("./Data/Shader/Mesh_Static_PS.cso", &pixel_shader);
 
 
 	//geometric_primitive_ps.cso
@@ -647,6 +647,7 @@ Static_mesh::Static_mesh(const wchar_t* obj_name)
 }
 
 void  Static_mesh::render(
+	YRShader					*shader,
 	const DirectX::XMFLOAT4X4	&world_view,		//ワールド・ビュー・プロジェクション合成行列
 	const DirectX::XMFLOAT4X4	&world_matrix,		//ワールド変換行列
 	const DirectX::XMFLOAT4		&light_direction,	//ライト進行方向
@@ -661,8 +662,6 @@ void  Static_mesh::render(
 	UINT offset = 0;
 	//頂点バッファのバインド
 	FRAMEWORK.context->IASetVertexBuffers(0, 1, &vertex_buffer, &stride, &offset);
-
-
 	//インデックスバッファのバインド
 	FRAMEWORK.context->IASetIndexBuffer(index_buffer, DXGI_FORMAT_R32_UINT, 0);
 
@@ -687,11 +686,12 @@ void  Static_mesh::render(
 	{
 		FRAMEWORK.context->RSSetState(filling_state);
 	}
-	FRAMEWORK.context->IASetInputLayout(input_layout);
+	/*FRAMEWORK.context->IASetInputLayout(input_layout);
 	FRAMEWORK.context->VSSetShader(vertex_shader, NULL, 0);
-	FRAMEWORK.context->PSSetShader(pixel_shader, NULL, 0);
+	FRAMEWORK.context->PSSetShader(pixel_shader, NULL, 0);*/
 	//context->PSSetShaderResources(0, 1, &shader_view);
 	//context->PSSetSamplers(0, 1, &sampler_state);
+	shader->Acivate();
 
 	//プリミティブの描画
 	/*context->DrawIndexed(indexsize, NULL, NULL);
@@ -718,7 +718,7 @@ void  Static_mesh::render(
 			}
 		}
 	}
-
+	shader->Inactivate();
 }
 
 

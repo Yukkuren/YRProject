@@ -1,10 +1,9 @@
 #pragma once
 
 #include <windows.h>
-#include<d3d11.h>
 #include<directxmath.h>
-#include <wrl.h>
 #include<string>
+#include "YRShader.h"
 
 class geometric_primitive
 {
@@ -37,6 +36,7 @@ public:
 	};
 
 	void render(
+		YRShader					*shader,
 		const DirectX::XMFLOAT4X4	&world_view,		//ワールド・ビュー・プロジェクション合成行列
 		const DirectX::XMFLOAT4X4	&world_matrix,		//ワールド変換行列
 		const DirectX::XMFLOAT4		&light_direction,	//ライト進行方向
@@ -59,8 +59,8 @@ public:
 	};
 };
 
-namespace ALL
-{
-	HRESULT create_vertex(const char *cso_file, ID3D11VertexShader **vert, D3D11_INPUT_ELEMENT_DESC *layout, UINT numElements, ID3D11InputLayout **input);
-	HRESULT CreatePixel(const char *ps_file, ID3D11PixelShader **pixel);
-}
+//namespace ALL
+//{
+//	/*HRESULT create_vertex(const char *cso_file, ID3D11VertexShader **vert, D3D11_INPUT_ELEMENT_DESC *layout, UINT numElements, ID3D11InputLayout **input);
+//	HRESULT CreatePixel(const char *ps_file, ID3D11PixelShader **pixel);*/
+//}

@@ -16,6 +16,7 @@ void MeshMotion::AnimReset()
 
 //一回のみ描画(アニメーションが終わるとtrue)
 bool MeshMotion::Draw(
+	YRShader		*shader,
 	DirectX::XMFLOAT3& pos,
 	DirectX::XMFLOAT3& scale,
 	DirectX::XMFLOAT3& angle,
@@ -29,7 +30,7 @@ bool MeshMotion::Draw(
 )
 {
 	anim_timer += elapsed_time;
-	skin->Render(pos, scale, angle, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer, material_color);
+	skin->Render(shader,pos, scale, angle, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer, material_color);
 	if (skin->FinCheck())
 	{
 		return true;
@@ -39,6 +40,7 @@ bool MeshMotion::Draw(
 
 //連続描画
 void MeshMotion::DrawContinue(
+	YRShader		*shader,
 	DirectX::XMFLOAT3& pos,
 	DirectX::XMFLOAT3& scale,
 	DirectX::XMFLOAT3& angle,
@@ -52,7 +54,7 @@ void MeshMotion::DrawContinue(
 )
 {
 	anim_timer += elapsed_time;
-	skin->Render(pos, scale, angle, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer, material_color);
+	skin->Render(shader,pos, scale, angle, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer, material_color);
 	if (skin->FinCheck())
 	{
 		AnimReset();
@@ -61,6 +63,7 @@ void MeshMotion::DrawContinue(
 
 //アニメーション無し用
 void MeshMotion::DrawMesh(
+	YRShader		*shader,
 	DirectX::XMFLOAT3 pos,
 	DirectX::XMFLOAT3& scale,
 	DirectX::XMFLOAT3& angle,
@@ -72,11 +75,12 @@ void MeshMotion::DrawMesh(
 	const DirectX::XMFLOAT4		material_color
 )
 {
-	skin->Render(pos, scale, angle, view, projection, light_direction, light_color, ambient_color, 0.0f, 0.0f, material_color);
+	skin->Render(shader,pos, scale, angle, view, projection, light_direction, light_color, ambient_color, 0.0f, 0.0f, material_color);
 }
 
 //現在のアニメーションの状態で停止描画
 void MeshMotion::DrawStop(
+	YRShader		*shader,
 	DirectX::XMFLOAT3 pos,
 	DirectX::XMFLOAT3& scale,
 	DirectX::XMFLOAT3& angle,
@@ -89,7 +93,7 @@ void MeshMotion::DrawStop(
 	const DirectX::XMFLOAT4		material_color
 )
 {
-	skin->Render(pos, scale, angle, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer, material_color);
+	skin->Render(shader,pos, scale, angle, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer, material_color);
 }
 
 
@@ -97,6 +101,7 @@ void MeshMotion::DrawStop(
 
 //一回のみ描画(アニメーションが終わるとtrue)
 bool MeshMotion::Draw(
+	YRShader		*shader,
 	DirectX::XMFLOAT3& pos,
 	DirectX::XMFLOAT3& scale,
 	DirectX::XMVECTOR& orientation,
@@ -110,7 +115,7 @@ bool MeshMotion::Draw(
 )
 {
 	anim_timer += elapsed_time;
-	skin->Render(pos, scale, orientation, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer, material_color);
+	skin->Render(shader,pos, scale, orientation, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer, material_color);
 	if (skin->FinCheck())
 	{
 		return true;
@@ -120,6 +125,7 @@ bool MeshMotion::Draw(
 
 //連続描画
 void MeshMotion::DrawContinue(
+	YRShader		*shader,
 	DirectX::XMFLOAT3& pos,
 	DirectX::XMFLOAT3& scale,
 	DirectX::XMVECTOR& orientation,
@@ -133,7 +139,7 @@ void MeshMotion::DrawContinue(
 )
 {
 	anim_timer += elapsed_time;
-	skin->Render(pos, scale, orientation, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer, material_color);
+	skin->Render(shader,pos, scale, orientation, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer, material_color);
 	if (skin->FinCheck())
 	{
 		AnimReset();
@@ -142,6 +148,7 @@ void MeshMotion::DrawContinue(
 
 //アニメーション無し用
 void MeshMotion::DrawMesh(
+	YRShader		*shader,
 	DirectX::XMFLOAT3 pos,
 	DirectX::XMFLOAT3& scale,
 	DirectX::XMVECTOR& orientation,
@@ -153,11 +160,12 @@ void MeshMotion::DrawMesh(
 	const DirectX::XMFLOAT4		material_color
 )
 {
-	skin->Render(pos, scale, orientation, view, projection, light_direction, light_color, ambient_color, 0.0f, 0.0f, material_color);
+	skin->Render(shader,pos, scale, orientation, view, projection, light_direction, light_color, ambient_color, 0.0f, 0.0f, material_color);
 }
 
 //現在のアニメーションの状態で停止描画
 void MeshMotion::DrawStop(
+	YRShader		*shader,
 	DirectX::XMFLOAT3 pos,
 	DirectX::XMFLOAT3& scale,
 	DirectX::XMVECTOR& orientation,
@@ -170,5 +178,5 @@ void MeshMotion::DrawStop(
 	const DirectX::XMFLOAT4		material_color
 )
 {
-	skin->Render(pos, scale, orientation, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer, material_color);
+	skin->Render(shader,pos, scale, orientation, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer, material_color);
 }

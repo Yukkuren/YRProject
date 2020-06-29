@@ -10,7 +10,6 @@ using namespace fbxsdk;
 #include<Shlwapi.h>
 #include <codecvt>
 #include <locale>
-
 #include "framework.h"
 
 using convert_t = std::codecvt_utf8<wchar_t>;
@@ -62,88 +61,88 @@ namespace ALL_SkinSet
 		return hr;
 	}
 
-	HRESULT create_vertex(const char *cso_file, ID3D11VertexShader **vert, D3D11_INPUT_ELEMENT_DESC *layout, UINT numElements, ID3D11InputLayout **input)
-	{
+	//HRESULT create_vertex(const char *cso_file, ID3D11VertexShader **vert, D3D11_INPUT_ELEMENT_DESC *layout, UINT numElements, ID3D11InputLayout **input)
+	//{
 
-		struct Vertex_and_Layout
-		{
-			Vertex_and_Layout(ID3D11VertexShader *vert, ID3D11InputLayout *input) : pVertex(vert), pInput(input) {}
-			Microsoft::WRL::ComPtr<ID3D11VertexShader> pVertex;
-			Microsoft::WRL::ComPtr<ID3D11InputLayout> pInput;
-		};
-		static std::map<std::string, Vertex_and_Layout> cache;
+	//	struct Vertex_and_Layout
+	//	{
+	//		Vertex_and_Layout(ID3D11VertexShader *vert, ID3D11InputLayout *input) : pVertex(vert), pInput(input) {}
+	//		Microsoft::WRL::ComPtr<ID3D11VertexShader> pVertex;
+	//		Microsoft::WRL::ComPtr<ID3D11InputLayout> pInput;
+	//	};
+	//	static std::map<std::string, Vertex_and_Layout> cache;
 
-		auto it = cache.find(cso_file);
-		if (it != cache.end())
-		{
-			*vert = it->second.pVertex.Get();
-			(*vert)->AddRef();
-			*input = it->second.pInput.Get();
-			(*input)->AddRef();
-			return S_OK;
-		}
-
-
-		HRESULT hr = S_OK;
-		FILE *fp = 0;
-
-		fopen_s(&fp, cso_file, "rb");
-		_ASSERT_EXPR_A(fp, "CSO File not found");
-		fseek(fp, 0, SEEK_END);
-		long cso_sz = ftell(fp);
-		fseek(fp, 0, SEEK_SET);
-		std::unique_ptr< unsigned char[] >cso_data = std::make_unique< unsigned char[]>(cso_sz);
-		fread(cso_data.get(), cso_sz, 1, fp);
-		fclose(fp);
-
-		hr = FRAMEWORK.device->CreateVertexShader(cso_data.get(), cso_sz, NULL, vert);
-		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-
-		hr = FRAMEWORK.device->CreateInputLayout(layout, numElements, cso_data.get(),
-			cso_sz, input);
-		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-
-		//delete[]cso_data;
+	//	auto it = cache.find(cso_file);
+	//	if (it != cache.end())
+	//	{
+	//		*vert = it->second.pVertex.Get();
+	//		(*vert)->AddRef();
+	//		*input = it->second.pInput.Get();
+	//		(*input)->AddRef();
+	//		return S_OK;
+	//	}
 
 
-		cache.insert(std::make_pair(cso_file, Vertex_and_Layout(*vert, *input)));
-		return hr;
-	}
+	//	HRESULT hr = S_OK;
+	//	FILE *fp = 0;
 
-	HRESULT CreatePixel(const char *ps_file, ID3D11PixelShader **pixel)
-	{
-		static std::map < std::string, Microsoft::WRL::ComPtr<ID3D11PixelShader>> pixelcache;
+	//	fopen_s(&fp, cso_file, "rb");
+	//	_ASSERT_EXPR_A(fp, "CSO File not found");
+	//	fseek(fp, 0, SEEK_END);
+	//	long cso_sz = ftell(fp);
+	//	fseek(fp, 0, SEEK_SET);
+	//	std::unique_ptr< unsigned char[] >cso_data = std::make_unique< unsigned char[]>(cso_sz);
+	//	fread(cso_data.get(), cso_sz, 1, fp);
+	//	fclose(fp);
 
-		auto it = pixelcache.find(ps_file);
-		if (it != pixelcache.end())
-		{
-			*pixel = it->second.Get();
-			(*pixel)->AddRef();
-			return S_OK;
-		}
+	//	hr = FRAMEWORK.device->CreateVertexShader(cso_data.get(), cso_sz, NULL, vert);
+	//	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
-		HRESULT hr = S_OK;
+	//	hr = FRAMEWORK.device->CreateInputLayout(layout, numElements, cso_data.get(),
+	//		cso_sz, input);
+	//	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
-		FILE *fpp = 0;
+	//	//delete[]cso_data;
 
-		fopen_s(&fpp, ps_file, "rb");
-		_ASSERT_EXPR_A(fpp, "CSO File not found");
-		fseek(fpp, 0, SEEK_END);
-		long cso_szp = ftell(fpp);
-		fseek(fpp, 0, SEEK_SET);
-		std::unique_ptr<unsigned char[]> cso_datap = std::make_unique< unsigned char[]>(cso_szp);
-		fread(cso_datap.get(), cso_szp, 1, fpp);
-		fclose(fpp);
 
-		hr = FRAMEWORK.device->CreatePixelShader(cso_datap.get(), cso_szp, NULL, pixel);
-		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+	//	cache.insert(std::make_pair(cso_file, Vertex_and_Layout(*vert, *input)));
+	//	return hr;
+	//}
 
-		//delete[]cso_datap;
+	//HRESULT CreatePixel(const char *ps_file, ID3D11PixelShader **pixel)
+	//{
+	//	static std::map < std::string, Microsoft::WRL::ComPtr<ID3D11PixelShader>> pixelcache;
 
-		pixelcache.insert(std::make_pair(ps_file, *pixel));
+	//	auto it = pixelcache.find(ps_file);
+	//	if (it != pixelcache.end())
+	//	{
+	//		*pixel = it->second.Get();
+	//		(*pixel)->AddRef();
+	//		return S_OK;
+	//	}
 
-		return hr;
-	}
+	//	HRESULT hr = S_OK;
+
+	//	FILE *fpp = 0;
+
+	//	fopen_s(&fpp, ps_file, "rb");
+	//	_ASSERT_EXPR_A(fpp, "CSO File not found");
+	//	fseek(fpp, 0, SEEK_END);
+	//	long cso_szp = ftell(fpp);
+	//	fseek(fpp, 0, SEEK_SET);
+	//	std::unique_ptr<unsigned char[]> cso_datap = std::make_unique< unsigned char[]>(cso_szp);
+	//	fread(cso_datap.get(), cso_szp, 1, fpp);
+	//	fclose(fpp);
+
+	//	hr = FRAMEWORK.device->CreatePixelShader(cso_datap.get(), cso_szp, NULL, pixel);
+	//	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	//	//delete[]cso_datap;
+
+	//	pixelcache.insert(std::make_pair(ps_file, *pixel));
+
+	//	return hr;
+	//}
 }
 
 //UNIT.22
@@ -977,6 +976,7 @@ Skinned_mesh::Skinned_mesh(const char *fbx_filename)
 //			 ビュー行列とプロジェクション行列は今までと同じように。
 //			 マテリアルのカラーとviewflagは書かなくてもいい
 void Skinned_mesh::Render(
+	YRShader					*shader,
 	DirectX::XMFLOAT3			&pos,				//モデルの位置
 	DirectX::XMFLOAT3			&scale,				//モデルの大きさ
 	DirectX::XMFLOAT3			&angle,				//モデルの回転
@@ -1029,6 +1029,7 @@ void Skinned_mesh::Render(
 	/*FRAMEWORK.context->IASetInputLayout(input_layout.Get());
 	FRAMEWORK.context->VSSetShader(vertex_shader.Get(), NULL, 0);
 	FRAMEWORK.context->PSSetShader(pixel_shader.Get(), NULL, 0);*/
+	shader->Acivate();
 
 	//定数バッファのバインド
 	for (auto& mesh : meshes)
@@ -1130,6 +1131,7 @@ void Skinned_mesh::Render(
 			FRAMEWORK.context->DrawIndexed(subset.index_count, subset.index_start, NULL);
 		}
 	}
+	shader->Inactivate();
 }
 
 //-----------------------------------------------
@@ -1138,6 +1140,7 @@ void Skinned_mesh::Render(
 //			 マテリアルのカラーとviewflagは書かなくてもいい
 //			こちらはまだ未実装
 void Skinned_mesh::Render(
+	YRShader					*shader,
 	DirectX::XMFLOAT3			&pos,				//モデルの位置
 	DirectX::XMFLOAT3			&scale,				//モデルの大きさ
 	DirectX::XMVECTOR			&orientation,		//モデルの回転
@@ -1190,6 +1193,7 @@ void Skinned_mesh::Render(
 	/*FRAMEWORK.context->IASetInputLayout(input_layout.Get());
 	FRAMEWORK.context->VSSetShader(vertex_shader.Get(), NULL, 0);
 	FRAMEWORK.context->PSSetShader(pixel_shader.Get(), NULL, 0);*/
+	shader->Acivate();
 
 	//定数バッファのバインド
 	for (auto& mesh : meshes)
@@ -1290,5 +1294,7 @@ void Skinned_mesh::Render(
 			FRAMEWORK.context->DrawIndexed(subset.index_count, subset.index_start, NULL);
 		}
 	}
+
+	shader->Inactivate();
 }
 

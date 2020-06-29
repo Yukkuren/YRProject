@@ -1,10 +1,8 @@
 #pragma once
 #include <windows.h>
-#include<d3d11.h>
 #include<directxmath.h>
-#include <wrl.h>
 #include<string>
-#include<vector>
+#include "YRShader.h"
 
 class Static_mesh
 {
@@ -47,6 +45,7 @@ public:
 	//void Mesh_Load(ID3D11Device *device, const wchar_t *obj_file);
 
 	void render(
+		YRShader					*shader,
 		const DirectX::XMFLOAT4X4	&world_view,		//ワールド・ビュー・プロジェクション合成行列
 		const DirectX::XMFLOAT4X4	&world_matrix,		//ワールド変換行列
 		const DirectX::XMFLOAT4		&light_direction,	//ライト進行方向
@@ -118,7 +117,7 @@ namespace MeshTexShader
 		D3D11_TEXTURE2D_DESC *texture2d_desc,
 		ID3D11ShaderResourceView **pShader
 	);
-	HRESULT create_vertex(const char *cso_file, ID3D11VertexShader **vert, D3D11_INPUT_ELEMENT_DESC *layout, UINT numElements, ID3D11InputLayout **input);
-	HRESULT CreatePixel(const char *ps_file, ID3D11PixelShader **pixel);
+	/*HRESULT create_vertex(const char *cso_file, ID3D11VertexShader **vert, D3D11_INPUT_ELEMENT_DESC *layout, UINT numElements, ID3D11InputLayout **input);
+	HRESULT CreatePixel(const char *ps_file, ID3D11PixelShader **pixel);*/
 
 }

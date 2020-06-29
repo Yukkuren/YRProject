@@ -34,6 +34,12 @@ void SceneGame::Init()
 	fedo_alpha = 1.0f;
 	fedo_start = false;
 
+	//シェーダー作成
+	spriteShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE);
+	spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
+	skinShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SKIN);
+	skinShader->Create("./Data/Shader/Skinned_VS.cso", "./Data/Shader/Skinned_PS.cso");
+
 	//カメラ初期設定
 	YRCamera.SetEye(DirectX::XMFLOAT3(10, 5, -25));			//視点
 	YRCamera.SetFocus(DirectX::XMFLOAT3(0, 0, 0));			//注視点
@@ -45,6 +51,12 @@ void SceneGame::LoadData()
 {
 	//モデル等のロード
 	//この関数はSceneLoadで別スレッドとして動かす
+
+	//画像のロード
+	if (test == nullptr)
+	{
+		test = std::make_unique<Sprite>(L"./Data/Image/BG/mementos.png", 1920.0f, 1080.0f);
+	}
 
 	//選択したキャラクターをそれぞれ生成する
 	SetPlayerCharacter(player1p, FRAMEWORK.sceneselect.select_p1);
@@ -74,11 +86,25 @@ void SceneGame::UnInit()
 	player1p->Uninit();
 	player2p->Uninit();
 	//SceneGameの画像などを解放する
+	test.reset();
+	test = nullptr;
 }
 
 void SceneGame::Update(float elapsed_time)
 {
 	
+	if (fedo_start)
+	{
+		//フェードアウト中
+	}
+	else
+	{
+		//フェードアウトがスタートしてない場合は画面を映す
+		if (fedo_alpha > 0.0f)
+		{
+			fedo_alpha -= FEDO_MIX(elapsed_time);
+		}
+	}
 }
 
 void SceneGame::Draw(float elapsed_time)
@@ -130,8 +156,14 @@ void SceneGame::Draw(float elapsed_time)
 	DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(1, 1, 1, 1);
 
 	
-	player1p->Draw(V, P, light_direction, lightColor, ambient_color, elapsed_time);
-	player2p->Draw(V, P, light_direction, lightColor, ambient_color, elapsed_time);
+	test->DrawGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f);
+	
+	player1p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+	player2p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+
+	//フェード用画像描画
+	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fedo_alpha));
+	
 }
 
 bool SceneGame::FedoOut(float elapsed_time)

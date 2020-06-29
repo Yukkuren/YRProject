@@ -31,6 +31,9 @@ void SceneTitle::Init()
 	p2Enter = false;
 	end = false;
 	timer = 0.0f;
+
+	spriteShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE);
+	spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
 }
 
 void SceneTitle::LoadData()
@@ -250,16 +253,18 @@ void SceneTitle::Draw(float elapsed_time)
 {
 	if (load_fin)
 	{
-		test->DrawGraph(FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f);
+		test->DrawGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f);
 		
 		//ƒAƒCƒRƒ“•`‰æ
 		knight_icon->DrawRotaGraph(
+			spriteShader.get(),
 			p1_pos.x,
 			p1_pos.y,
 			0.0f,
 			Rato
 		);
 		ken_icon->DrawRotaGraph(
+			spriteShader.get(),
 			p2_pos.x,
 			p2_pos.y,
 			0.0f,
@@ -272,6 +277,7 @@ void SceneTitle::Draw(float elapsed_time)
 		{
 			select_img->DrawRotaGraph
 			(
+				spriteShader.get(),
 				p1.x,
 				p1.y,
 				0.0f,
@@ -285,6 +291,7 @@ void SceneTitle::Draw(float elapsed_time)
 			{
 				select_img->DrawRotaGraph
 				(
+					spriteShader.get(),
 					p1.x,
 					p1.y,
 					0.0f,
@@ -299,6 +306,7 @@ void SceneTitle::Draw(float elapsed_time)
 		{
 			select_img->DrawRotaGraph
 			(
+				spriteShader.get(),
 				p2.x,
 				p2.y,
 				0.0f,
@@ -312,6 +320,7 @@ void SceneTitle::Draw(float elapsed_time)
 			{
 				select_img->DrawRotaGraph
 				(
+					spriteShader.get(),
 					p2.x,
 					p2.y,
 					0.0f,
@@ -322,7 +331,7 @@ void SceneTitle::Draw(float elapsed_time)
 		}
 	}
 
-	FRAMEWORK.fedo_img->DrawRotaGraph(FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fedo_alpha));
+	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fedo_alpha));
 
 #if USE_IMGUI
 	//ImGui

@@ -12,6 +12,7 @@
 #include <thread>
 #include "PlayerBase.h"
 #include "sprite.h"
+#include "YRShader.h"
 
 enum class INPUT_PLAYER : int
 {
@@ -60,6 +61,13 @@ public:
 	float timer;
 	int sco[6];
 
+	//画像
+	std::unique_ptr<Sprite> test;
+
+	//シェーダー
+	std::unique_ptr<YRShader> skinShader;
+	std::unique_ptr<YRShader> spriteShader;
+
 	PlayerALL PL;
 	std::unique_ptr<Player> player1p;
 	std::unique_ptr<Player> player2p;
@@ -97,6 +105,9 @@ public:
 
 	GamePad1			g1;
 	GamePad2			g2;
+
+	//シェーダー
+	std::unique_ptr<YRShader> spriteShader;
 
 	//画像描画関係
 	YR_Vector3			p1;
@@ -160,6 +171,9 @@ public:
 	//ロード時の画像
 	std::unique_ptr<Sprite>	load_img = nullptr;
 
+	//シェーダー
+	std::unique_ptr<YRShader> spriteShader;
+
 	float timer;
 	void Init();
 	void Update(float elapsed_time);
@@ -177,6 +191,9 @@ public:
 	std::thread* t = NULL;
 	int					load_state;
 	bool				load_fin;
+
+	//シェーダー
+	std::unique_ptr<YRShader> spriteShader;
 
 	//画像描画関係
 	YR_Vector3			p1;

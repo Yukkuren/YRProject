@@ -109,6 +109,7 @@ public:
 	virtual void Uninit() = 0;
 	virtual void Update(float decision) = 0;
 	virtual void Draw(
+		YRShader				*shader,
 		const DirectX::XMMATRIX& view,
 		const DirectX::XMMATRIX& projection,
 		const DirectX::XMFLOAT4& light_direction,

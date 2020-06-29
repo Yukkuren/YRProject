@@ -160,7 +160,7 @@ void Sprite::Init(const wchar_t* wchar)
 	hr = FRAMEWORK.device->CreateBuffer(&bd, &InitData, buffer.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
-	D3D11_INPUT_ELEMENT_DESC layout[] =
+	/*D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -170,7 +170,7 @@ void Sprite::Init(const wchar_t* wchar)
 
 	TextureALL::create_vertex_file(FRAMEWORK.device.Get(), "./Data/Shader/sprite_vs.cso", vert.GetAddressOf(), layout, numElements, input.GetAddressOf());
 
-	TextureALL::CreatePixel_files(FRAMEWORK.device.Get(), "./Data/Shader/sprite_ps.cso", pixel.GetAddressOf());
+	TextureALL::CreatePixel_files(FRAMEWORK.device.Get(), "./Data/Shader/sprite_ps.cso", pixel.GetAddressOf());*/
 
 	D3D11_RASTERIZER_DESC pRaster = {};
 	pRaster.FillMode = D3D11_FILL_SOLID;
@@ -287,7 +287,7 @@ Sprite::~Sprite()
 	//blendstate->Release();
 }
 
-void Sprite::render(float dx,float dy,float dw,float dh,float sx,float sy,float sw,float sh,float angle,float r,float g,float b,float a)
+void Sprite::render(YRShader* shader, float dx,float dy,float dw,float dh,float sx,float sy,float sw,float sh,float angle,float r,float g,float b,float a)
 {
 	D3D11_VIEWPORT viewport;
 	UINT num_viewport = 1;
@@ -454,17 +454,19 @@ void Sprite::render(float dx,float dy,float dw,float dh,float sx,float sy,float 
 	UINT offset = 0;
 	FRAMEWORK.context->IASetVertexBuffers(0, 1, buffer.GetAddressOf(), &stride, &offset);
 	FRAMEWORK.context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-	FRAMEWORK.context->IASetInputLayout(input.Get());
-
 	FRAMEWORK.context->RSSetState(rastersize.Get());
 
+	/*FRAMEWORK.context->IASetInputLayout(input.Get());
 	FRAMEWORK.context->VSSetShader(vert.Get(), NULL, 0);
-	FRAMEWORK.context->PSSetShader(pixel.Get(), NULL, 0);
-	
-	FRAMEWORK.context->PSSetShaderResources(0, 1, shader.GetAddressOf());
+	FRAMEWORK.context->PSSetShader(pixel.Get(), NULL, 0);*/
+
+	shader->Acivate();
+	FRAMEWORK.context->PSSetShaderResources(0, 1, this->shader.GetAddressOf());
 	FRAMEWORK.context->PSSetSamplers(0, 1, sampler.GetAddressOf());
 
 	FRAMEWORK.context->Draw(4, 0);
+
+	shader->Inactivate();
 }
 
 

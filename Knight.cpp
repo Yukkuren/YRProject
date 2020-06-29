@@ -914,6 +914,7 @@ void Knight::CancelList()
 
 
 void Knight::Draw(
+	YRShader				*shader,
 	const DirectX::XMMATRIX& view,
 	const DirectX::XMMATRIX& projection,
 	const DirectX::XMFLOAT4& light_direction,
@@ -992,6 +993,7 @@ void Knight::Draw(
 		angle.GetDXFLOAT3(),
 		view, projection, light_direction, light_color, ambient_color, elapsed_time, 1.0f);*/
 	motion.DrawContinue(
+		shader,
 		pos.GetDXFLOAT3(),
 		scale.GetDXFLOAT3(),
 		angle.GetDXFLOAT3(),

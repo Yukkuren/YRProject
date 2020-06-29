@@ -27,6 +27,10 @@ void SceneLoad::Init()
 	fedo_alpha = 1.0f;
 	fedo_start = false;
 	Game_load_fin = false;
+
+	//シェーダー作成
+	spriteShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE);
+	spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
 }
 
 void SceneLoad::LoadData()
@@ -161,6 +165,7 @@ void SceneLoad::Draw(float elapsedTime)
 	if (load_fin)
 	{
 		load_img->DrawRotaDivGraph(
+			spriteShader.get(),
 			FRAMEWORK.SCREEN_WIDTH / 2.0f,
 			FRAMEWORK.SCREEN_HEIGHT / 2.0f,
 			0.0f,
@@ -170,7 +175,7 @@ void SceneLoad::Draw(float elapsedTime)
 	}
 
 	//フェード用画像描画
-	FRAMEWORK.fedo_img->DrawRotaGraph(FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fedo_alpha));
+	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fedo_alpha));
 
 #if USE_IMGUI
 	//ImGui

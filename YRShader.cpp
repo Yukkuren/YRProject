@@ -184,6 +184,9 @@ HRESULT YRShader::create_hs_from_cso(const char* cso_name, ID3D11HullShader** hu
 }
 
 
+
+//Create
+
 bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file)
 {
 	switch (type)
@@ -236,7 +239,7 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file)
 		break;
 	}
 	CreatePixel(PS_cso_file, PSShader.GetAddressOf());
-	FRAMEWORK.context->IASetInputLayout(VertextLayout.Get());
+	return true;
 }
 
 bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file, const char* GS_cso_file)
@@ -292,7 +295,7 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file, const ch
 	}
 	CreatePixel(PS_cso_file, PSShader.GetAddressOf());
 	create_gs_from_cso(GS_cso_file, GSShader.GetAddressOf());
-	FRAMEWORK.context->IASetInputLayout(VertextLayout.Get());
+	return true;
 }
 
 bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file, const char* DS_cso_file, const char* HS_cso_file)
@@ -349,7 +352,7 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file, const ch
 	CreatePixel(PS_cso_file, PSShader.GetAddressOf());
 	create_ds_from_cso(DS_cso_file, DSShader.GetAddressOf());
 	create_hs_from_cso(HS_cso_file, HSShader.GetAddressOf());
-	FRAMEWORK.context->IASetInputLayout(VertextLayout.Get());
+	return true;
 }
 
 bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file, const char* GS_cso_file, const char* DS_cso_file, const char* HS_cso_file)
@@ -407,11 +410,12 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file, const ch
 	create_gs_from_cso(GS_cso_file, GSShader.GetAddressOf());
 	create_ds_from_cso(DS_cso_file, DSShader.GetAddressOf());
 	create_hs_from_cso(HS_cso_file, HSShader.GetAddressOf());
-	FRAMEWORK.context->IASetInputLayout(VertextLayout.Get());
+	return true;
 }
 
 void YRShader::Acivate()
 {
+	FRAMEWORK.context->IASetInputLayout(VertextLayout.Get());
 	FRAMEWORK.context->VSSetShader(VSShader.Get(), NULL, 0);
 	FRAMEWORK.context->PSSetShader(PSShader.Get(), NULL, 0);
 	FRAMEWORK.context->GSSetShader(GSShader.Get(), NULL, 0);
@@ -421,6 +425,7 @@ void YRShader::Acivate()
 
 void YRShader::Inactivate()
 {
+	FRAMEWORK.context->IASetInputLayout(NULL);
 	FRAMEWORK.context->VSSetShader(NULL, NULL, 0);
 	FRAMEWORK.context->PSSetShader(NULL, NULL, 0);
 	FRAMEWORK.context->GSSetShader(NULL, NULL, 0);

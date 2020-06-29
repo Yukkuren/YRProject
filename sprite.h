@@ -1,12 +1,10 @@
 #pragma once
 
 #include <windows.h>
-#include<d3d11.h>
 #include<directxmath.h>
-#include <wrl.h>
+#include "YRShader.h"
 #include<map>
 #include<string>
-#include<vector>
 //#include "framework.h"
 
 //-------------------------------------------------------------
@@ -62,6 +60,7 @@ public:
 
 	void render(
 		//UNIT.03
+		YRShader	*shader,
 		float dx, float dy,				//Coordinate of sprite's left-top corner in screen space
 		float dw, float dh,				//Size of sprite in screen space
 		float sx, float sy,				//Coordinate of sprite's left-top corner in texture space
@@ -101,14 +100,15 @@ public:
 	}
 
 	//画像通常描画(コンテキスト、描画位置X、描画位置Y)
-	void DrawGraph(float x, float y)
+	void DrawGraph(YRShader* shader, float x, float y)
 	{
-		render( x - (sw / 2.0f), y - (sh / 2.0f), sw, sh, sx, sy, sw, sh, 0.0f, 1, 1, 1, 1);
+		render( shader,x - (sw / 2.0f), y - (sh / 2.0f), sw, sh, sx, sy, sw, sh, 0.0f, 1, 1, 1, 1);
 	}
 	//画像回転描画(コンテキスト、描画位置x,y、回転角度、画像拡大率)
-	void DrawRotaGraph(float x, float y, float angle, float size, DirectX::XMFLOAT4 color = { 1,1,1,1 })
+	void DrawRotaGraph(YRShader* shader, float x, float y, float angle, float size, DirectX::XMFLOAT4 color = { 1,1,1,1 })
 	{
 		render(
+			shader,
 			x - (sw / 2 * size),
 			y - (sh / 2 * size),
 			sw * size, sh * size,
@@ -125,10 +125,12 @@ public:
 
 	//画像回転描画(画像描画サイズ決定型)(コンテキスト、描画位置x,y、回転角度、画像拡大率)
 	void DrawRotaGraph(
+		YRShader* shader,
 		float x, float y, float angle,
 		DirectX::XMFLOAT2 size, DirectX::XMFLOAT4 color = { 1,1,1,1 })
 	{
 		render(
+			shader,
 			x - (size.x / 2.0f),
 			y - (size.y / 2.0f),
 			size.x, size.y,
@@ -144,10 +146,12 @@ public:
 	}
 	//円形画像描画(画像描画サイズ決定型)(コンテキスト、描画位置x,y、回転角度、円の半径)
 	void DrawCircleGraph(
+		YRShader* shader,
 		float x, float y, float angle,
 		float size, DirectX::XMFLOAT4 color = { 1,1,1,1 })
 	{
 		render(
+			shader,
 			x - size,
 			y - size,
 			size * 2.0f, size * 2.0f,
@@ -164,6 +168,7 @@ public:
 
 	//分割画像描画(コンテキスト、画像の番号、描画位置X,Y、回転角度、画像拡大率、カラー)
 	void DrawRotaDivGraph(
+		YRShader* shader,
 		int number,
 		float x, float y, float angle, float size, DirectX::XMFLOAT4 color = { 1,1,1,1 })
 	{
@@ -174,6 +179,7 @@ public:
 
 		//numberに合わせて描画位置を決定する
 		render(
+			shader,
 			x - (nsx / 2 * size),
 			y - (nsy / 2 * size),
 			nsx * size,
@@ -193,6 +199,7 @@ public:
 
 	//分割画像アニメーション描画(コンテキスト、描画位置X,Y、回転角度、画像拡大率、アニメーション速度、カラー)
 	void DrawRotaDivGraph(
+		YRShader* shader,
 		float x, float y, float angle, float size, float frame,float elapsed_speed, DirectX::XMFLOAT4 color = { 1,1,1,1 })
 	{
 		//x,y:描画位置
@@ -213,6 +220,7 @@ public:
 		}
 		//numに合わせて描画位置を決定する
 		render(
+			shader,
 			x - (nsx / 2 * size),
 			y - (nsy / 2 * size),
 			nsx * size,
@@ -250,8 +258,8 @@ namespace TextureALL
 {
 	static std::map < std::wstring, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> > tex;
 	HRESULT TextureLoad(ID3D11Device *device, const wchar_t* wchar, D3D11_TEXTURE2D_DESC *texture2d_desc, ID3D11ShaderResourceView **pShader);
-	HRESULT create_vertex_file(ID3D11Device *device, const char *cso_file, ID3D11VertexShader **vert, D3D11_INPUT_ELEMENT_DESC *layout, UINT numElements, ID3D11InputLayout **input);
-	HRESULT CreatePixel_files(ID3D11Device *device, const char *ps_file, ID3D11PixelShader **pixel);
+	/*HRESULT create_vertex_file(ID3D11Device *device, const char *cso_file, ID3D11VertexShader **vert, D3D11_INPUT_ELEMENT_DESC *layout, UINT numElements, ID3D11InputLayout **input);
+	HRESULT CreatePixel_files(ID3D11Device *device, const char *ps_file, ID3D11PixelShader **pixel);*/
 
 }
 
