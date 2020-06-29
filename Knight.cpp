@@ -14,8 +14,8 @@ void Knight::Init(YR_Vector3 InitPos)
 {
 	//ImGui::Begin("RYU HitBox");
 	pos = InitPos;
-	scale = YR_Vector3( 1.0f,1.0f,1.0f );
-	angle = YR_Vector3(0.0f, 0.0f, 0.0f);
+	scale = YR_Vector3( 0.05f,0.05f,0.05f );
+	angle = YR_Vector3(DirectX::XMConvertToRadians(-90.0f), 0.0f, 0.0f);
 
 	speed.x = 0;
 	speed.y = 0.0f;
@@ -67,6 +67,8 @@ void Knight::LoadData()
 	{
 		base = std::make_unique<Skinned_mesh>("./Data/FBX/danbo_fbx/danbo_taiki.fbx");
 	}
+	motion.MeshSet(base);
+	motion.AnimReset();
 }
 
 void Knight::Uninit()
@@ -984,11 +986,17 @@ void Knight::Draw(
 	}
 
 	//ƒ‚ƒfƒ‹•`‰æ
-	base->Render(
+	/*base->Render(
 		pos.GetDXFLOAT3(),
 		scale.GetDXFLOAT3(),
 		angle.GetDXFLOAT3(),
-		view, projection, light_direction, light_color, ambient_color, elapsed_time, 1.0f);
+		view, projection, light_direction, light_color, ambient_color, elapsed_time, 1.0f);*/
+	motion.DrawContinue(
+		pos.GetDXFLOAT3(),
+		scale.GetDXFLOAT3(),
+		angle.GetDXFLOAT3(),
+		view, projection, light_direction, light_color, ambient_color, elapsed_time
+	);
 
 
 	if (atk[scastI(KNIGHTATK::HADOU)].hit_ok)

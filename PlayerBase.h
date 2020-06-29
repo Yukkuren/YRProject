@@ -89,6 +89,7 @@ public:
 
 public:
 	//モデル用変数
+	MeshMotion						motion;
 	std::unique_ptr<Skinned_mesh>	base = nullptr;
 public:
 	//座標、モデル描画用変数

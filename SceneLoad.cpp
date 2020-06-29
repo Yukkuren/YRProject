@@ -75,7 +75,7 @@ void SceneLoad::Update(float elapsedTime)
 	if (Game_load_fin)
 	{
 		//ロード画面を挟むため
-		if (timer > 10.0f)
+		if (timer > 1.0f)
 		{
 			fedo_start = true;
 		}
@@ -85,7 +85,7 @@ void SceneLoad::Update(float elapsedTime)
 			{
 				//フェードアウトが終わったらゲームメインへ遷移
 				//FRAMEWORK.SetScene(SCENE_TABLE::SCENE_GAME);
-				FRAMEWORK.SetScene(SCENE_TABLE::SCENE_TITLE);
+				FRAMEWORK.SetScene(SCENE_TABLE::SCENE_GAME);
 				UnInit();
 				return;
 			}

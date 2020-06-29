@@ -254,67 +254,41 @@ public:
 	float			anim_timer;	//モーション用タイマー
 public:
 	//モーションデータをセットする
-	void MeshSet(std::unique_ptr<Skinned_mesh>& mesh)
-	{
-		skin = mesh.get();
-	}
+	void MeshSet(std::unique_ptr<Skinned_mesh>& mesh);
 
 	//アニメーションをリセットする
-	void AnimReset()
-	{
-		anim_timer = 0.0f;
-		skin->AllFalse();
-	}
+	void AnimReset();
 
 	//一回のみ描画(アニメーションが終わるとtrue)
 	bool Draw(
-		DirectX::XMFLOAT3			&pos,
-		DirectX::XMFLOAT3			&scale,
-		DirectX::XMFLOAT3			&angle,
-		const DirectX::XMMATRIX		&view,
-		const DirectX::XMMATRIX		&projection,
-		const DirectX::XMFLOAT4		&light_direction,
-		const DirectX::XMFLOAT4		&light_color,
-		const DirectX::XMFLOAT4		&ambient_color,
+		DirectX::XMFLOAT3& pos,
+		DirectX::XMFLOAT3& scale,
+		DirectX::XMFLOAT3& angle,
+		const DirectX::XMMATRIX& view,
+		const DirectX::XMMATRIX& projection,
+		const DirectX::XMFLOAT4& light_direction,
+		const DirectX::XMFLOAT4& light_color,
+		const DirectX::XMFLOAT4& ambient_color,
 		float						elapsed_time,
 		const DirectX::XMFLOAT4		material_color = { 1.0f,1.0f,1.0f,1.0f }
-		)
-	{
-		anim_timer += elapsed_time;
-		skin->Render(pos, scale, angle, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer,material_color);
-		if (skin->FinCheck())
-		{
-			return true;
-		}
-		return false;
-	}
+	);
 
 	//連続描画
 	void DrawContinue(
-		ID3D11DeviceContext			*context,
-		DirectX::XMFLOAT3			&pos,
-		DirectX::XMFLOAT3			&scale,
-		DirectX::XMFLOAT3			&angle,
-		const DirectX::XMMATRIX		&view,
-		const DirectX::XMMATRIX		&projection,
-		const DirectX::XMFLOAT4		&light_direction,
-		const DirectX::XMFLOAT4		&light_color,
-		const DirectX::XMFLOAT4		&ambient_color,
+		DirectX::XMFLOAT3& pos,
+		DirectX::XMFLOAT3& scale,
+		DirectX::XMFLOAT3& angle,
+		const DirectX::XMMATRIX& view,
+		const DirectX::XMMATRIX& projection,
+		const DirectX::XMFLOAT4& light_direction,
+		const DirectX::XMFLOAT4& light_color,
+		const DirectX::XMFLOAT4& ambient_color,
 		float						elapsed_time,
 		const DirectX::XMFLOAT4		material_color = { 1.0f,1.0f,1.0f,1.0f }
-	)
-	{
-		anim_timer += elapsed_time;
-		skin->Render(pos, scale, angle, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer,material_color);
-		if (skin->FinCheck())
-		{
-			AnimReset();
-		}
-	}
+	);
 
 	//アニメーション無し用
 	void DrawMesh(
-		ID3D11DeviceContext* context,
 		DirectX::XMFLOAT3 pos,
 		DirectX::XMFLOAT3& scale,
 		DirectX::XMFLOAT3& angle,
@@ -324,14 +298,10 @@ public:
 		const DirectX::XMFLOAT4& light_color,
 		const DirectX::XMFLOAT4& ambient_color,
 		const DirectX::XMFLOAT4		material_color = { 1.0f,1.0f,1.0f,1.0f }
-	)
-	{
-		skin->Render(pos, scale, angle, view, projection, light_direction, light_color, ambient_color, 0.0f, 0.0f, material_color);
-	}
+	);
 
 	//現在のアニメーションの状態で停止描画
 	void DrawStop(
-		ID3D11DeviceContext* context,
 		DirectX::XMFLOAT3 pos,
 		DirectX::XMFLOAT3& scale,
 		DirectX::XMFLOAT3& angle,
@@ -342,64 +312,41 @@ public:
 		const DirectX::XMFLOAT4& ambient_color,
 		float						elapsed_time,
 		const DirectX::XMFLOAT4		material_color = { 1.0f,1.0f,1.0f,1.0f }
-	)
-	{
-		skin->Render(pos, scale, angle, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer, material_color);
-	}
+	);
 
 
 	//姿勢制御行列使用
 
 	//一回のみ描画(アニメーションが終わるとtrue)
 	bool Draw(
-		ID3D11DeviceContext			*context,
-		DirectX::XMFLOAT3			&pos,
-		DirectX::XMFLOAT3			&scale,
-		DirectX::XMVECTOR			&orientation,
-		const DirectX::XMMATRIX		&view,
-		const DirectX::XMMATRIX		&projection,
-		const DirectX::XMFLOAT4		&light_direction,
-		const DirectX::XMFLOAT4		&light_color,
-		const DirectX::XMFLOAT4		&ambient_color,
+		DirectX::XMFLOAT3& pos,
+		DirectX::XMFLOAT3& scale,
+		DirectX::XMVECTOR& orientation,
+		const DirectX::XMMATRIX& view,
+		const DirectX::XMMATRIX& projection,
+		const DirectX::XMFLOAT4& light_direction,
+		const DirectX::XMFLOAT4& light_color,
+		const DirectX::XMFLOAT4& ambient_color,
 		float						elapsed_time,
 		const DirectX::XMFLOAT4		material_color = { 1.0f,1.0f,1.0f,1.0f }
-	)
-	{
-		anim_timer += elapsed_time;
-		skin->Render(pos, scale, orientation, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer,material_color);
-		if (skin->FinCheck())
-		{
-			return true;
-		}
-		return false;
-	}
+	);
 
 	//連続描画
 	void DrawContinue(
-		ID3D11DeviceContext			*context,
-		DirectX::XMFLOAT3			&pos,
-		DirectX::XMFLOAT3			&scale,
-		DirectX::XMVECTOR			&orientation,
-		const DirectX::XMMATRIX		&view,
-		const DirectX::XMMATRIX		&projection,
-		const DirectX::XMFLOAT4		&light_direction,
-		const DirectX::XMFLOAT4		&light_color,
-		const DirectX::XMFLOAT4		&ambient_color,
+		DirectX::XMFLOAT3& pos,
+		DirectX::XMFLOAT3& scale,
+		DirectX::XMVECTOR& orientation,
+		const DirectX::XMMATRIX& view,
+		const DirectX::XMMATRIX& projection,
+		const DirectX::XMFLOAT4& light_direction,
+		const DirectX::XMFLOAT4& light_color,
+		const DirectX::XMFLOAT4& ambient_color,
 		float						elapsed_time,
 		const DirectX::XMFLOAT4		material_color = { 1.0f,1.0f,1.0f,1.0f }
-	)
-	{
-		anim_timer += elapsed_time;
-		skin->Render(pos, scale, orientation, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer,material_color);
-		if (skin->FinCheck())
-		{
-			AnimReset();
-		}
-	}
+	);
 
 	//アニメーション無し用
 	void DrawMesh(
-		ID3D11DeviceContext* context,
 		DirectX::XMFLOAT3 pos,
 		DirectX::XMFLOAT3& scale,
 		DirectX::XMVECTOR& orientation,
@@ -409,14 +356,10 @@ public:
 		const DirectX::XMFLOAT4& light_color,
 		const DirectX::XMFLOAT4& ambient_color,
 		const DirectX::XMFLOAT4		material_color = { 1.0f,1.0f,1.0f,1.0f }
-	)
-	{
-		skin->Render(pos, scale, orientation, view, projection, light_direction, light_color, ambient_color, 0.0f, 0.0f, material_color);
-	}
+	);
 
 	//現在のアニメーションの状態で停止描画
 	void DrawStop(
-		ID3D11DeviceContext* context,
 		DirectX::XMFLOAT3 pos,
 		DirectX::XMFLOAT3& scale,
 		DirectX::XMVECTOR& orientation,
@@ -427,9 +370,5 @@ public:
 		const DirectX::XMFLOAT4& ambient_color,
 		float						elapsed_time,
 		const DirectX::XMFLOAT4		material_color = { 1.0f,1.0f,1.0f,1.0f }
-	)
-	{
-		skin->Render(pos, scale, orientation, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer, material_color);
-	}
-
+	);
 };

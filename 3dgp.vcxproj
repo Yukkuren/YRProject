@@ -183,6 +183,7 @@
     <ClCompile Include="Skinned_mesh.cpp" />
     <ClCompile Include="sprite.cpp" />
     <ClCompile Include="static_mesh.cpp" />
+    <ClCompile Include="YRMotion.cpp" />
     <ClCompile Include="YR_VECTOR3.cpp" />
   </ItemGroup>
   <ItemGroup>

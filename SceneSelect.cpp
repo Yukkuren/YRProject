@@ -77,6 +77,18 @@ void SceneSelect::Update(float elapsedTime)
 	//ロード終了
 	if (load_fin)
 	{
+#if USE_IMGUI
+		if (pKeyState.nflg == 1)
+		{
+			select_p1 = scastI(PLSELECT::KNIGHT);
+			select_p2 = scastI(PLSELECT::KNIGHT);
+			//フェードアウトが終わったらロード画面へ
+			FRAMEWORK.SetScene(SCENE_LOAD);
+			UnInit();
+			return;
+		}
+#endif // USE_IMGUI
+
 		//timerはフローしないようにリセットする
 		if (timer < 1000.0f)
 		{

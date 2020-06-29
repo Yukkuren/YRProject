@@ -46,8 +46,8 @@ struct PlayerALL
 	float correction_value = 0.0f;
 	float gauge1P = 0.0f;
 	float gauge2P = 0.0f;
-	YR_Vector3 pos1P{ 0.0f,0.0f };
-	YR_Vector3 pos2P{ 1.0f,0.0f };
+	YR_Vector3 pos1P{ -1.0f,0.0f };
+	YR_Vector3 pos2P{ 2.0f,0.0f };
 
 	
 };

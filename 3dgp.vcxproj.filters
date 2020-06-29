@@ -157,6 +157,9 @@
     <ClCompile Include="KnightATK.cpp">
       <Filter>Game\Character\Sources</Filter>
     </ClCompile>
+    <ClCompile Include="YRMotion.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">

@@ -33,6 +33,12 @@ void SceneGame::Init()
 	timer = 0.0f;
 	fedo_alpha = 1.0f;
 	fedo_start = false;
+
+	//カメラ初期設定
+	YRCamera.SetEye(DirectX::XMFLOAT3(10, 5, -25));			//視点
+	YRCamera.SetFocus(DirectX::XMFLOAT3(0, 0, 0));			//注視点
+	YRCamera.SetUp(DirectX::XMFLOAT3(0, 1, 0));				//上方向
+	YRCamera.SetPerspective(30 * 0.01745f, 1280.0f / 720.0f, 0.0001f, 1000000);
 }
 
 void SceneGame::LoadData()
@@ -46,6 +52,8 @@ void SceneGame::LoadData()
 	//生成後初期化する(座標系、HP、UI座標など)
 	player1p->Init(PL.pos1P);
 	player2p->Init(PL.pos2P);
+	player1p->LoadData();
+	player2p->LoadData();
 	PL.HP_MAX1P = player1p->hp;
 	PL.HP_MAX2P = player2p->hp;
 	PL.ratio1P = player1p->hp / PL.HP_MAX1P * 800.0f;
@@ -121,6 +129,9 @@ void SceneGame::Draw(float elapsed_time)
 	//材質カラー
 	DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(1, 1, 1, 1);
 
+	
+	player1p->Draw(V, P, light_direction, lightColor, ambient_color, elapsed_time);
+	player2p->Draw(V, P, light_direction, lightColor, ambient_color, elapsed_time);
 }
 
 bool SceneGame::FedoOut(float elapsed_time)
@@ -153,20 +164,20 @@ void SceneGame::PadSet(int select1p,int select2p)
 {
 	if (select1p == scastI(INPUT_PLAYER::P1))
 	{
-		pad1 = std::make_unique<GamePad1>();
+		player1p->pad = std::make_unique<GamePad1>();
 	}
 	else
 	{
-		pad1 = std::make_unique<GamePad2>();
+		player1p->pad = std::make_unique<GamePad2>();
 	}
 
 	if (select2p == scastI(INPUT_PLAYER::P1))
 	{
-		pad2 = std::make_unique<GamePad1>();
+		player2p->pad = std::make_unique<GamePad1>();
 	}
 	else
 	{
-		pad2 = std::make_unique<GamePad2>();
+		player2p->pad = std::make_unique<GamePad2>();
 	}
 }
 
