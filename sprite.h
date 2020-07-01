@@ -237,6 +237,51 @@ public:
 		);
 
 	}
+
+	//分割画像描画(シェーダー、描画位置X,Y、回転角度、画像拡大率、画像の番号、カラー)
+	void DrawRotaDivGraph(
+		YRShader* shader,
+		float x, float y, float angle, float size,int num, DirectX::XMFLOAT4 color = { 1,1,1,1 })
+	{
+		//x,y:描画位置
+		//nx,ny:描画する画像の縦、横の分割数
+		//size:描画時の拡大率(通常サイズ1.0f)
+
+		//numに合わせて描画位置を決定する
+		render(
+			shader,
+			x - (nsx / 2 * size),
+			y - (nsy / 2 * size),
+			nsx * size,
+			nsx * size,
+			div[num].nx,
+			div[num].ny,
+			nsx,
+			nsy,
+			angle,
+			color.x,
+			color.y,
+			color.z,
+			color.w
+		);
+
+	}
+
+	//描画範囲指定描画(シェーダー、描画位置(x,y)、描画したい矩形の左上座標(x,y)、サイズ(指定した左上からどこまで))
+	//中心が左端なので注意
+	void DrawRectGraph(YRShader* shader, float x, float y, float srcX, float srcY, float width, float height, DirectX::XMFLOAT4 color = { 1,1,1,1 })
+	{
+		render(shader, x, y, width, height, srcX, srcY, width, height, 0.0f, color.x, color.y, color.z, color.w);
+	}
+
+	void DrawExtendGraph(YRShader* shader, float x, float y, float x2, float y2, DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,1.0f })
+	{
+		float width = x2 - x;
+		float height = y2 - y;
+		render(shader, x, y, width, height, sx, sy, sw, sh, 0.0f, color.x, color.y, color.z, color.w);
+	}
+
+
 	Sprite(const wchar_t* wchar/*Texture file name*/);
 	Sprite(const wchar_t* wchar, float sw, float sh);
 	//画像分割読み込み(画像横サイズ,画像縦サイズ,画像横分割数,画像縦分割数,分割した画像一枚の横サイズ,縦サイズ)

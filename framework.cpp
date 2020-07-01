@@ -137,6 +137,16 @@ bool framework::initialize()
 	UINT width = rc.right - rc.left;
 	UINT height = rc.bottom - rc.top;
 
+	if (width < SCREEN_WIDTH)
+	{
+		width = SCREEN_WIDTH;
+	}
+
+	if (height < SCREEN_HEIGHT)
+	{
+		height = SCREEN_HEIGHT;
+	}
+
 	UINT createDeviceFlags = 0;
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 

@@ -55,6 +55,13 @@ void SceneGame::Init()
 	YRCamera.SetFocus(DirectX::XMFLOAT3(0, 0, 0));			//注視点
 	YRCamera.SetUp(DirectX::XMFLOAT3(0, 1, 0));				//上方向
 	YRCamera.SetPerspective(30 * 0.01745f, 1280.0f / 720.0f, 0.0001f, 1000000);
+	
+	for (int i = 0; i < p1combo.size(); i++)
+	{
+		p1combo[i] = 0;
+		p2combo[i] = 0;
+	}
+	
 }
 
 
@@ -203,9 +210,9 @@ void SceneGame::Draw(float elapsed_time)
 		bool show_another_window = false;
 		static int number_id = 0;
 		ImGui::SetNextWindowSize(ImVec2(400, 800), 2);
-		ImGui::Begin("palam", &show_another_window);
+		ImGui::Begin("param", &show_another_window);
 		//ImGui::Text("anim : %f", motion.anim_timer);
-		ImGui::Text("time : %d", time);
+		ImGui::Text("time : %f", timer);
 		//ImGui::InputFloat("scroll", &scall, 0.01f, 100.0f);
 		//ImGui::SliderFloat("rollX", &roll.x, 0.0f, 30.00f);
 		//ImGui::SliderFloat("rollY", &roll.y, 0.0f, 30.00f);
@@ -241,10 +248,6 @@ void SceneGame::Draw(float elapsed_time)
 	//仮背景
 	test->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 0.5f);
 	
-	//プレイヤー描画
-	player1p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
-	player2p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
-
 	geo->render(
 		geoShader.get(),
 		DirectX::XMFLOAT3(3.0f, 0.0f, 0.0f),
@@ -263,11 +266,131 @@ void SceneGame::Draw(float elapsed_time)
 	PL.ratio2P = player2p->hp / PL.HP_MAX2P * 800.0f;
 	PL.correction_value = 800.0f - PL.ratio1P;
 
+	HPbar_img->DrawExtendGraph(spriteShader.get(), 75.0f, 75.0f, 925.0f, 225.0f );
+	HPbar_img->DrawExtendGraph(spriteShader.get(), 975.0f, 75.0f, 1825.0f, 225.0f);
+	HP_img->DrawRectGraph(spriteShader.get(),100.0f + PL.correction_value, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f);
+	HP_img->DrawRectGraph(spriteShader.get(),1000.0f, 100.0f, 0.0f, 0.0f, PL.ratio2P, 100.0f);
 
 	//コンボ表示
+
+	if (player1p->combo_count > 1)
+	{
+		font_img->DrawRotaDivGraph
+		(
+			spriteShader.get(),
+			300.0f,
+			400.0f,
+			0.0f,
+			3.0f,
+			p1combo[0],
+			DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f)
+		);
+		if (player1p->combo_count > 9)
+		{
+			font_img->DrawRotaDivGraph
+			(
+				spriteShader.get(),
+				200.0f,
+				400.0f,
+				0.0f,
+				3.0f,
+				p1combo[1],
+				DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
+			);
+		}
+		if (player1p->combo_count > 99)
+		{
+			font_img->DrawRotaDivGraph
+			(
+				spriteShader.get(),
+				100.0f,
+				400.0f,
+				0.0f,
+				3.0f,
+				p1combo[2],
+				DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
+			);
+		}
+	}
+
+	if (player2p->combo_count > 1)
+	{
+		font_img->DrawRotaDivGraph
+		(
+			spriteShader.get(),
+			1600.0f,
+			400.0f,
+			0.0f,
+			3.0f,
+			p2combo[2],
+			DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
+		);
+		if (player2p->combo_count > 9)
+		{
+			font_img->DrawRotaDivGraph
+			(
+				spriteShader.get(),
+				1500.0f,
+				400.0f,
+				0.0f,
+				3.0f,
+				p2combo[1],
+				DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
+			);
+		}
+		if (player2p->combo_count > 99)
+		{
+			font_img->DrawRotaDivGraph
+			(
+				spriteShader.get(),
+				1400.0f,
+				400.0f,
+				0.0f,
+				3.0f,
+				p2combo[0],
+				DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
+			);
+		}
+	}
+
+	//プレイヤー描画
+	player1p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+	player2p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
 	
+	//ゲージ描画
+	PL.gauge1P = (player1p->gauge / GAUGE_MAX) * 640.0f;
+	PL.gauge2P = (player2p->gauge / GAUGE_MAX) * 640.0f;
+	
+	PL.power1P = ColorSet(player1p->power);
+	gauge_img->DrawExtendGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + PL.gauge1P, 1064.0f, PL.power1P);
+	PL.power2P = ColorSet(player2p->power);
+	gauge_img->DrawExtendGraph(spriteShader.get(), 1800.0f - PL.gauge2P, 1000.0f, 1800.0f, 1064.0f, PL.power2P);
 
+	//ゲージケース
+	gaugecase_img->DrawExtendGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + 640.0f, 1064.0f);
+	gaugecase_img->DrawExtendGraph(spriteShader.get(), 1800.0f - 640.0f, 1000.0f, 1800.0f, 1064.0f);
 
+	//ゲージの数字描画
+	font_img->DrawRotaDivGraph
+	(
+		spriteShader.get(),
+		70.0f,
+		950.0f,
+		0.0f,
+		2.0f,
+		player1p->power,
+		PL.power1P
+	);
+	font_img->DrawRotaDivGraph
+	(
+		spriteShader.get(),
+		1800.0f,
+		950.0f,
+		0.0f,
+		2.0f,
+		player2p->power,
+		PL.power2P
+	);
 
 	//フェード用画像描画
 	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fedo_alpha));
@@ -340,38 +463,32 @@ DirectX::XMFLOAT2 SceneGame::Distance(DirectX::XMFLOAT2& s_pos, DirectX::XMFLOAT
 
 
 
-int SceneGame::ColorSet(int power)
+DirectX::XMFLOAT4 SceneGame::ColorSet(int power)
 {
-	//ゲージの量からフォントの色を決め、ハンドル用の値を返す
+	//ゲージの量からフォントの色を決定する
 	switch (power)
 	{
 	case 0:
-		//SetDrawBright(255, 100, 0);
-		return 0;
+		return DirectX::XMFLOAT4(1.0f,0.4f,0.0f,1.0f);
 		break;
 	case 1:
-		//SetDrawBright(100, 255, 100);
-		return 1;
+		return DirectX::XMFLOAT4(0.4f,1.0f,0.4f,1.0f);
 		break;
 	case 2:
-		//SetDrawBright(0, 0, 255);
-		return 2;
+		return DirectX::XMFLOAT4(0.0f,0.0f,1.0f,1.0f);
 		break;
 	case 3:
-		//SetDrawBright(0, 255, 0);
-		return 3;
+		return DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
 		break;
 	case 4:
-		//SetDrawBright(255, 0, 0);
-		return 4;
+		return DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 		break;
 	case 5:
-		//SetDrawBright(255, 255, 255);
-		return 5;
+		return DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 		break;
 
 	}
-	return 0;
+	return DirectX::XMFLOAT4(1.0f, 0.4f, 0.0f, 1.0f);
 }
 
 
@@ -478,73 +595,8 @@ void SceneGame::ComboImageSet()
 
 	for (int i = 0; i < 3; i++)
 	{
-		switch (s[i])
-		{
-		case 0:
-			//IMG::p1combo[i] = IMG::font[0];
-			break;
-		case 1:
-			//IMG::p1combo[i] = IMG::font[1];
-			break;
-		case 2:
-			//IMG::p1combo[i] = IMG::font[2];
-			break;
-		case 3:
-			//IMG::p1combo[i] = IMG::font[3];
-			break;
-		case 4:
-			//IMG::p1combo[i] = IMG::font[4];
-			break;
-		case 5:
-			//IMG::p1combo[i] = IMG::font[5];
-			break;
-		case 6:
-			//IMG::p1combo[i] = IMG::font[6];
-			break;
-		case 7:
-			//IMG::p1combo[i] = IMG::font[7];
-			break;
-		case 8:
-			//IMG::p1combo[i] = IMG::font[8];
-			break;
-		case 9:
-			//IMG::p1combo[i] = IMG::font[9];
-			break;
-		}
-
-		switch (v[i])
-		{
-		case 0:
-			//IMG::p2combo[i] = IMG::font[0];
-			break;
-		case 1:
-			//IMG::p2combo[i] = IMG::font[1];
-			break;
-		case 2:
-			//IMG::p2combo[i] = IMG::font[2];
-			break;
-		case 3:
-			//IMG::p2combo[i] = IMG::font[3];
-			break;
-		case 4:
-			//IMG::p2combo[i] = IMG::font[4];
-			break;
-		case 5:
-			//IMG::p2combo[i] = IMG::font[5];
-			break;
-		case 6:
-			//IMG::p2combo[i] = IMG::font[6];
-			break;
-		case 7:
-			//IMG::p2combo[i] = IMG::font[7];
-			break;
-		case 8:
-			//IMG::p2combo[i] = IMG::font[8];
-			break;
-		case 9:
-			//IMG::p2combo[i] = IMG::font[9];
-			break;
-		}
+		p1combo[i] = s[i];
+		p2combo[i] = v[i];
 	}
 }
 //
