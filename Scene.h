@@ -28,8 +28,8 @@ public:
 
 	//fedo_alphaの値を0.0f~1.0fに動かしてフェードさせる
 	//fedo_startはフェードアウトするかどうかのフラグ。falseの場合はfedo_alhaを下げ続ける
-	float fedo_alpha;
-	bool fedo_start;
+	float	fedo_alpha;
+	bool	fedo_start;
 
 	virtual void Init() {};
 	virtual void Update(float elapsed_time) {};
@@ -39,17 +39,17 @@ public:
 //プレイヤー制御構造体
 struct PlayerALL
 {
-	float HP_MAX1P = 0.0f;
-	float HP_MAX2P = 0.0f;
-	float ratio1P = 0.0f;
-	float ratio2P = 0.0f;
-	DirectX::XMFLOAT4 power1P = { 0.0f,0.0f,0.0f,0.0f };
-	DirectX::XMFLOAT4 power2P = { 0.0f,0.0f,0.0f,0.0f };
-	float correction_value = 0.0f;
-	float gauge1P = 0.0f;
-	float gauge2P = 0.0f;
-	YR_Vector3 pos1P{ -1.0f,0.0f };
-	YR_Vector3 pos2P{ 2.0f,0.0f };
+	float				HP_MAX1P = 0.0f;
+	float				HP_MAX2P = 0.0f;
+	float				ratio1P	= 0.0f;
+	float				ratio2P = 0.0f;
+	DirectX::XMFLOAT4	power1P = { 0.0f,0.0f,0.0f,0.0f };
+	DirectX::XMFLOAT4	power2P = { 0.0f,0.0f,0.0f,0.0f };
+	float				correction_value = 0.0f;
+	float				gauge1P = 0.0f;
+	float				gauge2P = 0.0f;
+	YR_Vector3			pos1P{ -1.0f,0.0f };
+	YR_Vector3			pos2P{ 2.0f,0.0f };
 
 	
 };
@@ -59,11 +59,12 @@ class SceneGame : public SceneBase
 private:
 	POINT mouse_pos;
 public:
-	float timer;
-	int sco[6];
+	float	timer;
+	int		sco[6];
 
 	std::unique_ptr<geometric_primitive> geo = nullptr;
-	//画像
+
+	//画像関係
 	std::unique_ptr<Sprite> test = nullptr;
 	std::unique_ptr<Sprite> HP_img = nullptr;
 	std::unique_ptr<Sprite> win1P_img = nullptr;
@@ -76,8 +77,8 @@ public:
 	std::unique_ptr<Sprite> font_img = nullptr;
 	std::unique_ptr<Sprite> call_img = nullptr;
 	std::unique_ptr<Sprite> effect_img = nullptr;
-	std::array<int, 3> p1combo;
-	std::array<int, 3> p2combo;
+	std::array<int, 3>		p1combo;
+	std::array<int, 3>		p2combo;
 
 
 	//シェーダー
@@ -85,27 +86,39 @@ public:
 	std::unique_ptr<YRShader> spriteShader;
 	std::unique_ptr<YRShader> geoShader;
 
-	PlayerALL PL;
-	std::unique_ptr<Player> player1p;
-	std::unique_ptr<Player> player2p;
-	std::unique_ptr<GamepadBase> pad1;
-	std::unique_ptr<GamepadBase> pad2;
+	//プレイヤー管理系
+	PlayerALL						PL;
+	std::unique_ptr<Player>			player1p;
+	std::unique_ptr<Player>			player2p;
+	std::unique_ptr<GamepadBase>	pad1;
+	std::unique_ptr<GamepadBase>	pad2;
 
-	void Init();
-	void Update(float elapsed_time);
-	void Draw(float elapsed_time);
-	void UnInit();
-	void LoadData();
-	bool FedoOut(float elapsed_time);
+	//ゲームループ制御変数
+	bool			pause;
+	bool			start;
+	int				judge;
+	int				start_timer;
+	bool			end;
+	bool			fin;
+	int				endtimer;
 
-	void PadSet(int select1);
-	void PadSet(int select1, int select2);
-	int Winjudge();
-	DirectX::XMFLOAT4 ColorSet(int power);
-	void ComboImageSet();
+public:
 
-	DirectX::XMFLOAT2 Distance(DirectX::XMFLOAT2& s_pos, DirectX::XMFLOAT2& e_pos);
-	void ScoreImageSet();
+	void				Init();
+	void				Update(float elapsed_time);
+	void				Draw(float elapsed_time);
+	void				UnInit();
+	void				LoadData();
+	bool				FedoOut(float elapsed_time);
+
+	void				PadSet(int select1);
+	void				PadSet(int select1, int select2);
+	int					Winjudge();
+	DirectX::XMFLOAT4	ColorSet(int power);
+	void				ComboImageSet();
+
+	DirectX::XMFLOAT2	Distance(DirectX::XMFLOAT2& s_pos, DirectX::XMFLOAT2& e_pos);
+	void				ScoreImageSet();
 
 public:
 	//ゲーム処理関数

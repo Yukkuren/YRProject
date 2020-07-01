@@ -38,9 +38,20 @@ void SceneGame::SetPlayerCharacter(std::unique_ptr<Player>& player, int select)
 
 void SceneGame::Init()
 {
-	timer = 0.0f;
-	fedo_alpha = 1.0f;
-	fedo_start = false;
+	//ゲームループ管理系初期化
+	timer				= 0.0f;
+	fedo_alpha			= 1.0f;
+	fedo_start			= false;
+	pause				= false;
+	start				= false;
+	Hitcheak::timer		= 0;
+	Hitcheak::hit		= false;
+	Hitcheak::stop1p	= false;
+	Hitcheak::stop2p	= false;
+	judge				= 0;
+	start_timer			= 0;
+	end					= false;
+	endtimer			= 0;
 
 	//シェーダー作成
 	spriteShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE);
@@ -56,11 +67,13 @@ void SceneGame::Init()
 	YRCamera.SetUp(DirectX::XMFLOAT3(0, 1, 0));				//上方向
 	YRCamera.SetPerspective(30 * 0.01745f, 1280.0f / 720.0f, 0.0001f, 1000000);
 	
+	//画像選択位置初期化
 	for (int i = 0; i < p1combo.size(); i++)
 	{
 		p1combo[i] = 0;
 		p2combo[i] = 0;
 	}
+
 	
 }
 
