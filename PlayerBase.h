@@ -84,7 +84,7 @@ public:
 	float		gauge;			//ゲージ
 	int			power;			//ゲージが最大になると1増える。特殊技はこっちを消費する
 	int			rival_state;	//相手のステート
-	int			steal_escape;	//投げ抜け可能時間
+	float		steal_escape;	//投げ抜け可能時間
 	int			combo_count;	//コンボカウント
 
 public:
@@ -150,7 +150,7 @@ public:
 
 	virtual void StopUpdate() = 0;
 	virtual void StopEnd() = 0;
-	virtual void TrackDash(float decision) = 0;
+	virtual void TrackDash(float decision, float elapsed_time) = 0;
 
 	virtual bool Intro() = 0;
 	virtual bool WinPerformance() = 0;

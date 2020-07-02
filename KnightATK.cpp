@@ -9,16 +9,17 @@
 
 
 
-void Knight::Slow()
+void Knight::Slow(float elapsed_time)
 {
 	YR_Vector3 cent{ pos.x + Getapply(100.0f),pos.y };
 	YR_Vector3 range{ 200.0f,50.0f };
-	atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 5, 5, 15, 20, 40, YR_Vector3(Getapply(10.0f), 30.0f), AttackBox::MIDDLE, Getapply(0.0f));
+	atk[scastI(KNIGHTATK::ONE)].Update(
+		cent, range, 5, 5, 15, 20, 40, YR_Vector3(Getapply(10.0f), 30.0f), AttackBox::MIDDLE, Getapply(0.0f),elapsed_time);
 }
 
 
 
-void Knight::Jaku()
+void Knight::Jaku(float elapsed_time)
 {
 	if (atk[scastI(KNIGHTATK::ONE)].knock_start)
 	{
@@ -33,16 +34,18 @@ void Knight::Jaku()
 	YR_Vector3 range{ 50.0f,50.0f };
 	if (ground)
 	{
-		atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 5, 5, 15, 10, 15, YR_Vector3(Getapply(5.0f), 0.0f), AttackBox::MIDDLE, Getapply(10.0f));
+		atk[scastI(KNIGHTATK::ONE)].Update(
+			cent, range, 5, 5, 15, 10, 15, YR_Vector3(Getapply(5.0f), 0.0f), AttackBox::MIDDLE, Getapply(10.0f),elapsed_time);
 	}
 	else
 	{
-		atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 5, 5, 15, 10, 20, YR_Vector3(Getapply(5.0f), 20.0f), AttackBox::MIDDLE, Getapply(10.0f));
+		atk[scastI(KNIGHTATK::ONE)].Update(
+			cent, range, 5, 5, 15, 10, 20, YR_Vector3(Getapply(5.0f), 20.0f), AttackBox::MIDDLE, Getapply(10.0f),elapsed_time);
 	}
 	specialfream = 0;
 }
 
-void Knight::Thu(int fream)
+void Knight::Thu(int fream, float elapsed_time)
 {
 	if (atk[scastI(KNIGHTATK::ONE)].knock_start)
 	{
@@ -59,28 +62,32 @@ void Knight::Thu(int fream)
 	{
 		if (ground)
 		{
-			atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 3, fream, 20, 30, 40, YR_Vector3(Getapply(20.0f), 0.0f), AttackBox::MIDDLE, Getapply(30.0f));
+			atk[scastI(KNIGHTATK::ONE)].Update(
+				cent, range, 3, fream, 20, 30, 40, YR_Vector3(Getapply(20.0f), 0.0f), AttackBox::MIDDLE, Getapply(30.0f),elapsed_time);
 		}
 		else
 		{
-			atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 3, fream, 20, 30, 40, YR_Vector3(Getapply(20.0f), 30.0f), AttackBox::MIDDLE, Getapply(30.0f));
+			atk[scastI(KNIGHTATK::ONE)].Update(
+				cent, range, 3, fream, 20, 30, 40, YR_Vector3(Getapply(20.0f), 30.0f), AttackBox::MIDDLE, Getapply(30.0f),elapsed_time);
 		}
 	}
 	else
 	{
 		if (ground)
 		{
-			atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 3, 20, 20, 30, 40, YR_Vector3(Getapply(20.0f), 0.0f), AttackBox::MIDDLE, Getapply(30.0f));
+			atk[scastI(KNIGHTATK::ONE)].Update(
+				cent, range, 3, 20, 20, 30, 40, YR_Vector3(Getapply(20.0f), 0.0f), AttackBox::MIDDLE, Getapply(30.0f),elapsed_time);
 		}
 		else
 		{
-			atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 3, 20, 20, 30, 40, YR_Vector3(Getapply(20.0f), 30.0f), AttackBox::MIDDLE, Getapply(30.0f));
+			atk[scastI(KNIGHTATK::ONE)].Update(
+				cent, range, 3, 20, 20, 30, 40, YR_Vector3(Getapply(20.0f), 30.0f), AttackBox::MIDDLE, Getapply(30.0f),elapsed_time);
 		}
 	}
 	specialfream = 0;
 }
 
-void Knight::Kyo(int fream)
+void Knight::Kyo(int fream, float elapsed_time)
 {
 	if (atk[scastI(KNIGHTATK::ONE)].knock_start)
 	{
@@ -91,23 +98,27 @@ void Knight::Kyo(int fream)
 	YR_Vector3 range{ 150.0f,150.0f };
 	if (specialfream != 0)
 	{
-		atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 5, specialfream, 30, 50, 50, YR_Vector3(Getapply(20.0f), 35.0f), AttackBox::MIDDLE, Getapply(50.0f));
+		atk[scastI(KNIGHTATK::ONE)].Update(
+			cent, range, 5, specialfream, 30, 50, 50, YR_Vector3(Getapply(20.0f), 35.0f), AttackBox::MIDDLE, Getapply(50.0f),elapsed_time);
 		cent = { pos.x + Getapply(100.0f),pos.y };
 		range = { 100.0f,50.0f };
-		atk[scastI(KNIGHTATK::TWO)].Update(cent, range, 5, specialfream, 30, 50, 50, YR_Vector3(Getapply(20.0f), 35.0f), AttackBox::MIDDLE, Getapply(50.0f));
+		atk[scastI(KNIGHTATK::TWO)].Update(
+			cent, range, 5, specialfream, 30, 50, 50, YR_Vector3(Getapply(20.0f), 35.0f), AttackBox::MIDDLE, Getapply(50.0f),elapsed_time);
 	}
 	else
 	{
-		atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 5, 25, 20, 50, 50, YR_Vector3(Getapply(20.0f), 35.0f), AttackBox::MIDDLE, Getapply(50.0f));
+		atk[scastI(KNIGHTATK::ONE)].Update(
+			cent, range, 5, 25, 20, 50, 50, YR_Vector3(Getapply(20.0f), 35.0f), AttackBox::MIDDLE, Getapply(50.0f),elapsed_time);
 		cent = { pos.x + Getapply(100.0f),pos.y };
 		range = { 100.0f,50.0f };
-		atk[scastI(KNIGHTATK::TWO)].Update(cent, range, 5, 25, 20, 50, 50, YR_Vector3(Getapply(20.0f), 35.0f), AttackBox::MIDDLE, Getapply(50.0f));
+		atk[scastI(KNIGHTATK::TWO)].Update(
+			cent, range, 5, 25, 20, 50, 50, YR_Vector3(Getapply(20.0f), 35.0f), AttackBox::MIDDLE, Getapply(50.0f),elapsed_time);
 	}
 	specialfream = 0;
 }
 
 
-void Knight::D_Jaku()
+void Knight::D_Jaku(float elapsed_time)
 {
 	Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(0.0f, 15.0f);
 	hit[scastI(KNIGHTHIT::BODY)].size = YR_Vector3(65.0f, 130.0f);
@@ -120,12 +131,13 @@ void Knight::D_Jaku()
 	}
 	YR_Vector3 cent{ pos.x + Getapply(60.0f),pos.y + 150.0f };
 	YR_Vector3 range{ 50.0f,50.0f };
-	atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 2, 2, 2, 5, 15, YR_Vector3(Getapply(3.0f), 0.0f), AttackBox::DOWN, Getapply(5.0f));
+	atk[scastI(KNIGHTATK::ONE)].Update(
+		cent, range, 2, 2, 2, 5, 15, YR_Vector3(Getapply(3.0f), 0.0f), AttackBox::DOWN, Getapply(5.0f),elapsed_time);
 	specialfream = 0;
 }
 
 
-void Knight::D_Thu(int fream)
+void Knight::D_Thu(int fream, float elapsed_time)
 {
 	Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(-31.0f, 134.0f);
 	hit[scastI(KNIGHTHIT::BODY)].size = YR_Vector3(110.0f, 62.0f);
@@ -140,11 +152,13 @@ void Knight::D_Thu(int fream)
 	YR_Vector3 range{ 100.0f,50.0f };
 	if (fream != 0)
 	{//3
-		atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 3, fream, 35, 30, 30, YR_Vector3(Getapply(10.0f), 10.0f), AttackBox::DOWN, Getapply(30.0f));
+		atk[scastI(KNIGHTATK::ONE)].Update(
+			cent, range, 3, fream, 35, 30, 30, YR_Vector3(Getapply(10.0f), 10.0f), AttackBox::DOWN, Getapply(30.0f),elapsed_time);
 	}
 	else
 	{
-		atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 3, 6, 35, 30, 30, YR_Vector3(Getapply(10.0f), 10.0f), AttackBox::DOWN, Getapply(30.0f));
+		atk[scastI(KNIGHTATK::ONE)].Update(
+			cent, range, 3, 6, 35, 30, 30, YR_Vector3(Getapply(10.0f), 10.0f), AttackBox::DOWN, Getapply(30.0f),elapsed_time);
 	}
 	if (later < 0)
 	{
@@ -153,7 +167,7 @@ void Knight::D_Thu(int fream)
 	specialfream = 0;
 }
 
-void Knight::U_Kyo(int fream)
+void Knight::U_Kyo(int fream, float elapsed_time)
 {
 	if (atk[scastI(KNIGHTATK::ONE)].knock_start)
 	{
@@ -166,30 +180,34 @@ void Knight::U_Kyo(int fream)
 	{
 		if (ground)
 		{
-			atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 5, specialfream, 30, 50, 30, YR_Vector3(Getapply(50.0f), 10.0f), AttackBox::UP, Getapply(50.0f));
+			atk[scastI(KNIGHTATK::ONE)].Update(
+				cent, range, 5, specialfream, 30, 50, 30, YR_Vector3(Getapply(50.0f), 10.0f), AttackBox::UP, Getapply(50.0f),elapsed_time);
 		}
 		else
 		{
 			cent = { pos.x + Getapply(100.0f),pos.y + 50.0f };
-			atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 5, specialfream, 30, 50, 30, YR_Vector3(Getapply(50.0f), -25.0f), AttackBox::UP, Getapply(50.0f));
+			atk[scastI(KNIGHTATK::ONE)].Update(
+				cent, range, 5, specialfream, 30, 50, 30, YR_Vector3(Getapply(50.0f), -25.0f), AttackBox::UP, Getapply(50.0f),elapsed_time);
 		}
 	}
 	else
 	{
 		if (ground)
 		{
-			atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 5, 20, 30, 50, 30, YR_Vector3(Getapply(50.0f), 10.0f), AttackBox::UP, Getapply(50.0f));
+			atk[scastI(KNIGHTATK::ONE)].Update(
+				cent, range, 5, 20, 30, 50, 30, YR_Vector3(Getapply(50.0f), 10.0f), AttackBox::UP, Getapply(50.0f),elapsed_time);
 		}
 		else
 		{
 			cent = { pos.x + Getapply(100.0f),pos.y + 50.0f };
-			atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 5, 20, 30, 50, 30, YR_Vector3(Getapply(50.0f), -25.0f), AttackBox::UP, Getapply(50.0f));
+			atk[scastI(KNIGHTATK::ONE)].Update(
+				cent, range, 5, 20, 30, 50, 30, YR_Vector3(Getapply(50.0f), -25.0f), AttackBox::UP, Getapply(50.0f),elapsed_time);
 		}
 	}
 	specialfream = 0;
 }
 
-void Knight::P_Kyo()
+void Knight::P_Kyo(float elapsed_time)
 {
 	if (atk[scastI(KNIGHTATK::ONE)].knock_start)
 	{
@@ -199,15 +217,17 @@ void Knight::P_Kyo()
 	pos.y -= gravity;
 	YR_Vector3 cent{ pos.x + Getapply(100.0f),pos.y - 100.0f };
 	YR_Vector3 range{ 150.0f,150.0f };
-	atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 5, 10, 20, 80, 50, YR_Vector3(Getapply(50.0f), 40.0f), AttackBox::UP, Getapply(50.0f), 0);
+	atk[scastI(KNIGHTATK::ONE)].Update(
+		cent, range, 5, 10, 20, 80, 50, YR_Vector3(Getapply(50.0f), 40.0f), AttackBox::UP, Getapply(50.0f), 0,elapsed_time);
 }
 
 
-void Knight::Hadouken()
+void Knight::Hadouken(float elapsed_time)
 {
 	YR_Vector3 cent{ pos.x ,pos.y };
 	YR_Vector3 range{ 0.1f,0.1f };
-	atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 1, 15, 15, 1, 0, YR_Vector3(Getapply(0.0f), 0.0f), AttackBox::MIDDLE, Getapply(0.0f));
+	atk[scastI(KNIGHTATK::ONE)].Update(
+		cent, range, 1, 15, 15, 1, 0, YR_Vector3(Getapply(0.0f), 0.0f), AttackBox::MIDDLE, Getapply(0.0f),elapsed_time);
 	if (atk[scastI(KNIGHTATK::ONE)].hit_ok)
 	{
 		atk[scastI(KNIGHTATK::ONE)].damege = 0;
@@ -224,11 +244,12 @@ void Knight::Hadouken()
 }
 
 
-void Knight::Thu_Hadouken()
+void Knight::Thu_Hadouken(float elapsed_time)
 {
 	YR_Vector3 cent{ pos.x ,pos.y };
 	YR_Vector3 range{ 0.1f,0.1f };
-	atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 1, 15, 15, 1, 0, YR_Vector3(Getapply(0.0f), 0.0f), AttackBox::MIDDLE, Getapply(0.0f));
+	atk[scastI(KNIGHTATK::ONE)].Update(
+		cent, range, 1, 15, 15, 1, 0, YR_Vector3(Getapply(0.0f), 0.0f), AttackBox::MIDDLE, Getapply(0.0f),elapsed_time);
 	if (atk[scastI(KNIGHTATK::ONE)].hit_ok)
 	{
 		atk[scastI(KNIGHTATK::ONE)].damege = 0;
@@ -246,11 +267,12 @@ void Knight::Thu_Hadouken()
 
 
 
-void Knight::Kyo_Hadouken()
+void Knight::Kyo_Hadouken(float elapsed_time)
 {
 	YR_Vector3 cent{ pos.x ,pos.y };
 	YR_Vector3 range{ 0.1f,0.1f };
-	atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 1, 15, 15, 1, 0, YR_Vector3(Getapply(0.0f), 0.0f), AttackBox::MIDDLE, Getapply(0.0f));
+	atk[scastI(KNIGHTATK::ONE)].Update(
+		cent, range, 1, 15, 15, 1, 0, YR_Vector3(Getapply(0.0f), 0.0f), AttackBox::MIDDLE, Getapply(0.0f),elapsed_time);
 	if (atk[scastI(KNIGHTATK::ONE)].hit_ok)
 	{
 		atk[scastI(KNIGHTATK::ONE)].damege = 0;
@@ -266,7 +288,7 @@ void Knight::Kyo_Hadouken()
 
 
 
-void Knight::HadouUpdate()
+void Knight::HadouUpdate(float elapsed_time)
 {
 	if (!atk[scastI(KNIGHTATK::HADOU)].hit_ok)
 	{
@@ -276,11 +298,12 @@ void Knight::HadouUpdate()
 	YR_Vector3 cent{ hadou.x,hadou.y };
 	YR_Vector3 range{ 50.0f,50.0f };
 
-	atk[scastI(KNIGHTATK::HADOU)].UpdateMissile(cent, range, 60, 15, 20, YR_Vector3(Getapply(5.0f), 20.0f), AttackBox::MIDDLE);
+	atk[scastI(KNIGHTATK::HADOU)].UpdateMissile(
+		cent, range, 60, 15, 20, YR_Vector3(Getapply(5.0f), 20.0f), AttackBox::MIDDLE,elapsed_time);
 	hadou.x += hadouspeed;
 }
 
-void Knight::Thu_HadouUpdate()
+void Knight::Thu_HadouUpdate(float elapsed_time)
 {
 	if (!atk[scastI(KNIGHTATK::THU_HADOU)].hit_ok)
 	{
@@ -290,12 +313,13 @@ void Knight::Thu_HadouUpdate()
 	YR_Vector3 cent{ hadou.x,hadou.y };
 	YR_Vector3 range{ 50.0f,50.0f };
 
-	atk[scastI(KNIGHTATK::THU_HADOU)].UpdateMissile(cent, range, 60, 20, 5, YR_Vector3(Getapply(5.0f), 0.0f), AttackBox::MIDDLE);
+	atk[scastI(KNIGHTATK::THU_HADOU)].UpdateMissile(
+		cent, range, 60, 20, 5, YR_Vector3(Getapply(5.0f), 0.0f), AttackBox::MIDDLE,elapsed_time);
 	hadou.x += hadouspeed;
 }
 
 
-void Knight::Kyo_HadouUpdate()
+void Knight::Kyo_HadouUpdate(float elapsed_time)
 {
 	if (!atk[scastI(KNIGHTATK::KYO_HADOU)].hit_ok)
 	{
@@ -305,7 +329,8 @@ void Knight::Kyo_HadouUpdate()
 	YR_Vector3 cent{ hadou.x,hadou.y };
 	YR_Vector3 range{ 150.0f,150.0f };
 
-	atk[scastI(KNIGHTATK::KYO_HADOU)].UpdateMissile(cent, range, 60, 30, 30, YR_Vector3(Getapply(20.0f), 30.0f), AttackBox::MIDDLE, 0);
+	atk[scastI(KNIGHTATK::KYO_HADOU)].UpdateMissile(
+		cent, range, 60, 30, 30, YR_Vector3(Getapply(20.0f), 30.0f), AttackBox::MIDDLE, 0,elapsed_time);
 	hadou.x += hadouspeed;
 }
 
@@ -313,7 +338,7 @@ void Knight::Kyo_HadouUpdate()
 
 
 
-void Knight::Panish_N()
+void Knight::Panish_N(float elapsed_time)
 {
 	/*if (atk[scastI(RYUATK::ONE)].knock_start)
 	{
@@ -326,7 +351,8 @@ void Knight::Panish_N()
 	}*/
 	YR_Vector3 cent{ pos.x ,pos.y };
 	YR_Vector3 range{ 1.0f,1.0f };
-	atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 5, 25, 5, 0, 0, YR_Vector3(Getapply(0.0f), 0.0f), AttackBox::MIDDLE, Getapply(0.0f));
+	atk[scastI(KNIGHTATK::ONE)].Update(
+		cent, range, 5, 25, 5, 0, 0, YR_Vector3(Getapply(0.0f), 0.0f), AttackBox::MIDDLE, Getapply(0.0f),elapsed_time);
 
 	if (atk[scastI(KNIGHTATK::ONE)].fream == 0)
 	{
@@ -340,11 +366,12 @@ void Knight::Panish_N()
 
 
 
-void Knight::Panish_H()
+void Knight::Panish_H(float elapsed_time)
 {
 	YR_Vector3 cent{ pos.x ,pos.y };
 	YR_Vector3 range{ 1.0f,1.0f };
-	atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 5, 35, 5, 0, 0, YR_Vector3(Getapply(0.0f), 0.0f), AttackBox::MIDDLE, Getapply(0.0f));
+	atk[scastI(KNIGHTATK::ONE)].Update(
+		cent, range, 5, 35, 5, 0, 0, YR_Vector3(Getapply(0.0f), 0.0f), AttackBox::MIDDLE, Getapply(0.0f),elapsed_time);
 
 	if (atk[scastI(KNIGHTATK::ONE)].fream == 0)
 	{
@@ -359,7 +386,7 @@ void Knight::Panish_H()
 }
 
 
-void Knight::ExtendATK()
+void Knight::ExtendATK(float elapsed_time)
 {
 	if (atk[scastI(KNIGHTATK::ONE)].knock_start)
 	{
@@ -370,11 +397,13 @@ void Knight::ExtendATK()
 	YR_Vector3 range{ 50.0f,200.0f };
 	if (ground)
 	{
-		atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 5, 3, 80, 10, 50, YR_Vector3(Getapply(30.0f), 30.0f), AttackBox::MIDDLE, Getapply(0.0f));
+		atk[scastI(KNIGHTATK::ONE)].Update(
+			cent, range, 5, 3, 80, 10, 50, YR_Vector3(Getapply(30.0f), 30.0f), AttackBox::MIDDLE, Getapply(0.0f),elapsed_time);
 	}
 	else
 	{
-		atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 5, 3, 80, 10, 50, YR_Vector3(Getapply(30.0f), 30.0f), AttackBox::MIDDLE, Getapply(0.0f));
+		atk[scastI(KNIGHTATK::ONE)].Update(
+			cent, range, 5, 3, 80, 10, 50, YR_Vector3(Getapply(30.0f), 30.0f), AttackBox::MIDDLE, Getapply(0.0f),elapsed_time);
 	}
 	if (atk[scastI(KNIGHTATK::ONE)].timer > 0)
 	{

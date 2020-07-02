@@ -74,10 +74,10 @@ void SceneGame::Init()
 	}
 
 	//カメラ初期設定
-	YRCamera.SetEye(DirectX::XMFLOAT3(0, 0, -25));			//視点
-	YRCamera.SetFocus(DirectX::XMFLOAT3(0, 0, 0));			//注視点
-	YRCamera.SetUp(DirectX::XMFLOAT3(0, 1, 0));				//上方向
-	YRCamera.SetPerspective(30 * 0.01745f, 1280.0f / 720.0f, 0.0001f, 1000000);
+	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -25));			//視点
+	YRCamera.SetFocus(DirectX::XMFLOAT3(0.0f, 5.0f, 0.0f));			//注視点
+	YRCamera.SetUp(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));				//上方向
+	YRCamera.SetPerspective(30 * 0.01745f, 1920.0f / 1080.0f, 0.0001f, 1000000);
 	
 	//画像選択位置初期化
 	for (int i = 0; i < p1combo.size(); i++)
@@ -232,10 +232,10 @@ void SceneGame::StartSet()
 {
 	//イントロ終了後のゲーム画面のセット
 	//カメラ初期設定
-	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 0.0f, -25.0f));			//視点
-	YRCamera.SetFocus(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));			//注視点
+	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -25.0f));			//視点
+	YRCamera.SetFocus(DirectX::XMFLOAT3(0.0f, 5.0f, 0.0f));			//注視点
 	YRCamera.SetUp(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));				//上方向
-	YRCamera.SetPerspective(30.0f * 0.01745f, 1280.0f / 720.0f, 0.0001f, 1000000.0f);
+	YRCamera.SetPerspective(30.0f * 0.01745f, 1920.0f / 1080.0f, 0.0001f, 1000000.0f);
 }
 
 
@@ -546,7 +546,7 @@ void SceneGame::Update(float elapsed_time)
 			else
 			{
 				//カウント中
-				if (start_timer < 5.0f)
+				if (start_timer < 3.0f)
 				{
 					start_timer += elapsed_time;
 				}
@@ -645,6 +645,8 @@ void SceneGame::Draw(float elapsed_time)
 #if USE_IMGUI
 	//ImGui
 	{
+		DirectX::XMFLOAT3 eye = YRCamera.GetEye();
+		DirectX::XMFLOAT3 focus = YRCamera.GetFocus();
 		bool show_demo_window = true;
 		bool show_another_window = false;
 		static int number_id = 0;
@@ -659,15 +661,33 @@ void SceneGame::Draw(float elapsed_time)
 		//ImGui::InputFloat("transX", &trans.x, 1.0f, 30.00f);
 		//ImGui::InputFloat("transY", &trans.y, 1.0f, 30.00f);
 		//ImGui::InputFloat("transZ", &trans.z, 1.0f, 30.00f);
-		ImGui::ColorEdit4("light_color", light_color);
-		ImGui::InputFloat("light_direction.x", &light_direction.x, 0.1f, 0.1f);
-		ImGui::InputFloat("light_direction.y", &light_direction.y, 0.1f, 0.1f);
-		ImGui::InputFloat("light_direction.z", &light_direction.z, 0.1f, 0.1f);
-		ImGui::InputFloat("light_direction.w", &light_direction.w, 0.1f, 0.1f);
-		ImGui::InputFloat("ambient_color.x", &ambient_color.x, 0.01f, 0.01f);
-		ImGui::InputFloat("ambient_color.y", &ambient_color.y, 0.01f, 0.01f);
-		ImGui::InputFloat("ambient_color.z", &ambient_color.z, 0.01f, 0.01f);
-		ImGui::InputFloat("ambient_color.w", &ambient_color.w, 0.01f, 0.01f);
+		if(ImGui::TreeNode("light"))
+		{
+			ImGui::ColorEdit4("light_color", light_color);
+			ImGui::InputFloat("light_direction.x", &light_direction.x, 0.1f, 0.1f);
+			ImGui::InputFloat("light_direction.y", &light_direction.y, 0.1f, 0.1f);
+			ImGui::InputFloat("light_direction.z", &light_direction.z, 0.1f, 0.1f);
+			ImGui::InputFloat("light_direction.w", &light_direction.w, 0.1f, 0.1f);
+			ImGui::InputFloat("ambient_color.x", &ambient_color.x, 0.01f, 0.01f);
+			ImGui::InputFloat("ambient_color.y", &ambient_color.y, 0.01f, 0.01f);
+			ImGui::InputFloat("ambient_color.z", &ambient_color.z, 0.01f, 0.01f);
+			ImGui::InputFloat("ambient_color.w", &ambient_color.w, 0.01f, 0.01f);
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Camera"))
+		{
+			ImGui::InputFloat("eye_X", &eye.x, 0.01f, 0.01f);
+			ImGui::InputFloat("eye_Y", &eye.y, 0.01f, 0.01f);
+			ImGui::InputFloat("eye_Z", &eye.z, 0.01f, 0.01f);
+			ImGui::InputFloat("focus_X", &focus.x, 0.01f, 0.01f);
+			ImGui::InputFloat("focus_Y", &focus.y, 0.01f, 0.01f);
+			ImGui::InputFloat("focus_Z", &focus.z, 0.01f, 0.01f);
+			ImGui::TreePop();
+		}
+
+		YRCamera.SetEye(eye);
+		YRCamera.SetFocus(focus);
+
 		ImGui::End();
 	}
 #endif
@@ -702,21 +722,23 @@ void SceneGame::Draw(float elapsed_time)
 	case SceneGame::INTRO1P:
 		//1Pのイントロ
 		//プレイヤー描画
-		player1p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player1p->Draw(skinShader.get(),geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
 		break;
 	case SceneGame::INTRO2P:
 		//2Pのイントロ
 		//プレイヤー描画
-		player2p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player2p->Draw(skinShader.get(),geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
 		break;
 	case SceneGame::READY:
 	case SceneGame::MAIN:
 	case SceneGame::FINISH:
 		//内部処理ではフェードをしているだけで画面に変化はない為一括
+
+		//カウント表示
 		if (!start)
 		{
 			//Are You Ready?
-			if (start_timer < 3.0f)
+			if (start_timer < 1.0f)
 			{
 				call_img->DrawRotaDivGraph
 				(
@@ -837,8 +859,8 @@ void SceneGame::Draw(float elapsed_time)
 		}
 
 		//プレイヤー描画
-		player1p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
-		player2p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player1p->Draw(skinShader.get(),geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player2p->Draw(skinShader.get(),geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
 
 
 		//ゲージ描画
@@ -878,11 +900,11 @@ void SceneGame::Draw(float elapsed_time)
 		break;
 	case SceneGame::WIN1P:
 		//プレイヤー描画
-		player1p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player1p->Draw(skinShader.get(),geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
 		break;
 	case SceneGame::WIN2P:
 		//プレイヤー描画
-		player2p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player2p->Draw(skinShader.get(),geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
 		break;
 	case SceneGame::GAME_FIN:
 		break;

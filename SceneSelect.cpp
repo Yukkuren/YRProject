@@ -106,7 +106,7 @@ void SceneSelect::Update(float elapsed_time)
 		{
 			timer = 0;
 		}
-		constexpr float a = 1.0f / 60.0f;
+		//constexpr float a = 1.0f / 60.0f;
 		FRAMEWORK.scenegame.pad1->Update(elapsed_time);
 		FRAMEWORK.scenegame.pad2->Update(elapsed_time);
 

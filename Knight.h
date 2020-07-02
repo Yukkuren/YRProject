@@ -85,26 +85,26 @@ public:
 	bool WinPerformance();
 
 
-	void Jaku();
-	void Thu(int fream);
-	void Kyo(int fream);
-	void D_Jaku();
-	void D_Thu(int fream);
-	void U_Kyo(int fream);
-	void Hadouken();
-	void Thu_Hadouken();
-	void Kyo_Hadouken();
-	void HadouUpdate();
-	void Thu_HadouUpdate();
-	void Kyo_HadouUpdate();
-	void P_Kyo();
-	void TrackDash(float decision);
-	void Steal();
-	void Slow();
-	void Panish_N();
-	void Panish_H();
+	void Jaku(float elapsed_time);
+	void Thu(int fream, float elapsed_time);
+	void Kyo(int fream, float elapsed_time);
+	void D_Jaku(float elapsed_time);
+	void D_Thu(int fream, float elapsed_time);
+	void U_Kyo(int fream, float elapsed_time);
+	void Hadouken(float elapsed_time);
+	void Thu_Hadouken(float elapsed_time);
+	void Kyo_Hadouken(float elapsed_time);
+	void HadouUpdate(float elapsed_time);
+	void Thu_HadouUpdate(float elapsed_time);
+	void Kyo_HadouUpdate(float elapsed_time);
+	void P_Kyo(float elapsed_time);
+	void TrackDash(float decision, float elapsed_time);
+	void Steal(float elapsed_time);
+	void Slow(float elapsed_time);
+	void Panish_N(float elapsed_time);
+	void Panish_H(float elapsed_time);
 
-	void ExtendATK();
+	void ExtendATK(float elapsed_time);
 
 	void StateNone();
 

@@ -47,11 +47,11 @@ void Knight::Init(YR_Vector3 InitPos)
 		atk[i].Init();
 	}
 #pragma region HITBOXINIT
-	Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(0.0f, -8.0f);
-	hit[scastI(KNIGHTHIT::BODY)].Init(pos + Hitplus[scastI(KNIGHTHIT::BODY)], YR_Vector3(65.0f, 130.0f));
+	Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(-0.7f, 1.0f);
+	hit[scastI(KNIGHTHIT::BODY)].Init(pos + Hitplus[scastI(KNIGHTHIT::BODY)], YR_Vector3(2.0f, 2.9f));
 	HitSize[scastI(KNIGHTHIT::BODY)] = hit[scastI(KNIGHTHIT::BODY)].size;
-	Hitplus[scastI(KNIGHTHIT::LEG)] = YR_Vector3(0.0f, 163.0f);
-	hit[scastI(KNIGHTHIT::LEG)].Init(pos + Hitplus[scastI(KNIGHTHIT::LEG)], YR_Vector3(73.0f, 40.0f));
+	Hitplus[scastI(KNIGHTHIT::LEG)] = YR_Vector3(-0.4f, 0.2f);
+	hit[scastI(KNIGHTHIT::LEG)].Init(pos + Hitplus[scastI(KNIGHTHIT::LEG)], YR_Vector3(1.4f, 0.8f));
 	HitSize[scastI(KNIGHTHIT::LEG)] = hit[scastI(KNIGHTHIT::LEG)].size;
 #pragma endregion
 
@@ -84,9 +84,9 @@ void Knight::Update(float decision, float elapsed_time)
 	finish = false;
 	DamageCheck();
 	WaitAnimSet();
-	HadouUpdate();
-	Thu_HadouUpdate();
-	Kyo_HadouUpdate();
+	HadouUpdate(elapsed_time);
+	Thu_HadouUpdate(elapsed_time);
+	Kyo_HadouUpdate(elapsed_time);
 	if (pos.y >= POS_Y)
 	{
 		ground = true;
@@ -202,15 +202,15 @@ void Knight::Update(float decision, float elapsed_time)
 			case MOVEL://,,
 			case SLOW:
 				//投げ
-				Slow();
+				Slow(elapsed_time);
 				break;
 			case STEAL:
 				//相手のステートを奪う。掴み
-				Steal();
+				Steal(elapsed_time);
 				break;
 			case JAKU:
 				//弱攻撃
-				Jaku();
+				Jaku(elapsed_time);
 				//中攻撃(連打した場合は弱→中→強と繋がるように)
 				if (later > -1)
 				{
@@ -273,7 +273,7 @@ void Knight::Update(float decision, float elapsed_time)
 				break;
 			case THU:
 				//中攻撃
-				Thu(specialfream);
+				Thu(specialfream, elapsed_time);
 				if (later > -1)
 				{
 					if (pad->x_input[static_cast<int>(PAD::X)] == 1)
@@ -322,7 +322,7 @@ void Knight::Update(float decision, float elapsed_time)
 				break;
 			case KYO:
 				//強攻撃
-				Kyo(specialfream);
+				Kyo(specialfream, elapsed_time);
 				if (later > -1)
 				{
 					if (pad->x_input[static_cast<int>(PAD::X)] == 1)
@@ -364,7 +364,7 @@ void Knight::Update(float decision, float elapsed_time)
 				break;
 			case D_THU:
 				//下段中攻撃
-				D_Thu(specialfream);
+				D_Thu(specialfream, elapsed_time);
 				if (later > -1)
 				{
 					if (pad->x_input[static_cast<int>(PAD::B)] == 1)
@@ -397,36 +397,36 @@ void Knight::Update(float decision, float elapsed_time)
 				break;
 			case U_KYO:
 				//上段強攻撃
-				U_Kyo(specialfream);
+				U_Kyo(specialfream, elapsed_time);
 				break;
 			case D_JAKU:
 				//下段弱攻撃
-				D_Jaku();
+				D_Jaku(elapsed_time);
 				break;
 			case HADOUKEN:
-				Hadouken();
+				Hadouken(elapsed_time);
 				break;
 			case THU_HADOUKEN:
-				Thu_Hadouken();
+				Thu_Hadouken(elapsed_time);
 				break;
 			case KYO_HADOUKEN:
-				Kyo_Hadouken();
+				Kyo_Hadouken(elapsed_time);
 				break;
 			case TRACK_DASH:
 				//ホーミングダッシュ
-				TrackDash(decision);
+				TrackDash(decision, elapsed_time);
 				break;
 			case P_KYO:
-				P_Kyo();
+				P_Kyo(elapsed_time);
 				break;
 			case EXTENDATK:
-				ExtendATK();
+				ExtendATK(elapsed_time);
 				break;
 			case PANISH_N:
-				Panish_N();
+				Panish_N(elapsed_time);
 				break;
 			case PANISH_H:
-				Panish_H();
+				Panish_H(elapsed_time);
 				break;
 			}
 
@@ -814,6 +814,7 @@ void Knight::Update(float decision, float elapsed_time)
 	pos.x += speed.x;
 	pos.y -= speed_Y.Update(elapsed_time);
 
+#ifdef USE_IMGU
 	if (state != D_THU && state != DOWN && state != SQUAT && state != D_JAKU)
 	{
 		Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(0.0f, -8.0f);
@@ -821,8 +822,9 @@ void Knight::Update(float decision, float elapsed_time)
 		Hitplus[scastI(KNIGHTHIT::LEG)] = YR_Vector3(0.0f, 163.0f);
 		hit[scastI(KNIGHTHIT::LEG)].size = HitSize[scastI(KNIGHTHIT::LEG)];
 	}
-	hit[scastI(KNIGHTHIT::BODY)].Update(pos + Hitplus[scastI(KNIGHTHIT::BODY)], hit[scastI(KNIGHTHIT::BODY)].size);
-	hit[scastI(KNIGHTHIT::LEG)].Update(pos + Hitplus[scastI(KNIGHTHIT::LEG)], hit[scastI(KNIGHTHIT::LEG)].size);
+#endif // USE_IMGUI
+	hit[scastI(KNIGHTHIT::BODY)].Update(pos + Hitplus[scastI(KNIGHTHIT::BODY)], hit[scastI(KNIGHTHIT::BODY)].size,elapsed_time);
+	hit[scastI(KNIGHTHIT::LEG)].Update(pos + Hitplus[scastI(KNIGHTHIT::LEG)], hit[scastI(KNIGHTHIT::LEG)].size,elapsed_time);
 }
 
 
@@ -955,6 +957,7 @@ void Knight::Draw(
 	//左向き
 	if (rightOrleft < 0)
 	{
+		angle.y = DirectX::XMConvertToRadians(70.0f);
 		//多分これいらない
 		if (state == KYO)
 		{
@@ -974,6 +977,7 @@ void Knight::Draw(
 	//右向き
 	else
 	{
+		angle.y = DirectX::XMConvertToRadians(-70.0f);
 		//というか絶対いらない
 		if (state == KYO)
 		{
@@ -1026,7 +1030,7 @@ void Knight::Draw(
 #if USE_IMGUI
 		for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
 		{
-			hit[i].Draw();
+			hit[i].Draw(geoshader, view, projection, light_direction, light_color, ambient_color);
 		}
 
 		if (attack)
@@ -1037,7 +1041,7 @@ void Knight::Draw(
 				{
 					if (atk[atknum].hit_ok)
 					{
-						atk[atknum].Draw();
+						atk[atknum].Draw(geoshader, view, projection, light_direction, light_color, ambient_color);
 					}
 				}
 			}
@@ -1083,15 +1087,15 @@ void Knight::Draw(
 			//static float f = 0.0f;
 			ImGui::Begin("RyuHitBox");
 			//ImGui::Text(u8"ようこそ、DXライブラリへ");
-			ImGui::SliderFloat("BodyPosX", &Hitplus[scastI(KNIGHTHIT::BODY)].x, -1000.0f, 1000.0f);
-			ImGui::SliderFloat("BodyPosY", &Hitplus[scastI(KNIGHTHIT::BODY)].y, -1000.0f, 1000.0f);
-			ImGui::SliderFloat("BodySizeX", &hit[scastI(KNIGHTHIT::BODY)].size.x, -1000.0f, 1000.0f);
-			ImGui::SliderFloat("BodySizeY", &hit[scastI(KNIGHTHIT::BODY)].size.y, -1000.0f, 1000.0f);
+			ImGui::InputFloat("BodyPosX", &Hitplus[scastI(KNIGHTHIT::BODY)].x, 0.1f, 0.1f);
+			ImGui::InputFloat("BodyPosY", &Hitplus[scastI(KNIGHTHIT::BODY)].y, 0.1f, 0.1f);
+			ImGui::InputFloat("BodySizeX", &hit[scastI(KNIGHTHIT::BODY)].size.x, 0.1f, 0.1f);
+			ImGui::InputFloat("BodySizeY", &hit[scastI(KNIGHTHIT::BODY)].size.y, 0.1f, 0.1f);
 
-			ImGui::SliderFloat("LegPosX", &Hitplus[scastI(KNIGHTHIT::LEG)].x, -1000.0f, 1000.0f);
-			ImGui::SliderFloat("LegPosY", &Hitplus[scastI(KNIGHTHIT::LEG)].y, -1000.0f, 1000.0f);
-			ImGui::SliderFloat("LegSizeX", &hit[scastI(KNIGHTHIT::LEG)].size.x, -1000.0f, 1000.0f);
-			ImGui::SliderFloat("LegSizeY", &hit[scastI(KNIGHTHIT::LEG)].size.y, -1000.0f, 1000.0f);
+			ImGui::InputFloat("LegPosX", &Hitplus[scastI(KNIGHTHIT::LEG)].x, 0.1f, 0.1f);
+			ImGui::InputFloat("LegPosY", &Hitplus[scastI(KNIGHTHIT::LEG)].y, 0.1f, 0.1f);
+			ImGui::InputFloat("LegSizeX", &hit[scastI(KNIGHTHIT::LEG)].size.x, 0.1f, 0.1f);
+			ImGui::InputFloat("LegSizeY", &hit[scastI(KNIGHTHIT::LEG)].size.y, 0.1f, 0.1f);
 			//ImGui::SliderFloat("camera.y", &camera.y, -world_max_y, world_max_y);
 			//ImGui::SliderFloat("camera.x", &camera.x, -world_max_x, world_max_x);
 			ImGui::Text("player.y:%f", pos.y);
@@ -1536,8 +1540,10 @@ void Knight::WaitAnimSet()
 {
 	if (state == NONE)
 	{
+#ifdef USE_IMGU
 		hit[scastI(KNIGHTHIT::BODY)].size = HitSize[scastI(KNIGHTHIT::BODY)];
 		hit[scastI(KNIGHTHIT::LEG)].size = HitSize[scastI(KNIGHTHIT::LEG)];
+#endif // USE_IMGU
 		//描画をセット
 
 		state = WAIT;
@@ -1878,7 +1884,7 @@ void Knight::DamageCheck()
 			}
 			hit[i].steal = false;
 			steal_escape = hit[i].steal_timer;
-			hit[i].steal_timer = 0;
+			hit[i].steal_timer = 0.0f;
 			state = STATENONE;
 		}
 	}
@@ -2399,11 +2405,11 @@ void Knight::StateNone()
 }
 
 
-void Knight::Steal()
+void Knight::Steal(float elapsed_time)
 {
 	YR_Vector3 cent{ pos.x + Getapply(100.0f),pos.y };
 	YR_Vector3 range{ 50.0f,50.0f };
-	atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 10, 10, 15, 20, 13, YR_Vector3(Getapply(0.0f), 0.0f), AttackBox::STEAL, Getapply(0.0f), true);
+	atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 10, 10, 15, 20, 13, YR_Vector3(Getapply(0.0f), 0.0f), AttackBox::STEAL, Getapply(0.0f), true,elapsed_time);
 	if (rival_state != STATENONE)
 	{
 		if (atk[scastI(KNIGHTATK::ONE)].timer == 0)
@@ -2450,7 +2456,7 @@ void Knight::Steal()
 }
 
 
-void Knight::TrackDash(float decision)
+void Knight::TrackDash(float decision,float elapsed_time)
 {
 	if (state != TRACK_DASH)
 	{
@@ -2485,7 +2491,7 @@ void Knight::TrackDash(float decision)
 		YR_Vector3 range{ 150.0f,200.0f };
 		atk[scastI(KNIGHTATK::ONE)].Update
 		(
-			cent, range, 3, 1, 3, 5, 40, YR_Vector3(3.0f * decision, 20.0f), AttackBox::MIDDLE, Getapply(10.0f)
+			cent, range, 3, 1, 3, 5, 40, YR_Vector3(3.0f * decision, 20.0f), AttackBox::MIDDLE, Getapply(10.0f), elapsed_time
 		);
 	}
 

@@ -1,5 +1,6 @@
-#include"HitBox.h"
-#include"PlayerBase.h"
+#include "HitBox.h"
+#include "PlayerBase.h"
+#include "framework.h"
 
 void HitBox::Init(YR_Vector3 cent, YR_Vector3 range)
 {
@@ -8,22 +9,22 @@ void HitBox::Init(YR_Vector3 cent, YR_Vector3 range)
 	hit = false;
 	damege = 0.0f;
 	//hitother = false;
-	timer = 0;
+	timer = 0.0f;
 	hitback = { 0.0f, 0.0f };
 	guard = NOGUARD;
 	guard_ok = false;
 	steal = false;
-	steal_timer = 0;
+	steal_timer = 0.0f;
 }
 
-void HitBox::Update(YR_Vector3 cent, YR_Vector3 range)
+void HitBox::Update(YR_Vector3 cent, YR_Vector3 range,float elapsed_time)
 {
 	center = cent;
 	size = range;
 	//if (DEBUG_MODE)Draw();
-	if (timer > 0)
+	if (timer > 0.0f)
 	{
-		timer--;
+		timer -= elapsed_time;
 		if (hitback.x > 0)
 		{
 			hitback.x--;
@@ -44,6 +45,10 @@ void HitBox::Update(YR_Vector3 cent, YR_Vector3 range)
 		{
 			hitback.y--;
 		}
+		if (timer < 0.0f)
+		{
+			timer = 0.0f;
+		}
 	}
 	if (damege > 0)
 	{
@@ -55,11 +60,27 @@ void HitBox::Update(YR_Vector3 cent, YR_Vector3 range)
 	}
 }
 
-void HitBox::Draw()
+void HitBox::Draw(
+	YRShader *shader, 
+	const DirectX::XMMATRIX& view,
+	const DirectX::XMMATRIX& projection,
+	const DirectX::XMFLOAT4& light_direction,
+	const DirectX::XMFLOAT4& light_color,
+	const DirectX::XMFLOAT4& ambient_color)
 {
 	//SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
 	if (guard == INVINCIBLE)
 	{
+		//ƒK[ƒhŽž
+		FRAMEWORK.scenegame.geo->render(
+			shader,
+			DirectX::XMFLOAT3(center.x, center.y, -2.0f),
+			size.GetDXFLOAT3(),
+			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+			view,
+			projection,
+			DirectX::XMFLOAT4(1.0f, 0.8f, 0.0f, 0.5f)
+		);
 		/*DrawBoxAA(
 			center.x - size.x - camera.x,
 			center.y - size.y - camera.y,
@@ -70,8 +91,18 @@ void HitBox::Draw()
 	}
 	else
 	{
-		if (timer == 0)
+		if (timer == 0.0f)
 		{
+			//’ÊíŽž
+			FRAMEWORK.scenegame.geo->render(
+				shader,
+				DirectX::XMFLOAT3(center.x, center.y, -2.0f),
+				size.GetDXFLOAT3(),
+				DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+				view,
+				projection,
+				DirectX::XMFLOAT4(0.0f, 0.0f, 0.8f, 0.5f)
+			);
 			/*DrawBoxAA(
 				center.x - size.x - camera.x,
 				center.y - size.y - camera.y,
@@ -82,6 +113,16 @@ void HitBox::Draw()
 		}
 		else
 		{
+			//‚Ì‚¯‚¼‚è’†
+			FRAMEWORK.scenegame.geo->render(
+				shader,
+				DirectX::XMFLOAT3(center.x, center.y, -2.0f),
+				size.GetDXFLOAT3(),
+				DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+				view,
+				projection,
+				DirectX::XMFLOAT4(0.0f, 0.8f, 0.0f, 0.5f)
+			);
 			/*DrawBoxAA(
 				center.x - size.x - camera.x,
 				center.y - size.y - camera.y,
