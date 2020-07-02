@@ -37,6 +37,14 @@ public:
 };
 
 //プレイヤー制御構造体
+//{
+//	HP_MAX～：プレイヤーのHPの最大値
+//	ratio～：HP描画時に使用
+//	power～：ゲージの色
+//	correction_value：意味は知らん。なんか画像の位置調整に使ってる
+//	gauge～：描画時に使用。こちらはゲージ
+//	pos～：プレイヤーの初期位置
+//}
 struct PlayerALL
 {
 	float				HP_MAX1P = 0.0f;
@@ -62,7 +70,29 @@ public:
 	float	timer;
 	int		sco[6];
 
-	std::unique_ptr<geometric_primitive> geo = nullptr;
+	enum MAIN_LOOP
+	{
+		INTRO1P = 0,
+		INTRO2P,
+		READY,
+		MAIN,
+		FINISH,
+		WIN1P,
+		WIN2P,
+		GAME_FIN,
+	};
+
+	enum JUDGE_VICTORY
+	{
+		NO_VICTORY = 0,
+		VICTORY1P,
+		VICTORY2P,
+		DROW,
+	};
+
+	MAIN_LOOP		main_loop;	//この変数でゲームメインの遷移を管理する
+
+	std::unique_ptr<geometric_primitive>	geo = nullptr;
 
 	//画像関係
 	std::unique_ptr<Sprite> test = nullptr;
@@ -82,25 +112,26 @@ public:
 
 
 	//シェーダー
-	std::unique_ptr<YRShader> skinShader;
-	std::unique_ptr<YRShader> spriteShader;
-	std::unique_ptr<YRShader> geoShader;
+	std::unique_ptr<YRShader> skinShader = nullptr;
+	std::unique_ptr<YRShader> spriteShader = nullptr;
+	std::unique_ptr<YRShader> geoShader = nullptr;
 
 	//プレイヤー管理系
 	PlayerALL						PL;
-	std::unique_ptr<Player>			player1p;
-	std::unique_ptr<Player>			player2p;
-	std::unique_ptr<GamepadBase>	pad1;
-	std::unique_ptr<GamepadBase>	pad2;
+	std::unique_ptr<Player>			player1p	= nullptr;
+	std::unique_ptr<Player>			player2p	= nullptr;
+	std::unique_ptr<GamepadBase>	pad1		= nullptr;
+	std::unique_ptr<GamepadBase>	pad2		= nullptr;
 
 	//ゲームループ制御変数
-	bool			pause;
-	bool			start;
-	int				judge;
-	int				start_timer;
-	bool			end;
-	bool			fin;
-	int				endtimer;
+	bool			pause;			//ポーズ中
+	bool			start;			//対戦開始
+	JUDGE_VICTORY	judge;			//勝敗の有無
+	float			start_timer;	//開始までの時間。Are You Ready?
+	bool			end;			//勝敗がついた
+	bool			fin;			//全て終わった
+	float			endtimer;		//勝敗がついてから勝利画面に移行するまでに使用
+	float			mix_fedo;		//フェードインの速度変更用
 
 public:
 
@@ -113,7 +144,7 @@ public:
 
 	void				PadSet(int select1);
 	void				PadSet(int select1, int select2);
-	int					Winjudge();
+	void				Winjudge();
 	DirectX::XMFLOAT4	ColorSet(int power);
 	void				ComboImageSet();
 
@@ -122,7 +153,12 @@ public:
 
 public:
 	//ゲーム処理関数
-	void SetPlayerCharacter(std::unique_ptr<Player>& player, int select);
+	void	SetPlayerCharacter(std::unique_ptr<Player>& player, int select);
+	void	PauseUpdate();
+	void	TrackSet();
+	void	FinUpdate();
+	void	StartSet();
+	void	FinSet();
 };
 
 
@@ -131,7 +167,7 @@ class SceneTitle : public SceneBase
 {
 	
 public:
-	std::unique_ptr<Sprite> test;
+	std::unique_ptr<Sprite> test = nullptr;
 	std::thread* t = NULL;
 	int					load_state;
 	bool				load_fin;
@@ -140,7 +176,7 @@ public:
 	GamePad2			g2;
 
 	//シェーダー
-	std::unique_ptr<YRShader> spriteShader;
+	std::unique_ptr<YRShader> spriteShader = nullptr;
 
 	//画像描画関係
 	YR_Vector3			p1;
@@ -205,7 +241,7 @@ public:
 	std::unique_ptr<Sprite>	load_img = nullptr;
 
 	//シェーダー
-	std::unique_ptr<YRShader> spriteShader;
+	std::unique_ptr<YRShader> spriteShader = nullptr;
 
 	float timer;
 	void Init();
@@ -226,7 +262,7 @@ public:
 	bool				load_fin;
 
 	//シェーダー
-	std::unique_ptr<YRShader> spriteShader;
+	std::unique_ptr<YRShader> spriteShader = nullptr;
 
 	//画像描画関係
 	YR_Vector3			p1;

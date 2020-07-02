@@ -166,6 +166,9 @@
     <ClCompile Include="YRShader.cpp">
       <Filter>assistance\Sources</Filter>
     </ClCompile>
+    <ClCompile Include="World.cpp">
+      <Filter>assistance\Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -260,6 +263,9 @@
     </ClInclude>
     <ClInclude Include="Knight.h">
       <Filter>Game\Character\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="World.h">
+      <Filter>assistance\Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

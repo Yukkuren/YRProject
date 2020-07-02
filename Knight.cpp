@@ -2,7 +2,8 @@
 #include "PlayerBase.h"
 #include "Key.h"
 #include "YRGamePad.h"
-
+#include "camera.h"
+#include "framework.h"
 
 
 Knight::~Knight()
@@ -23,11 +24,11 @@ void Knight::Init(YR_Vector3 InitPos)
 	max_jump_flag = false;
 	hp = 1000;
 	gravity = 40.0f;
-	knocktimer = 0;
+	knocktimer = 0.0f;
 	ground = true;
 	jumpflag = false;
 	drawset = false;
-	specialfream = 0;
+	specialfream = 0.0f;
 	fast = false;
 	finish = false;
 	stop_pos = { 0.0f,0.0f };
@@ -39,6 +40,8 @@ void Knight::Init(YR_Vector3 InitPos)
 	steal_escape = 0;
 	speed_Y.Set(0.0f);
 	combo_count = 0;
+	intro_state = INTRO_KNIGHT::SET;
+	win_state = WIN_PERFORMANCE_KNIGHT::CAMERA_ZOOM;
 	for (int i = 0; i < scastI(KNIGHTATK::ATKEND); i++)
 	{
 		atk[i].Init();
@@ -76,7 +79,7 @@ void Knight::Uninit()
 	base.reset();
 	base = nullptr;
 }
-void Knight::Update(float decision)
+void Knight::Update(float decision, float elapsed_time)
 {
 	finish = false;
 	DamageCheck();
@@ -479,20 +482,20 @@ void Knight::Update(float decision)
 			{
 				jumpcount = 2;
 				rightOrleft = decision;
-				if (speed.x > 0)
+				if (speed.x > 0.0f)
 				{
-					speed.x--;
-					if (speed.x < 0)
+					speed.x-=elapsed_time;
+					if (speed.x < 0.0f)
 					{
 						speed.x = 0;
 					}
 				}
-				if (speed.x < 0)
+				if (speed.x < 0.0f)
 				{
-					speed.x++;
-					if (speed.x > 0)
+					speed.x+=elapsed_time;
+					if (speed.x > 0.0f)
 					{
-						speed.x = 0;
+						speed.x = 0.0f;
 					}
 				}
 			}
@@ -809,7 +812,7 @@ void Knight::Update(float decision)
 	JumpUpdate();
 
 	pos.x += speed.x;
-	pos.y -= speed_Y.Update();
+	pos.y -= speed_Y.Update(elapsed_time);
 
 	if (state != D_THU && state != DOWN && state != SQUAT && state != D_JAKU)
 	{
@@ -915,6 +918,7 @@ void Knight::CancelList()
 
 void Knight::Draw(
 	YRShader				*shader,
+	YRShader				*geoshader,
 	const DirectX::XMMATRIX& view,
 	const DirectX::XMMATRIX& projection,
 	const DirectX::XMFLOAT4& light_direction,
@@ -2618,6 +2622,81 @@ void Knight::StopEnd()
 
 void Knight::WinAnimSet()
 {
-	//描画をセット
+	//勝利演出用のセット
+	pos = YR_Vector3(1.0f, 0.0f, 0.0f);
+	YRCamera.SetFocus(pos.GetDXFLOAT3());
+	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 0.0f, -25.0f));
+}
 
+bool Knight::WinPerformance()
+{
+	//勝利演出の行動をする
+	//カメラもこちらで動かす
+	switch (win_state)
+	{
+	case Knight::WIN_PERFORMANCE_KNIGHT::CAMERA_ZOOM:
+	{
+		YR_Vector3 vec, eye, focus;
+		focus = YRCamera.GetFocus();
+		eye = YRCamera.GetEye();
+		vec = focus - eye;
+		float len = vec.Length();
+		if (len < 0.5f)
+		{
+			win_state = WIN_PERFORMANCE_KNIGHT::FINISH;
+			break;
+		}
+		vec.Normalize();
+		eye += vec * 0.1f;
+		YRCamera.SetEye(eye.GetDXFLOAT3());
+	}
+	break;
+	case Knight::WIN_PERFORMANCE_KNIGHT::FINISH:
+		return true;
+		break;
+	default:
+		break;
+	}
+
+
+	return false;
+}
+
+bool Knight::Intro()
+{
+	//イントロの行動をする
+	//カメラもこちらで動かす
+	switch (intro_state)
+	{
+	case Knight::INTRO_KNIGHT::SET:
+		YRCamera.SetFocus(pos.GetDXFLOAT3());
+		YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 0.0f, -25.0f));
+		intro_state = INTRO_KNIGHT::CAMERA_ZOOM;
+		break;
+	case Knight::INTRO_KNIGHT::CAMERA_ZOOM:
+	{
+		YR_Vector3 vec, eye, focus;
+		focus = YRCamera.GetFocus();
+		eye = YRCamera.GetEye();
+		vec = focus - eye;
+		float len = vec.Length();
+		if (len < 0.5f)
+		{
+			intro_state = INTRO_KNIGHT::FINISH;
+			break;
+		}
+		vec.Normalize();
+		eye += vec * 0.1f;
+		YRCamera.SetEye(eye.GetDXFLOAT3());
+	}
+		break;
+	case Knight::INTRO_KNIGHT::FINISH:
+		return true;
+		break;
+	default:
+		break;
+	}
+	
+
+	return false;
 }

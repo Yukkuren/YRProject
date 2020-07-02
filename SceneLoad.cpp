@@ -8,7 +8,7 @@
 //・SceneSelectから送られてきた情報をもとにデータの読み込みを行い、
 //	読み込みがすべて完了したらSceneGameをセットする
 //-------------------------------------------------------------
-int Hitcheak::timer = 0;
+float Hitcheak::timer = 0.0f;
 bool Hitcheak::hit = false;
 bool Hitcheak::stop1p = false;
 bool Hitcheak::stop2p = false;
@@ -29,8 +29,11 @@ void SceneLoad::Init()
 	Game_load_fin = false;
 
 	//シェーダー作成
-	spriteShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE);
-	spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
+	if (spriteShader == nullptr)
+	{
+		spriteShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE);
+		spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
+	}
 }
 
 void SceneLoad::LoadData()
@@ -56,6 +59,10 @@ void SceneLoad::UnInit()
 	//「ロード画面で表示する画像等」のみ解放する
 	load_img.reset();
 	load_img = nullptr;
+
+	//シェーダーも解放
+	spriteShader.reset();
+	spriteShader = nullptr;
 }
 
 void SceneLoad::Update(float elapsedTime)

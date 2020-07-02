@@ -38,21 +38,21 @@ enum class PLSELECT :int
 class Speed
 {
 public:
-	float speedY = 0;
+	float speedY = 0.0f;
 
 	void Set(float speed)
 	{
 		speedY = speed;
 	};
-	float Update()
+	float Update(float elapsed_time)
 	{
-		if (speedY > 0)
+		if (speedY > 0.0f)
 		{
-			speedY--;
+			speedY -= elapsed_time;
 		}
 		else
 		{
-			speedY = 0;
+			speedY = 0.0f;
 		}
 		return speedY;
 	};
@@ -73,10 +73,10 @@ public:
 	int			state;			//今何をしているか(enum)
 	float		rightOrleft;	//右向きなら*1左向きなら*-1
 	bool		moveflag;		//TRUEなら動いている
-	int			later;			//後隙フレーム
-	int			knocktimer;		//喰らい時間
+	float		later;			//後隙フレーム
+	float		knocktimer;		//喰らい時間
 	float		gravity;		//重力値
-	int			specialfream;	//弱コンボ等でフレームを減らす際の数値
+	float		specialfream;	//弱コンボ等でフレームを減らす際の数値
 	bool		finish;			//行動が終了したときのみtrue
 	bool		step;
 	bool		hightrigger;	//ハイジャンプ時true、通常時false
@@ -107,9 +107,10 @@ public:
 	virtual void Init(YR_Vector3 InitPos) = 0;
 	virtual void LoadData() = 0;
 	virtual void Uninit() = 0;
-	virtual void Update(float decision) = 0;
+	virtual void Update(float decision,float elapsed_time) = 0;
 	virtual void Draw(
 		YRShader				*shader,
+		YRShader				*geoshader,
 		const DirectX::XMMATRIX& view,
 		const DirectX::XMMATRIX& projection,
 		const DirectX::XMFLOAT4& light_direction,
@@ -150,6 +151,9 @@ public:
 	virtual void StopUpdate() = 0;
 	virtual void StopEnd() = 0;
 	virtual void TrackDash(float decision) = 0;
+
+	virtual bool Intro() = 0;
+	virtual bool WinPerformance() = 0;
 };
 
 #endif // !PLAYERBASE_H_

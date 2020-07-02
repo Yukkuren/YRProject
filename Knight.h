@@ -28,12 +28,12 @@ enum class KNIGHTATK :int
 class Knight : public Player
 {
 private:
-	const float walkspeed = 5;
-	const float dashspeed = 20;
-	const float backstepS = 30;
-	const float stepspeed = 40;
-	const float jump_max = 70;
-	const float high_jump_max = 90.0f;
+	const float walkspeed = 0.05f;
+	const float dashspeed = 0.1f;
+	const float backstepS = 0.5f;
+	const float stepspeed = 0.5f;
+	const float jump_max = 0.5f;
+	const float high_jump_max = 0.5f;
 public:
 	bool fast;
 	YR_Vector3 FastPos;
@@ -50,9 +50,10 @@ public:
 	void Init(YR_Vector3 InitPos);
 	void Uninit();
 	void LoadData();
-	void Update(float decision);
+	void Update(float decision, float elapsed_time);
 	void Draw(
 		YRShader				*shader,
+		YRShader				*geoshader,
 		const DirectX::XMMATRIX& view,
 		const DirectX::XMMATRIX& projection,
 		const DirectX::XMFLOAT4& light_direction,
@@ -81,6 +82,7 @@ public:
 	void GuardAnimSet();
 	void WaitAnimSet();
 	void WinAnimSet();
+	bool WinPerformance();
 
 
 	void Jaku();
@@ -124,6 +126,10 @@ public:
 	void StopUpdate();
 	void StopEnd();
 
+	bool Intro();
+
+
+	//攻撃以外のステート
 	enum
 	{
 		NONE = 0,
@@ -160,6 +166,23 @@ public:
 		PANISH_H,
 		EXTENDATK,
 	};
+
+	//イントロ用列挙
+	enum class INTRO_KNIGHT : int
+	{
+		SET = 0,
+		CAMERA_ZOOM,
+		FINISH,
+	};
+	INTRO_KNIGHT	intro_state;
+
+	//勝利演出用列挙
+	enum class WIN_PERFORMANCE_KNIGHT : int
+	{
+		CAMERA_ZOOM = 0,
+		FINISH,
+	};
+	WIN_PERFORMANCE_KNIGHT win_state;
 };
 
 #endif // !_KNIGHT_H_

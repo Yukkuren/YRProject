@@ -11,7 +11,7 @@ public:
 	static void HitCheakAttack(AttackBox* attack1p, int a_max1p, AttackBox* attack2p, int a_max2p);
 	//static void HitCheak2(AttackBox *attack, int a_max, HitBox *hit, int h_max);
 	static void HitPlayer(HitBox* pl1, float& pos1, HitBox* pl2, float& pos2);
-	static int timer;
+	static float timer;
 	static bool hit;
 	static bool stop1p;
 	static bool stop2p;

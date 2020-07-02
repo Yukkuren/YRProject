@@ -46,7 +46,7 @@ void GamePad1::UnInit()
 	}
 }
 
-void GamePad1::Update()
+void GamePad1::Update(float elapsed_time)
 {
 #pragma region hei
 
@@ -302,7 +302,7 @@ void GamePad1::Update()
 	InputSave();
 	if (!Hitcheak::hit)
 	{
-		InputUpdate();
+		InputUpdate(elapsed_time);
 	}
 }
 
@@ -313,7 +313,7 @@ void GamePad1::InputSave()
 		if (x_input[i] == 1)
 		{
 			que.push_back(InputListor(i));
-			que.back().timer = 20;
+			que.back().timer = 0.3f;
 		}
 		if (que.size() > 10)
 		{
@@ -332,23 +332,23 @@ void GamePad1::InputSave()
 
 		if (pre_input)
 		{
-			if (que.back().timer > 0)
+			if (que.back().timer > 0.0f)
 			{
 				x_input[que.back().kind] = 1;
 			}
 		}
 	}
 }
-void GamePad1::InputUpdate()
+void GamePad1::InputUpdate(float elapsed_time)
 {
 	if (!que.empty())
 	{
 		for (auto& it : que)
 		{
-			it.timer--;
-			if (it.timer < 0)
+			it.timer -= elapsed_time;
+			if (it.timer < 0.0f)
 			{
-				it.timer = 0;
+				it.timer = 0.0f;
 			}
 		}
 	}

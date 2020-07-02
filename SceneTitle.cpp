@@ -32,8 +32,11 @@ void SceneTitle::Init()
 	end = false;
 	timer = 0.0f;
 
-	spriteShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE);
-	spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
+	if (spriteShader == nullptr)
+	{
+		spriteShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE);
+		spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
+	}
 }
 
 void SceneTitle::LoadData()
@@ -72,6 +75,8 @@ void SceneTitle::UnInit()
 	ken_icon = nullptr;
 	select_img.reset();
 	select_img = nullptr;
+	spriteShader.reset();
+	spriteShader = nullptr;
 }
 
 void SceneTitle::Update(float elapsed_time)
@@ -84,9 +89,10 @@ void SceneTitle::Update(float elapsed_time)
 		if (pKeyState.nflg == 1)
 		{
 			select_p1 = scastI(INPUT_PLAYER::P1);
+			select_p2 = scastI(INPUT_PLAYER::P2);
 			FRAMEWORK.scenegame.PadSet(select_p1);
-			FRAMEWORK.SetScene(SCENE_SELECT);
 			UnInit();
+			FRAMEWORK.SetScene(SCENE_SELECT);
 			return;
 		}
 
@@ -102,8 +108,8 @@ void SceneTitle::Update(float elapsed_time)
 			timer = 0;
 		}
 
-		g1.Update();
-		g2.Update();
+		g1.Update(elapsed_time);
+		g2.Update(elapsed_time);
 
 		//プレイヤー1のカーソル移動処理
 		if (p1Enter)

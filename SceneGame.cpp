@@ -5,6 +5,7 @@
 #include "YRMouse.h"
 #include "framework.h"
 #include "HitCheak.h"
+#include "World.h"
 
 //キャラクターインクルード
 #include "Knight.h"
@@ -44,22 +45,33 @@ void SceneGame::Init()
 	fedo_start			= false;
 	pause				= false;
 	start				= false;
-	Hitcheak::timer		= 0;
+	Hitcheak::timer = 0.0f;
 	Hitcheak::hit		= false;
 	Hitcheak::stop1p	= false;
 	Hitcheak::stop2p	= false;
-	judge				= 0;
-	start_timer			= 0;
+	judge				= JUDGE_VICTORY::NO_VICTORY;
+	start_timer			= 0.0f;
 	end					= false;
-	endtimer			= 0;
+	endtimer			= 0.0f;
+	mix_fedo			= 3.0f;
+	main_loop = MAIN_LOOP::INTRO1P;	//最初は1Pのイントロから開始
 
 	//シェーダー作成
-	spriteShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE);
-	spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
-	skinShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SKIN);
-	skinShader->Create("./Data/Shader/Skinned_VS.cso", "./Data/Shader/Skinned_PS.cso");
-	geoShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::GEO);
-	geoShader->Create("./Data/Shader/board_vs.cso", "./Data/Shader/board_ps.cso");
+	if (spriteShader == nullptr)
+	{
+		spriteShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE);
+		spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
+	}
+	if (skinShader == nullptr)
+	{
+		skinShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SKIN);
+		skinShader->Create("./Data/Shader/Skinned_VS.cso", "./Data/Shader/Skinned_PS.cso");
+	}
+	if (geoShader == nullptr)
+	{
+		geoShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::GEO);
+		geoShader->Create("./Data/Shader/board_vs.cso", "./Data/Shader/board_ps.cso");
+	}
 
 	//カメラ初期設定
 	YRCamera.SetEye(DirectX::XMFLOAT3(0, 0, -25));			//視点
@@ -157,7 +169,7 @@ void SceneGame::LoadData()
 	PL.ratio2P = player2p->hp / PL.HP_MAX2P * 800.0f;
 	PL.correction_value = 800.0f - PL.ratio1P;
 	//タイトルで決定したパッドの順番をこちらにも設定して初期化
-	PadSet(FRAMEWORK.sceneselect.select_p1, FRAMEWORK.sceneselect.select_p2);
+	PadSet(FRAMEWORK.scenetitle.select_p1, FRAMEWORK.scenetitle.select_p2);
 	player1p->pad->Init();
 	player2p->pad->Init();
 
@@ -177,7 +189,67 @@ void SceneGame::UnInit()
 	player2p->Uninit();
 	//SceneGameの画像などを解放する
 	test.reset();
+	geo.reset();
+	HP_img.reset();
+	win1P_img.reset();
+	win2P_img.reset();
+	draw_img.reset();
+	HPbar_img.reset();
+	KO_img.reset();
+	gauge_img.reset();
+	gaugecase_img.reset();
+	font_img.reset();
+	call_img.reset();
+	effect_img.reset();
 	test = nullptr;
+	geo = nullptr;
+	HP_img = nullptr;
+	win1P_img = nullptr;
+	win2P_img = nullptr;
+	draw_img = nullptr;
+	HPbar_img = nullptr;
+	KO_img = nullptr;
+	gauge_img = nullptr;
+	gaugecase_img = nullptr;
+	font_img = nullptr;
+	call_img = nullptr;
+	effect_img = nullptr;
+
+	//シェーダー解放
+	spriteShader.reset();
+	spriteShader = nullptr;
+	skinShader.reset();
+	skinShader = nullptr;
+	geoShader.reset();
+	geoShader = nullptr;
+}
+
+
+
+
+
+void SceneGame::StartSet()
+{
+	//イントロ終了後のゲーム画面のセット
+	//カメラ初期設定
+	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 0.0f, -25.0f));			//視点
+	YRCamera.SetFocus(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));			//注視点
+	YRCamera.SetUp(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));				//上方向
+	YRCamera.SetPerspective(30.0f * 0.01745f, 1280.0f / 720.0f, 0.0001f, 1000000.0f);
+}
+
+
+
+
+
+void SceneGame::FinSet()
+{
+	//ゲーム終了後のゲーム画面のセット
+	//カメラ初期設定
+	YRCamera.SetEye(DirectX::XMFLOAT3(0, 0, -25));			//視点
+	YRCamera.SetFocus(DirectX::XMFLOAT3(0, 0, 0));			//注視点
+	YRCamera.SetUp(DirectX::XMFLOAT3(0, 1, 0));				//上方向
+	YRCamera.SetPerspective(30 * 0.01745f, 1280.0f / 720.0f, 0.0001f, 1000000);
 }
 
 
@@ -192,13 +264,367 @@ void SceneGame::Update(float elapsed_time)
 	if (fedo_start)
 	{
 		//フェードアウト中
+		switch (main_loop)
+		{
+			//イントロを飛ばす場合はゲームメインへ
+		case SceneGame::INTRO1P:
+		case SceneGame::INTRO2P:
+			fedo_alpha += (elapsed_time * 5.0f);
+			if (fedo_alpha > 1.0f)
+			{
+				main_loop = MAIN_LOOP::READY;
+				//ここでメイン画面設定関数を呼ぶ
+				StartSet();
+				fedo_start = false;
+			}
+			break;
+		case SceneGame::READY:
+			break;
+		case SceneGame::MAIN:
+			if (FedoOut(elapsed_time))
+			{
+				UnInit();
+				FRAMEWORK.SetScene(SCENE_TABLE::SCENE_SELECT);
+			}
+			break;
+		case SceneGame::FINISH:
+			fedo_alpha += (elapsed_time * 5.0f);
+			if (fedo_alpha > 1.0f)
+			{
+				switch (judge)
+				{
+				case SceneGame::NO_VICTORY:
+					break;
+				case SceneGame::VICTORY1P:
+					//ここで勝利画面設定関数を呼ぶ
+					player1p->WinAnimSet();
+					break;
+				case SceneGame::VICTORY2P:
+					//ここで勝利画面設定関数を呼ぶ
+					player2p->WinAnimSet();
+					break;
+				case SceneGame::DROW:
+					//ここで勝利画面設定関数を呼ぶ
+
+					break;
+				default:
+					break;
+				}
+				mix_fedo = 5.0f;
+				fedo_start = false;
+			}
+			break;
+		case SceneGame::WIN1P:
+		case SceneGame::WIN2P:
+			if (FedoOut(elapsed_time))
+			{
+				fedo_start = false;
+				main_loop = SceneGame::GAME_FIN;
+				//ここでゲーム終了後の画面設定をする
+				FinSet();
+			}
+			break;
+		case SceneGame::GAME_FIN:
+			if (FedoOut(elapsed_time))
+			{
+				UnInit();
+				FRAMEWORK.SetScene(SCENE_TABLE::SCENE_SELECT);
+			}
+			break;
+		default:
+			break;
+		}
 	}
 	else
 	{
+		//メインループ
+		switch (main_loop)
+		{
+		case SceneGame::INTRO1P:
+			//プレイヤー1のイントロ
+
+			//パッドの更新
+			player1p->pad->Update(elapsed_time);
+			player2p->pad->Update(elapsed_time);
+
+			//1Pイントロ更新
+			if (player1p->Intro())
+			{
+				main_loop = MAIN_LOOP::INTRO2P;
+			}
+
+			//途中ボタンが押されたときはスキップ
+			if (player1p->pad->x_input[scastI(PAD::X)] == 1 ||
+				player2p->pad->x_input[scastI(PAD::X)] == 1)
+			{
+				fedo_start = true;
+			}
+			break;
+		case SceneGame::INTRO2P:
+			//プレイヤー2のイントロ
+
+			//パッドの更新
+			player1p->pad->Update(elapsed_time);
+			player2p->pad->Update(elapsed_time);
+
+			//2Pイントロ更新
+			if (player2p->Intro())
+			{
+				fedo_start = true;
+			}
+
+			//途中ボタンが押されたらスキップ
+			if (player1p->pad->x_input[scastI(PAD::X)] == 1 ||
+				player2p->pad->x_input[scastI(PAD::X)] == 1)
+			{
+				fedo_start = true;
+			}
+			break;
+		case SceneGame::READY:
+			//イントロ終了後のフェードイン
+			mix_fedo = 3.0f;
+			if (fedo_alpha < 0.1f)
+			{
+				main_loop = MAIN_LOOP::MAIN;
+			}
+			break;
+		case SceneGame::MAIN:
+			if (start)
+			{
+				//イントロがすべて終わり、カウントも終えゲームが開始された
+				
+				//パッド更新
+				player1p->pad->Update(elapsed_time);
+				player2p->pad->Update(elapsed_time);
+				if (pause)
+				{
+					//ポーズ中
+					PauseUpdate();
+				}
+				else
+				{
+					//対戦中
+
+					//※要変更。ステートの[2]なんて見ただけじゃ何かわからない
+					if (player1p->state != 2 && player2p->state != 2)
+					{
+						//プレイヤーのステートが奪われた状態以外は押し出しを行う
+						//Hitcheak::HitPlayer(player1p->GetHit(), player1p->pos.x, player2p->GetHit(), player2p->pos.x);
+					}
+
+					//攻撃同士の判定
+					Hitcheak::HitCheakAttack(player1p->GetAttack(), player1p->GetMax(1), player2p->GetAttack(), player2p->GetMax(1));
+					player1p->GaugeUp(Hitcheak::add1P);
+					player2p->GaugeUp(Hitcheak::add2P);
+
+					//攻撃と当たり判定の判定
+					Hitcheak::add1P = Hitcheak::HitCheak(player1p->GetAttack(), player1p->GetMax(1), player2p->GetHit(), player2p->GetMax(0), 2);
+					Hitcheak::add2P = Hitcheak::HitCheak(player2p->GetAttack(), player2p->GetMax(1), player1p->GetHit(), player1p->GetMax(0), 1);
+					player1p->GaugeUp(Hitcheak::add1P);
+					player2p->GaugeUp(Hitcheak::add2P);
+
+					//ヒットストップ処理
+					if (Hitcheak::hit)
+					{
+						Hitcheak::timer -= elapsed_time;
+						if (Hitcheak::timer < 0.0f)
+						{
+							Hitcheak::clash = false;
+							Hitcheak::hit = false;
+							Hitcheak::timer = 0.0f;
+							player1p->StopEnd();
+							player2p->StopEnd();
+							Hitcheak::stop1p = false;
+							Hitcheak::stop2p = false;
+						}
+						if (Hitcheak::timer != 0.0f)
+						{
+							/*PlayerALL::player1p->StopUpdate();
+							PlayerALL::player2p->StopUpdate();*/
+							if (Hitcheak::stop1p)
+							{
+								player1p->StopUpdate();
+							}
+							if (Hitcheak::stop2p)
+							{
+								player2p->StopUpdate();
+							}
+							return;
+						}
+					}
+					if (!Hitcheak::hit && Hitcheak::timer > 0.0f)
+					{
+						Hitcheak::hit = true;
+					}
+
+					//プレイヤーの位置からカメラの位置を決定する
+					Limit::Set(player1p->pos, player2p->pos);
+
+					//ホーミングダッシュ用の値を変更する
+					TrackSet();
+
+					if (end)
+					{
+						//勝敗がついた
+						endtimer += elapsed_time;
+						
+						float now_elapsed = 0.0f;
+
+						//勝敗決定後、スローにする時間を作りたいので
+						if (endtimer > 3.0f)
+						{
+							now_elapsed = elapsed_time;
+						}
+						else
+						{
+							now_elapsed = elapsed_time * 0.5f;
+						}
+
+						//大体7秒後くらいに勝利画面へ
+						if (endtimer > 7.0f)
+						{
+							main_loop = MAIN_LOOP::FINISH;
+							fedo_start = true;
+						}
+
+						//プレイヤー更新(KO時のｳﾜｧ...ｳﾜｧ...ｳﾜｧ...ってスローになるやつ)
+						//1Pが左
+						if (player1p->pos.x < player2p->pos.x)
+						{
+							player1p->Update(1.0f, now_elapsed);
+							player2p->Update(-1.0f, now_elapsed);
+						}
+						//2Pが左
+						else
+						{
+							player1p->Update(-1.0f, now_elapsed);
+							player2p->Update(1.0f, now_elapsed);
+						}
+					}
+					else
+					{
+						//未だ勝敗はつかず
+
+						if (player1p->pad->x_input[scastI(PAD::START)] == 1 || player2p->pad->x_input[scastI(PAD::START)] == 1)
+						{
+							//ポーズボタンが押された
+							pause = TRUE;
+						}
+
+						//プレイヤー更新
+						//1Pが左
+						if (player1p->pos.x < player2p->pos.x)
+						{
+							player1p->Update(1.0f, elapsed_time);
+							player2p->Update(-1.0f, elapsed_time);
+						}
+						//2Pが左
+						else
+						{
+							player1p->Update(-1.0f, elapsed_time);
+							player2p->Update(1.0f, elapsed_time);
+						}
+
+						//プレイヤーの移動距離制限(※要変更)
+						if (player1p->state != 2 && player2p->state != 2)
+						{
+							Limit::Stop(player1p->pos.x, player2p->pos.x);
+						}
+
+						//コンボに応じて画像セット
+						ComboImageSet();
+
+						//勝敗判定
+						if (judge != JUDGE_VICTORY::NO_VICTORY)
+						{
+							end = true;
+						}
+					}
+
+				}
+			}
+			else
+			{
+				//カウント中
+				if (start_timer < 5.0f)
+				{
+					start_timer += elapsed_time;
+				}
+				else
+				{
+					//カウントが既定に到達したのでゲーム開始
+					start = true;
+				}
+			}
+			break;
+		case SceneGame::FINISH:
+			//フェードインしたら勝敗に合わせてステートを変える
+			if (fedo_alpha < 0.1f)
+			{
+				switch (judge)
+				{
+				case SceneGame::NO_VICTORY:
+					break;
+				case SceneGame::VICTORY1P:
+					main_loop = MAIN_LOOP::WIN1P;
+					break;
+				case SceneGame::VICTORY2P:
+					main_loop = MAIN_LOOP::WIN2P;
+					break;
+				case SceneGame::DROW:
+					break;
+				default:
+					break;
+				}
+				
+			}
+			break;
+		case SceneGame::WIN1P:
+			
+			//パッドの更新
+			player1p->pad->Update(elapsed_time);
+			player2p->pad->Update(elapsed_time);
+
+			if (player1p->WinPerformance())
+			{
+				fedo_start = true;
+			}
+
+			//途中ボタンが押されたらスキップ
+			if (player1p->pad->x_input[scastI(PAD::X)] == 1 ||
+				player2p->pad->x_input[scastI(PAD::X)] == 1)
+			{
+				fedo_start = true;
+			}
+			break;
+		case SceneGame::WIN2P:
+
+			//パッドの更新
+			player1p->pad->Update(elapsed_time);
+			player2p->pad->Update(elapsed_time);
+
+			if (player2p->WinPerformance())
+			{
+				fedo_start = true;
+			}
+
+			//途中ボタンが押されたらスキップ
+			if (player1p->pad->x_input[scastI(PAD::X)] == 1 ||
+				player2p->pad->x_input[scastI(PAD::X)] == 1)
+			{
+				fedo_start = true;
+			}
+			break;
+		case SceneGame::GAME_FIN:
+			FinUpdate();
+			break;
+		default:
+			break;
+		}
 		//フェードアウトがスタートしてない場合は画面を映す
 		if (fedo_alpha > 0.0f)
 		{
-			fedo_alpha -= FEDO_MIX(elapsed_time);
+			fedo_alpha -= (elapsed_time * mix_fedo);
 		}
 	}
 }
@@ -271,139 +697,198 @@ void SceneGame::Draw(float elapsed_time)
 		DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.5f)
 	);
 
-
-	//UI描画
-
-	//体力バー表示
-	PL.ratio1P = player1p->hp / PL.HP_MAX1P * 800.0f;
-	PL.ratio2P = player2p->hp / PL.HP_MAX2P * 800.0f;
-	PL.correction_value = 800.0f - PL.ratio1P;
-
-	HPbar_img->DrawExtendGraph(spriteShader.get(), 75.0f, 75.0f, 925.0f, 225.0f );
-	HPbar_img->DrawExtendGraph(spriteShader.get(), 975.0f, 75.0f, 1825.0f, 225.0f);
-	HP_img->DrawRectGraph(spriteShader.get(),100.0f + PL.correction_value, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f);
-	HP_img->DrawRectGraph(spriteShader.get(),1000.0f, 100.0f, 0.0f, 0.0f, PL.ratio2P, 100.0f);
-
-	//コンボ表示
-
-	if (player1p->combo_count > 1)
+	switch (main_loop)
 	{
+	case SceneGame::INTRO1P:
+		//1Pのイントロ
+		//プレイヤー描画
+		player1p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		break;
+	case SceneGame::INTRO2P:
+		//2Pのイントロ
+		//プレイヤー描画
+		player2p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		break;
+	case SceneGame::READY:
+	case SceneGame::MAIN:
+	case SceneGame::FINISH:
+		//内部処理ではフェードをしているだけで画面に変化はない為一括
+		if (!start)
+		{
+			//Are You Ready?
+			if (start_timer < 3.0f)
+			{
+				call_img->DrawRotaDivGraph
+				(
+					spriteShader.get(),
+					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
+					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f,
+					0.0f,
+					1.0f,
+					0
+				);
+			}
+			else
+			{
+				//Go!!
+				call_img->DrawRotaDivGraph
+				(
+					spriteShader.get(),
+					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
+					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f,
+					0.0f,
+					1.0f,
+					1
+				);
+			}
+		}
+
+		//UI描画
+		//体力バー表示
+		PL.ratio1P = player1p->hp / PL.HP_MAX1P * 800.0f;
+		PL.ratio2P = player2p->hp / PL.HP_MAX2P * 800.0f;
+		PL.correction_value = 800.0f - PL.ratio1P;
+
+		HPbar_img->DrawExtendGraph(spriteShader.get(), 75.0f, 75.0f, 925.0f, 225.0f);
+		HPbar_img->DrawExtendGraph(spriteShader.get(), 975.0f, 75.0f, 1825.0f, 225.0f);
+		HP_img->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f);
+		HP_img->DrawRectGraph(spriteShader.get(), 1000.0f, 100.0f, 0.0f, 0.0f, PL.ratio2P, 100.0f);
+
+		//コンボ表示
+
+		if (player1p->combo_count > 1)
+		{
+			font_img->DrawRotaDivGraph
+			(
+				spriteShader.get(),
+				300.0f,
+				400.0f,
+				0.0f,
+				3.0f,
+				p1combo[0],
+				DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
+			);
+			if (player1p->combo_count > 9)
+			{
+				font_img->DrawRotaDivGraph
+				(
+					spriteShader.get(),
+					200.0f,
+					400.0f,
+					0.0f,
+					3.0f,
+					p1combo[1],
+					DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
+				);
+			}
+			if (player1p->combo_count > 99)
+			{
+				font_img->DrawRotaDivGraph
+				(
+					spriteShader.get(),
+					100.0f,
+					400.0f,
+					0.0f,
+					3.0f,
+					p1combo[2],
+					DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
+				);
+			}
+		}
+
+		if (player2p->combo_count > 1)
+		{
+			font_img->DrawRotaDivGraph
+			(
+				spriteShader.get(),
+				1600.0f,
+				400.0f,
+				0.0f,
+				3.0f,
+				p2combo[2],
+				DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
+			);
+			if (player2p->combo_count > 9)
+			{
+				font_img->DrawRotaDivGraph
+				(
+					spriteShader.get(),
+					1500.0f,
+					400.0f,
+					0.0f,
+					3.0f,
+					p2combo[1],
+					DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
+				);
+			}
+			if (player2p->combo_count > 99)
+			{
+				font_img->DrawRotaDivGraph
+				(
+					spriteShader.get(),
+					1400.0f,
+					400.0f,
+					0.0f,
+					3.0f,
+					p2combo[0],
+					DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
+				);
+			}
+		}
+
+		//プレイヤー描画
+		player1p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player2p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+
+
+		//ゲージ描画
+		PL.gauge1P = (player1p->gauge / GAUGE_MAX) * 640.0f;
+		PL.gauge2P = (player2p->gauge / GAUGE_MAX) * 640.0f;
+
+		PL.power1P = ColorSet(player1p->power);
+		gauge_img->DrawExtendGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + PL.gauge1P, 1064.0f, PL.power1P);
+		PL.power2P = ColorSet(player2p->power);
+		gauge_img->DrawExtendGraph(spriteShader.get(), 1800.0f - PL.gauge2P, 1000.0f, 1800.0f, 1064.0f, PL.power2P);
+
+		//ゲージケース
+		gaugecase_img->DrawExtendGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + 640.0f, 1064.0f);
+		gaugecase_img->DrawExtendGraph(spriteShader.get(), 1800.0f - 640.0f, 1000.0f, 1800.0f, 1064.0f);
+
+		//ゲージの数字描画
 		font_img->DrawRotaDivGraph
 		(
 			spriteShader.get(),
-			300.0f,
-			400.0f,
+			70.0f,
+			950.0f,
 			0.0f,
-			3.0f,
-			p1combo[0],
-			DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f)
+			2.0f,
+			player1p->power,
+			PL.power1P
 		);
-		if (player1p->combo_count > 9)
-		{
-			font_img->DrawRotaDivGraph
-			(
-				spriteShader.get(),
-				200.0f,
-				400.0f,
-				0.0f,
-				3.0f,
-				p1combo[1],
-				DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
-			);
-		}
-		if (player1p->combo_count > 99)
-		{
-			font_img->DrawRotaDivGraph
-			(
-				spriteShader.get(),
-				100.0f,
-				400.0f,
-				0.0f,
-				3.0f,
-				p1combo[2],
-				DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
-			);
-		}
-	}
-
-	if (player2p->combo_count > 1)
-	{
 		font_img->DrawRotaDivGraph
 		(
 			spriteShader.get(),
-			1600.0f,
-			400.0f,
+			1800.0f,
+			950.0f,
 			0.0f,
-			3.0f,
-			p2combo[2],
-			DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
+			2.0f,
+			player2p->power,
+			PL.power2P
 		);
-		if (player2p->combo_count > 9)
-		{
-			font_img->DrawRotaDivGraph
-			(
-				spriteShader.get(),
-				1500.0f,
-				400.0f,
-				0.0f,
-				3.0f,
-				p2combo[1],
-				DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
-			);
-		}
-		if (player2p->combo_count > 99)
-		{
-			font_img->DrawRotaDivGraph
-			(
-				spriteShader.get(),
-				1400.0f,
-				400.0f,
-				0.0f,
-				3.0f,
-				p2combo[0],
-				DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
-			);
-		}
+		break;
+	case SceneGame::WIN1P:
+		//プレイヤー描画
+		player1p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		break;
+	case SceneGame::WIN2P:
+		//プレイヤー描画
+		player2p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		break;
+	case SceneGame::GAME_FIN:
+		break;
+	default:
+		break;
 	}
-
-	//プレイヤー描画
-	player1p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
-	player2p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
-	
-	//ゲージ描画
-	PL.gauge1P = (player1p->gauge / GAUGE_MAX) * 640.0f;
-	PL.gauge2P = (player2p->gauge / GAUGE_MAX) * 640.0f;
-	
-	PL.power1P = ColorSet(player1p->power);
-	gauge_img->DrawExtendGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + PL.gauge1P, 1064.0f, PL.power1P);
-	PL.power2P = ColorSet(player2p->power);
-	gauge_img->DrawExtendGraph(spriteShader.get(), 1800.0f - PL.gauge2P, 1000.0f, 1800.0f, 1064.0f, PL.power2P);
-
-	//ゲージケース
-	gaugecase_img->DrawExtendGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + 640.0f, 1064.0f);
-	gaugecase_img->DrawExtendGraph(spriteShader.get(), 1800.0f - 640.0f, 1000.0f, 1800.0f, 1064.0f);
-
-	//ゲージの数字描画
-	font_img->DrawRotaDivGraph
-	(
-		spriteShader.get(),
-		70.0f,
-		950.0f,
-		0.0f,
-		2.0f,
-		player1p->power,
-		PL.power1P
-	);
-	font_img->DrawRotaDivGraph
-	(
-		spriteShader.get(),
-		1800.0f,
-		950.0f,
-		0.0f,
-		2.0f,
-		player2p->power,
-		PL.power2P
-	);
 
 	//フェード用画像描画
 	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fedo_alpha));
@@ -561,26 +1046,66 @@ void SceneGame::ScoreImageSet()
 
 
 
-int SceneGame::Winjudge()
+void SceneGame::Winjudge()
 {
 	if (player1p->hp <= 0 && player2p->hp <= 0)
 	{
 		player1p->hp = 0;
 		player2p->hp = 0;
-		return 3;
+		judge = JUDGE_VICTORY::DROW;
+		return;
 	}
 	if (player1p->hp <= 0)
 	{
 		player1p->hp = 0;
-		return 2;
+		judge = JUDGE_VICTORY::VICTORY2P;
+		return;
 	}
 	if (player2p->hp <= 0)
 	{
 		player2p->hp = 0;
-		return 1;
+		judge = JUDGE_VICTORY::VICTORY1P;
+		return;
 	}
+	judge = JUDGE_VICTORY::NO_VICTORY;
+}
 
-	return 0;
+
+
+
+void SceneGame::PauseUpdate()
+{
+	//ポーズ中行う処理
+	if (player1p->pad->x_input[scastI(PAD::START)] == 1 || player2p->pad->x_input[scastI(PAD::START)] == 1)
+	{
+		pause = FALSE;
+		//pauseTimer = 20;
+	}
+	if (player1p->pad->x_input[scastI(PAD::LB)] == 1 ||player2p->pad->x_input[scastI(PAD::LB)] == 1)
+	{
+		//セレクト画面に戻る
+		fedo_start = true;
+		//FRAMEWORK.SetScene(SCENE_SELECT);
+	}
+}
+
+
+
+
+void SceneGame::TrackSet()
+{
+	//ホーミングダッシュ用の値を変更する
+	player1p->tracking.rival_Pos = player2p->pos;
+	player2p->tracking.rival_Pos = player1p->pos;
+	player1p->rival_state = player2p->state;
+	player2p->rival_state = player1p->state;
+}
+
+
+void SceneGame::FinUpdate()
+{
+	//ゲーム終了後の処理
+	fedo_start = true;
 }
 
 

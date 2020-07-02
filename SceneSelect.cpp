@@ -32,8 +32,11 @@ void SceneSelect::Init()
 	end = false;
 	timer = 0.0f;
 
-	spriteShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE);
-	spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
+	if (spriteShader == nullptr)
+	{
+		spriteShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE);
+		spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
+	}
 }
 
 void SceneSelect::LoadData()
@@ -73,9 +76,11 @@ void SceneSelect::UnInit()
 	ken_icon = nullptr;
 	select_img.reset();
 	select_img = nullptr;
+	spriteShader.reset();
+	spriteShader = nullptr;
 }
 
-void SceneSelect::Update(float elapsedTime)
+void SceneSelect::Update(float elapsed_time)
 {
 	//ロード終了
 	if (load_fin)
@@ -95,15 +100,15 @@ void SceneSelect::Update(float elapsedTime)
 		//timerはフローしないようにリセットする
 		if (timer < 1000.0f)
 		{
-			timer += elapsedTime;
+			timer += elapsed_time;
 		}
 		else
 		{
 			timer = 0;
 		}
-
-		FRAMEWORK.scenegame.pad1->Update();
-		FRAMEWORK.scenegame.pad2->Update();
+		constexpr float a = 1.0f / 60.0f;
+		FRAMEWORK.scenegame.pad1->Update(elapsed_time);
+		FRAMEWORK.scenegame.pad2->Update(elapsed_time);
 
 		//プレイヤー1のカーソル移動処理
 		if (p1Enter)
@@ -193,7 +198,7 @@ void SceneSelect::Update(float elapsedTime)
 		}
 		if (fedo_start)
 		{
-			if (FedoOut(elapsedTime))
+			if (FedoOut(elapsed_time))
 			{
 				//フェードアウトが終わったらロード画面へ
 				FRAMEWORK.SetScene(SCENE_LOAD);
@@ -207,7 +212,7 @@ void SceneSelect::Update(float elapsedTime)
 			//フェードアウトがスタートしてない場合は画面を映す
 			if (fedo_alpha > 0.0f)
 			{
-				fedo_alpha -= FEDO_MIX(elapsedTime);
+				fedo_alpha -= FEDO_MIX(elapsed_time);
 			}
 		}
 

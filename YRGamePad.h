@@ -13,7 +13,7 @@ class InputListor
 public:
 	InputListor(int n);
 	int kind;
-	int timer = 0;
+	float timer = 0.0f;
 };
 
 enum class PAD :int
@@ -90,9 +90,9 @@ public:
 	std::array<int, 10>input_history = { -1 };
 	CommandList com_list;
 	virtual void Init() = 0;
-	virtual void Update() = 0;
+	virtual void Update(float elapsed_time) = 0;
 	virtual void InputSave() = 0;
-	virtual void InputUpdate() = 0;
+	virtual void InputUpdate(float elapsed_time) = 0;
 	virtual void UnInit() = 0;
 	/*static Gamepad *GetInstance()
 	{
@@ -105,9 +105,9 @@ class GamePad1 :public GamepadBase
 {
 public:
 	void Init();
-	void Update();
+	void Update(float elapsed_time);
 	void InputSave();
-	void InputUpdate();
+	void InputUpdate(float elapsed_time);
 	void UnInit();
 };
 
@@ -115,9 +115,9 @@ class GamePad2 : public GamepadBase
 {
 public:
 	void Init();
-	void Update();
+	void Update(float elapsed_time);
 	void InputSave();
-	void InputUpdate();
+	void InputUpdate(float elapsed_time);
 	void UnInit();
 };
 
