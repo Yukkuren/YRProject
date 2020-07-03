@@ -47,10 +47,10 @@ void Knight::Init(YR_Vector3 InitPos)
 		atk[i].Init();
 	}
 #pragma region HITBOXINIT
-	Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(-0.7f, 1.0f);
+	Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(0.0f, 1.0f);
 	hit[scastI(KNIGHTHIT::BODY)].Init(pos + Hitplus[scastI(KNIGHTHIT::BODY)], YR_Vector3(2.0f, 2.9f));
 	HitSize[scastI(KNIGHTHIT::BODY)] = hit[scastI(KNIGHTHIT::BODY)].size;
-	Hitplus[scastI(KNIGHTHIT::LEG)] = YR_Vector3(-0.4f, 0.2f);
+	Hitplus[scastI(KNIGHTHIT::LEG)] = YR_Vector3(0.0f, 0.2f);
 	hit[scastI(KNIGHTHIT::LEG)].Init(pos + Hitplus[scastI(KNIGHTHIT::LEG)], YR_Vector3(1.4f, 0.8f));
 	HitSize[scastI(KNIGHTHIT::LEG)] = hit[scastI(KNIGHTHIT::LEG)].size;
 #pragma endregion
@@ -920,7 +920,6 @@ void Knight::CancelList()
 
 void Knight::Draw(
 	YRShader				*shader,
-	YRShader				*geoshader,
 	const DirectX::XMMATRIX& view,
 	const DirectX::XMMATRIX& projection,
 	const DirectX::XMFLOAT4& light_direction,
@@ -1028,24 +1027,6 @@ void Knight::Draw(
 
 //デバッグ状態なら
 #if USE_IMGUI
-		for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
-		{
-			hit[i].Draw(geoshader, view, projection, light_direction, light_color, ambient_color);
-		}
-
-		if (attack)
-		{
-			for (int atknum = 0; atknum < scastI(KNIGHTATK::ATKEND); atknum++)
-			{
-				if (atk[atknum].attack)
-				{
-					if (atk[atknum].hit_ok)
-					{
-						atk[atknum].Draw(geoshader, view, projection, light_direction, light_color, ambient_color);
-					}
-				}
-			}
-		}
 		//プレイヤーの中心
 		if (ground)
 		{
@@ -1110,6 +1091,39 @@ void Knight::Draw(
 #endif
 
 }
+
+
+
+void Knight::DrawDEBUG(
+	YRShader* geoshader,
+	const DirectX::XMMATRIX& view,
+	const DirectX::XMMATRIX& projection,
+	const DirectX::XMFLOAT4& light_direction,
+	const DirectX::XMFLOAT4& light_color,
+	const DirectX::XMFLOAT4& ambient_color,
+	float						elapsed_time)
+{
+	for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
+	{
+		hit[i].Draw(geoshader, view, projection, light_direction, light_color, ambient_color);
+	}
+
+	if (attack)
+	{
+		for (int atknum = 0; atknum < scastI(KNIGHTATK::ATKEND); atknum++)
+		{
+			if (atk[atknum].attack)
+			{
+				if (atk[atknum].hit_ok)
+				{
+					atk[atknum].Draw(geoshader, view, projection, light_direction, light_color, ambient_color);
+				}
+			}
+		}
+	}
+}
+
+
 
 
 //残像の描画

@@ -109,7 +109,6 @@ public:
 	virtual void Uninit() = 0;
 	virtual void Update(float decision,float elapsed_time) = 0;
 	virtual void Draw(
-		YRShader				*shader,
 		YRShader				*geoshader,
 		const DirectX::XMMATRIX& view,
 		const DirectX::XMMATRIX& projection,
@@ -117,6 +116,15 @@ public:
 		const DirectX::XMFLOAT4& light_color,
 		const DirectX::XMFLOAT4& ambient_color,
 		float						elapsed_time ) = 0;
+
+	virtual void DrawDEBUG(
+		YRShader* geoshader,
+		const DirectX::XMMATRIX& view,
+		const DirectX::XMMATRIX& projection,
+		const DirectX::XMFLOAT4& light_direction,
+		const DirectX::XMFLOAT4& light_color,
+		const DirectX::XMFLOAT4& ambient_color,
+		float						elapsed_time) = 0;
 
 public:
 	//çsìÆånä÷êî

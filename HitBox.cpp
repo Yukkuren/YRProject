@@ -74,8 +74,8 @@ void HitBox::Draw(
 		//ƒK[ƒhŽž
 		FRAMEWORK.scenegame.geo->render(
 			shader,
-			DirectX::XMFLOAT3(center.x, center.y, -2.0f),
-			size.GetDXFLOAT3(),
+			center.GetDXFLOAT3(),
+			DirectX::XMFLOAT3(size.x, size.y, 5.0f),
 			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 			view,
 			projection,
@@ -96,8 +96,8 @@ void HitBox::Draw(
 			//’ÊíŽž
 			FRAMEWORK.scenegame.geo->render(
 				shader,
-				DirectX::XMFLOAT3(center.x, center.y, -2.0f),
-				size.GetDXFLOAT3(),
+				center.GetDXFLOAT3(),
+				DirectX::XMFLOAT3(size.x, size.y, 10.0f),
 				DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 				view,
 				projection,
@@ -116,8 +116,8 @@ void HitBox::Draw(
 			//‚Ì‚¯‚¼‚è’†
 			FRAMEWORK.scenegame.geo->render(
 				shader,
-				DirectX::XMFLOAT3(center.x, center.y, -2.0f),
-				size.GetDXFLOAT3(),
+				center.GetDXFLOAT3(),
+				DirectX::XMFLOAT3(size.x, size.y, 5.0f),
 				DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 				view,
 				projection,

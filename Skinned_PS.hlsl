@@ -104,6 +104,6 @@ float4 main(VS_OUT pin) : SV_TARGET
 	color.rgb *= pin.color.rgb*float3(A + D + S);
 
 	//フォグ計算
-	color.rgb = Fog(color.rgb, EyePos.xyz, pin.wPos, fogColor, fogNear, fogFar);
+	//color.rgb = Fog(color.rgb, EyePos.xyz, pin.wPos, fogColor, fogNear, fogFar);
 	return color;
 }

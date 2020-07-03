@@ -68,3 +68,8 @@ const DirectX::XMFLOAT3& Camera::GetFocus()const
 {
 	return focus;
 }
+
+const float& Camera::GetFov()const
+{
+	return fov;
+}

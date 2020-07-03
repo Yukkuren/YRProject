@@ -167,35 +167,35 @@ geometric_primitive::geometric_primitive()
 	//position,normalの順番
 	vertex vertics[] = {
 		//前面
-		{ DirectX::XMFLOAT3(0.0f,1.0f,0.0f),DirectX::XMFLOAT3(0.0f,0.0f,-1.0f) },//0
-		{ DirectX::XMFLOAT3(1.0f,1.0f,0.0f),DirectX::XMFLOAT3(0.0f,0.0f,-1.0f) },//1
-		{ DirectX::XMFLOAT3(1.0f,0.0f,0.0f),DirectX::XMFLOAT3(0.0f,0.0f,-1.0f) },//2
-		{ DirectX::XMFLOAT3(0.0f,0.0f,0.0f),DirectX::XMFLOAT3(0.0f,0.0f,-1.0f) },//3
+		{ DirectX::XMFLOAT3(-1.0f,1.0f,-1.0f),DirectX::XMFLOAT3(-1.0f,-1.0f,-1.0f) },//0
+		{ DirectX::XMFLOAT3(1.0f,1.0f,-1.0f),DirectX::XMFLOAT3(-1.0f,-1.0f,-1.0f) },//1
+		{ DirectX::XMFLOAT3(1.0f,-1.0f,-1.0f),DirectX::XMFLOAT3(-1.0f,-1.0f,-1.0f) },//2
+		{ DirectX::XMFLOAT3(-1.0f,-1.0f,-1.0f),DirectX::XMFLOAT3(-1.0f,-1.0f,-1.0f) },//3
 		//前面を見て右面
-		{ DirectX::XMFLOAT3(1.0f,1.0f,0.0f),DirectX::XMFLOAT3(1.0f,0.0f,0.0f) },//4
-		{ DirectX::XMFLOAT3(1.0f,1.0f,1.0f),DirectX::XMFLOAT3(1.0f,0.0f,0.0f) },//5
-		{ DirectX::XMFLOAT3(1.0f,0.0f,1.0f),DirectX::XMFLOAT3(1.0f,0.0f,0.0f) },//6
-		{ DirectX::XMFLOAT3(1.0f,0.0f,0.0f),DirectX::XMFLOAT3(1.0f,0.0f,0.0f) },//7
+		{ DirectX::XMFLOAT3(1.0f,1.0f,-1.0f),DirectX::XMFLOAT3(1.0f,-1.0f,-1.0f) },//4
+		{ DirectX::XMFLOAT3(1.0f,1.0f,1.0f),DirectX::XMFLOAT3(1.0f,-1.0f,-1.0f) },//5
+		{ DirectX::XMFLOAT3(1.0f,-1.0f,1.0f),DirectX::XMFLOAT3(1.0f,-1.0f,-1.0f) },//6
+		{ DirectX::XMFLOAT3(1.0f,-1.0f,-1.0f),DirectX::XMFLOAT3(1.0f,-1.0f,-1.0f) },//7
 		//前面を見て左面
-		{ DirectX::XMFLOAT3(0.0f,1.0f,1.0f),DirectX::XMFLOAT3(-1.0f,0.0f,0.0f) },//8
-		{ DirectX::XMFLOAT3(0.0f,1.0f,0.0f),DirectX::XMFLOAT3(-1.0f,0.0f,0.0f) },//9
-		{ DirectX::XMFLOAT3(0.0f,0.0f,0.0f),DirectX::XMFLOAT3(-1.0f,0.0f,0.0f) },//10
-		{ DirectX::XMFLOAT3(0.0f,0.0f,1.0f),DirectX::XMFLOAT3(-1.0f,0.0f,0.0f) },//11
+		{ DirectX::XMFLOAT3(-1.0f,1.0f,1.0f),DirectX::XMFLOAT3(-1.0f,-1.0f,-1.0f) },//8
+		{ DirectX::XMFLOAT3(-1.0f,1.0f,-1.0f),DirectX::XMFLOAT3(-1.0f,-1.0f,-1.0f) },//9
+		{ DirectX::XMFLOAT3(-1.0f,-1.0f,-1.0f),DirectX::XMFLOAT3(-1.0f,-1.0f,-1.0f) },//10
+		{ DirectX::XMFLOAT3(-1.0f,-1.0f,1.0f),DirectX::XMFLOAT3(-1.0f,-1.0f,-1.0f) },//11
 		//裏面
-		{ DirectX::XMFLOAT3(1.0f,1.0f,1.0f),DirectX::XMFLOAT3(0.0f,0.0f,1.0f) },//12
-		{ DirectX::XMFLOAT3(0.0f,1.0f,1.0f),DirectX::XMFLOAT3(0.0f,0.0f,1.0f) },//13
-		{ DirectX::XMFLOAT3(0.0f,0.0f,1.0f),DirectX::XMFLOAT3(0.0f,0.0f,1.0f) },//14
-		{ DirectX::XMFLOAT3(1.0f,0.0f,1.0f),DirectX::XMFLOAT3(0.0f,0.0f,1.0f) },//15
+		{ DirectX::XMFLOAT3(1.0f,1.0f,1.0f),DirectX::XMFLOAT3(-1.0f,-1.0f,1.0f) },//12
+		{ DirectX::XMFLOAT3(-1.0f,1.0f,1.0f),DirectX::XMFLOAT3(-1.0f,-1.0f,1.0f) },//13
+		{ DirectX::XMFLOAT3(-1.0f,-1.0f,1.0f),DirectX::XMFLOAT3(-1.0f,-1.0f,1.0f) },//14
+		{ DirectX::XMFLOAT3(1.0f,-1.0f,1.0f),DirectX::XMFLOAT3(-1.0f,-1.0f,1.0f) },//15
 		//上面
-		{ DirectX::XMFLOAT3(0.0f,1.0f,1.0f),DirectX::XMFLOAT3(0.0f,1.0f,0.0f) },//16
-		{ DirectX::XMFLOAT3(1.0f,1.0f,1.0f),DirectX::XMFLOAT3(0.0f,1.0f,0.0f) },//17
-		{ DirectX::XMFLOAT3(1.0f,1.0f,0.0f),DirectX::XMFLOAT3(0.0f,1.0f,0.0f) },//18
-		{ DirectX::XMFLOAT3(0.0f,1.0f,0.0f),DirectX::XMFLOAT3(0.0f,1.0f,0.0f) },//19
+		{ DirectX::XMFLOAT3(-1.0f,1.0f,1.0f),DirectX::XMFLOAT3(-1.0f,1.0f,-1.0f) },//16
+		{ DirectX::XMFLOAT3(1.0f,1.0f,1.0f),DirectX::XMFLOAT3(-1.0f,1.0f,-1.0f) },//17
+		{ DirectX::XMFLOAT3(1.0f,1.0f,-1.0f),DirectX::XMFLOAT3(-1.0f,1.0f,-1.0f) },//18
+		{ DirectX::XMFLOAT3(-1.0f,1.0f,-1.0f),DirectX::XMFLOAT3(-1.0f,1.0f,-1.0f) },//19
 		//下面
-		{ DirectX::XMFLOAT3(1.0f,0.0f,1.0f),DirectX::XMFLOAT3(0.0f,-1.0f,0.0f) },//20
-		{ DirectX::XMFLOAT3(0.0f,0.0f,1.0f),DirectX::XMFLOAT3(0.0f,-1.0f,0.0f) },//21
-		{ DirectX::XMFLOAT3(0.0f,0.0f,0.0f),DirectX::XMFLOAT3(0.0f,-1.0f,0.0f) },//22
-		{ DirectX::XMFLOAT3(1.0f,0.0f,0.0f),DirectX::XMFLOAT3(0.0f,-1.0f,0.0f) },//23
+		{ DirectX::XMFLOAT3(1.0f,-1.0f,1.0f),DirectX::XMFLOAT3(-1.0f,-1.0f,-1.0f) },//20
+		{ DirectX::XMFLOAT3(-1.0f,-1.0f,1.0f),DirectX::XMFLOAT3(-1.0f,-1.0f,-1.0f) },//21
+		{ DirectX::XMFLOAT3(-1.0f,-1.0f,-1.0f),DirectX::XMFLOAT3(-1.0f,-1.0f,-1.0f) },//22
+		{ DirectX::XMFLOAT3(1.0f,-1.0f,-1.0f),DirectX::XMFLOAT3(-1.0f,-1.0f,-1.0f) },//23
 	};
 	u_int indices[] = {
 		//時計回りで表面

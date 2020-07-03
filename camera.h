@@ -31,6 +31,7 @@ public:
 	const DirectX::XMFLOAT4X4& GetProjection()const;
 	const DirectX::XMFLOAT3& GetEye()const;
 	const DirectX::XMFLOAT3& GetFocus()const;
+	const float& GetFov()const;
 
 	static Camera &getInstance()
 	{

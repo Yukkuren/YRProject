@@ -53,7 +53,15 @@ public:
 	void Update(float decision, float elapsed_time);
 	void Draw(
 		YRShader				*shader,
-		YRShader				*geoshader,
+		const DirectX::XMMATRIX& view,
+		const DirectX::XMMATRIX& projection,
+		const DirectX::XMFLOAT4& light_direction,
+		const DirectX::XMFLOAT4& light_color,
+		const DirectX::XMFLOAT4& ambient_color,
+		float						elapsed_time);
+
+	void DrawDEBUG(
+		YRShader* geoshader,
 		const DirectX::XMMATRIX& view,
 		const DirectX::XMMATRIX& projection,
 		const DirectX::XMFLOAT4& light_direction,
