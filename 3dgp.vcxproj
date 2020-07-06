@@ -183,6 +183,7 @@
     <ClCompile Include="Skinned_mesh.cpp" />
     <ClCompile Include="sprite.cpp" />
     <ClCompile Include="static_mesh.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="YRMotion.cpp" />
     <ClCompile Include="YRShader.cpp" />
     <ClCompile Include="YR_VECTOR3.cpp" />
@@ -197,6 +198,7 @@
     <ClInclude Include="HitBox.h" />
     <ClInclude Include="HitCheak.h" />
     <ClInclude Include="Knight.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="YRGamePad.h" />
     <ClInclude Include="Geometric_primitive.h" />
     <ClInclude Include="high_resolution_timer.h" />

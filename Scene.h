@@ -63,6 +63,9 @@ public:
 
 	//画像
 	std::unique_ptr<Sprite> test;
+	std::unique_ptr<Skinned_mesh> box;
+	std::shared_ptr<Texture> box_texture;
+	MeshMotion motion;
 
 	//シェーダー
 	std::unique_ptr<YRShader> skinShader;

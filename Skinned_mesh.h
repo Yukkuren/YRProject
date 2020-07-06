@@ -5,6 +5,8 @@
 #include "YRShader.h"
 #include<array>
 #include<memory>
+#include "Texture.h"
+
 
 //#include "framework.h"
 
@@ -22,6 +24,10 @@ typedef std::vector<bone_influence> bone_influences_per_control_point;
 
 class Skinned_mesh
 {
+
+protected:
+	//テクスチャ利用
+	std::shared_ptr<Texture> texture = nullptr;
 private:
 	//レイピック用ポリゴン
 	/*struct Face
@@ -69,7 +75,12 @@ public:
 	};
 	//Y軸とZ軸を入れ替える
 
+	Skinned_mesh(const char* fbx_filename, std::shared_ptr<Texture> tex);
+
 	Skinned_mesh(const char *fbx_filename);
+
+	bool Load(const char* fbx_filename);
+	bool Load(const char* fbx_filename, std::shared_ptr<Texture> tex);
 
 	~Skinned_mesh()
 	{
