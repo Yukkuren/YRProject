@@ -104,6 +104,11 @@ void SceneGame::LoadData()
 		geo = std::make_unique<geometric_primitive>();
 	}
 
+	if (skin == nullptr)
+	{
+		skin = std::make_unique<Skinned_mesh>("./Data/FBX/knight.fbx");
+	}
+
 	//画像のロード
 	if (test == nullptr)
 	{
@@ -866,13 +871,19 @@ void SceneGame::Draw(float elapsed_time)
 		//プレイヤー描画
 		player1p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
 		player2p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
-
+		
+		/*skin->Render(
+			skinShader.get(), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+			DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
+			DirectX::XMFLOAT3(DirectX::XMConvertToRadians(90.0f), 0.0f, 0.0f),
+			V, P, light_direction, lightColor, ambient_color, elapsed_time, 0.0f
+		);*/
 
 #if USE_IMGUI
 		player1p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
 		player2p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
 #endif // USE_IMGUI
-
+		
 
 		//ゲージ描画
 		PL.gauge1P = (player1p->gauge / GAUGE_MAX) * 640.0f;

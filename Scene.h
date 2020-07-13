@@ -93,6 +93,7 @@ public:
 	MAIN_LOOP		main_loop;	//‚±‚Ì•Ï”‚ÅƒQ[ƒ€ƒƒCƒ“‚Ì‘JˆÚ‚ğŠÇ—‚·‚é
 
 	std::unique_ptr<geometric_primitive>	geo = nullptr;
+	std::unique_ptr<Skinned_mesh>	skin = nullptr;
 
 	//‰æ‘œŠÖŒW
 	std::unique_ptr<Sprite> test = nullptr;

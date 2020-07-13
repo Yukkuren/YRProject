@@ -68,7 +68,8 @@ void Knight::LoadData()
 {
 	if (base == nullptr)
 	{
-		base = std::make_unique<Skinned_mesh>("./Data/FBX/danbo_fbx/danbo_taiki.fbx");
+		//base = std::make_unique<Skinned_mesh>("./Data/FBX/danbo_fbx/danbo_taiki.fbx");
+		base = std::make_unique<Skinned_mesh>("./Data/FBX/knight.fbx");
 	}
 	motion.MeshSet(base);
 	motion.AnimReset();
