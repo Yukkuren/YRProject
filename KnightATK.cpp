@@ -45,7 +45,7 @@ void Knight::Jaku(float elapsed_time)
 	specialfream = 0;
 }
 
-void Knight::Thu(int fream, float elapsed_time)
+void Knight::Thu(float fream, float elapsed_time)
 {
 	if (atk[scastI(KNIGHTATK::ONE)].knock_start)
 	{
@@ -87,7 +87,7 @@ void Knight::Thu(int fream, float elapsed_time)
 	specialfream = 0;
 }
 
-void Knight::Kyo(int fream, float elapsed_time)
+void Knight::Kyo(float fream, float elapsed_time)
 {
 	if (atk[scastI(KNIGHTATK::ONE)].knock_start)
 	{
@@ -137,7 +137,7 @@ void Knight::D_Jaku(float elapsed_time)
 }
 
 
-void Knight::D_Thu(int fream, float elapsed_time)
+void Knight::D_Thu(float fream, float elapsed_time)
 {
 	Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(-31.0f, 134.0f);
 	hit[scastI(KNIGHTHIT::BODY)].size = YR_Vector3(110.0f, 62.0f);
@@ -167,7 +167,7 @@ void Knight::D_Thu(int fream, float elapsed_time)
 	specialfream = 0;
 }
 
-void Knight::U_Kyo(int fream, float elapsed_time)
+void Knight::U_Kyo(float fream, float elapsed_time)
 {
 	if (atk[scastI(KNIGHTATK::ONE)].knock_start)
 	{

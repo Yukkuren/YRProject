@@ -235,8 +235,8 @@ public:
 			{
 				return false;
 			}*/
-			int frame = mesh.skeletal_animation.animation_tick / mesh.skeletal_animation.sampling_time;
-			if (frame < mesh.skeletal_animation.size())
+			int frame = static_cast<int>(mesh.skeletal_animation.animation_tick / mesh.skeletal_animation.sampling_time);
+			if (frame < static_cast<int>(mesh.skeletal_animation.size()))
 			{
 				return false;
 			}

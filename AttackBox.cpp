@@ -27,7 +27,7 @@ void AttackBox::Init()
 void AttackBox::Update(
 	YR_Vector3 cent, 
 	YR_Vector3 range, 
-	float time, float frm, float late, float dage, int hitbackT, YR_Vector3 divhitback, int kind, float knock, float elapsed_time)
+	float time, float frm, float late, float dage, float hitbackT, YR_Vector3 divhitback, int kind, float knock, float elapsed_time)
 {
 	if (!start)
 	{
@@ -90,7 +90,7 @@ void AttackBox::Update(
 }
 
 void AttackBox::UpdateMissile(
-	YR_Vector3 cent, YR_Vector3 range, float time, float dage, int hitbackT, YR_Vector3 divhitback, int kind, float elapsed_time)
+	YR_Vector3 cent, YR_Vector3 range, float time, float dage, float hitbackT, YR_Vector3 divhitback, int kind, float elapsed_time)
 {
 	if (!start)
 	{
@@ -147,7 +147,7 @@ void AttackBox::UpdateMissile(
 
 
 void AttackBox::UpdateMissile(
-	YR_Vector3 cent, YR_Vector3 range, float time, float dage, int hitbackT, YR_Vector3 divhitback, int kind, int gauge, float elapsed_time)
+	YR_Vector3 cent, YR_Vector3 range, float time, float dage, float hitbackT, YR_Vector3 divhitback, int kind, int gauge, float elapsed_time)
 {
 	if (!start)
 	{
@@ -207,7 +207,7 @@ void AttackBox::UpdateMissile(
 bool AttackBox::Update(
 	YR_Vector3 cent,
 	YR_Vector3 range,
-	float time, float frm, float late, float dage, int hitbackT, YR_Vector3 divhitback, int kind, float knock, bool fin, float elapsed_time)
+	float time, float frm, float late, float dage, float hitbackT, YR_Vector3 divhitback, int kind, float knock, bool fin, float elapsed_time)
 {
 	if (!start)
 	{
@@ -275,7 +275,7 @@ bool AttackBox::Update(
 void AttackBox::Update(
 	YR_Vector3 cent,
 	YR_Vector3 range,
-	float time, float frm, float late, float dage, int hitbackT, YR_Vector3 divhitback, int kind, float knock, int gauge, float elapsed_time)
+	float time, float frm, float late, float dage, float hitbackT, YR_Vector3 divhitback, int kind, float knock, int gauge, float elapsed_time)
 {
 	if (!start)
 	{

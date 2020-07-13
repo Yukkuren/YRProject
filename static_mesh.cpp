@@ -247,7 +247,7 @@ namespace MeshTexShader
 			{
 				float i;
 				fin >> i;
-				materials->back().illum = i;
+				materials->back().illum = static_cast<u_int>(i);
 			}
 			if (0 == wcscmp(command, L"newmtl"))
 			{

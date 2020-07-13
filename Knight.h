@@ -94,11 +94,11 @@ public:
 
 
 	void Jaku(float elapsed_time);
-	void Thu(int fream, float elapsed_time);
-	void Kyo(int fream, float elapsed_time);
+	void Thu(float fream, float elapsed_time);
+	void Kyo(float fream, float elapsed_time);
 	void D_Jaku(float elapsed_time);
-	void D_Thu(int fream, float elapsed_time);
-	void U_Kyo(int fream, float elapsed_time);
+	void D_Thu(float fream, float elapsed_time);
+	void U_Kyo(float fream, float elapsed_time);
 	void Hadouken(float elapsed_time);
 	void Thu_Hadouken(float elapsed_time);
 	void Kyo_Hadouken(float elapsed_time);

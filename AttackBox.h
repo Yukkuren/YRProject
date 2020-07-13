@@ -32,20 +32,20 @@ public:
 		const DirectX::XMFLOAT4& light_color,
 		const DirectX::XMFLOAT4& ambient_color);			//DEBUG_MODEがtrueの時のみ描画
 	//位置、大きさ、持続、発生、後隙、威力、のけぞり時間、吹っ飛ばしベクトル、段、ノックバック
-	void Update(YR_Vector3 cent, YR_Vector3 range, float time, float frm, float late, float dage, int hitbackT, YR_Vector3 divhitback, int kind, float knock,float elapsed_time);
+	void Update(YR_Vector3 cent, YR_Vector3 range, float time, float frm, float late, float dage, float hitbackT, YR_Vector3 divhitback, int kind, float knock,float elapsed_time);
 	//Updateに毎回値を入れることによって座標を動かしている。timerやlate等は攻撃発生時のみ値が代入される
 	//位置、大きさ、持続、威力、のけぞり時間、吹っ飛ばしベクトル、段
-	void UpdateMissile(YR_Vector3 cent, YR_Vector3 range, float time, float dage, int hitbackT, YR_Vector3 divhitback, int kind, float elapsed_time);
+	void UpdateMissile(YR_Vector3 cent, YR_Vector3 range, float time, float dage, float hitbackT, YR_Vector3 divhitback, int kind, float elapsed_time);
 
 	//位置、大きさ、持続、威力、のけぞり時間、吹っ飛ばしベクトル、段、ゲージを獲得しない
-	void UpdateMissile(YR_Vector3 cent, YR_Vector3 range, float time, float dage, int hitbackT, YR_Vector3 divhitback, int kind, int gauge, float elapsed_time);
+	void UpdateMissile(YR_Vector3 cent, YR_Vector3 range, float time, float dage, float hitbackT, YR_Vector3 divhitback, int kind, int gauge, float elapsed_time);
 
 	//位置、大きさ、持続、発生、後隙、威力、のけぞり時間、吹っ飛ばしベクトル、段、ノックバック,攻撃を継続する
-	bool Update(YR_Vector3 cent, YR_Vector3 range, float time, float frm, float late, float dage, int hitbackT, YR_Vector3 divhitback, int kind, float knock, bool fin, float elapsed_time);
+	bool Update(YR_Vector3 cent, YR_Vector3 range, float time, float frm, float late, float dage, float hitbackT, YR_Vector3 divhitback, int kind, float knock, bool fin, float elapsed_time);
 
 
 	//位置、大きさ、持続、威力、のけぞり時間、吹っ飛ばしベクトル、段、ゲージを獲得しない
-	void Update(YR_Vector3 cent, YR_Vector3 range, float time, float frm, float late, float dage, int hitbackT, YR_Vector3 divhitback, int kind, float knock, int gauge, float elapsed_time);
+	void Update(YR_Vector3 cent, YR_Vector3 range, float time, float frm, float late, float dage, float hitbackT, YR_Vector3 divhitback, int kind, float knock, int gauge, float elapsed_time);
 
 	enum
 	{

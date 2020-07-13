@@ -238,7 +238,7 @@ void fetch_animations(FbxMesh *fbx_mesh, Skinned_mesh::Skeletal_animation &skele
 		FbxTime frame_time;
 		frame_time.SetTime(0, 0, 0, 1, 0, time_mode); 
 
-		sampling_rate = sampling_rate > 0 ? sampling_rate : frame_time.GetFrameRate(time_mode);
+		sampling_rate = sampling_rate > 0 ? sampling_rate : static_cast<u_int>(frame_time.GetFrameRate(time_mode));
 		float sampling_time = 1.0f / sampling_rate;
 		skeletal_animation.sampling_time = sampling_time;
 		skeletal_animation.animation_tick = 0.0f;
@@ -560,7 +560,7 @@ bool Skinned_mesh::Load(const char *fbx_filename)
 							//tex_file_name = tex_file_name.substr(3, tex_file_name.size() - 3);
 							int size = 0;
 							int slash = 0;
-							for (int i = 0; i < tex_file_name.size() - 1; i++)
+							for (int i = 0; i < static_cast<int>(tex_file_name.size()) - 1; i++)
 							{
 								if (tex_file_name.at(i) != '/' && tex_file_name.at(i) != '\\' && tex_file_name.at(i) != '.')
 								{
@@ -1409,10 +1409,10 @@ void Skinned_mesh::Render(
 			{
 				
 				mesh.skeletal_animation.animation_tick = anime_count;
-				int frame = mesh.skeletal_animation.animation_tick / mesh.skeletal_animation.sampling_time;
-				if (frame > mesh.skeletal_animation.size() - 1)
+				int frame = static_cast<int>(mesh.skeletal_animation.animation_tick / mesh.skeletal_animation.sampling_time);
+				if (frame > static_cast<int>(mesh.skeletal_animation.size()) - 1)
 				{
-					frame = mesh.skeletal_animation.size() - 1;
+					frame = static_cast<int>(mesh.skeletal_animation.size()) - 1;
 					//mesh.skeletal_animation.animation_tick = 0;
 					//mesh.skeletal_animation.anim_fin = true;
 				}
@@ -1580,10 +1580,10 @@ void Skinned_mesh::Render(
 			{
 
 				mesh.skeletal_animation.animation_tick = anime_count;
-				int frame = mesh.skeletal_animation.animation_tick / mesh.skeletal_animation.sampling_time;
-				if (frame > mesh.skeletal_animation.size() - 1)
+				int frame = static_cast<int>(mesh.skeletal_animation.animation_tick / mesh.skeletal_animation.sampling_time);
+				if (frame > static_cast<int>(mesh.skeletal_animation.size()) - 1)
 				{
-					frame = mesh.skeletal_animation.size() - 1;
+					frame = static_cast<int>(mesh.skeletal_animation.size()) - 1;
 					//mesh.skeletal_animation.animation_tick = 0;
 					//mesh.skeletal_animation.anim_fin = true;
 				}
