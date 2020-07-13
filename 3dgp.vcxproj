@@ -182,6 +182,7 @@
     <ClCompile Include="SceneLoad.cpp" />
     <ClCompile Include="SceneOver.cpp" />
     <ClCompile Include="SceneSelect.cpp" />
+    <ClCompile Include="SceneTest.cpp" />
     <ClCompile Include="SceneTitle.cpp" />
     <ClCompile Include="Skinned_mesh.cpp" />
     <ClCompile Include="sprite.cpp" />

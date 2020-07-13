@@ -40,6 +40,9 @@ enum SCENE_TABLE
 	SCENE_GAME,
 	SCENE_CLEAR,
 	SCENE_OVER,
+	SCENE_TEST,
+
+
 	SCENE_END,
 };
 
@@ -71,6 +74,7 @@ public:
 	SceneClear sceneclear;
 	SceneOver sceneover;
 	SceneSelect sceneselect;
+	SceneTest	scenetest;
 	//SceneBase scenetutorial;
 
 	SceneBase* scene;
@@ -83,6 +87,7 @@ public:
 		&scenegame,
 		&sceneclear,
 		&sceneover,
+		&scenetest,
 	};
 
 

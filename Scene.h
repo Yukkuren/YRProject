@@ -301,3 +301,31 @@ public:
 
 	YR_Vector3			PosSet(int select);
 };
+
+class SceneTest : public SceneBase
+{
+public:
+	float	timer;
+
+	std::unique_ptr<Sprite> test = nullptr;
+	std::unique_ptr<Skinned_mesh> box = nullptr;
+	std::shared_ptr<Texture> box_texture = nullptr;
+	MeshMotion motion;
+
+	std::unique_ptr<geometric_primitive>	geo = nullptr;
+
+	//シェーダー
+	std::unique_ptr<YRShader> skinShader = nullptr;
+	std::unique_ptr<YRShader> spriteShader = nullptr;
+	std::unique_ptr<YRShader> geoShader = nullptr;
+
+	//テクスチャ
+	std::unique_ptr<Texture> color_texture = nullptr;
+	std::unique_ptr<Texture> normal_texture = nullptr;
+	std::unique_ptr<Texture> position_texture = nullptr;
+
+public:
+	void Init();
+	void Update(float elapsed_time);
+	void Draw(float elapsed_time);
+};

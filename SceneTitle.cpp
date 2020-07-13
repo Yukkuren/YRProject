@@ -96,6 +96,16 @@ void SceneTitle::Update(float elapsed_time)
 			return;
 		}
 
+		if (pKeyState.tflg == 1)
+		{
+			select_p1 = scastI(INPUT_PLAYER::P1);
+			select_p2 = scastI(INPUT_PLAYER::P2);
+			FRAMEWORK.scenegame.PadSet(select_p1);
+			UnInit();
+			FRAMEWORK.SetScene(SCENE_TEST);
+			return;
+		}
+
 #endif // USE_IMGUI
 
 		//timerはフローしないようにリセットする

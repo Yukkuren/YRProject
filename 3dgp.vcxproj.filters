@@ -132,6 +132,9 @@
     <ClCompile Include="HitCheak.cpp">
       <Filter>Game\asisst</Filter>
     </ClCompile>
+    <ClCompile Include="SceneTest.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="YR_VECTOR3.h">
