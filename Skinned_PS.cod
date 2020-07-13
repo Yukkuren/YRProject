@@ -36,12 +36,10 @@
 // SV_POSITION              0   xyzw        0      POS   float       
 // NORMAL                   0   xyzw        1     NONE   float   xyzw
 // TEXCOORD                 0   xy          2     NONE   float   xy  
-// WEIGHTS                  0   xyzw        3     NONE   float       
-// BONES                    0   xyzw        4     NONE    uint       
-// COLOR                    0   xyzw        5     NONE   float   xyz 
-// TEXCOORD                 1   xyz         6     NONE   float       
-// TEXCOORD                 2   xyz         7     NONE   float   xyz 
-// TEXCOORD                 4   xyz         8     NONE   float       
+// COLOR                    0   xyzw        3     NONE   float   xyz 
+// TEXCOORD                 1   xyz         4     NONE   float       
+// TEXCOORD                 2   xyz         5     NONE   float   xyz 
+// TEXCOORD                 4   xyz         6     NONE   float       
 //
 //
 // Output signature:
@@ -57,8 +55,8 @@ dcl_sampler s0, mode_default
 dcl_resource_texture2d (float,float,float,float) t0
 dcl_input_ps linear v1.xyzw
 dcl_input_ps linear v2.xy
+dcl_input_ps linear v3.xyz
 dcl_input_ps linear v5.xyz
-dcl_input_ps linear v7.xyz
 dcl_output o0.xyzw
 dcl_temps 8
 //
@@ -66,37 +64,22 @@ dcl_temps 8
 //   v0.x <- pin.position.x; v0.y <- pin.position.y; v0.z <- pin.position.z; v0.w <- pin.position.w; 
 //   v1.x <- pin.normal.x; v1.y <- pin.normal.y; v1.z <- pin.normal.z; v1.w <- pin.normal.w; 
 //   v2.x <- pin.texcoord.x; v2.y <- pin.texcoord.y; 
-//   v3.x <- pin.bone_weights.x; v3.y <- pin.bone_weights.y; v3.z <- pin.bone_weights.z; v3.w <- pin.bone_weights.w; 
-//   v4.x <- pin.bone_indices.x; v4.y <- pin.bone_indices.y; v4.z <- pin.bone_indices.z; v4.w <- pin.bone_indices.w; 
-//   v5.x <- pin.color.x; v5.y <- pin.color.y; v5.z <- pin.color.z; v5.w <- pin.color.w; 
-//   v6.x <- pin.wNormal.x; v6.y <- pin.wNormal.y; v6.z <- pin.wNormal.z; 
-//   v7.x <- pin.wEyeDir.x; v7.y <- pin.wEyeDir.y; v7.z <- pin.wEyeDir.z; 
-//   v8.x <- pin.wPos.x; v8.y <- pin.wPos.y; v8.z <- pin.wPos.z; 
+//   v3.x <- pin.color.x; v3.y <- pin.color.y; v3.z <- pin.color.z; v3.w <- pin.color.w; 
+//   v4.x <- pin.wNormal.x; v4.y <- pin.wNormal.y; v4.z <- pin.wNormal.z; 
+//   v5.x <- pin.wEyeDir.x; v5.y <- pin.wEyeDir.y; v5.z <- pin.wEyeDir.z; 
+//   v6.x <- pin.wPos.x; v6.y <- pin.wPos.y; v6.z <- pin.wPos.z; 
 //   o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
 //
-<<<<<<< HEAD
 #line 81 "E:\ƒQ[ƒ€§ì\YRProject\Skinned_PS"
 sample_indexable(texture2d)(float,float,float,float) r0.xyzw, v2.xyxx, t0.xyzw, s0  // r0.x <- color.x; r0.y <- color.y; r0.z <- color.z; r0.w <- color.w
 dp4 r1.x, v1.xyzw, v1.xyzw
 rsq r1.x, r1.x
 mul r1.xyz, r1.xxxx, v1.yxzy  // r1.x <- N.y; r1.y <- N.x; r1.z <- N.z
-=======
-#line 4 "E:\ƒQ[ƒ€§ì\YRProject\Skinned_mesh."
-mov r0.xyz, l(0.800000,0.800000,0.600000,0)  // r0.x <- fogColor.x; r0.y <- fogColor.y; r0.z <- fogColor.z
-mov r0.w, l(20.000000)  // r0.w <- fogNear
-mov r1.x, l(50.000000)  // r1.x <- fogFar
-
-#line 81 "E:\ƒQ[ƒ€§ì\YRProject\Skinned_PS"
-sample_indexable(texture2d)(float,float,float,float) r2.xyzw, v2.xyxx, t0.xyzw, s0  // r2.x <- color.x; r2.y <- color.y; r2.z <- color.z; r2.w <- color.w
-dp4 r1.y, v1.xyzw, v1.xyzw
-rsq r1.y, r1.y
-mul r1.yzw, r1.yyyy, v1.yyxz  // r1.y <- N.y; r1.z <- N.x; r1.w <- N.z
->>>>>>> Shader
 
 #line 85
-dp3 r1.w, v7.xyzx, v7.xyzx
+dp3 r1.w, v5.xyzx, v5.xyzx
 rsq r1.w, r1.w
-mul r2.xyz, r1.wwww, v7.xyzx  // r2.x <- E.x; r2.y <- E.y; r2.z <- E.z
+mul r2.xyz, r1.wwww, v5.xyzx  // r2.x <- E.x; r2.y <- E.y; r2.z <- E.z
 mov r3.xyz, -cb0[9].xyzx
 dp3 r1.w, r3.xyzx, r3.xyzx
 rsq r1.w, r1.w
@@ -170,7 +153,7 @@ mov r1.xyz, r1.xyzx  // r1.x <- <BlinnPhongSpecular return value>.x; r1.y <- <Bl
 mov r1.xyz, r1.xyzx  // r1.x <- S.x; r1.y <- S.y; r1.z <- S.z
 add r2.xyz, r4.xyzx, r6.xyzx
 add r1.xyz, r1.xyzx, r2.xyzx
-mul r1.xyz, r1.xyzx, v5.xyzx
+mul r1.xyz, r1.xyzx, v3.xyzx
 mul r0.xyz, r0.xyzx, r1.xyzx
 
 #line 108

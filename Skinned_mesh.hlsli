@@ -14,12 +14,19 @@ struct VS_OUT
 	float4	position	: SV_POSITION;
 	float4	normal		: NORMAL;
 	float2	texcoord	: TEXCOORD;
-	float4	bone_weights: WEIGHTS;
-	uint4	bone_indices: BONES;
 	float4	color		: COLOR;
 	float3	wNormal		: TEXCOORD1;	//ワールド法線
 	float3	wEyeDir		: TEXCOORD2;	//ワールド法線
 	float3	wPos		: TEXCOORD4;	//ワールド位置
+};
+
+struct VS_INPUT
+{
+	float4	position	: POSITION;
+	float4	normal		: NORMAL;
+	float2	texcoord	: TEXCOORD;
+	float4	bone_weights: WEIGHTS;
+	uint4	bone_indices: BONES;
 };
 
 cbuffer CONSTANT_BUFFER : register(b0)

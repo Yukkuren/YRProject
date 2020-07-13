@@ -45,12 +45,10 @@
 // SV_POSITION              0   xyzw        0      POS   float   xyzw
 // NORMAL                   0   xyzw        1     NONE   float   xyzw
 // TEXCOORD                 0   xy          2     NONE   float   xy  
-// WEIGHTS                  0   xyzw        3     NONE   float       
-// BONES                    0   xyzw        4     NONE    uint       
-// COLOR                    0   xyzw        5     NONE   float   xyzw
-// TEXCOORD                 1   xyz         6     NONE   float   xyz 
-// TEXCOORD                 2   xyz         7     NONE   float   xyz 
-// TEXCOORD                 4   xyz         8     NONE   float   xyz 
+// COLOR                    0   xyzw        3     NONE   float   xyzw
+// TEXCOORD                 1   xyz         4     NONE   float   xyz 
+// TEXCOORD                 2   xyz         5     NONE   float   xyz 
+// TEXCOORD                 4   xyz         6     NONE   float   xyz 
 //
 vs_5_0
 dcl_globalFlags refactoringAllowed | skipOptimization
@@ -71,33 +69,31 @@ dcl_input v4.xyzw
 dcl_output_siv o0.xyzw, position
 dcl_output o1.xyzw
 dcl_output o2.xy
-dcl_output o5.xyzw
+dcl_output o3.xyzw
+dcl_output o4.xyz
+dcl_output o5.xyz
 dcl_output o6.xyz
-dcl_output o7.xyz
-dcl_output o8.xyz
 dcl_temps 7
 //
 // Initial variable locations:
-//   v0.x <- position.x; v0.y <- position.y; v0.z <- position.z; v0.w <- position.w; 
-//   v1.x <- normal.x; v1.y <- normal.y; v1.z <- normal.z; v1.w <- normal.w; 
-//   v2.x <- texcoord.x; v2.y <- texcoord.y; 
-//   v3.x <- bone_weights.x; v3.y <- bone_weights.y; v3.z <- bone_weights.z; v3.w <- bone_weights.w; 
-//   v4.x <- bone_indices.x; v4.y <- bone_indices.y; v4.z <- bone_indices.z; v4.w <- bone_indices.w; 
-//   o3.x <- <main return value>.bone_weights.x; o3.y <- <main return value>.bone_weights.y; o3.z <- <main return value>.bone_weights.z; o3.w <- <main return value>.bone_weights.w; 
-//   o4.x <- <main return value>.bone_indices.x; o4.y <- <main return value>.bone_indices.y; o4.z <- <main return value>.bone_indices.z; o4.w <- <main return value>.bone_indices.w; 
-//   o8.x <- <main return value>.wPos.x; o8.y <- <main return value>.wPos.y; o8.z <- <main return value>.wPos.z; 
-//   o7.x <- <main return value>.wEyeDir.x; o7.y <- <main return value>.wEyeDir.y; o7.z <- <main return value>.wEyeDir.z; 
-//   o6.x <- <main return value>.wNormal.x; o6.y <- <main return value>.wNormal.y; o6.z <- <main return value>.wNormal.z; 
-//   o5.x <- <main return value>.color.x; o5.y <- <main return value>.color.y; o5.z <- <main return value>.color.z; o5.w <- <main return value>.color.w; 
+//   v0.x <- input.position.x; v0.y <- input.position.y; v0.z <- input.position.z; v0.w <- input.position.w; 
+//   v1.x <- input.normal.x; v1.y <- input.normal.y; v1.z <- input.normal.z; v1.w <- input.normal.w; 
+//   v2.x <- input.texcoord.x; v2.y <- input.texcoord.y; 
+//   v3.x <- input.bone_weights.x; v3.y <- input.bone_weights.y; v3.z <- input.bone_weights.z; v3.w <- input.bone_weights.w; 
+//   v4.x <- input.bone_indices.x; v4.y <- input.bone_indices.y; v4.z <- input.bone_indices.z; v4.w <- input.bone_indices.w; 
+//   o6.x <- <main return value>.wPos.x; o6.y <- <main return value>.wPos.y; o6.z <- <main return value>.wPos.z; 
+//   o5.x <- <main return value>.wEyeDir.x; o5.y <- <main return value>.wEyeDir.y; o5.z <- <main return value>.wEyeDir.z; 
+//   o4.x <- <main return value>.wNormal.x; o4.y <- <main return value>.wNormal.y; o4.z <- <main return value>.wNormal.z; 
+//   o3.x <- <main return value>.color.x; o3.y <- <main return value>.color.y; o3.z <- <main return value>.color.z; o3.w <- <main return value>.color.w; 
 //   o2.x <- <main return value>.texcoord.x; o2.y <- <main return value>.texcoord.y; 
 //   o1.x <- <main return value>.normal.x; o1.y <- <main return value>.normal.y; o1.z <- <main return value>.normal.z; o1.w <- <main return value>.normal.w; 
 //   o0.x <- <main return value>.position.x; o0.y <- <main return value>.position.y; o0.z <- <main return value>.position.z; o0.w <- <main return value>.position.w
 //
-#line 21 "C:\Users\2180099.MAETEL\Desktop\å¬êlêªçÏ\Skinned_VS."
+#line 19 "E:\ÉQÅ[ÉÄêßçÏ\YRProject\Skinned_VS"
 itof r0.xyz, l(0, 0, 0, 0)  // r0.x <- p.x; r0.y <- p.y; r0.z <- p.z
 itof r1.xyz, l(0, 0, 0, 0)  // r1.x <- n.x; r1.y <- n.y; r1.z <- n.z
 
-#line 25
+#line 23
 mov r0.w, l(0)  // r0.w <- i2
 mov r2.xyz, r0.xyzx  // r2.x <- p.x; r2.y <- p.y; r2.z <- p.z
 mov r3.xyz, r1.xyzx  // r3.x <- n.x; r3.y <- n.y; r3.z <- n.z
@@ -136,12 +132,12 @@ loop
   add r3.xyz, r3.xyzx, r4.xyzx
   iadd r1.w, r1.w, l(1)
 endloop 
-mov r2.xyz, r2.xyzx  // r2.x <- position.x; r2.y <- position.y; r2.z <- position.z
-mov r0.x, l(1.000000)  // r0.x <- position.w
+mov r2.xyz, r2.xyzx  // r2.x <- input.position.x; r2.y <- input.position.y; r2.z <- input.position.z
+mov r0.x, l(1.000000)  // r0.x <- input.position.w
 mov r3.w, l(0)
-mov r3.xyzw, r3.xyzw  // r3.x <- normal.x; r3.y <- normal.y; r3.z <- normal.z; r3.w <- normal.w
+mov r3.xyzw, r3.xyzw  // r3.x <- input.normal.x; r3.y <- input.normal.y; r3.z <- input.normal.z; r3.w <- input.normal.w
 
-#line 38
+#line 36
 mul r1.xyzw, r2.xxxx, cb0[0].xyzw
 mul r4.xyzw, r2.yyyy, cb0[1].xyzw
 add r1.xyzw, r1.xyzw, r4.xyzw
@@ -161,11 +157,11 @@ rsq r0.y, r0.y
 mul r3.xyzw, r0.yyyy, r3.xyzw  // r3.x <- N.x; r3.y <- N.y; r3.z <- N.z; r3.w <- N.w
 mov r3.xyzw, r3.xyzw  // r3.x <- vout.normal.x; r3.y <- vout.normal.y; r3.z <- vout.normal.z; r3.w <- vout.normal.w
 
-#line 64
+#line 62
 mov r0.yz, v2.xxyx  // r0.y <- vout.texcoord.x; r0.z <- vout.texcoord.y
 mov r4.xyzw, cb0[8].xyzw  // r4.x <- vout.color.x; r4.y <- vout.color.y; r4.z <- vout.color.z; r4.w <- vout.color.w
 
-#line 68
+#line 66
 mul r5.xyz, r2.xxxx, cb0[4].xyzx
 mul r2.xyw, r2.yyyy, cb0[5].xyxz
 add r2.xyw, r2.xyxw, r5.xyxz
@@ -183,10 +179,10 @@ mov r3.xyz, r3.xyzx  // r3.x <- vout.wNormal.x; r3.y <- vout.wNormal.y; r3.z <- 
 mov r2.xyz, r2.xyzx  // r2.x <- vout.wPos.x; r2.y <- vout.wPos.y; r2.z <- vout.wPos.z
 mov o0.xyzw, r1.xyzw
 mov o1.xyzw, r3.xyzw
-mov o5.xyzw, r4.xyzw
-mov o6.xyz, r3.xyzx
-mov o7.xyz, r5.xyzx
-mov o8.xyz, r2.xyzx
+mov o3.xyzw, r4.xyzw
+mov o4.xyz, r3.xyzx
+mov o5.xyz, r5.xyzx
+mov o6.xyz, r2.xyzx
 mov o2.xy, r0.yzyy
 ret 
 // Approximately 87 instruction slots used
