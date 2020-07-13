@@ -331,8 +331,24 @@ bool Fbx_Tex_LevelCheck(std::string* fbx_name, std::string* tex_file_name)
 }
 
 
-Skinned_mesh::Skinned_mesh(const char *fbx_filename)
+Skinned_mesh::Skinned_mesh(const char* fbx_filename)
 {
+	//FBXにテクスチャが設定されている場合
+	Load(fbx_filename);
+}
+
+
+Skinned_mesh::Skinned_mesh(const char* fbx_filename, std::shared_ptr<Texture> tex)
+{
+	//手動でテクスチャを指定して読み込む場合
+	Load(fbx_filename,tex);
+}
+
+
+
+bool Skinned_mesh::Load(const char *fbx_filename)
+{
+	//FBXに設定されているテクスチャを読み込む
 	HRESULT hr = S_OK;
 	//Create the FBX SDK manager
 	FbxManager* manager = FbxManager::Create();
@@ -816,7 +832,339 @@ Skinned_mesh::Skinned_mesh(const char *fbx_filename)
 
 	hr = FRAMEWORK.device->CreateSamplerState(&sampler_desc, sampler_state.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	return true;
 }
+
+
+
+bool Skinned_mesh::Load(const char* fbx_filename, std::shared_ptr<Texture> tex)
+{
+	//手動でテクスチャを読み込む
+	HRESULT hr = S_OK;
+	//Create the FBX SDK manager
+	FbxManager* manager = FbxManager::Create();
+
+	// Create an IOSettings object. IOSROOT is defined in Fbxiosettingspath.h. 
+	manager->SetIOSettings(FbxIOSettings::Create(manager, IOSROOT));
+
+
+	// Create an importer. 
+	FbxImporter* importer = FbxImporter::Create(manager, "");
+
+
+	// Initialize the importer. 
+	bool import_status = false;
+	import_status = importer->Initialize(fbx_filename, -1, manager->GetIOSettings());
+	_ASSERT_EXPR_A(import_status, importer->GetStatus().GetErrorString());
+
+
+	// Create a new scene so it can be populated by the imported file. 
+	FbxScene* scene = FbxScene::Create(manager, "");
+
+
+	// Import the contents of the file into the scene. 
+	import_status = importer->Import(scene);
+	_ASSERT_EXPR_A(import_status, importer->GetStatus().GetErrorString());
+
+
+	// Convert mesh, NURBS and patch into triangle mesh 
+	fbxsdk::FbxGeometryConverter geometry_converter(manager);
+	geometry_converter.Triangulate(scene, /*replace*/true);
+
+
+	// Fetch node attributes and materials under this node recursively. Currently only mesh.  
+	std::vector<FbxNode*> fetched_meshes;
+	std::function<void(FbxNode*)> traverse = [&](FbxNode* node) {
+		if (node) {
+			FbxNodeAttribute* fbx_node_attribute = node->GetNodeAttribute();
+			if (fbx_node_attribute) {
+				switch (fbx_node_attribute->GetAttributeType()) {
+				case FbxNodeAttribute::eMesh:
+					fetched_meshes.push_back(node);
+					break;
+				}
+			}
+			for (int i = 0; i < node->GetChildCount(); i++)
+				traverse(node->GetChild(i));
+		}
+	};
+	traverse(scene->GetRootNode());
+
+	int fetched_size = fetched_meshes.size();
+
+	meshes.resize(fetched_meshes.size());
+	for (size_t i = 0; i < fetched_meshes.size(); i++)
+	{
+		std::vector<Vertex> vertices; // Vertex buffer 
+		std::vector<u_int> indices;  // Index buffer 
+		FbxMesh* fbx_mesh = fetched_meshes.at(i)->GetMesh();
+
+		std::vector<bone_influences_per_control_point> bone_influences;
+		fetch_bone_influences(fbx_mesh, bone_influences);
+
+		mesh& mesh = meshes.at(i);
+
+		FbxAMatrix global_transform = fbx_mesh->GetNode()->EvaluateGlobalTransform(0);
+		for (int row = 0; row < 4; row++)
+		{
+			for (int column = 0; column < 4; column++)
+			{
+				mesh.global_transform.m[row][column] = static_cast<float>(global_transform[row][column]);
+			}
+		}
+
+
+		// Fetch mesh data 
+		u_int vertex_count = 0;
+		const int number_of_materials = fbx_mesh->GetNode()->GetMaterialCount();
+		const int number_of_polygons = fbx_mesh->GetPolygonCount();
+
+
+		//UNIT.22
+		// Fetch bone Matrices
+		//FbxTime::EMode time_mode = fbx_mesh->GetScene()->GetGlobalSettings().GetTimeMode();
+		//FbxTime frame_time;
+		//frame_time.SetTime(0, 0, 0, 1, 0, time_mode);
+		//fetch_bone_matrices(fbx_mesh, mesh.skeletal, frame_time * 20);	//pose at frame 20
+
+		//UNIT.23
+		fetch_animations(fbx_mesh, mesh.skeletal_animation);
+
+		mesh.subsets.resize(number_of_materials);//UNIT18
+		if (number_of_materials < 1)
+		{
+			mesh.subsets.resize(1);
+		}
+		for (int index_of_material = 0; index_of_material < number_of_materials; ++index_of_material)
+		{
+			subset& subset = mesh.subsets.at(index_of_material);
+			const FbxSurfaceMaterial* surface_material = fbx_mesh->GetNode()->GetMaterial(index_of_material);
+
+			const FbxProperty property = surface_material->FindProperty(FbxSurfaceMaterial::sDiffuse);
+			const FbxProperty factor = surface_material->FindProperty(FbxSurfaceMaterial::sDiffuseFactor);
+			if (property.IsValid() && factor.IsValid())
+			{
+				FbxDouble3 color = property.Get<FbxDouble3>();
+				double f = factor.Get<FbxDouble>();
+				subset.diffuse.color.x = static_cast<float>(color[0] * f);
+				subset.diffuse.color.y = static_cast<float>(color[1] * f);
+				subset.diffuse.color.z = static_cast<float>(color[2] * f);
+				subset.diffuse.color.w = 1.0f;
+			}
+			if (property.IsValid())
+			{
+				const int number_of_textures = property.GetSrcObjectCount<FbxFileTexture>();
+			}
+		}
+
+		if (number_of_materials > 0)
+		{
+			//Count the faces of each material
+			for (int index_of_polygon = 0; index_of_polygon < number_of_polygons; index_of_polygon++)
+			{
+				const u_int material_index = fbx_mesh->GetElementMaterial()->GetIndexArray().GetAt(index_of_polygon);
+				mesh.subsets.at(material_index).index_count += 3;
+			}
+
+			//Record the offset (how many vertex)
+			int offset = 0;
+			for (subset& subset : mesh.subsets)
+			{
+				subset.index_start = offset;
+				offset += subset.index_count;
+				//This will be used as counter in the following produres. reset to zero
+				subset.index_count = 0;
+			}
+		}
+
+		const FbxVector4* array_of_control_points = fbx_mesh->GetControlPoints();
+		indices.resize(number_of_polygons * 3);//UNIT18
+		for (int index_of_polygon = 0; index_of_polygon < number_of_polygons; index_of_polygon++)
+		{
+			//UNIT18
+			//The material for current face
+			int index_of_material = 0;
+			if (number_of_materials > 0)
+			{
+				index_of_material = fbx_mesh->GetElementMaterial()->GetIndexArray().GetAt(index_of_polygon);
+			}
+
+			//Where should I save the vertex attribute index. according to the material
+			subset& subset = mesh.subsets.at(index_of_material);
+			const int indext_offset = subset.index_start + subset.index_count;
+
+			for (int index_of_vertex = 0; index_of_vertex < 3; index_of_vertex++) {
+				Vertex vertex;
+				const int index_of_control_point = fbx_mesh->GetPolygonVertex(index_of_polygon, index_of_vertex);
+				vertex.position.x = static_cast<float>(array_of_control_points[index_of_control_point][0]);
+				vertex.position.y = static_cast<float>(array_of_control_points[index_of_control_point][1]);
+				vertex.position.z = static_cast<float>(array_of_control_points[index_of_control_point][2]);
+				bone_influences_per_control_point point;
+				point = bone_influences.at(index_of_control_point);
+				int i = 0;
+				for (auto& p : point)
+				{
+					//assert(i >= 4);
+					vertex.bone_indices[i] = p.index;
+					vertex.bone_weights[i] = p.weight;
+					i++;
+					if (i >= MAX_BONE_INFLUENCES)
+					{
+						break;
+					}
+				}
+
+				fbxsdk::FbxStringList uv_names;
+				fbx_mesh->GetUVSetNames(uv_names);
+				FbxVector2 uv;
+				bool unmapped_uv;
+				if (fbx_mesh->GetElementUVCount() > 0)
+				{
+					fbx_mesh->GetPolygonVertexUV(index_of_polygon, index_of_vertex, uv_names[0], uv, unmapped_uv);
+					vertex.texcoord.x = static_cast<float>(uv[0]);
+					vertex.texcoord.y = 1.0f - static_cast<float>(uv[1]);
+				}
+				if (fbx_mesh->GetElementNormalCount() > 0)
+				{
+					FbxVector4 normal;
+					fbx_mesh->GetPolygonVertexNormal(index_of_polygon, index_of_vertex, normal);
+					vertex.normal.x = static_cast<float>(normal[0]);
+					vertex.normal.y = static_cast<float>(normal[1]);
+					vertex.normal.z = static_cast<float>(normal[2]);
+				}
+
+				vertices.push_back(vertex);
+				//indices.push_back(vertex_count);
+				indices.at(indext_offset + index_of_vertex) = static_cast<u_int>(vertex_count);
+				vertex_count += 1;
+			}
+			subset.index_count += 3;
+		}
+
+		indexsize = indices.size();
+
+
+		D3D11_BUFFER_DESC buffer_desc{};
+		buffer_desc.ByteWidth = vertices.size() * sizeof(Skinned_mesh::Vertex);
+		buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;// D3D11_USAGE_DYNAMIC;D3D11_USAGE_IMMUTABLE
+		buffer_desc.CPUAccessFlags = 0;// D3D11_CPU_ACCESS_WRITE;
+		buffer_desc.MiscFlags = 0;
+		buffer_desc.StructureByteStride = 0;
+
+		D3D11_SUBRESOURCE_DATA subresource = {};
+		subresource.pSysMem = vertices.data();
+		subresource.SysMemPitch = 0;
+		subresource.SysMemSlicePitch = 0;
+
+		hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, &subresource, &mesh.vertex_buffer);
+		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+		//インデックス情報セット
+		ZeroMemory(&buffer_desc, sizeof(D3D11_BUFFER_DESC));
+		ZeroMemory(&subresource, sizeof(D3D11_SUBRESOURCE_DATA));
+		buffer_desc.ByteWidth = indices.size() * sizeof(u_int);
+		buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+		buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;// D3D11_USAGE_DYNAMIC;
+		buffer_desc.CPUAccessFlags = 0;// D3D11_CPU_ACCESS_WRITE;
+		buffer_desc.MiscFlags = 0;
+		buffer_desc.StructureByteStride = 0;
+		subresource.pSysMem = indices.data();
+		subresource.SysMemPitch = 0;
+		subresource.SysMemSlicePitch = 0;
+
+		hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, &subresource, &mesh.index_buffer);
+		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+	}
+
+	manager->Destroy();
+
+	D3D11_RASTERIZER_DESC rasterizer_desc;
+
+	rasterizer_desc.FillMode = D3D11_FILL_WIREFRAME;
+	rasterizer_desc.CullMode = D3D11_CULL_BACK;
+	rasterizer_desc.FrontCounterClockwise = FALSE;
+	rasterizer_desc.DepthBias = 0;
+	rasterizer_desc.DepthBiasClamp = 0;
+	rasterizer_desc.SlopeScaledDepthBias = 0;
+	rasterizer_desc.DepthClipEnable = TRUE;
+	rasterizer_desc.ScissorEnable = FALSE;
+	rasterizer_desc.MultisampleEnable = FALSE;
+	rasterizer_desc.AntialiasedLineEnable = FALSE;
+
+	hr = FRAMEWORK.device->CreateRasterizerState(&rasterizer_desc, line_state.GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	rasterizer_desc.FillMode = D3D11_FILL_SOLID;
+	rasterizer_desc.CullMode = D3D11_CULL_FRONT;
+	rasterizer_desc.FrontCounterClockwise = FALSE;
+	rasterizer_desc.DepthBias = 0;
+	rasterizer_desc.DepthBiasClamp = 0;
+	rasterizer_desc.SlopeScaledDepthBias = 0;
+	rasterizer_desc.DepthClipEnable = TRUE;
+	rasterizer_desc.ScissorEnable = FALSE;
+	rasterizer_desc.MultisampleEnable = FALSE;
+	rasterizer_desc.AntialiasedLineEnable = FALSE;
+	hr = FRAMEWORK.device->CreateRasterizerState(&rasterizer_desc, filling_state.GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	//深度ステンシルステートオブジェクト生成
+	D3D11_DEPTH_STENCIL_DESC depth_desc;
+
+	depth_desc.DepthEnable = TRUE;
+	depth_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depth_desc.DepthFunc = D3D11_COMPARISON_LESS;
+	depth_desc.StencilEnable = FALSE;
+	depth_desc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+	depth_desc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+	depth_desc.FrontFace.StencilFunc = depth_desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depth_desc.FrontFace.StencilDepthFailOp = depth_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilPassOp = depth_desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilFailOp = depth_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+
+	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, depth_state.GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	D3D11_BUFFER_DESC buffer_desc{};
+	D3D11_SUBRESOURCE_DATA subresource = {};
+	ZeroMemory(&buffer_desc, sizeof(D3D11_BUFFER_DESC));
+	ZeroMemory(&subresource, sizeof(D3D11_SUBRESOURCE_DATA));
+	buffer_desc.ByteWidth = sizeof(cbuffer);
+	buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+	buffer_desc.CPUAccessFlags = 0;
+	buffer_desc.MiscFlags = 0;
+	buffer_desc.StructureByteStride = 0;
+
+	hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, nullptr/*&subresource*/, constant_buffer.GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	D3D11_SAMPLER_DESC sampler_desc;
+	//ID3D11SamplerState *samplestate;
+
+	sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.MipLODBias = 0.0f;
+	sampler_desc.MaxAnisotropy = 16;
+	sampler_desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	memcpy(sampler_desc.BorderColor, &DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), sizeof(DirectX::XMFLOAT4));
+	sampler_desc.MinLOD = 0;
+	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	hr = FRAMEWORK.device->CreateSamplerState(&sampler_desc, sampler_state.GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	//テクスチャセット
+	texture = tex;
+
+	return true;
+}
+
+
 
 //void Skinned_mesh::Render(
 //	ID3D11DeviceContext			*context,			//デバイスコンテキスト
@@ -1125,7 +1473,14 @@ void Skinned_mesh::Render(
 			FRAMEWORK.context->UpdateSubresource(constant_buffer.Get(), 0, 0, &cb, 0, 0);
 			FRAMEWORK.context->VSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
 			FRAMEWORK.context->PSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
-			FRAMEWORK.context->PSSetShaderResources(0, 1, &subset.diffuse.shader_resource_view);
+			if (texture)
+			{
+				texture->Set(0);
+			}
+			else
+			{
+				FRAMEWORK.context->PSSetShaderResources(0, 1, &subset.diffuse.shader_resource_view);
+			}
 			FRAMEWORK.context->PSSetSamplers(0, 1, sampler_state.GetAddressOf());
 			//プリミティブの描画
 			FRAMEWORK.context->DrawIndexed(subset.index_count, subset.index_start, NULL);
@@ -1288,7 +1643,14 @@ void Skinned_mesh::Render(
 			FRAMEWORK.context->UpdateSubresource(constant_buffer.Get(), 0, 0, &cb, 0, 0);
 			FRAMEWORK.context->VSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
 			FRAMEWORK.context->PSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
-			FRAMEWORK.context->PSSetShaderResources(0, 1, &subset.diffuse.shader_resource_view);
+			if (texture)
+			{
+				texture->Set(0);
+			}
+			else
+			{
+				FRAMEWORK.context->PSSetShaderResources(0, 1, &subset.diffuse.shader_resource_view);
+			}
 			FRAMEWORK.context->PSSetSamplers(0, 1, sampler_state.GetAddressOf());
 			//プリミティブの描画
 			FRAMEWORK.context->DrawIndexed(subset.index_count, subset.index_start, NULL);

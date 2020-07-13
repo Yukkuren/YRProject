@@ -74,6 +74,7 @@ void SceneGame::Init()
 	}
 
 	//カメラ初期設定
+<<<<<<< HEAD
 	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -25));			//視点
 	YRCamera.SetFocus(DirectX::XMFLOAT3(0.0f, 5.0f, 0.0f));			//注視点
 	YRCamera.SetUp(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));				//上方向
@@ -87,6 +88,15 @@ void SceneGame::Init()
 	}
 
 	
+=======
+	YRCamera.SetEye(DirectX::XMFLOAT3(10, 5, -25));			//視点
+	YRCamera.SetFocus(DirectX::XMFLOAT3(0, 0, 0));			//注視点
+	YRCamera.SetUp(DirectX::XMFLOAT3(0, 1, 0));				//上方向
+	YRCamera.SetPerspective(30 * 0.01745f, 1280.0f / 720.0f, 0.0001f, 1000000);
+
+	motion.MeshSet(box);
+	motion.AnimReset();
+>>>>>>> Shader
 }
 
 
@@ -159,6 +169,16 @@ void SceneGame::LoadData()
 		effect_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/effect.png", 192.0f, 128.0f, 3, 2, 64.0f, 64.0f);
 	}
 	
+
+	if (box_texture == nullptr)
+	{
+		box_texture = std::make_shared<Texture>(L"./Data/FBX/danbo_fbx/texture/danbo_face_c2.png");
+	}
+
+	if (box == nullptr)
+	{
+		box = std::make_unique<Skinned_mesh>("./Data/FBX/danbo_fbx/danbo_taiki.fbx", box_texture);
+	}
 
 	//選択したキャラクターをそれぞれ生成する
 	SetPlayerCharacter(player1p, FRAMEWORK.sceneselect.select_p1);
@@ -648,6 +668,7 @@ void SceneGame::Draw(float elapsed_time)
 	static DirectX::XMFLOAT4 light_direction = DirectX::XMFLOAT4(0, -1, 1, 0);
 	static DirectX::XMFLOAT4 ambient_color(0.3f, 0.3f, 0.3f, 0.5f);
 	static float anim_count = 0.0f;
+	static DirectX::XMFLOAT3 box_angle = { DirectX::XMConvertToRadians(-90.0f),0.0f,0.0f };
 #if USE_IMGUI
 	//ImGui
 	{
@@ -658,8 +679,13 @@ void SceneGame::Draw(float elapsed_time)
 		bool show_demo_window = true;
 		bool show_another_window = false;
 		static int number_id = 0;
+<<<<<<< HEAD
 		ImGui::SetNextWindowSize(ImVec2(400, 800), 2);
 		ImGui::Begin("param", &show_another_window);
+=======
+		ImGui::SetNextWindowSize(ImVec2(400, 400), 2);
+		ImGui::Begin("palam", &show_another_window);
+>>>>>>> Shader
 		//ImGui::Text("anim : %f", motion.anim_timer);
 		ImGui::Text("time : %f", timer);
 		//ImGui::InputFloat("scroll", &scall, 0.01f, 100.0f);
@@ -669,6 +695,7 @@ void SceneGame::Draw(float elapsed_time)
 		//ImGui::InputFloat("transX", &trans.x, 1.0f, 30.00f);
 		//ImGui::InputFloat("transY", &trans.y, 1.0f, 30.00f);
 		//ImGui::InputFloat("transZ", &trans.z, 1.0f, 30.00f);
+<<<<<<< HEAD
 		if(ImGui::TreeNode("light"))
 		{
 			ImGui::ColorEdit4("light_color", light_color);
@@ -698,6 +725,21 @@ void SceneGame::Draw(float elapsed_time)
 		YRCamera.SetFocus(focus);
 		YRCamera.SetPerspective(fov * 0.01745f, 1920.0f / 1080.0f, 0.0001f, 1000000.0f);
 
+=======
+		ImGui::ColorEdit4("light_color", light_color);
+		ImGui::InputFloat("light_direction.x", &light_direction.x, 0.1f, 0.1f);
+		ImGui::InputFloat("light_direction.y", &light_direction.y, 0.1f, 0.1f);
+		ImGui::InputFloat("light_direction.z", &light_direction.z, 0.1f, 0.1f);
+		ImGui::InputFloat("light_direction.w", &light_direction.w, 0.1f, 0.1f);
+		ImGui::InputFloat("ambient_color.x", &ambient_color.x, 0.01f, 0.01f);
+		ImGui::InputFloat("ambient_color.y", &ambient_color.y, 0.01f, 0.01f);
+		ImGui::InputFloat("ambient_color.z", &ambient_color.z, 0.01f, 0.01f);
+		ImGui::InputFloat("ambient_color.w", &ambient_color.w, 0.01f, 0.01f);
+
+		ImGui::InputFloat("box_angle.x", &box_angle.x, 0.01f, 0.01f);
+		ImGui::InputFloat("box_angle.y", &box_angle.y, 0.01f, 0.01f);
+		ImGui::InputFloat("box_angle.z", &box_angle.z, 0.01f, 0.01f);
+>>>>>>> Shader
 		ImGui::End();
 	}
 #endif
@@ -933,6 +975,14 @@ void SceneGame::Draw(float elapsed_time)
 	default:
 		break;
 	}
+
+	motion.DrawContinue(
+		skinShader.get(),
+		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+		DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
+		box_angle,
+		V, P, light_direction, lightColor, ambient_color, elapsed_time
+	);
 
 	//フェード用画像描画
 	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fedo_alpha));

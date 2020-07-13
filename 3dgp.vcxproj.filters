@@ -166,8 +166,13 @@
     <ClCompile Include="YRShader.cpp">
       <Filter>assistance\Sources</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="World.cpp">
       <Filter>assistance\Sources</Filter>
+=======
+    <ClCompile Include="Texture.cpp">
+      <Filter>Sources</Filter>
+>>>>>>> Shader
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -264,8 +269,13 @@
     <ClInclude Include="Knight.h">
       <Filter>Game\Character\Header</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="World.h">
       <Filter>assistance\Headers</Filter>
+=======
+    <ClInclude Include="Texture.h">
+      <Filter>Headers</Filter>
+>>>>>>> Shader
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

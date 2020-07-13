@@ -74,11 +74,24 @@ dcl_temps 8
 //   v8.x <- pin.wPos.x; v8.y <- pin.wPos.y; v8.z <- pin.wPos.z; 
 //   o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
 //
+<<<<<<< HEAD
 #line 81 "E:\ƒQ[ƒ€§ì\YRProject\Skinned_PS"
 sample_indexable(texture2d)(float,float,float,float) r0.xyzw, v2.xyxx, t0.xyzw, s0  // r0.x <- color.x; r0.y <- color.y; r0.z <- color.z; r0.w <- color.w
 dp4 r1.x, v1.xyzw, v1.xyzw
 rsq r1.x, r1.x
 mul r1.xyz, r1.xxxx, v1.yxzy  // r1.x <- N.y; r1.y <- N.x; r1.z <- N.z
+=======
+#line 4 "E:\ƒQ[ƒ€§ì\YRProject\Skinned_mesh."
+mov r0.xyz, l(0.800000,0.800000,0.600000,0)  // r0.x <- fogColor.x; r0.y <- fogColor.y; r0.z <- fogColor.z
+mov r0.w, l(20.000000)  // r0.w <- fogNear
+mov r1.x, l(50.000000)  // r1.x <- fogFar
+
+#line 81 "E:\ƒQ[ƒ€§ì\YRProject\Skinned_PS"
+sample_indexable(texture2d)(float,float,float,float) r2.xyzw, v2.xyxx, t0.xyzw, s0  // r2.x <- color.x; r2.y <- color.y; r2.z <- color.z; r2.w <- color.w
+dp4 r1.y, v1.xyzw, v1.xyzw
+rsq r1.y, r1.y
+mul r1.yzw, r1.yyyy, v1.yyxz  // r1.y <- N.y; r1.z <- N.x; r1.w <- N.z
+>>>>>>> Shader
 
 #line 85
 dp3 r1.w, v7.xyzx, v7.xyzx
