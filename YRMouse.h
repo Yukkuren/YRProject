@@ -18,7 +18,7 @@ private:
 	bool cursor_click = false;
 	YRMouse() {};
 public:
-	DirectX::XMFLOAT2 pos;
+	DirectX::XMFLOAT2 pos = { 0.0f,0.0f };
 
 	int left_state = 0;
 	int right_state = 0;

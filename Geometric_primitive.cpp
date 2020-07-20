@@ -5,110 +5,9 @@
 #include "framework.h"
 #include<map>
 
-
-//namespace ALL
-//{
-//	//HRESULT create_vertex(const char *cso_file, ID3D11VertexShader **vert, D3D11_INPUT_ELEMENT_DESC *layout, UINT numElements, ID3D11InputLayout **input)
-//	//{
-//
-//	//	struct Vertex_and_Layout
-//	//	{
-//	//		Vertex_and_Layout(ID3D11VertexShader *vert, ID3D11InputLayout *input) : pVertex(vert), pInput(input) {}
-//	//		Microsoft::WRL::ComPtr<ID3D11VertexShader> pVertex;
-//	//		Microsoft::WRL::ComPtr<ID3D11InputLayout> pInput;
-//	//	};
-//	//	static std::map<std::string, Vertex_and_Layout> cache;
-//
-//	//	auto it = cache.find(cso_file);
-//	//	if (it != cache.end())
-//	//	{
-//	//		*vert = it->second.pVertex.Get();
-//	//		(*vert)->AddRef();
-//	//		*input = it->second.pInput.Get();
-//	//		(*input)->AddRef();
-//	//		return S_OK;
-//	//	}
-//
-//
-//	//	HRESULT hr = S_OK;
-//	//	FILE *fp = 0;
-//
-//	//	fopen_s(&fp, cso_file, "rb");
-//	//	_ASSERT_EXPR_A(fp, "CSO File not found");
-//	//	fseek(fp, 0, SEEK_END);
-//	//	long cso_sz = ftell(fp);
-//	//	fseek(fp, 0, SEEK_SET);
-//	//	std::unique_ptr<unsigned char[]>cso_data = std::make_unique< unsigned char[]>(cso_sz);
-//	//	fread(cso_data.get(), cso_sz, 1, fp);
-//	//	fclose(fp);
-//
-//	//	hr = FRAMEWORK.device->CreateVertexShader(cso_data.get(), cso_sz, NULL, vert);
-//	//	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-//
-//	//	hr = FRAMEWORK.device->CreateInputLayout(layout, numElements, cso_data.get(),
-//	//		cso_sz, input);
-//	//	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-//
-//	//	cache.insert(std::make_pair(cso_file, Vertex_and_Layout(*vert, *input)));
-//	//	return hr;
-//	//}
-//
-//	//HRESULT CreatePixel(const char *ps_file, ID3D11PixelShader **pixel)
-//	//{
-//	//	static std::map < std::string, Microsoft::WRL::ComPtr<ID3D11PixelShader>> pixelcache;
-//
-//	//	auto it = pixelcache.find(ps_file);
-//	//	if (it != pixelcache.end())
-//	//	{
-//	//		*pixel = it->second.Get();
-//	//		(*pixel)->AddRef();
-//	//		return S_OK;
-//	//	}
-//
-//	//	HRESULT hr = S_OK;
-//
-//	//	FILE *fpp = 0;
-//
-//	//	fopen_s(&fpp, ps_file, "rb");
-//	//	_ASSERT_EXPR_A(fpp, "CSO File not found");
-//	//	fseek(fpp, 0, SEEK_END);
-//	//	long cso_szp = ftell(fpp);
-//	//	fseek(fpp, 0, SEEK_SET);
-//	//	std::unique_ptr<unsigned char[]>cso_datap = std::make_unique< unsigned char[]>(cso_szp);
-//	//	fread(cso_datap.get(), cso_szp, 1, fpp);
-//	//	fclose(fpp);
-//
-//	//	hr = FRAMEWORK.device->CreatePixelShader(cso_datap.get(), cso_szp, NULL, pixel);
-//	//	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-//
-//	//	//delete[]cso_datap;
-//
-//	//	pixelcache.insert(std::make_pair(ps_file, *pixel));
-//
-//	//	return hr;
-//	//}
-//}
-
 geometric_primitive::geometric_primitive()
 {
 	HRESULT hr = S_OK;
-	
-	//D3D11_INPUT_ELEMENT_DESC element_desc[] =
-	//{
-	//	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	//	{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	//};
-	//UINT numElements = ARRAYSIZE(element_desc);
-
-	//
-	////頂点シェーダーオブジェクト生成
-	////入力レイアウトオブジェクト生成
-	////ピクセルシェーダーオブジェクト生成
-	//ALL::create_vertex("./Data/Shader/geometric_primitive_vs.cso", &vertex_shader, element_desc, numElements, &input_layout);
-	//ALL::CreatePixel("./Data/Shader/geometric_primitive_ps.cso", &pixel_shader);
-
-
-		//geometric_primitive_ps.cso
 	//ラスタライザーステートオブジェクト生成
 	D3D11_RASTERIZER_DESC rasterizer_desc;
 
@@ -304,6 +203,7 @@ void  geometric_primitive::render(
 	UINT offset = 0;
 	//頂点バッファのバインド
 	FRAMEWORK.context->IASetVertexBuffers(0, 1, vertex_buffer.GetAddressOf(), &stride, &offset);
+
 	
 	//インデックスバッファのバインド
 	FRAMEWORK.context->IASetIndexBuffer(index_buffer.Get(), DXGI_FORMAT_R32_UINT, offset);

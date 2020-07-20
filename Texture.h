@@ -32,8 +32,8 @@ public:
 	bool Load(const wchar_t* fbx_filename);
 	void Set(UINT slot, BOOL flg = TRUE);
 
-	UINT GetWidth() { return texture2d_desc.Width; };
-	UINT GetHeight() { return texture2d_desc.Height; };
+	UINT GetWidth() const { return texture2d_desc.Width; };//画像の全体横サイズを返す
+	UINT GetHeight() const { return texture2d_desc.Height; };//画像の全体縦サイズを返す
 	bool Create(u_int width, u_int height, DXGI_FORMAT format);
 
 	//深度ステンシルバッファ作成

@@ -9,8 +9,9 @@ using namespace fbxsdk;
 #include<wrl.h>
 #include<Shlwapi.h>
 #include <codecvt>
-#include <locale>
 #include "framework.h"
+#include <locale>
+
 
 using convert_t = std::codecvt_utf8<wchar_t>;
 std::wstring_convert<convert_t, wchar_t> strconverter;
@@ -251,7 +252,7 @@ void fetch_animations(FbxMesh *fbx_mesh, Skinned_mesh::Skeletal_animation &skele
 
 		FbxTime sampling_step;
 		sampling_step.SetTime(0, 0, 1, 0, 0, time_mode);
-		sampling_step = static_cast<FbxLongLong>(sampling_step.Get() * sampling_time);
+		sampling_step = static_cast<FbxLongLong>(static_cast<float>(sampling_step.Get()) * sampling_time);
 		for (FbxTime current_time = start_time; current_time < end_time; current_time += sampling_step)
 		{ 
 			Skinned_mesh::skeletal skeletal;

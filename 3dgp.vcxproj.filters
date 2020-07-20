@@ -31,6 +31,15 @@
     <FxCompile Include="sprite_vs.hlsl">
       <Filter>Shader\SpriteShader</Filter>
     </FxCompile>
+    <FxCompile Include="AnimShader_vs.hlsl">
+      <Filter>Shader\AnimShader</Filter>
+    </FxCompile>
+    <FxCompile Include="AnimShader_ps.hlsl">
+      <Filter>Shader\AnimShader</Filter>
+    </FxCompile>
+    <FxCompile Include="AnimShader_gs.hlsl">
+      <Filter>Shader\AnimShader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="YR_VECTOR3.cpp">
@@ -135,6 +144,15 @@
     <ClCompile Include="SceneTest.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Board_primitive.cpp">
+      <Filter>Cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Sampler.cpp">
+      <Filter>Cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimBoard.cpp">
+      <Filter>Cpp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="YR_VECTOR3.h">
@@ -236,6 +254,15 @@
     <ClInclude Include="Tracking.h">
       <Filter>Game\asisst</Filter>
     </ClInclude>
+    <ClInclude Include="Board_primitive.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Sampler.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimBoard.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="board.hlsli">
@@ -252,6 +279,9 @@
     </None>
     <None Include="sprite.hlsli">
       <Filter>Shader\SpriteShader</Filter>
+    </None>
+    <None Include="AnimShader.hlsli">
+      <Filter>Shader\AnimShader</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -305,6 +335,9 @@
     </Filter>
     <Filter Include="Game\asisst">
       <UniqueIdentifier>{f7ed333f-2781-4345-8feb-625d58abd14f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\AnimShader">
+      <UniqueIdentifier>{ecbdc193-3721-4da3-9c1e-b2fdf60a4770}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

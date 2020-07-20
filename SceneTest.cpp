@@ -19,7 +19,17 @@ void SceneTest::Init()
 	if (geoShader == nullptr)
 	{
 		geoShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::GEO);
-		geoShader->Create("./Data/Shader/board_vs.cso", "./Data/Shader/board_ps.cso");
+		geoShader->Create("./Data/Shader/geometric_primitive_vs.cso", "./Data/Shader/geometric_primitive_ps.cso");
+	}
+	if (boardShader == nullptr)
+	{
+		boardShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::BOARD);
+		boardShader->Create("./Data/Shader/board_vs.cso", "./Data/Shader/board_ps.cso");
+	}
+	if (animShader == nullptr)
+	{
+		animShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::ANIM);
+		animShader->Create("./Data/Shader/AnimShader_vs.cso", "./Data/Shader/AnimShader_ps.cso", "./Data/Shader/AnimShader_gs.cso");
 	}
 
 	//ÉJÉÅÉâèâä˙ê›íË
@@ -32,6 +42,10 @@ void SceneTest::Init()
 	{
 		box_texture = std::make_shared<Texture>(L"./Data/FBX/danbo_fbx/texture/danbo_face_c2.png");
 	}
+	if (board_texture == nullptr)
+	{
+		board_texture = std::make_shared<Texture>(L"./Data/Image/UI/GameScene/effect.png");
+	}
 
 	if (box == nullptr)
 	{
@@ -40,6 +54,14 @@ void SceneTest::Init()
 	if (geo == nullptr)
 	{
 		geo = std::make_unique<geometric_primitive>();
+	}
+	if (board == nullptr)
+	{
+		board = std::make_unique<board_primitive>(board_texture);
+	}
+	if (anim == nullptr)
+	{
+		anim = std::make_unique<AnimBoard>(board_texture, 6,XMFLOAT2(64.0f,64.0f),XMINT2(3,2),XMFLOAT2(192.0f,128.0f));
 	}
 
 	motion.MeshSet(box);
@@ -67,6 +89,10 @@ void SceneTest::Init()
 		position_texture = std::make_unique<Texture>();
 		position_texture->Create(1280, 720, DXGI_FORMAT_R16G16B16A16_FLOAT);
 	}
+	if (sampler == nullptr)
+	{
+		sampler = std::make_shared<Sampler>(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP);
+	}
 }
 
 void SceneTest::Update(float elapsed_time)
@@ -81,7 +107,11 @@ void SceneTest::Draw(float elapsed_time)
 	static DirectX::XMFLOAT4 light_direction = DirectX::XMFLOAT4(0, -1, 1, 0);
 	static DirectX::XMFLOAT4 ambient_color(0.3f, 0.3f, 0.3f, 0.5f);
 	static float anim_count = 0.0f;
-	static DirectX::XMFLOAT3 box_angle = { DirectX::XMConvertToRadians(-90.0f),0.0f,0.0f };
+	//static DirectX::XMFLOAT3 box_angle = { DirectX::XMConvertToRadians(-90.0f),0.0f,0.0f };
+	static DirectX::XMFLOAT3 box_angle = { 0.0f,0.0f,0.0f };
+
+	static float off_x = 0.0f;
+	static float off_y = 0.0f;
 #if USE_IMGUI
 	//ImGui
 	{
@@ -130,6 +160,9 @@ void SceneTest::Draw(float elapsed_time)
 		ImGui::InputFloat("box_angle.x", &box_angle.x, 0.01f, 0.01f);
 		ImGui::InputFloat("box_angle.y", &box_angle.y, 0.01f, 0.01f);
 		ImGui::InputFloat("box_angle.z", &box_angle.z, 0.01f, 0.01f);
+
+		ImGui::InputFloat("offset.x", &off_x, 0.01f, 0.01f);
+		ImGui::InputFloat("offset.y", &off_y, 0.01f, 0.01f);
 	}
 #endif
 	DirectX::XMFLOAT4 lightColor(light_color[0], light_color[1], light_color[2], light_color[3]);
@@ -158,12 +191,36 @@ void SceneTest::Draw(float elapsed_time)
 
 	geo->render(
 		geoShader.get(),
-		DirectX::XMFLOAT3(3.0f, 0.0f, 0.0f),
-		DirectX::XMFLOAT3(5.0f, 3.0f, 0.0f),
+		DirectX::XMFLOAT3(5.0f, 5.0f, 0.0f),
+		DirectX::XMFLOAT3(1.0f, 1.0f, 0.0f),
 		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 		V,
 		P,
-		DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f)
+		DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)
 	);
 
+	sampler->Set(0);
+
+	board->render(
+		boardShader.get(),
+		DirectX::XMFLOAT3(-5.0f, 3.0f, 0.0f),
+		DirectX::XMFLOAT3(3.0f, 3.0f, 0.0f),
+		box_angle,
+		V,
+		P,
+		off_x,
+		off_y,
+		DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)
+	);
+
+	//sampler->Set(0);
+	anim->Render(
+		animShader.get(),
+		DirectX::XMFLOAT3(5.0f, 3.0f, 0.0f),
+		DirectX::XMFLOAT2(1.0f, 1.0f),
+		box_angle,
+		0.1f,
+		V, P,
+		elapsed_time
+	);
 }
