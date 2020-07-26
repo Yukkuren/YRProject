@@ -250,6 +250,35 @@ public:
 			}
 		}
 		return 0;
+		case WM_MOUSEMOVE:
+			//マウスを動かしたとき
+			pMouse.pos.x = static_cast<float>(LOWORD(lparam));
+			pMouse.pos.y = static_cast<float> (HIWORD(lparam));
+			if (wparam & MK_LBUTTON)
+			{
+				pMouse.SetLeft(true);
+			}
+			else
+			{
+				pMouse.SetLeft(false);
+			}
+			if (wparam & MK_RBUTTON)
+			{
+				pMouse.SetRight(true);
+			}
+			else
+			{
+				pMouse.SetRight(false);
+			}
+			if (wparam & MK_MBUTTON)
+			{
+				pMouse.SetCursor(true);
+			}
+			else
+			{
+				pMouse.SetCursor(false);
+			}
+			return 0;
 		case WM_LBUTTONDOWN:
 			//マウス左ボタン押下
 			pMouse.pos.x = static_cast<float>(LOWORD(lparam));

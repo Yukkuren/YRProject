@@ -15,7 +15,7 @@ void Knight::Init(YR_Vector3 InitPos)
 {
 	//ImGui::Begin("RYU HitBox");
 	pos = InitPos;
-	scale = YR_Vector3( 0.05f,0.05f,0.05f );
+	scale = YR_Vector3( 0.1f,0.1f,0.1f );
 	angle = YR_Vector3(DirectX::XMConvertToRadians(-90.0f), 0.0f, 0.0f);
 
 	speed.x = 0;
@@ -995,18 +995,19 @@ void Knight::Draw(
 	}
 
 	//ƒ‚ƒfƒ‹•`‰æ
-	/*base->Render(
+	base->Render(
+		shader,
 		pos.GetDXFLOAT3(),
 		scale.GetDXFLOAT3(),
 		angle.GetDXFLOAT3(),
-		view, projection, light_direction, light_color, ambient_color, elapsed_time, 1.0f);*/
-	motion.DrawContinue(
+		view, projection, light_direction, light_color, ambient_color, elapsed_time, 0.0f);
+	/*motion.DrawContinue(
 		shader,
 		pos.GetDXFLOAT3(),
 		scale.GetDXFLOAT3(),
 		angle.GetDXFLOAT3(),
 		view, projection, light_direction, light_color, ambient_color, elapsed_time
-	);
+	);*/
 
 
 	if (atk[scastI(KNIGHTATK::HADOU)].hit_ok)

@@ -12,7 +12,7 @@
 
 
 #define MAX_BONE_INFLUENCES 4
-#define BONE_MAX	(32)
+#define BONE_MAX	(128)
 
 struct bone_influence
 {

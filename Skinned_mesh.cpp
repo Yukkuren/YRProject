@@ -650,10 +650,10 @@ bool Skinned_mesh::Load(const char *fbx_filename)
 				int i = 0;
 				for (auto& p : point)
 				{
-					//assert(i >= 4);
 					vertex.bone_indices[i] = p.index;
 					vertex.bone_weights[i] = p.weight;
 					i++;
+					assert(i >= 4);
 					if (i >= MAX_BONE_INFLUENCES)
 					{
 						break;

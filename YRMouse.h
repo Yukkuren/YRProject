@@ -13,9 +13,9 @@
 class YRMouse
 {
 private:
-	bool left_click = false;
-	bool right_click = false;
-	bool cursor_click = false;
+	bool left_click = false;	//マウス左クリック
+	bool right_click = false;	//マウス右クリック
+	bool cursor_click = false;	//マウス中央クリック
 	YRMouse() {};
 public:
 	DirectX::XMFLOAT2 pos;

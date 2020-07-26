@@ -81,16 +81,16 @@ public:
 		return instance;
 	}*/
 
-	void DrawBox(ID3D11DeviceContext* context,float posX, float posY, float angle = 0.0f, DirectX::XMFLOAT4 color = { 1,1,1,0.5f })
+	void DrawBox(YRShader *shader,float posX, float posY, float angle = 0.0f, DirectX::XMFLOAT4 color = { 1,1,1,0.5f })
 	{
 		//FRAMEWORK.BlendSet(Blend::BLEND_MODE::ALPHA);
-		pColSprite.box->DrawRotaGraph(posX, posY, angle, boxsize, color);
+		pColSprite.box->DrawRotaGraph(shader,posX, posY, angle, boxsize, color);
 		//FRAMEWORK.BlendSet(Blend::BLEND_MODE::NONE);
 	}
-	void DrawCircle(ID3D11DeviceContext* context,float posX, float posY, float angle = 0.0f, DirectX::XMFLOAT4 color = { 1,1,1,0.5f })
+	void DrawCircle(YRShader *shader,float posX, float posY, float angle = 0.0f, DirectX::XMFLOAT4 color = { 1,1,1,0.5f })
 	{
 		//FRAMEWORK.BlendSet(Blend::BLEND_MODE::ALPHA);
-		pColSprite.circle->DrawCircleGraph(posX, posY, angle, circle_size, color);
+		pColSprite.circle->DrawCircleGraph(shader,posX, posY, angle, circle_size, color);
 		//FRAMEWORK.BlendSet(Blend::BLEND_MODE::NONE);
 	}
 };

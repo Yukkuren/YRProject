@@ -260,7 +260,8 @@ void SceneGame::StartSet()
 	YRCamera.SetFocus(DirectX::XMFLOAT3(0.0f, 5.0f, 0.0f));			//’Ž‹“_
 	YRCamera.SetUp(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));				//ã•ûŒü
 	YRCamera.SetPerspective(10.0f * 0.01745f, 1920.0f / 1080.0f, 0.0001f, 1000000.0f);
-	
+	//YRCamera.SetPerspective(1080.0f, 1920.0f, 0.0001f, 1000000.0f);
+
 }
 
 
@@ -675,6 +676,7 @@ void SceneGame::Draw(float elapsed_time)
 		DirectX::XMFLOAT3	focus = YRCamera.GetFocus();
 		float				fov = YRCamera.GetFov();
 		fov /= 0.01745f;
+		float				aspect = YRCamera.GetAspect();
 		bool show_demo_window = true;
 		bool show_another_window = false;
 		static int number_id = 0;
@@ -705,19 +707,34 @@ void SceneGame::Draw(float elapsed_time)
 		}
 		if (ImGui::TreeNode("Camera"))
 		{
-			ImGui::InputFloat("eye_X", &eye.x, 0.01f, 0.01f);
-			ImGui::InputFloat("eye_Y", &eye.y, 0.01f, 0.01f);
-			ImGui::InputFloat("eye_Z", &eye.z, 0.01f, 0.01f);
-			ImGui::InputFloat("focus_X", &focus.x, 0.01f, 0.01f);
-			ImGui::InputFloat("focus_Y", &focus.y, 0.01f, 0.01f);
-			ImGui::InputFloat("focus_Z", &focus.z, 0.01f, 0.01f);
+			ImGui::InputFloat("eye_X", &eye.x, 0.1f, 0.1f);
+			ImGui::InputFloat("eye_Y", &eye.y, 0.1f, 0.1f);
+			ImGui::InputFloat("eye_Z", &eye.z, 0.1f, 0.1f);
+			ImGui::InputFloat("focus_X", &focus.x, 0.1f, 0.1f);
+			ImGui::InputFloat("focus_Y", &focus.y, 0.1f, 0.1f);
+			ImGui::InputFloat("focus_Z", &focus.z, 0.1f, 0.1f);
 			ImGui::InputFloat("fov", &fov, 1.00f, 1.00f);
+			ImGui::InputFloat("aspect", &aspect, 1.00f, 1.00f);
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode("CameraSlider"))
+		{
+			ImGui::SliderFloat("eye_X", &eye.x, -350.1f, 350.1f);
+			ImGui::SliderFloat("eye_Y", &eye.y, -350.1f, 350.1);
+			ImGui::SliderFloat("eye_Z", &eye.z, -350.1f, 350.1);
+			ImGui::SliderFloat("focus_X", &focus.x, -350.1f, 350.1);
+			ImGui::SliderFloat("focus_Y", &focus.y, -350.1f, 350.1);
+			ImGui::SliderFloat("focus_Z", &focus.z, -350.1f, 350.1);
+			ImGui::SliderFloat("fov", &fov, 1, 360.00f);
+			ImGui::SliderFloat("aspect", &aspect, 0.1f, 10.0f);
 			ImGui::TreePop();
 		}
 
 		YRCamera.SetEye(eye);
 		YRCamera.SetFocus(focus);
-		YRCamera.SetPerspective(fov * 0.01745f, 1920.0f / 1080.0f, 0.0001f, 1000000.0f);
+		YRCamera.SetPerspective(fov* 0.01745f, aspect, 0.0001f, 1000000.0f);
+		//YRCamera.SetPerspective(fov, aspect, 0.0001f, 1000000.0f);
 		ImGui::InputFloat("box_angle.x", &box_angle.x, 0.01f, 0.01f);
 		ImGui::InputFloat("box_angle.y", &box_angle.y, 0.01f, 0.01f);
 		ImGui::InputFloat("box_angle.z", &box_angle.z, 0.01f, 0.01f);
@@ -903,16 +920,18 @@ void SceneGame::Draw(float elapsed_time)
 		);*/
 
 #if USE_IMGUI
-		player1p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
-		player2p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		/*player1p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player2p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);*/
 		
-		motion.DrawContinue(
+		/*motion.DrawContinue(
 		skinShader.get(),
 		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 		DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
 		box_angle,
 		V, P, light_direction, lightColor, ambient_color, elapsed_time
-	);
+	);*/
+
+		YRCamera.CameraMove(spriteShader.get());
 #endif // USE_IMGUI
 		
 

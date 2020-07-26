@@ -4,6 +4,7 @@
 #include <memory>
 #include"Geometric_primitive.h"
 #include"static_mesh.h"
+#include "collision.h"
 
 void BlendCreate(ID3D11Device *device, ID3D11BlendState **blendstate)
 {
@@ -363,6 +364,8 @@ bool framework::initialize()
 	{
 		fedo_img = std::make_unique<Sprite>(L"./Data/Shader/white_bourd.png", 1920.0f, 1080.0f);
 	}
+
+	pColSprite.SetSprite();
 
 	return true;
 }

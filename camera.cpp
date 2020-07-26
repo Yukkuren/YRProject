@@ -1,4 +1,6 @@
 #include "camera.h"
+#include "YRMouse.h"
+#include "collision.h"
 
 void Camera::Active()
 {
@@ -11,6 +13,12 @@ void Camera::Active()
 	DirectX::XMStoreFloat4x4(&view, V);
 
 	//投影変換行列
+	/*DirectX::XMMATRIX P = DirectX::XMMatrixOrthographicLH(
+		fov,
+		aspect,
+		nearZ,
+		farZ
+	);*/
 	DirectX::XMMATRIX P = DirectX::XMMatrixPerspectiveFovLH(
 		fov,
 		aspect,
@@ -72,4 +80,40 @@ const DirectX::XMFLOAT3& Camera::GetFocus()const
 const float& Camera::GetFov()const
 {
 	return fov;
+}
+
+const float& Camera::GetAspect()const
+{
+	return aspect;
+}
+
+void Camera::CameraMove(YRShader *shader)
+{
+	//マウスが右クリックされたら座標を保存する
+	if (pMouse.right_state == 1)
+	{
+		start_Pos = pMouse.pos;
+	}
+
+	if (pMouse.right_state > 1)
+	{
+		pColSprite.circle->DrawCircleGraph(shader, start_Pos.x, start_Pos.y, 0.0f, 5.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f));
+		if (start_Pos.x > pMouse.pos.x)
+		{
+			eye.x += 0.1f;
+		}
+		if (pMouse.pos.x > start_Pos.x)
+		{
+			eye.x -= 0.1f;
+		}
+
+		if (start_Pos.y > pMouse.pos.y)
+		{
+			eye.y += 0.1f;
+		}
+		if (pMouse.pos.y > start_Pos.y)
+		{
+			eye.y -= 0.1f;
+		}
+	}
 }

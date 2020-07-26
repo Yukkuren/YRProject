@@ -1,6 +1,8 @@
 #pragma once
 
 #include <DirectXMath.h>
+#include "YRShader.h"
+
 class Camera
 {
 private:
@@ -14,6 +16,10 @@ private:
 	float					nearZ;		//ニアクリップ面までの距離
 	float					farZ;		//ファークリップ面までの距離
 
+
+
+	DirectX::XMFLOAT2		start_Pos;	//カメラ移動開始時にカーソルの位置を保存する変数
+
 	Camera() {};
 public:
 	//行列更新
@@ -26,12 +32,15 @@ public:
 	void SetFocus(const DirectX::XMFLOAT3& focus);
 	void SetUp(const DirectX::XMFLOAT3& up);
 
+	void CameraMove(YRShader* shader);
+
 	//getter
 	const DirectX::XMFLOAT4X4& GetView()const;
 	const DirectX::XMFLOAT4X4& GetProjection()const;
 	const DirectX::XMFLOAT3& GetEye()const;
 	const DirectX::XMFLOAT3& GetFocus()const;
 	const float& GetFov()const;
+	const float& GetAspect()const;
 
 	static Camera &getInstance()
 	{
