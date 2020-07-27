@@ -132,6 +132,10 @@ public:
 		//scene->Update(timer.time_interval());
 	};
 
+	void SetViewPort(float width,float height);
+
+	bool CreateConstantBUffer(ID3D11Buffer** pCB, u_int size);
+
 	static framework& getInstance(HWND hwnd = nullptr)
 	{
 		static framework instance(hwnd);

@@ -655,3 +655,32 @@ void framework::render(float elapsed_time/*Elapsed seconds from last frame*/)
 	chain.Get()->Present(0, 0);
 }
 
+void framework::SetViewPort(float width, float height)
+{
+	D3D11_VIEWPORT vp = {};
+	vp.Width = (FLOAT)width;
+	vp.Height = (FLOAT)height;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+	context.Get()->RSSetViewports(1, &vp);
+}
+
+bool framework::CreateConstantBUffer(ID3D11Buffer** pCB, u_int size)
+{
+	D3D11_BUFFER_DESC buffer_desc{};
+	ZeroMemory(&buffer_desc, sizeof(D3D11_BUFFER_DESC));
+	buffer_desc.ByteWidth = size;
+	buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+	buffer_desc.CPUAccessFlags = 0;
+	buffer_desc.MiscFlags = 0;
+	buffer_desc.StructureByteStride = 0;
+
+	HRESULT hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, nullptr, pCB);
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	return true;
+}
+

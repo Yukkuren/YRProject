@@ -21,6 +21,7 @@ public:
 
 	board_primitive();
 	board_primitive(std::shared_ptr<Texture> tex);
+	board_primitive(const wchar_t* filename);
 
 	~board_primitive(){};
 

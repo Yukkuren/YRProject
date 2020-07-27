@@ -5,6 +5,7 @@
 #include "YRShader.h"
 #include<map>
 #include<string>
+#include "Texture.h"
 //#include "framework.h"
 
 //-------------------------------------------------------------
@@ -37,6 +38,7 @@ public:
 	float numY;						//画像縦分割数
 	int	num = 0;
 	float time = 0;
+	std::shared_ptr<Texture> texture = nullptr;
 public:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader>			vert;
 	Microsoft::WRL::ComPtr<ID3D11PixelShader>			pixel;
@@ -281,7 +283,7 @@ public:
 		render(shader, x, y, width, height, sx, sy, sw, sh, 0.0f, color.x, color.y, color.z, color.w);
 	}
 
-
+	Sprite();
 	Sprite(const wchar_t* wchar/*Texture file name*/);
 	Sprite(const wchar_t* wchar, float sw, float sh);
 	//画像分割読み込み(画像横サイズ,画像縦サイズ,画像横分割数,画像縦分割数,分割した画像一枚の横サイズ,縦サイズ)

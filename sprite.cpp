@@ -206,7 +206,8 @@ void Sprite::Init(const wchar_t* wchar)
 	sample.MipLODBias = 0.0f;
 	sample.MaxAnisotropy = 16;
 	sample.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	memcpy(sample.BorderColor, &DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), sizeof(DirectX::XMFLOAT4));
+	DirectX::XMFLOAT4 bColor = { 0.0f, 0.0f, 0.0f, 0.0f };
+	memcpy(sample.BorderColor, &bColor, sizeof(DirectX::XMFLOAT4));
 	sample.MinLOD = 0;
 	sample.MaxLOD = D3D11_FLOAT32_MAX;
 
@@ -255,6 +256,127 @@ void Sprite::Init(const wchar_t* wchar)
 
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 }
+
+Sprite::Sprite() : texture(nullptr)
+{
+	vertex vertics[] = {
+		{ DirectX::XMFLOAT3(0,0,0),DirectX::XMFLOAT4(1,1,1,1), DirectX::XMFLOAT2(0,0) },
+		{ DirectX::XMFLOAT3(0,0,0),DirectX::XMFLOAT4(1,1,1,1), DirectX::XMFLOAT2(0,0) },
+		{ DirectX::XMFLOAT3(0,0,0),DirectX::XMFLOAT4(1,1,1,1), DirectX::XMFLOAT2(0,0) },
+		{ DirectX::XMFLOAT3(0,0,0),DirectX::XMFLOAT4(1,1,1,1), DirectX::XMFLOAT2(0,0) },
+	};
+
+	HRESULT hr = S_OK;
+	//ID3DBlob* pVSBlob = NULL;
+
+	D3D11_BUFFER_DESC bd = {};
+	//ZeroMemory(&bd, sizeof(bd));
+	bd.Usage = D3D11_USAGE_DYNAMIC;
+	bd.ByteWidth = sizeof(vertics);
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	//bd.CPUAccessFlags = 0;
+	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	bd.MiscFlags = 0;
+	bd.StructureByteStride = 0;
+	D3D11_SUBRESOURCE_DATA InitData = {};
+	//ZeroMemory(&InitData, sizeof(InitData));
+	InitData.pSysMem = vertics;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	hr = FRAMEWORK.device->CreateBuffer(&bd, &InitData, buffer.GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	/*D3D11_INPUT_ELEMENT_DESC layout[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0 , DXGI_FORMAT_R32G32_FLOAT , 0 , D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+	UINT numElements = ARRAYSIZE(layout);
+
+	TextureALL::create_vertex_file(FRAMEWORK.device.Get(), "./Data/Shader/sprite_vs.cso", vert.GetAddressOf(), layout, numElements, input.GetAddressOf());
+
+	TextureALL::CreatePixel_files(FRAMEWORK.device.Get(), "./Data/Shader/sprite_ps.cso", pixel.GetAddressOf());*/
+
+	D3D11_RASTERIZER_DESC pRaster = {};
+	pRaster.FillMode = D3D11_FILL_SOLID;
+	pRaster.CullMode = D3D11_CULL_NONE;
+	pRaster.FrontCounterClockwise = FALSE;
+	pRaster.DepthBias = 0;
+	pRaster.DepthBiasClamp = 0;
+	pRaster.SlopeScaledDepthBias = 0;
+	pRaster.DepthClipEnable = FALSE;
+	pRaster.ScissorEnable = FALSE;
+	pRaster.MultisampleEnable = FALSE;
+	pRaster.AntialiasedLineEnable = FALSE;
+
+	hr = FRAMEWORK.device->CreateRasterizerState(&pRaster, rastersize.GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+
+
+	D3D11_SAMPLER_DESC sample;
+	//ID3D11SamplerState *samplestate;
+
+	sample.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	sample.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sample.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sample.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sample.MipLODBias = 0.0f;
+	sample.MaxAnisotropy = 16;
+	sample.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	DirectX::XMFLOAT4 bColor = { 0.0f, 0.0f, 0.0f, 0.0f };
+	memcpy(sample.BorderColor, &bColor, sizeof(DirectX::XMFLOAT4));
+	sample.MinLOD = 0;
+	sample.MaxLOD = D3D11_FLOAT32_MAX;
+
+
+	/*FLOAT color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	sample.BorderColor[0] = color[0];
+	sample.BorderColor[1] = color[1];
+	sample.BorderColor[2] = color[2];
+	sample.BorderColor[3] = color[3];*/
+
+
+	hr = FRAMEWORK.device->CreateSamplerState(&sample, sampler.GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	D3D11_DEPTH_STENCIL_DESC depth_desc;
+
+	depth_desc.DepthEnable = FALSE;
+	depth_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depth_desc.DepthFunc = D3D11_COMPARISON_LESS;
+	depth_desc.StencilEnable = FALSE;
+	depth_desc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+	depth_desc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+	depth_desc.FrontFace.StencilFunc = depth_desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depth_desc.FrontFace.StencilDepthFailOp = depth_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilPassOp = depth_desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilFailOp = depth_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+
+	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, depthstate.GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	/*D3D11_BLEND_DESC blend_desc;
+
+	blend_desc.AlphaToCoverageEnable = TRUE;
+	blend_desc.IndependentBlendEnable = FALSE;
+	blend_desc.RenderTarget[0].BlendEnable = FALSE;
+	blend_desc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	blend_desc.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
+	blend_desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blend_desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blend_desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blend_desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blend_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;*/
+
+	//hr = device->CreateBlendState(&blend_desc, &blendstate);
+
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+}
+
 
 Sprite::Sprite( const wchar_t* wchar)
 {

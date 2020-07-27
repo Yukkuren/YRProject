@@ -827,7 +827,8 @@ bool Skinned_mesh::Load(const char *fbx_filename)
 	sampler_desc.MipLODBias = 0.0f;
 	sampler_desc.MaxAnisotropy = 16;
 	sampler_desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	memcpy(sampler_desc.BorderColor, &DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), sizeof(DirectX::XMFLOAT4));
+	DirectX::XMFLOAT4 bColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	memcpy(sampler_desc.BorderColor, &bColor, sizeof(DirectX::XMFLOAT4));
 	sampler_desc.MinLOD = 0;
 	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
 
@@ -1129,9 +1130,9 @@ bool Skinned_mesh::Load(const char* fbx_filename, std::shared_ptr<Texture> tex)
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 	D3D11_BUFFER_DESC buffer_desc{};
-	D3D11_SUBRESOURCE_DATA subresource = {};
+	//D3D11_SUBRESOURCE_DATA subresource = {};
 	ZeroMemory(&buffer_desc, sizeof(D3D11_BUFFER_DESC));
-	ZeroMemory(&subresource, sizeof(D3D11_SUBRESOURCE_DATA));
+	//ZeroMemory(&subresource, sizeof(D3D11_SUBRESOURCE_DATA));
 	buffer_desc.ByteWidth = sizeof(cbuffer);
 	buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	buffer_desc.Usage = D3D11_USAGE_DEFAULT;
@@ -1152,7 +1153,8 @@ bool Skinned_mesh::Load(const char* fbx_filename, std::shared_ptr<Texture> tex)
 	sampler_desc.MipLODBias = 0.0f;
 	sampler_desc.MaxAnisotropy = 16;
 	sampler_desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	memcpy(sampler_desc.BorderColor, &DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), sizeof(DirectX::XMFLOAT4));
+	DirectX::XMFLOAT4 bColor = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	memcpy(sampler_desc.BorderColor, &bColor, sizeof(DirectX::XMFLOAT4));
 	sampler_desc.MinLOD = 0;
 	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
 
