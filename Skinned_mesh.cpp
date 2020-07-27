@@ -653,13 +653,13 @@ bool Skinned_mesh::Load(const char *fbx_filename)
 				{
 					vertex.bone_indices[i] = p.index;
 					vertex.bone_weights[i] = p.weight;
-					i++;
-					assert(i >= 4);
+					const char* name = fbx_mesh->GetName();
+					assert(i < MAX_BONE_INFLUENCES);
 					if (i >= MAX_BONE_INFLUENCES)
 					{
 						break;
 					}
-					
+					i++;
 				}
 
 
@@ -1474,6 +1474,7 @@ void Skinned_mesh::Render(
 			FRAMEWORK.context->UpdateSubresource(constant_buffer.Get(), 0, 0, &cb, 0, 0);
 			FRAMEWORK.context->VSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
 			FRAMEWORK.context->PSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
+			FRAMEWORK.context->GSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
 			if (texture)
 			{
 				texture->Set(0);

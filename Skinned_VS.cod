@@ -13,8 +13,8 @@
 //   float4 light_direction;            // Offset:  144 Size:    16 [unused]
 //   float4 light_color;                // Offset:  160 Size:    16 [unused]
 //   float4 ambient_color;              // Offset:  176 Size:    16 [unused]
-//   row_major float4x4 bone_transforms[32];// Offset:  192 Size:  2048
-//   float4 EyePos;                     // Offset: 2240 Size:    16
+//   row_major float4x4 bone_transforms[128];// Offset:  192 Size:  8192
+//   float4 EyePos;                     // Offset: 8384 Size:    16
 //
 // }
 //
@@ -60,7 +60,7 @@ dcl_immediateConstantBuffer { { 1.000000, 0, 0, 0},
                               { 0, -1, 0, 0},
                               { 0, 0, -1, 0},
                               { 0, 0, 0, -1} }
-dcl_constantbuffer CB0[141], dynamicIndexed
+dcl_constantbuffer CB0[525], dynamicIndexed
 dcl_input v0.xyzw
 dcl_input v1.xyz
 dcl_input v2.xy
@@ -190,7 +190,7 @@ add r2.xyz, r2.xyzx, r5.xyzx  // r2.x <- wP.x; r2.y <- wP.y; r2.z <- wP.z
 
 #line 68
 mov r5.xyz, -r2.xyzx
-add r5.xyz, r5.xyzx, cb0[140].xyzx
+add r5.xyz, r5.xyzx, cb0[524].xyzx
 dp3 r0.x, r5.xyzx, r5.xyzx
 rsq r0.x, r0.x
 mul r5.xyz, r0.xxxx, r5.xyzx  // r5.x <- E.x; r5.y <- E.y; r5.z <- E.z

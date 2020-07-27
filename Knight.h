@@ -49,7 +49,7 @@ public:
 	~Knight();
 	void Init(YR_Vector3 InitPos);
 	void Uninit();
-	void LoadData();
+	void LoadData(std::shared_ptr<Texture> texture = nullptr);
 	void Update(float decision, float elapsed_time);
 	void Draw(
 		YRShader				*shader,

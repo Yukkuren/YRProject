@@ -72,6 +72,11 @@ void SceneGame::Init()
 		geoShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::GEO);
 		geoShader->Create("./Data/Shader/geometric_primitive_vs.cso", "./Data/Shader/geometric_primitive_ps.cso");
 	}
+	if (toonShader == nullptr)
+	{
+		toonShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::TOON);
+		toonShader->Create("./Data/Shader/ToonShader_vs.cso", "./Data/Shader/ToonShader_ps.cso", "./Data/Shader/ToonShader_gs.cso");
+	}
 
 	//カメラ初期設定
 	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -140.0f));			//視点
@@ -110,6 +115,10 @@ void SceneGame::LoadData()
 	if (skin == nullptr)
 	{
 		skin = std::make_unique<Skinned_mesh>("./Data/FBX/knight.fbx");
+	}
+	if (knight2P_texture == nullptr)
+	{
+		knight2P_texture = std::make_shared<Texture>(L"./Data/FBX/knight_tex2P.png");
 	}
 	
 #if USE_IMGUI
@@ -186,7 +195,7 @@ void SceneGame::LoadData()
 	player1p->Init(PL.pos1P);
 	player2p->Init(PL.pos2P);
 	player1p->LoadData();
-	player2p->LoadData();
+	player2p->LoadData(knight2P_texture);
 	PL.HP_MAX1P = player1p->hp;
 	PL.HP_MAX2P = player2p->hp;
 	PL.ratio1P = player1p->hp / PL.HP_MAX1P * 800.0f;
@@ -246,6 +255,8 @@ void SceneGame::UnInit()
 	skinShader = nullptr;
 	geoShader.reset();
 	geoShader = nullptr;
+	toonShader.reset();
+	toonShader = nullptr;
 }
 
 
@@ -778,12 +789,12 @@ void SceneGame::Draw(float elapsed_time)
 	case SceneGame::INTRO1P:
 		//1Pのイントロ
 		//プレイヤー描画
-		player1p->Draw(skinShader.get(),V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player1p->Draw(toonShader.get(),V, P, light_direction, lightColor, ambient_color, elapsed_time);
 		break;
 	case SceneGame::INTRO2P:
 		//2Pのイントロ
 		//プレイヤー描画
-		player2p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player2p->Draw(toonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
 		break;
 	case SceneGame::READY:
 	case SceneGame::MAIN:
@@ -915,8 +926,8 @@ void SceneGame::Draw(float elapsed_time)
 		}
 
 		//プレイヤー描画
-		player1p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
-		player2p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player1p->Draw(toonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player2p->Draw(toonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
 		
 		/*skin->Render(
 			skinShader.get(), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
@@ -978,11 +989,11 @@ void SceneGame::Draw(float elapsed_time)
 		break;
 	case SceneGame::WIN1P:
 		//プレイヤー描画
-		player1p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player1p->Draw(toonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
 		break;
 	case SceneGame::WIN2P:
 		//プレイヤー描画
-		player2p->Draw(skinShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player2p->Draw(toonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
 		break;
 	case SceneGame::GAME_FIN:
 		break;

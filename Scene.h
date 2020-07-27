@@ -118,11 +118,13 @@ public:
 	std::unique_ptr<Skinned_mesh> box = nullptr;
 	std::shared_ptr<Texture> box_texture = nullptr;
 	MeshMotion motion;
+	std::shared_ptr<Texture> knight2P_texture = nullptr;
 
 	//シェーダー
 	std::unique_ptr<YRShader> skinShader = nullptr;
 	std::unique_ptr<YRShader> spriteShader = nullptr;
 	std::unique_ptr<YRShader> geoShader = nullptr;
+	std::unique_ptr<YRShader> toonShader = nullptr;
 
 	//プレイヤー管理系
 	PlayerALL						PL;
@@ -329,6 +331,7 @@ public:
 	std::unique_ptr<YRShader> geoShader = nullptr;
 	std::unique_ptr<YRShader> boardShader = nullptr;
 	std::unique_ptr<YRShader> animShader = nullptr;
+	std::unique_ptr<YRShader> toonShader = nullptr;
 
 	//テクスチャ
 	std::unique_ptr<Texture> color_texture = nullptr;

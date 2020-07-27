@@ -40,6 +40,15 @@
     <FxCompile Include="AnimShader_gs.hlsl">
       <Filter>Shader\AnimShader</Filter>
     </FxCompile>
+    <FxCompile Include="ToonShader_ps.hlsl">
+      <Filter>Shader\ToonShader</Filter>
+    </FxCompile>
+    <FxCompile Include="ToonShader_vs.hlsl">
+      <Filter>Shader\ToonShader</Filter>
+    </FxCompile>
+    <FxCompile Include="ToonShader_gs.hlsl">
+      <Filter>Shader\ToonShader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="YR_VECTOR3.cpp">
@@ -283,6 +292,9 @@
     <None Include="AnimShader.hlsli">
       <Filter>Shader\AnimShader</Filter>
     </None>
+    <None Include="ToonShader.hlsli">
+      <Filter>Shader\ToonShader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shader">
@@ -338,6 +350,9 @@
     </Filter>
     <Filter Include="Shader\AnimShader">
       <UniqueIdentifier>{ecbdc193-3721-4da3-9c1e-b2fdf60a4770}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\ToonShader">
+      <UniqueIdentifier>{07fd2593-2f9b-47c1-94e5-7f5b4e5cb6a7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

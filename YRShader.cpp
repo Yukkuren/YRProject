@@ -258,6 +258,17 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file)
 			VertextLayout.GetAddressOf());
 	}
 	break;
+	case INPUT_ELEMENT_DESC::TOON:
+	{
+		UINT numElements = YRINPUT_ELEMENT_DESC.toon_element_desc.size();
+		create_vertex(
+			VS_cso_file,
+			VSShader.GetAddressOf(),
+			YRINPUT_ELEMENT_DESC.toon_element_desc.data(),
+			numElements,
+			VertextLayout.GetAddressOf());
+	}
+	break;
 	default:
 		break;
 	}
@@ -331,6 +342,17 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file, const ch
 			VS_cso_file,
 			VSShader.GetAddressOf(),
 			YRINPUT_ELEMENT_DESC.anim_element_desc.data(),
+			numElements,
+			VertextLayout.GetAddressOf());
+	}
+	break;
+	case INPUT_ELEMENT_DESC::TOON:
+	{
+		UINT numElements = YRINPUT_ELEMENT_DESC.toon_element_desc.size();
+		create_vertex(
+			VS_cso_file,
+			VSShader.GetAddressOf(),
+			YRINPUT_ELEMENT_DESC.toon_element_desc.data(),
 			numElements,
 			VertextLayout.GetAddressOf());
 	}
@@ -413,6 +435,17 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file, const ch
 			VertextLayout.GetAddressOf());
 	}
 	break;
+	case INPUT_ELEMENT_DESC::TOON:
+	{
+		UINT numElements = YRINPUT_ELEMENT_DESC.toon_element_desc.size();
+		create_vertex(
+			VS_cso_file,
+			VSShader.GetAddressOf(),
+			YRINPUT_ELEMENT_DESC.toon_element_desc.data(),
+			numElements,
+			VertextLayout.GetAddressOf());
+	}
+	break;
 	default:
 		break;
 	}
@@ -488,6 +521,17 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file, const ch
 			VS_cso_file,
 			VSShader.GetAddressOf(),
 			YRINPUT_ELEMENT_DESC.anim_element_desc.data(),
+			numElements,
+			VertextLayout.GetAddressOf());
+	}
+	break;
+	case INPUT_ELEMENT_DESC::TOON:
+	{
+		UINT numElements = YRINPUT_ELEMENT_DESC.toon_element_desc.size();
+		create_vertex(
+			VS_cso_file,
+			VSShader.GetAddressOf(),
+			YRINPUT_ELEMENT_DESC.toon_element_desc.data(),
 			numElements,
 			VertextLayout.GetAddressOf());
 	}

@@ -64,12 +64,19 @@ void Knight::Init(YR_Vector3 InitPos)
 }
 
 
-void Knight::LoadData()
+void Knight::LoadData(std::shared_ptr<Texture> texture)
 {
 	if (base == nullptr)
 	{
 		//base = std::make_unique<Skinned_mesh>("./Data/FBX/danbo_fbx/danbo_taiki.fbx");
-		base = std::make_unique<Skinned_mesh>("./Data/FBX/knight.fbx");
+		if (texture != nullptr)
+		{
+			base = std::make_unique<Skinned_mesh>("./Data/FBX/knight.fbx",texture);
+		}
+		else
+		{
+			base = std::make_unique<Skinned_mesh>("./Data/FBX/knight.fbx");
+		}
 	}
 	motion.MeshSet(base);
 	motion.AnimReset();
@@ -995,19 +1002,19 @@ void Knight::Draw(
 	}
 
 	//ƒ‚ƒfƒ‹•`‰æ
-	base->Render(
+	/*base->Render(
 		shader,
 		pos.GetDXFLOAT3(),
 		scale.GetDXFLOAT3(),
 		angle.GetDXFLOAT3(),
-		view, projection, light_direction, light_color, ambient_color, elapsed_time, 0.0f);
-	/*motion.DrawContinue(
+		view, projection, light_direction, light_color, ambient_color, elapsed_time, 0.0f);*/
+	motion.DrawContinue(
 		shader,
 		pos.GetDXFLOAT3(),
 		scale.GetDXFLOAT3(),
 		angle.GetDXFLOAT3(),
 		view, projection, light_direction, light_color, ambient_color, elapsed_time
-	);*/
+	);
 
 
 	if (atk[scastI(KNIGHTATK::HADOU)].hit_ok)

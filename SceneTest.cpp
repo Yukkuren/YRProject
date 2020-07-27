@@ -31,6 +31,11 @@ void SceneTest::Init()
 		animShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::ANIM);
 		animShader->Create("./Data/Shader/AnimShader_vs.cso", "./Data/Shader/AnimShader_ps.cso", "./Data/Shader/AnimShader_gs.cso");
 	}
+	if (toonShader == nullptr)
+	{
+		toonShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::TOON);
+		toonShader->Create("./Data/Shader/ToonShader_vs.cso", "./Data/Shader/ToonShader_ps.cso", "./Data/Shader/ToonShader_gs.cso");
+	}
 
 	//ƒJƒƒ‰‰Šúİ’è
 	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -25));			//‹“_
@@ -49,7 +54,7 @@ void SceneTest::Init()
 
 	if (box == nullptr)
 	{
-		box = std::make_unique<Skinned_mesh>("./Data/FBX/danbo_fbx/danbo_taiki.fbx", box_texture);
+		box = std::make_unique<Skinned_mesh>("./Data/FBX/knight.fbx");
 	}
 	if (geo == nullptr)
 	{
@@ -114,7 +119,7 @@ void SceneTest::Draw(float elapsed_time)
 	static float off_y = 0.0f;
 #if USE_IMGUI
 	//ImGui
-	{
+	if(0){
 		DirectX::XMFLOAT3	eye = YRCamera.GetEye();
 		DirectX::XMFLOAT3	focus = YRCamera.GetFocus();
 		float				fov = YRCamera.GetFov();
@@ -179,48 +184,48 @@ void SceneTest::Draw(float elapsed_time)
 
 
 	//‰¼”wŒi
-	test->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 0.5f);
+	//test->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 0.5f);
 
 	motion.DrawContinue(
-		skinShader.get(),
+		toonShader.get(),
 		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 		DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
 		box_angle,
 		V, P, light_direction, lightColor, ambient_color, elapsed_time
 	);
 
-	geo->render(
-		geoShader.get(),
-		DirectX::XMFLOAT3(5.0f, 5.0f, 0.0f),
-		DirectX::XMFLOAT3(1.0f, 1.0f, 0.0f),
-		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-		V,
-		P,
-		DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)
-	);
-
-	sampler->Set(0);
-
-	board->render(
-		boardShader.get(),
-		DirectX::XMFLOAT3(-5.0f, 3.0f, 0.0f),
-		DirectX::XMFLOAT3(3.0f, 3.0f, 0.0f),
-		box_angle,
-		V,
-		P,
-		off_x,
-		off_y,
-		DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)
-	);
+	//geo->render(
+	//	geoShader.get(),
+	//	DirectX::XMFLOAT3(5.0f, 5.0f, 0.0f),
+	//	DirectX::XMFLOAT3(1.0f, 1.0f, 0.0f),
+	//	DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+	//	V,
+	//	P,
+	//	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)
+	//);
 
 	//sampler->Set(0);
-	anim->Render(
-		animShader.get(),
-		DirectX::XMFLOAT3(5.0f, 3.0f, 0.0f),
-		DirectX::XMFLOAT2(1.0f, 1.0f),
-		box_angle,
-		0.1f,
-		V, P,
-		elapsed_time
-	);
+
+	//board->render(
+	//	boardShader.get(),
+	//	DirectX::XMFLOAT3(-5.0f, 3.0f, 0.0f),
+	//	DirectX::XMFLOAT3(3.0f, 3.0f, 0.0f),
+	//	box_angle,
+	//	V,
+	//	P,
+	//	off_x,
+	//	off_y,
+	//	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)
+	//);
+
+	////sampler->Set(0);
+	//anim->Render(
+	//	animShader.get(),
+	//	DirectX::XMFLOAT3(5.0f, 3.0f, 0.0f),
+	//	DirectX::XMFLOAT2(1.0f, 1.0f),
+	//	box_angle,
+	//	0.1f,
+	//	V, P,
+	//	elapsed_time
+	//);
 }

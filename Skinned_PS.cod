@@ -13,8 +13,8 @@
 //   float4 light_direction;            // Offset:  144 Size:    16
 //   float4 light_color;                // Offset:  160 Size:    16
 //   float4 ambient_color;              // Offset:  176 Size:    16
-//   row_major float4x4 bone_transforms[32];// Offset:  192 Size:  2048 [unused]
-//   float4 EyePos;                     // Offset: 2240 Size:    16 [unused]
+//   row_major float4x4 bone_transforms[128];// Offset:  192 Size:  8192 [unused]
+//   float4 EyePos;                     // Offset: 8384 Size:    16 [unused]
 //
 // }
 //

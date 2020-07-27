@@ -1,4 +1,4 @@
-#define MAX_BONES 32
+#define MAX_BONES 128
 
 //フォグのパラメータ
 static const float3 fogColor = { 0.8,0.8,0.6 };

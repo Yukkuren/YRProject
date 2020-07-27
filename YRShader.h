@@ -58,6 +58,13 @@ private:
 		anim_element_desc.push_back(uv_pos);
 		anim_element_desc.push_back(uv_size);
 		anim_element_desc.push_back(color);
+
+		//toon
+		toon_element_desc.push_back(pos);
+		toon_element_desc.push_back(normal);
+		toon_element_desc.push_back(tex);
+		toon_element_desc.push_back(wight);
+		toon_element_desc.push_back(bone);
 	};
 public:
 	enum ShaderType
@@ -68,6 +75,7 @@ public:
 		GEO,
 		BOARD,
 		ANIM,
+		TOON,
 	};
 
 	std::vector<D3D11_INPUT_ELEMENT_DESC> skin_element_desc;
@@ -76,6 +84,7 @@ public:
 	std::vector<D3D11_INPUT_ELEMENT_DESC> geometric_element_desc;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> board_element_desc;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> anim_element_desc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> toon_element_desc;
 
 	static INPUT_ELEMENT_DESC &getInstance()
 	{

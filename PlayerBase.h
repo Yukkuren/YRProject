@@ -11,6 +11,7 @@
 #include "Tracking.h"
 #include <memory>
 #include "YRGamePad.h"
+#include "Texture.h"
 
 
 #define		POS_Y	(0.0f)
@@ -105,7 +106,7 @@ public:
 public:
 	//Šî–{ˆ—ŠÖ”
 	virtual void Init(YR_Vector3 InitPos) = 0;
-	virtual void LoadData() = 0;
+	virtual void LoadData(std::shared_ptr<Texture> texture =nullptr) = 0;
 	virtual void Uninit() = 0;
 	virtual void Update(float decision,float elapsed_time) = 0;
 	virtual void Draw(
