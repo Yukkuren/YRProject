@@ -70,7 +70,7 @@ void SceneGame::Init()
 	if (geoShader == nullptr)
 	{
 		geoShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::GEO);
-		geoShader->Create("./Data/Shader/board_vs.cso", "./Data/Shader/board_ps.cso");
+		geoShader->Create("./Data/Shader/geometric_primitive_vs.cso", "./Data/Shader/geometric_primitive_ps.cso");
 	}
 
 	//ƒJƒƒ‰‰Šúİ’è

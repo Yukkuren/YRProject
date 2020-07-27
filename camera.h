@@ -27,17 +27,9 @@ private:
 	float					nearZ = 0.0f;		//ニアクリップ面までの距離
 	float					farZ = 0.0f;		//ファークリップ面までの距離
 
-<<<<<<< HEAD
-
-
 	DirectX::XMFLOAT2		start_Pos;	//カメラ移動開始時にカーソルの位置を保存する変数
 
 	Camera() {};
-=======
-	Camera() 
-	{
-	};
->>>>>>> Shader
 public:
 	//行列更新
 	void Active();
