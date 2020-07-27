@@ -6,21 +6,38 @@
 class Camera
 {
 private:
-	DirectX::XMFLOAT4X4		view;		//視野変換行列
-	DirectX::XMFLOAT4X4		projection;	//投影変換行列
-	DirectX::XMFLOAT3		eye;		//視点
-	DirectX::XMFLOAT3		focus;		//注視点
-	DirectX::XMFLOAT3		up;			//上ベクトル
-	float					fov;		//画角
-	float					aspect;		//アスペクト比
-	float					nearZ;		//ニアクリップ面までの距離
-	float					farZ;		//ファークリップ面までの距離
+	DirectX::XMFLOAT4X4		view = 
+	{ 
+		0.0f,0.0f,0.0f,0.0f,
+		0.0f,0.0f,0.0f,0.0f,
+		0.0f,0.0f,0.0f,0.0f,
+		0.0f,0.0f,0.0f,0.0f };		//視野変換行列
+	DirectX::XMFLOAT4X4		projection = 
+	{ 
+		0.0f,0.0f,0.0f,0.0f,
+		0.0f,0.0f,0.0f,0.0f,
+		0.0f,0.0f,0.0f,0.0f,
+		0.0f,0.0f,0.0f,0.0f 
+	};	//投影変換行列
+	DirectX::XMFLOAT3		eye = { 0.0f,0.0f,0.0f };	//視点
+	DirectX::XMFLOAT3		focus = { 0.0f,0.0f,0.0f };		//注視点
+	DirectX::XMFLOAT3		up = { 0.0f,0.0f,0.0f };			//上ベクトル
+	float					fov = 0.0f;		//画角
+	float					aspect = 0.0f;		//アスペクト比
+	float					nearZ = 0.0f;		//ニアクリップ面までの距離
+	float					farZ = 0.0f;		//ファークリップ面までの距離
 
+<<<<<<< HEAD
 
 
 	DirectX::XMFLOAT2		start_Pos;	//カメラ移動開始時にカーソルの位置を保存する変数
 
 	Camera() {};
+=======
+	Camera() 
+	{
+	};
+>>>>>>> Shader
 public:
 	//行列更新
 	void Active();

@@ -36,16 +36,18 @@ dcl_output o0.xyzw
 dcl_temps 1
 //
 // Initial variable locations:
-//   v0.x <- pin.position.x; v0.y <- pin.position.y; v0.z <- pin.position.z; v0.w <- pin.position.w; 
-//   v1.x <- pin.tex.x; v1.y <- pin.tex.y; 
-//   v2.x <- pin.color.x; v2.y <- pin.color.y; v2.z <- pin.color.z; v2.w <- pin.color.w; 
+//   v0.x <- input.Position.x; v0.y <- input.Position.y; v0.z <- input.Position.z; v0.w <- input.Position.w; 
+//   v1.x <- input.Tex.x; v1.y <- input.Tex.y; 
+//   v2.x <- input.Color.x; v2.y <- input.Color.y; v2.z <- input.Color.z; v2.w <- input.Color.w; 
 //   o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
 //
-#line 5 "E:\ゲーム制作\YRProject\board_ps.hlsl"
-sample_indexable(texture2d)(float,float,float,float) r0.xyzw, v1.xyxx, t0.xyzw, s0
-mul r0.xyzw, r0.xyzw, v2.xyzw  // r0.x <- color.x; r0.y <- color.y; r0.z <- color.z; r0.w <- color.w
+#line 8 "E:\ゲーム制作\YRProject\AnimShader_ps.hlsl"
+sample_indexable(texture2d)(float,float,float,float) r0.xyzw, v1.xyxx, t0.xyzw, s0  // r0.x <- color.x; r0.y <- color.y; r0.z <- color.z; r0.w <- color.w
 
-#line 6
+#line 9
+mul r0.xyzw, r0.xyzw, v2.xyzw
+
+#line 10
 mov o0.xyzw, r0.xyzw
 ret 
 // Approximately 4 instruction slots used

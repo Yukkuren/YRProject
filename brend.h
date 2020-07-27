@@ -15,7 +15,7 @@ private:
 
 	}
 public:
-	ID3D11BlendState *blendstate[BLENDMAX];
+	ID3D11BlendState* blendstate[BLENDMAX];
 
 	enum
 	{

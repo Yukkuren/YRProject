@@ -14,6 +14,9 @@
 #include "sprite.h"
 #include "YRShader.h"
 #include "Geometric_primitive.h"
+#include "Board_primitive.h"
+#include "Sampler.h"
+#include "AnimBoard.h"
 
 enum class INPUT_PLAYER : int
 {
@@ -67,8 +70,8 @@ class SceneGame : public SceneBase
 private:
 	POINT mouse_pos;
 public:
-	float	timer;
-	int		sco[6];
+	float	timer = 0.0f;
+	int		sco[6] = { 0,0,0,0,0,0 };
 
 	enum MAIN_LOOP
 	{
@@ -129,14 +132,14 @@ public:
 	std::unique_ptr<GamepadBase>	pad2		= nullptr;
 
 	//ゲームループ制御変数
-	bool			pause;			//ポーズ中
-	bool			start;			//対戦開始
-	JUDGE_VICTORY	judge;			//勝敗の有無
-	float			start_timer;	//開始までの時間。Are You Ready?
-	bool			end;			//勝敗がついた
-	bool			fin;			//全て終わった
-	float			endtimer;		//勝敗がついてから勝利画面に移行するまでに使用
-	float			mix_fedo;		//フェードインの速度変更用
+	bool			pause = false;			//ポーズ中
+	bool			start = false;			//対戦開始
+	JUDGE_VICTORY	judge = NO_VICTORY;		//勝敗の有無
+	float			start_timer = 0.0f;		//開始までの時間。Are You Ready?
+	bool			end = false;			//勝敗がついた
+	bool			fin = false;			//全て終わった
+	float			endtimer = 0.0f;		//勝敗がついてから勝利画面に移行するまでに使用
+	float			mix_fedo = 0.0f;		//フェードインの速度変更用
 
 public:
 
@@ -174,8 +177,8 @@ class SceneTitle : public SceneBase
 public:
 	std::unique_ptr<Sprite> test = nullptr;
 	std::thread* t = NULL;
-	int					load_state;
-	bool				load_fin;
+	int					load_state = 0;
+	bool				load_fin = false;
 
 	GamePad1			g1;
 	GamePad2			g2;
@@ -189,14 +192,14 @@ public:
 	YR_Vector3			none_pos;
 	YR_Vector3			p1_pos;
 	YR_Vector3			p2_pos;
-	float				Rato;
-	bool				p1Enter;
-	bool				p2Enter;
-	float				timer;
-	bool				end;
+	float				Rato = 0.0f;
+	bool				p1Enter = false;
+	bool				p2Enter = false;
+	float				timer = 0.0f;
+	bool				end = false;
 
-	int					select_p1;
-	int					select_p2;
+	int					select_p1 = 0;
+	int					select_p2 = 0;
 
 public:
 	std::unique_ptr<Sprite>	knight_icon = nullptr;
@@ -216,8 +219,8 @@ public:
 class SceneClear : public SceneBase
 {
 public:
-	int sco[6];
-	int timer;
+	int sco[6] = { 0,0,0,0,0,0 };
+	float timer = 0.0f;
 	void Init();
 	void Update(float elapsed_time);
 	void Draw(float elapsed_time);
@@ -227,7 +230,7 @@ public:
 class SceneOver : public SceneBase
 {
 public:
-	int timer;
+	float timer = 0.0f;
 	void Init();
 	void Update(float elapsed_time);
 	void Draw(float elapsed_time);
@@ -238,9 +241,9 @@ class SceneLoad : public SceneBase
 public:
 	//ロード関係
 	std::thread* t = NULL;
-	int					load_state;
-	bool				load_fin;
-	bool				Game_load_fin;
+	int					load_state = 0;
+	bool				load_fin = false;
+	bool				Game_load_fin = false;
 
 	//ロード時の画像
 	std::unique_ptr<Sprite>	load_img = nullptr;
@@ -248,7 +251,7 @@ public:
 	//シェーダー
 	std::unique_ptr<YRShader> spriteShader = nullptr;
 
-	float timer;
+	float timer = 0.0f;
 	void Init();
 	void Update(float elapsed_time);
 	void Draw(float elapsed_time);
@@ -263,8 +266,8 @@ class SceneSelect : public SceneBase
 public:
 	//ロード関係
 	std::thread* t = NULL;
-	int					load_state;
-	bool				load_fin;
+	int					load_state = 0;
+	bool				load_fin = false;
 
 	//シェーダー
 	std::unique_ptr<YRShader> spriteShader = nullptr;
@@ -274,14 +277,14 @@ public:
 	YR_Vector3			p2;
 	YR_Vector3			knight_pos;
 	YR_Vector3			kenpos;
-	float				Rato;
-	bool				p1Enter;
-	bool				p2Enter;
-	float				timer;
-	bool				end;
+	float				Rato = 0.0f;
+	bool				p1Enter = false;
+	bool				p2Enter = false;
+	float				timer = 0.0f;
+	bool				end = false;
 	
-	int					select_p1;
-	int					select_p2;
+	int					select_p1 = 0;
+	int					select_p2 = 0;
 
 public:
 	std::unique_ptr<Sprite>	back_img = nullptr;
@@ -305,24 +308,33 @@ public:
 class SceneTest : public SceneBase
 {
 public:
-	float	timer;
+	float	timer = 0.0f;
 
 	std::unique_ptr<Sprite> test = nullptr;
 	std::unique_ptr<Skinned_mesh> box = nullptr;
 	std::shared_ptr<Texture> box_texture = nullptr;
+	std::shared_ptr<Texture> board_texture = nullptr;
 	MeshMotion motion;
 
 	std::unique_ptr<geometric_primitive>	geo = nullptr;
+	std::unique_ptr<board_primitive>		board = nullptr;
+	std::unique_ptr<AnimBoard>				anim = nullptr;
+
+	//サンプラー
+	std::shared_ptr<Sampler> sampler = nullptr;
 
 	//シェーダー
 	std::unique_ptr<YRShader> skinShader = nullptr;
 	std::unique_ptr<YRShader> spriteShader = nullptr;
 	std::unique_ptr<YRShader> geoShader = nullptr;
+	std::unique_ptr<YRShader> boardShader = nullptr;
+	std::unique_ptr<YRShader> animShader = nullptr;
 
 	//テクスチャ
 	std::unique_ptr<Texture> color_texture = nullptr;
 	std::unique_ptr<Texture> normal_texture = nullptr;
 	std::unique_ptr<Texture> position_texture = nullptr;
+	
 
 public:
 	void Init();

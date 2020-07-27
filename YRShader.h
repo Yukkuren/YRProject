@@ -16,6 +16,8 @@ private:
 	D3D11_INPUT_ELEMENT_DESC pos		=	{ "POSITION",	0,	DXGI_FORMAT_R32G32B32_FLOAT,	0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0 };
 	D3D11_INPUT_ELEMENT_DESC normal		=	{ "NORMAL",		0,	DXGI_FORMAT_R32G32B32_FLOAT,	0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0 };
 	D3D11_INPUT_ELEMENT_DESC tex		=	{ "TEXCOORD",	0,	DXGI_FORMAT_R32G32_FLOAT,		0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0 };
+	D3D11_INPUT_ELEMENT_DESC uv_pos		=	{ "UV_POS",	0,	DXGI_FORMAT_R32G32_FLOAT,		0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0 };
+	D3D11_INPUT_ELEMENT_DESC uv_size	=	{ "UV_SIZE",	0,	DXGI_FORMAT_R32G32_FLOAT,		0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0 };
 	D3D11_INPUT_ELEMENT_DESC wight		=	{ "WEIGHTS",	0,	DXGI_FORMAT_R32G32B32A32_FLOAT,	0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0 };
 	D3D11_INPUT_ELEMENT_DESC bone		=	{ "BONES",		0,	DXGI_FORMAT_R32G32B32A32_UINT,	0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0 };
 	D3D11_INPUT_ELEMENT_DESC color		=	{ "COLOR",		0,	DXGI_FORMAT_R32G32B32A32_FLOAT, 0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0 };
@@ -43,7 +45,19 @@ private:
 
 		//geometric
 		geometric_element_desc.push_back(pos);
-		geometric_element_desc.push_back(normal);
+
+		//board
+		board_element_desc.push_back(pos);
+		board_element_desc.push_back(normal);
+		board_element_desc.push_back(tex);
+		board_element_desc.push_back(color);
+
+		//anim
+		anim_element_desc.push_back(pos);
+		anim_element_desc.push_back(tex);
+		anim_element_desc.push_back(uv_pos);
+		anim_element_desc.push_back(uv_size);
+		anim_element_desc.push_back(color);
 	};
 public:
 	enum ShaderType
@@ -52,12 +66,16 @@ public:
 		STATIC,
 		SPRITE,
 		GEO,
+		BOARD,
+		ANIM,
 	};
 
 	std::vector<D3D11_INPUT_ELEMENT_DESC> skin_element_desc;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> static_element_desc;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> sprite_element_desc;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> geometric_element_desc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> board_element_desc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> anim_element_desc;
 
 	static INPUT_ELEMENT_DESC &getInstance()
 	{
