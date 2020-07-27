@@ -74,10 +74,10 @@ void SceneGame::Init()
 	}
 
 	//カメラ初期設定
-	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -25));			//視点
+	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -140.0f));			//視点
 	YRCamera.SetFocus(DirectX::XMFLOAT3(0.0f, 5.0f, 0.0f));			//注視点
 	YRCamera.SetUp(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));				//上方向
-	YRCamera.SetPerspective(30 * 0.01745f, 1920.0f / 1080.0f, 0.0001f, 1000000);
+	YRCamera.SetPerspective(10.0f * 0.01745f, 1920.0f / 1080.0f, 0.4f, 1000000.0f);
 	
 	//画像選択位置初期化
 	for (int i = 0; i < static_cast<int>(p1combo.size()); i++)
@@ -256,10 +256,10 @@ void SceneGame::StartSet()
 {
 	//イントロ終了後のゲーム画面のセット
 	//カメラ初期設定
-	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -100.0f));			//視点
+	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -140.0f));			//視点
 	YRCamera.SetFocus(DirectX::XMFLOAT3(0.0f, 5.0f, 0.0f));			//注視点
 	YRCamera.SetUp(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));				//上方向
-	YRCamera.SetPerspective(10.0f * 0.01745f, 1920.0f / 1080.0f, 0.0001f, 1000000.0f);
+	YRCamera.SetPerspective(10.0f * 0.01745f, 1920.0f / 1080.0f, 0.4f, 1000000.0f);
 	//YRCamera.SetPerspective(1080.0f, 1920.0f, 0.0001f, 1000000.0f);
 
 }
@@ -272,10 +272,10 @@ void SceneGame::FinSet()
 {
 	//ゲーム終了後のゲーム画面のセット
 	//カメラ初期設定
-	YRCamera.SetEye(DirectX::XMFLOAT3(0, 0, -25));			//視点
+	YRCamera.SetEye(DirectX::XMFLOAT3(0, 0, -140));			//視点
 	YRCamera.SetFocus(DirectX::XMFLOAT3(0, 0, 0));			//注視点
 	YRCamera.SetUp(DirectX::XMFLOAT3(0, 1, 0));				//上方向
-	YRCamera.SetPerspective(30 * 0.01745f, 1280.0f / 720.0f, 0.0001f, 1000000);
+	YRCamera.SetPerspective(30 * 0.01745f, 1280.0f / 720.0f, 0.4f, 1000000.0f);
 }
 
 
@@ -677,6 +677,8 @@ void SceneGame::Draw(float elapsed_time)
 		float				fov = YRCamera.GetFov();
 		fov /= 0.01745f;
 		float				aspect = YRCamera.GetAspect();
+		float				nearZ = YRCamera.GetNear();
+		float				farZ = YRCamera.GetFar();
 		bool show_demo_window = true;
 		bool show_another_window = false;
 		static int number_id = 0;
@@ -715,6 +717,8 @@ void SceneGame::Draw(float elapsed_time)
 			ImGui::InputFloat("focus_Z", &focus.z, 0.1f, 0.1f);
 			ImGui::InputFloat("fov", &fov, 1.00f, 1.00f);
 			ImGui::InputFloat("aspect", &aspect, 1.00f, 1.00f);
+			ImGui::InputFloat("near", &nearZ, 1.00f, 1.00f);
+			ImGui::InputFloat("far", &farZ, 1.00f, 1.00f);
 			ImGui::TreePop();
 		}
 
@@ -728,12 +732,14 @@ void SceneGame::Draw(float elapsed_time)
 			ImGui::SliderFloat("focus_Z", &focus.z, -350.1f, 350.1);
 			ImGui::SliderFloat("fov", &fov, 1, 360.00f);
 			ImGui::SliderFloat("aspect", &aspect, 0.1f, 10.0f);
+			ImGui::SliderFloat("near", &nearZ, 0.0f, 10.0f);
+			ImGui::SliderFloat("far", &farZ, 0.1f, 1000000.0f);
 			ImGui::TreePop();
 		}
 
 		YRCamera.SetEye(eye);
 		YRCamera.SetFocus(focus);
-		YRCamera.SetPerspective(fov* 0.01745f, aspect, 0.0001f, 1000000.0f);
+		YRCamera.SetPerspective(fov* 0.01745f, aspect, nearZ, farZ);
 		//YRCamera.SetPerspective(fov, aspect, 0.0001f, 1000000.0f);
 		ImGui::InputFloat("box_angle.x", &box_angle.x, 0.01f, 0.01f);
 		ImGui::InputFloat("box_angle.y", &box_angle.y, 0.01f, 0.01f);

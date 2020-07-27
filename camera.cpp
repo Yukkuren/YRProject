@@ -87,6 +87,16 @@ const float& Camera::GetAspect()const
 	return aspect;
 }
 
+const float& Camera::GetNear()const
+{
+	return nearZ;
+}
+
+const float& Camera::GetFar()const
+{
+	return farZ;
+}
+
 void Camera::CameraMove(YRShader *shader)
 {
 	//マウスが右クリックされたら座標を保存する

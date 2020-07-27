@@ -41,6 +41,8 @@ public:
 	const DirectX::XMFLOAT3& GetFocus()const;
 	const float& GetFov()const;
 	const float& GetAspect()const;
+	const float& GetNear()const;
+	const float& GetFar()const;
 
 	static Camera &getInstance()
 	{
