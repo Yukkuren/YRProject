@@ -32,7 +32,7 @@ void main(
 		float4 P = input[0].Position + float4(input[0].Normal, 0.0) * LW;
 		data.SV_Position = mul(P,world_view_projection);
 		data.SV_Position /= data.SV_Position.w;
-		data.Position = mul(input[0].Position, world);
+		data.Position = mul(P, world);
 		data.wNormal = -input[0].wNormal;
 		data.Tex = input[0].Tex;
 		data.Color = LC;
@@ -42,7 +42,7 @@ void main(
 		P = input[2].Position + float4(input[2].Normal, 0.0) * LW;
 		data.SV_Position = mul(P, world_view_projection);
 		data.SV_Position /= data.SV_Position.w;
-		data.Position = mul(input[2].Position, world);
+		data.Position = mul(P, world);
 		data.wNormal = -input[2].wNormal;
 		data.Tex = input[2].Tex;
 		data.Color = LC;
@@ -52,7 +52,7 @@ void main(
 		P = input[1].Position + float4(input[1].Normal, 0.0) * LW;
 		data.SV_Position = mul(P, world_view_projection);
 		data.SV_Position /= data.SV_Position.w;
-		data.Position = mul(input[1].Position, world);
+		data.Position = mul(P, world);
 		data.wNormal = -input[1].wNormal;
 		data.Tex = input[1].Tex;
 		data.Color = LC;

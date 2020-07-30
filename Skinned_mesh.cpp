@@ -9,8 +9,8 @@ using namespace fbxsdk;
 #include<wrl.h>
 #include<Shlwapi.h>
 #include <codecvt>
-#include "framework.h"
 #include <locale>
+#include "framework.h"
 
 
 using convert_t = std::codecvt_utf8<wchar_t>;
@@ -780,6 +780,20 @@ bool Skinned_mesh::Load(const char *fbx_filename)
 	hr = FRAMEWORK.device->CreateRasterizerState(&rasterizer_desc, filling_state.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
+
+	rasterizer_desc.FillMode = D3D11_FILL_SOLID;
+	rasterizer_desc.CullMode = D3D11_CULL_FRONT;
+	rasterizer_desc.FrontCounterClockwise = TRUE;
+	rasterizer_desc.DepthBias = 0;
+	rasterizer_desc.DepthBiasClamp = 0;
+	rasterizer_desc.SlopeScaledDepthBias = 0;
+	rasterizer_desc.DepthClipEnable = TRUE;
+	rasterizer_desc.ScissorEnable = FALSE;
+	rasterizer_desc.MultisampleEnable = FALSE;
+	rasterizer_desc.AntialiasedLineEnable = FALSE;
+	hr = FRAMEWORK.device->CreateRasterizerState(&rasterizer_desc, filling_state_inverse.GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
 	//深度ステンシルステートオブジェクト生成
 	D3D11_DEPTH_STENCIL_DESC depth_desc;
 
@@ -814,7 +828,7 @@ bool Skinned_mesh::Load(const char *fbx_filename)
 
 	//subresource.pSysMem = NULL;
 
-	hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, nullptr/*&subresource*/, constant_buffer.GetAddressOf());
+	hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, nullptr, constant_buffer.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 	D3D11_SAMPLER_DESC sampler_desc;
@@ -827,7 +841,8 @@ bool Skinned_mesh::Load(const char *fbx_filename)
 	sampler_desc.MipLODBias = 0.0f;
 	sampler_desc.MaxAnisotropy = 16;
 	sampler_desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	memcpy(sampler_desc.BorderColor, &DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), sizeof(DirectX::XMFLOAT4));
+	DirectX::XMFLOAT4 bColor = { 0.0f, 0.0f, 0.0f, 0.0f };
+	memcpy(sampler_desc.BorderColor, &bColor, sizeof(DirectX::XMFLOAT4));
 	sampler_desc.MinLOD = 0;
 	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
 
@@ -1110,6 +1125,20 @@ bool Skinned_mesh::Load(const char* fbx_filename, std::shared_ptr<Texture> tex)
 	hr = FRAMEWORK.device->CreateRasterizerState(&rasterizer_desc, filling_state.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
+
+	rasterizer_desc.FillMode = D3D11_FILL_SOLID;
+	rasterizer_desc.CullMode = D3D11_CULL_FRONT;
+	rasterizer_desc.FrontCounterClockwise = TRUE;
+	rasterizer_desc.DepthBias = 0;
+	rasterizer_desc.DepthBiasClamp = 0;
+	rasterizer_desc.SlopeScaledDepthBias = 0;
+	rasterizer_desc.DepthClipEnable = TRUE;
+	rasterizer_desc.ScissorEnable = FALSE;
+	rasterizer_desc.MultisampleEnable = FALSE;
+	rasterizer_desc.AntialiasedLineEnable = FALSE;
+	hr = FRAMEWORK.device->CreateRasterizerState(&rasterizer_desc, filling_state_inverse.GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
 	//深度ステンシルステートオブジェクト生成
 	D3D11_DEPTH_STENCIL_DESC depth_desc;
 
@@ -1152,7 +1181,8 @@ bool Skinned_mesh::Load(const char* fbx_filename, std::shared_ptr<Texture> tex)
 	sampler_desc.MipLODBias = 0.0f;
 	sampler_desc.MaxAnisotropy = 16;
 	sampler_desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	memcpy(sampler_desc.BorderColor, &DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), sizeof(DirectX::XMFLOAT4));
+	DirectX::XMFLOAT4 bColor = { 0.0f, 0.0f, 0.0f, 0.0f };
+	memcpy(sampler_desc.BorderColor, &bColor, sizeof(DirectX::XMFLOAT4));
 	sampler_desc.MinLOD = 0;
 	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
 
@@ -1336,6 +1366,7 @@ void Skinned_mesh::Render(
 	const DirectX::XMFLOAT4		&ambient_color,		//環境光
 	float						elapsed_time,
 	float						anime_count,
+	bool						inversion,
 	const DirectX::XMFLOAT4		material_color,	//材質色
 	const bool					viewflag		//線・塗りつぶし描画フラグ
 )
@@ -1348,24 +1379,51 @@ void Skinned_mesh::Render(
 	r = DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z);
 	//移動行列作成
 	t = DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
+	DirectX::XMFLOAT4X4 mirror =
+	{
+		-1,0,0,0,
+		0,1,0,0,
+		0,0,1,0,
+		0,0,0,1
+	};
+	DirectX::XMMATRIX	m = DirectX::XMLoadFloat4x4(&mirror);
+	DirectX::XMMATRIX V;
+	V = view;
+	//if (inversion)
+	//{
+	//	V = m * view;
+	//}
+	//else
+	//{
+	//	V = view;
+	//}
+	
 	//行列合成と変換
 	DirectX::XMMATRIX world_matrix = s*r*t;
 	DirectX::XMFLOAT4X4 world;
 	DirectX::XMStoreFloat4x4(&world, world_matrix);
 
-
+	
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
-
 	//ワールド・ビュー・プロジェクション行列作成
 	DirectX::XMFLOAT4X4 world_view_projection;
-	DirectX::XMStoreFloat4x4(&world_view_projection, world_matrix*view*projection);
+	DirectX::XMStoreFloat4x4(&world_view_projection, world_matrix* V*projection);
 	//context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	//ステート・シェーダー設定
 	if (viewflag)
 	{
 		FRAMEWORK.context->RSSetState(filling_state.Get());
+		/*if (inversion)
+		{
+			FRAMEWORK.context->RSSetState(filling_state_inverse.Get());
+		}
+		else
+		{
+			FRAMEWORK.context->RSSetState(filling_state.Get());
+		}*/
+		
 	}
 	else
 	{
@@ -1410,10 +1468,12 @@ void Skinned_mesh::Render(
 			{
 				
 				mesh.skeletal_animation.animation_tick = anime_count;
-				int frame = static_cast<int>(mesh.skeletal_animation.animation_tick / mesh.skeletal_animation.sampling_time);
-				if (frame > static_cast<int>(mesh.skeletal_animation.size()) - 1)
+				int index = static_cast<int>(mesh.skeletal_animation.animation_tick / mesh.skeletal_animation.sampling_time);
+				int indexR = index + 1;
+				if (index >= static_cast<int>(mesh.skeletal_animation.size()) - 1)
 				{
-					frame = static_cast<int>(mesh.skeletal_animation.size()) - 1;
+					index = static_cast<int>(mesh.skeletal_animation.size()) - 1;
+					indexR = index;
 					//mesh.skeletal_animation.animation_tick = 0;
 					//mesh.skeletal_animation.anim_fin = true;
 				}
@@ -1423,12 +1483,40 @@ void Skinned_mesh::Render(
 					skeletal2 = mesh.skeletal_animation.at(frame+1);
 				}*/
 				
-				std::vector<bone> &skeletal = mesh.skeletal_animation.at(frame);
+				std::vector<bone> &skeletal = mesh.skeletal_animation.at(static_cast<int>(index));
+				std::vector<bone>& skeletal2 = mesh.skeletal_animation.at(static_cast<int>(indexR));
 				size_t number_of_bones = skeletal.size();
 				_ASSERT_EXPR(number_of_bones < BONE_MAX, L"'the number_of_bones' exceeds MAX_BONES.");
 				for (size_t i = 0; i < number_of_bones; i++)
 				{
-					XMStoreFloat4x4(&cb.bone_transforms[i], XMLoadFloat4x4(&skeletal.at(i).transform));
+					//XMStoreFloat4x4(&cb.bone_transforms[i], XMLoadFloat4x4(&skeletal.at(i).transform));
+					float left = static_cast<float>(index)* mesh.skeletal_animation.sampling_time;
+					float right = static_cast<float>(index + 1)* mesh.skeletal_animation.sampling_time;
+					float t = (mesh.skeletal_animation.animation_tick - left) / (right - left);
+
+					XMVECTOR	S, R, T;
+					XMVECTOR	S2, R2, T2;
+					XMMatrixDecompose(&S, &R, &T, XMLoadFloat4x4(&skeletal.at(i).transform));
+					XMMatrixDecompose(&S2, &R2, &T2, XMLoadFloat4x4(&skeletal2.at(i).transform));
+
+					XMVECTOR	SA, RA, TA;
+					SA = XMVectorLerp(S, S2,t);
+					RA = XMQuaternionSlerp(R, R2, t);
+					TA = XMVectorLerp(T, T2, t);
+
+					XMFLOAT4 up = { 0,0,1,0 };
+					XMVECTOR up_v = XMLoadFloat4(&up);
+
+					XMVECTOR qaxis = XMQuaternionRotationAxis(up_v, XMConvertToRadians(180.0f));
+					
+					XMMATRIX W;
+					
+					W =
+						XMMatrixScalingFromVector(SA) *
+						XMMatrixRotationQuaternion(RA) *
+						XMMatrixTranslationFromVector(TA);
+
+					XMStoreFloat4x4(&cb.bone_transforms[i], W);
 					/*XMStoreFloat4x4(&cb.bone_transforms[i],
 						XMLoadFloat4x4(
 							&Interpolation(
@@ -1471,6 +1559,15 @@ void Skinned_mesh::Render(
 			cb.eyePos.y = YRCamera.GetEye().y;
 			cb.eyePos.z = YRCamera.GetEye().z;
 			cb.eyePos.w = 1.0f;
+
+			/*if (inversion)
+			{
+				cb.inverse = 1;
+			}
+			else
+			{
+				cb.inverse = 0;
+			}*/
 			FRAMEWORK.context->UpdateSubresource(constant_buffer.Get(), 0, 0, &cb, 0, 0);
 			FRAMEWORK.context->VSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
 			FRAMEWORK.context->PSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());

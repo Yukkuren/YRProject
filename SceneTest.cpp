@@ -54,7 +54,8 @@ void SceneTest::Init()
 
 	if (box == nullptr)
 	{
-		box = std::make_unique<Skinned_mesh>("./Data/FBX/knight.fbx");
+		//box = std::make_unique<Skinned_mesh>("./Data/FBX/Knight.fbx");
+		box = std::make_unique<Skinned_mesh>("./Data/FBX/danbo_fbx/danbo_taiki.fbx");
 	}
 	if (geo == nullptr)
 	{
@@ -119,7 +120,7 @@ void SceneTest::Draw(float elapsed_time)
 	static float off_y = 0.0f;
 #if USE_IMGUI
 	//ImGui
-	if(0){
+	if(1){
 		DirectX::XMFLOAT3	eye = YRCamera.GetEye();
 		DirectX::XMFLOAT3	focus = YRCamera.GetFocus();
 		float				fov = YRCamera.GetFov();
@@ -194,38 +195,38 @@ void SceneTest::Draw(float elapsed_time)
 		V, P, light_direction, lightColor, ambient_color, elapsed_time
 	);
 
-	//geo->render(
-	//	geoShader.get(),
-	//	DirectX::XMFLOAT3(5.0f, 5.0f, 0.0f),
-	//	DirectX::XMFLOAT3(1.0f, 1.0f, 0.0f),
-	//	DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-	//	V,
-	//	P,
-	//	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)
-	//);
+	geo->render(
+		geoShader.get(),
+		DirectX::XMFLOAT3(5.0f, 5.0f, 0.0f),
+		DirectX::XMFLOAT3(1.0f, 1.0f, 0.0f),
+		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+		V,
+		P,
+		DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)
+	);
+
+	sampler->Set(0);
+
+	board->render(
+		boardShader.get(),
+		DirectX::XMFLOAT3(-5.0f, 3.0f, 0.0f),
+		DirectX::XMFLOAT3(3.0f, 3.0f, 0.0f),
+		box_angle,
+		V,
+		P,
+		off_x,
+		off_y,
+		DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)
+	);
 
 	//sampler->Set(0);
-
-	//board->render(
-	//	boardShader.get(),
-	//	DirectX::XMFLOAT3(-5.0f, 3.0f, 0.0f),
-	//	DirectX::XMFLOAT3(3.0f, 3.0f, 0.0f),
-	//	box_angle,
-	//	V,
-	//	P,
-	//	off_x,
-	//	off_y,
-	//	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)
-	//);
-
-	////sampler->Set(0);
-	//anim->Render(
-	//	animShader.get(),
-	//	DirectX::XMFLOAT3(5.0f, 3.0f, 0.0f),
-	//	DirectX::XMFLOAT2(1.0f, 1.0f),
-	//	box_angle,
-	//	0.1f,
-	//	V, P,
-	//	elapsed_time
-	//);
+	anim->Render(
+		animShader.get(),
+		DirectX::XMFLOAT3(5.0f, 3.0f, 0.0f),
+		DirectX::XMFLOAT2(1.0f, 1.0f),
+		box_angle,
+		0.1f,
+		V, P,
+		elapsed_time
+	);
 }

@@ -47,7 +47,7 @@ float4 main(PSInput input) : SV_TARGET
 	float3 Kd = float3(1.0f, 1.0f, 1.0f);
 	float3 D = ToonDiffuse(N, L, C, Kd);
 
-	// ‹¾–Ê”½ŽË 
+	// ‹¾–Ê”½ŽË
 	float3 Ks = float3(1, 1, 1);
 	float3 S = ToonSpecular(N, L, C, E, Ks, 5);
 

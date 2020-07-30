@@ -111,6 +111,8 @@ loop
   mul r5.xyz, v0.yyyy, cb0[r4.x + 13].xyzx
   add r4.yzw, r4.yyzw, r5.xxyz
   mul r5.xyz, v0.zzzz, cb0[r4.x + 14].xyzx
+  add r4.yzw, r4.yyzw, r5.xxyz
+  mul r5.xyz, l(1.000000, 1.000000, 1.000000, 0.000000), cb0[r4.x + 15].xyzx
   add r4.xyz, r4.yzwy, r5.xyzx
   mul r4.xyz, r3.wwww, r4.xyzx
   add r2.xyz, r2.xyzx, r4.xyzx
@@ -142,11 +144,11 @@ mov r2.xyz, r2.xyzx  // r2.x <- input.Position.x; r2.y <- input.Position.y; r2.z
 #line 17
 mov r3.xyz, r3.xyzx  // r3.x <- input.Normal.x; r3.y <- input.Normal.y; r3.z <- input.Normal.z
 
-#line 20
+#line 29
 mov r2.xyz, r2.xyzx  // r2.x <- P.x; r2.y <- P.y; r2.z <- P.z
 mov r2.w, l(1.000000)  // r2.w <- P.w
 
-#line 22
+#line 31
 mul r0.xyzw, r3.xxxx, cb0[4].xyzw
 mul r1.xyzw, r3.yyyy, cb0[5].xyzw
 add r0.xyzw, r0.xyzw, r1.xyzw
@@ -156,32 +158,32 @@ dp4 r0.w, r0.xyzw, r0.xyzw
 rsq r0.w, r0.w
 mul r0.xyz, r0.wwww, r0.xyzx  // r0.x <- N.x; r0.y <- N.y; r0.z <- N.z
 
-#line 24
+#line 33
 mul r1.xyz, r2.xxxx, cb0[4].xyzx
 mul r4.xyz, r2.yyyy, cb0[5].xyzx
 add r1.xyz, r1.xyzx, r4.xyzx
 mul r4.xyz, r2.zzzz, cb0[6].xyzx
 add r1.xyz, r1.xyzx, r4.xyzx  // r1.x <- worldPos.x; r1.y <- worldPos.y; r1.z <- worldPos.z
 
-#line 26
+#line 35
 mov r2.xyzw, r2.xyzw  // r2.x <- output.Position.x; r2.y <- output.Position.y; r2.z <- output.Position.z; r2.w <- output.Position.w
 
-#line 27
-itof r4.xyzw, l(1, 1, 1, 1)  // r4.x <- output.Color.x; r4.y <- output.Color.y; r4.z <- output.Color.z; r4.w <- output.Color.w
+#line 36
+mov r4.xyzw, l(1.000000,1.000000,1.000000,1.000000)  // r4.x <- output.Color.x; r4.y <- output.Color.y; r4.z <- output.Color.z; r4.w <- output.Color.w
 
-#line 28
+#line 37
 mov r3.xyz, r3.xyzx  // r3.x <- output.Normal.x; r3.y <- output.Normal.y; r3.z <- output.Normal.z
 
-#line 29
+#line 38
 mov r5.xy, v2.xyxx  // r5.x <- output.Tex.x; r5.y <- output.Tex.y
 
-#line 30
+#line 39
 mov r0.xyz, r0.xyzx  // r0.x <- output.wNormal.x; r0.y <- output.wNormal.y; r0.z <- output.wNormal.z
 
-#line 31
+#line 40
 mov r1.xyz, r1.xyzx  // r1.x <- output.wPos.x; r1.y <- output.wPos.y; r1.z <- output.wPos.z
 
-#line 33
+#line 42
 mov o0.xyzw, r2.xyzw
 mov o3.xyzw, r4.xyzw
 mov o1.xyz, r3.xyzx
@@ -189,4 +191,4 @@ mov o4.xyz, r0.xyzx
 mov o5.xyz, r1.xyzx
 mov o2.xy, r5.xyxx
 ret 
-// Approximately 68 instruction slots used
+// Approximately 70 instruction slots used

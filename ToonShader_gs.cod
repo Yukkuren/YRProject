@@ -96,7 +96,7 @@ dcl_maxout 6
 //   v[2][5].x <- input[2].wPos.x; v[2][5].y <- input[2].wPos.y; v[2][5].z <- input[2].wPos.z
 //
 #line 3 "E:\ゲーム制作\YRProject\ToonShader.hlsli"
-mov r0.x, l(0.010000)  // r0.x <- LW
+mov r0.x, l(0.007000)  // r0.x <- LW
 
 #line 4
 itof r1.xyzw, l(0, 0, 0, -1)  // r1.x <- LC.x; r1.y <- LC.y; r1.z <- LC.z; r1.w <- LC.w
@@ -169,20 +169,20 @@ mul r4.xyzw, r2.yyyy, cb0[1].xyzw
 add r3.xyzw, r3.xyzw, r4.xyzw
 mul r4.xyzw, r2.zzzz, cb0[2].xyzw
 add r3.xyzw, r3.xyzw, r4.xyzw
-mul r2.xyzw, r2.wwww, cb0[3].xyzw
-add r2.xyzw, r2.xyzw, r3.xyzw  // r2.x <- data.SV_Position.x; r2.y <- data.SV_Position.y; r2.z <- data.SV_Position.z; r2.w <- data.SV_Position.w
+mul r4.xyzw, r2.wwww, cb0[3].xyzw
+add r3.xyzw, r3.xyzw, r4.xyzw  // r3.x <- data.SV_Position.x; r3.y <- data.SV_Position.y; r3.z <- data.SV_Position.z; r3.w <- data.SV_Position.w
 
 #line 34
-div r2.xyzw, r2.xyzw, r2.wwww
+div r3.xyzw, r3.xyzw, r3.wwww
 
 #line 35
-mul r3.xyzw, cb0[4].xyzw, v[0][0].xxxx
-mul r4.xyzw, cb0[5].xyzw, v[0][0].yyyy
-add r3.xyzw, r3.xyzw, r4.xyzw
-mul r4.xyzw, cb0[6].xyzw, v[0][0].zzzz
-add r3.xyzw, r3.xyzw, r4.xyzw
-mul r4.xyzw, cb0[7].xyzw, v[0][0].wwww
-add r3.xyzw, r3.xyzw, r4.xyzw  // r3.x <- data.Position.x; r3.y <- data.Position.y; r3.z <- data.Position.z; r3.w <- data.Position.w
+mul r4.xyzw, r2.xxxx, cb0[4].xyzw
+mul r5.xyzw, r2.yyyy, cb0[5].xyzw
+add r4.xyzw, r4.xyzw, r5.xyzw
+mul r5.xyzw, r2.zzzz, cb0[6].xyzw
+add r4.xyzw, r4.xyzw, r5.xyzw
+mul r2.xyzw, r2.wwww, cb0[7].xyzw
+add r2.xyzw, r2.xyzw, r4.xyzw  // r2.x <- data.Position.x; r2.y <- data.Position.y; r2.z <- data.Position.z; r2.w <- data.Position.w
 
 #line 36
 mov r0.yzw, -v[0][4].xxyz  // r0.y <- data.wNormal.x; r0.z <- data.wNormal.y; r0.w <- data.wNormal.z
@@ -197,8 +197,8 @@ mov r1.xyzw, r1.xyzw  // r1.x <- data.Color.x; r1.y <- data.Color.y; r1.z <- dat
 mov r5.xyz, v[0][5].xyzx  // r5.x <- data.wPos.x; r5.y <- data.wPos.y; r5.z <- data.wPos.z
 
 #line 41
-mov o0.xyzw, r2.xyzw
-mov o1.xyzw, r3.xyzw
+mov o0.xyzw, r3.xyzw
+mov o1.xyzw, r2.xyzw
 mov o2.xy, r4.xyxx
 mov o3.xyzw, r1.xyzw
 mov o4.xyz, r0.yzwy
@@ -217,20 +217,20 @@ mul r4.xyzw, r2.yyyy, cb0[1].xyzw
 add r3.xyzw, r3.xyzw, r4.xyzw
 mul r4.xyzw, r2.zzzz, cb0[2].xyzw
 add r3.xyzw, r3.xyzw, r4.xyzw
-mul r2.xyzw, r2.wwww, cb0[3].xyzw
-add r2.xyzw, r2.xyzw, r3.xyzw  // r2.x <- data.SV_Position.x; r2.y <- data.SV_Position.y; r2.z <- data.SV_Position.z; r2.w <- data.SV_Position.w
+mul r4.xyzw, r2.wwww, cb0[3].xyzw
+add r3.xyzw, r3.xyzw, r4.xyzw  // r3.x <- data.SV_Position.x; r3.y <- data.SV_Position.y; r3.z <- data.SV_Position.z; r3.w <- data.SV_Position.w
 
 #line 44
-div r2.xyzw, r2.xyzw, r2.wwww
+div r3.xyzw, r3.xyzw, r3.wwww
 
 #line 45
-mul r3.xyzw, cb0[4].xyzw, v[2][0].xxxx
-mul r4.xyzw, cb0[5].xyzw, v[2][0].yyyy
-add r3.xyzw, r3.xyzw, r4.xyzw
-mul r4.xyzw, cb0[6].xyzw, v[2][0].zzzz
-add r3.xyzw, r3.xyzw, r4.xyzw
-mul r4.xyzw, cb0[7].xyzw, v[2][0].wwww
-add r3.xyzw, r3.xyzw, r4.xyzw  // r3.x <- data.Position.x; r3.y <- data.Position.y; r3.z <- data.Position.z; r3.w <- data.Position.w
+mul r4.xyzw, r2.xxxx, cb0[4].xyzw
+mul r5.xyzw, r2.yyyy, cb0[5].xyzw
+add r4.xyzw, r4.xyzw, r5.xyzw
+mul r5.xyzw, r2.zzzz, cb0[6].xyzw
+add r4.xyzw, r4.xyzw, r5.xyzw
+mul r2.xyzw, r2.wwww, cb0[7].xyzw
+add r2.xyzw, r2.xyzw, r4.xyzw  // r2.x <- data.Position.x; r2.y <- data.Position.y; r2.z <- data.Position.z; r2.w <- data.Position.w
 
 #line 46
 mov r0.yzw, -v[2][4].xxyz
@@ -239,11 +239,11 @@ mov r0.yzw, -v[2][4].xxyz
 mov r4.xy, v[2][2].xyxx  // r4.x <- data.Tex.x; r4.y <- data.Tex.y
 
 #line 49
-mov r5.xyz, v[2][5].xyzx
+mov r5.xyz, v[2][5].xyzx  // r5.x <- data.wPos.x; r5.y <- data.wPos.y; r5.z <- data.wPos.z
 
 #line 50
-mov o0.xyzw, r2.xyzw
-mov o1.xyzw, r3.xyzw
+mov o0.xyzw, r3.xyzw
+mov o1.xyzw, r2.xyzw
 mov o2.xy, r4.xyxx
 mov o3.xyzw, r1.xyzw
 mov o4.xyz, r0.yzwy
@@ -262,33 +262,33 @@ mul r3.xyzw, r0.yyyy, cb0[1].xyzw
 add r2.xyzw, r2.xyzw, r3.xyzw
 mul r3.xyzw, r0.zzzz, cb0[2].xyzw
 add r2.xyzw, r2.xyzw, r3.xyzw
-mul r0.xyzw, r0.wwww, cb0[3].xyzw
-add r0.xyzw, r0.xyzw, r2.xyzw  // r0.x <- data.SV_Position.x; r0.y <- data.SV_Position.y; r0.z <- data.SV_Position.z; r0.w <- data.SV_Position.w
+mul r3.xyzw, r0.wwww, cb0[3].xyzw
+add r2.xyzw, r2.xyzw, r3.xyzw  // r2.x <- data.SV_Position.x; r2.y <- data.SV_Position.y; r2.z <- data.SV_Position.z; r2.w <- data.SV_Position.w
 
 #line 54
-div r0.xyzw, r0.xyzw, r0.wwww
+div r2.xyzw, r2.xyzw, r2.wwww
 
 #line 55
-mul r2.xyzw, cb0[4].xyzw, v[1][0].xxxx
-mul r3.xyzw, cb0[5].xyzw, v[1][0].yyyy
-add r2.xyzw, r2.xyzw, r3.xyzw
-mul r3.xyzw, cb0[6].xyzw, v[1][0].zzzz
-add r2.xyzw, r2.xyzw, r3.xyzw
-mul r3.xyzw, cb0[7].xyzw, v[1][0].wwww
-add r2.xyzw, r2.xyzw, r3.xyzw  // r2.x <- data.Position.x; r2.y <- data.Position.y; r2.z <- data.Position.z; r2.w <- data.Position.w
+mul r3.xyzw, r0.xxxx, cb0[4].xyzw
+mul r4.xyzw, r0.yyyy, cb0[5].xyzw
+add r3.xyzw, r3.xyzw, r4.xyzw
+mul r4.xyzw, r0.zzzz, cb0[6].xyzw
+add r3.xyzw, r3.xyzw, r4.xyzw
+mul r0.xyzw, r0.wwww, cb0[7].xyzw
+add r0.xyzw, r0.xyzw, r3.xyzw  // r0.x <- data.Position.x; r0.y <- data.Position.y; r0.z <- data.Position.z; r0.w <- data.Position.w
 
 #line 56
 mov r3.xyz, -v[1][4].xyzx  // r3.x <- data.wNormal.x; r3.y <- data.wNormal.y; r3.z <- data.wNormal.z
 
 #line 57
-mov r4.xy, v[1][2].xyxx
+mov r4.xy, v[1][2].xyxx  // r4.x <- data.Tex.x; r4.y <- data.Tex.y
 
 #line 59
 mov r5.xyz, v[1][5].xyzx
 
 #line 60
-mov o0.xyzw, r0.xyzw
-mov o1.xyzw, r2.xyzw
+mov o0.xyzw, r2.xyzw
+mov o1.xyzw, r0.xyzw
 mov o2.xy, r4.xyxx
 mov o3.xyzw, r1.xyzw
 mov o4.xyz, r3.xyzx

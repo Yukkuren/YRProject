@@ -49,11 +49,10 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader>			vertex_shader;
 	Microsoft::WRL::ComPtr<ID3D11PixelShader>			pixel_shader;
 	Microsoft::WRL::ComPtr<ID3D11InputLayout>			input_layout;
-	//ID3D11Buffer				*vertex_buffer;
-	//ID3D11Buffer				*index_buffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer>				constant_buffer;
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState>		line_state;
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState>		filling_state;
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState>		filling_state_inverse;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>		depth_state;
 	//ID3D11Resource				*pResouce;
 	D3D11_TEXTURE2D_DESC texture2d_desc;
@@ -110,10 +109,13 @@ public:
 		const DirectX::XMFLOAT4		&ambient_color,
 		//UNIT.23
 		float						elapsed_time,
-		float						anime_count,		//アニメのカウント
+		float						anime_count,		//アニメのカウント(通常は1.0f、早くしたい場合は減らす(？))
+		bool						inversion = false,	//反転させるかどうか
 		const DirectX::XMFLOAT4			material_color = { 1.0f,1.0f,1.0f,1.0f },
 		const bool						viewflag = true
 	);
+
+
 
 	void Render(
 		YRShader					*shader,
@@ -167,6 +169,10 @@ public:
 		DirectX::XMFLOAT4		ambient_color;
 		DirectX::XMFLOAT4X4		bone_transforms[BONE_MAX];
 		DirectX::XMFLOAT4		eyePos;
+		/*int						inverse;
+		int		dummy1;
+		int		dummy2;
+		int		dummy3;*/
 	};
 
 	struct material
@@ -283,6 +289,7 @@ public:
 		const DirectX::XMFLOAT4& light_color,
 		const DirectX::XMFLOAT4& ambient_color,
 		float						elapsed_time,
+		bool						inversion = true,
 		const DirectX::XMFLOAT4		material_color = { 1.0f,1.0f,1.0f,1.0f }
 	);
 
@@ -298,6 +305,7 @@ public:
 		const DirectX::XMFLOAT4& light_color,
 		const DirectX::XMFLOAT4& ambient_color,
 		float						elapsed_time,
+		bool						inversion = true,
 		const DirectX::XMFLOAT4		material_color = { 1.0f,1.0f,1.0f,1.0f }
 	);
 
@@ -312,6 +320,7 @@ public:
 		const DirectX::XMFLOAT4& light_direction,
 		const DirectX::XMFLOAT4& light_color,
 		const DirectX::XMFLOAT4& ambient_color,
+		bool						inversion = true,
 		const DirectX::XMFLOAT4		material_color = { 1.0f,1.0f,1.0f,1.0f }
 	);
 
@@ -327,6 +336,7 @@ public:
 		const DirectX::XMFLOAT4& light_color,
 		const DirectX::XMFLOAT4& ambient_color,
 		float						elapsed_time,
+		bool						inversion = true,
 		const DirectX::XMFLOAT4		material_color = { 1.0f,1.0f,1.0f,1.0f }
 	);
 

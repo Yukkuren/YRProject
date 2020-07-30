@@ -961,10 +961,13 @@ void Knight::Draw(
 	//　こういう処理を取らざるを得なかったと考えられる
 	//--------------------------------------------------------------------
 
+	bool inversion = true;//左右反転フラグ
+
 	//左向き
 	if (rightOrleft < 0)
 	{
-		angle.y = DirectX::XMConvertToRadians(70.0f);
+		angle.y = DirectX::XMConvertToRadians(180.0f);
+		inversion = true;
 		//多分これいらない
 		if (state == KYO)
 		{
@@ -984,7 +987,8 @@ void Knight::Draw(
 	//右向き
 	else
 	{
-		angle.y = DirectX::XMConvertToRadians(-70.0f);
+		angle.y = DirectX::XMConvertToRadians(0.0f);
+		inversion = false;
 		//というか絶対いらない
 		if (state == KYO)
 		{
@@ -1013,7 +1017,8 @@ void Knight::Draw(
 		pos.GetDXFLOAT3(),
 		scale.GetDXFLOAT3(),
 		angle.GetDXFLOAT3(),
-		view, projection, light_direction, light_color, ambient_color, elapsed_time
+		view, projection, light_direction, light_color, ambient_color, elapsed_time,
+		inversion
 	);
 
 

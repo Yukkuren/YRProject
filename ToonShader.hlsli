@@ -1,6 +1,6 @@
 #define MAX_BONES 128
 
-static const float LW = 0.01f;			//—ÖŠsü‚Ì‘¾‚³
+static const float LW = 0.007f;			//—ÖŠsü‚Ì‘¾‚³
 static const float4 LC = { 0,0,0,-1 };	//—ÖŠsü‚ÌF
 
 Texture2D DiffuseTexture : register(t0);
@@ -47,4 +47,8 @@ cbuffer CONSTANT_BUFFER : register(b0)
 	//UNIT.21
 	row_major float4x4 bone_transforms[MAX_BONES];
 	float4 EyePos;				//ƒJƒƒ‰À•W
+	/*int		inverse;
+	int		dummy1;
+	int		dummy2;
+	int		dummy3;*/
 };

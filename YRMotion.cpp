@@ -26,11 +26,12 @@ bool MeshMotion::Draw(
 	const DirectX::XMFLOAT4& light_color,
 	const DirectX::XMFLOAT4& ambient_color,
 	float						elapsed_time,
+	bool						inversion,
 	const DirectX::XMFLOAT4		material_color
 )
 {
 	anim_timer += elapsed_time;
-	skin->Render(shader,pos, scale, angle, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer, material_color);
+	skin->Render(shader,pos, scale, angle, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer, inversion,material_color);
 	if (skin->FinCheck())
 	{
 		return true;
@@ -50,11 +51,12 @@ void MeshMotion::DrawContinue(
 	const DirectX::XMFLOAT4& light_color,
 	const DirectX::XMFLOAT4& ambient_color,
 	float						elapsed_time,
+	bool						inversion,
 	const DirectX::XMFLOAT4		material_color
 )
 {
 	anim_timer += elapsed_time;
-	skin->Render(shader,pos, scale, angle, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer, material_color);
+	skin->Render(shader,pos, scale, angle, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer, inversion,material_color);
 	if (skin->FinCheck())
 	{
 		AnimReset();
@@ -72,10 +74,11 @@ void MeshMotion::DrawMesh(
 	const DirectX::XMFLOAT4& light_direction,
 	const DirectX::XMFLOAT4& light_color,
 	const DirectX::XMFLOAT4& ambient_color,
+	bool						inversion,
 	const DirectX::XMFLOAT4		material_color
 )
 {
-	skin->Render(shader,pos, scale, angle, view, projection, light_direction, light_color, ambient_color, 0.0f, 0.0f, material_color);
+	skin->Render(shader,pos, scale, angle, view, projection, light_direction, light_color, ambient_color, 0.0f, 0.0f,inversion, material_color);
 }
 
 //Œ»Ý‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚Ìó‘Ô‚Å’âŽ~•`‰æ
@@ -90,10 +93,11 @@ void MeshMotion::DrawStop(
 	const DirectX::XMFLOAT4& light_color,
 	const DirectX::XMFLOAT4& ambient_color,
 	float						elapsed_time,
+	bool						inversion,
 	const DirectX::XMFLOAT4		material_color
 )
 {
-	skin->Render(shader,pos, scale, angle, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer, material_color);
+	skin->Render(shader,pos, scale, angle, view, projection, light_direction, light_color, ambient_color, elapsed_time, anim_timer,inversion, material_color);
 }
 
 
