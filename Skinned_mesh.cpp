@@ -653,7 +653,7 @@ bool Skinned_mesh::Load(const char *fbx_filename)
 				{
 					vertex.bone_indices[i] = p.index;
 					vertex.bone_weights[i] = p.weight;
-					const char* name = fbx_mesh->GetName();
+					const char* nalme = fbx_mesh->GetName();
 					assert(i < MAX_BONE_INFLUENCES);
 					if (i >= MAX_BONE_INFLUENCES)
 					{

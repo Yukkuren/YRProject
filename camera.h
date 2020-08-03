@@ -31,6 +31,16 @@ private:
 
 	Camera() {};
 public:
+
+	enum CAMERA_STATE
+	{
+		MAIN = 0,
+		PLAYER1P,
+		PLAYER2P,
+	};
+
+	CAMERA_STATE camera_state = MAIN;
+
 	//çsóÒçXêV
 	void Active();
 

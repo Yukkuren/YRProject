@@ -163,12 +163,13 @@ public:
 
 public:
 	//ゲーム処理関数
-	void	SetPlayerCharacter(std::unique_ptr<Player>& player, int select);
-	void	PauseUpdate();
-	void	TrackSet();
-	void	FinUpdate();
-	void	StartSet();
-	void	FinSet();
+	void	SetPlayerCharacter(std::unique_ptr<Player>& player, int select);	//selectによってプレイヤーを生成する
+	void	PauseUpdate();		//ポーズ中行う処理
+	void	TrackSet();			//ホーミングダッシュ用の値を変更する
+	void	FinUpdate();		//ゲーム終了後の処理
+	void	StartSet();			//イントロ終了後のゲーム画面のセット(カメラ)
+	void	FinSet();			//ゲーム終了後のゲーム画面のセット(カメラ)
+	void	CameraUpdate();		//カメラのステートがMAINにある場合のカメラ処理を行う
 };
 
 

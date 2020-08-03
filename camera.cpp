@@ -13,12 +13,12 @@ void Camera::Active()
 	DirectX::XMStoreFloat4x4(&view, V);
 
 	//ìäâeïœä∑çsóÒ
-	/*DirectX::XMMATRIX P = DirectX::XMMatrixOrthographicLH(
-		fov,
-		aspect,
+	DirectX::XMMATRIX P1 = DirectX::XMMatrixOrthographicLH(
+		FRAMEWORK.SCREEN_WIDTH,
+		FRAMEWORK.SCREEN_HEIGHT,
 		nearZ,
 		farZ
-	);*/
+	);
 	DirectX::XMMATRIX P = DirectX::XMMatrixPerspectiveFovLH(
 		fov,
 		aspect,

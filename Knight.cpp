@@ -58,7 +58,8 @@ void Knight::Init(YR_Vector3 InitPos)
 	hadouspeed = 0.0f;
 	moveflag = false;
 	attack = FALSE;
-	state = NONE;
+	attack_state = AttackState::NONE;
+	act_state = ActState::NONE;
 	later = -1;
 	hadou = { pos.x + Getapply(100),pos.y };
 }
@@ -80,6 +81,17 @@ void Knight::LoadData(std::shared_ptr<Texture> texture)
 	}
 	motion.MeshSet(base);
 	motion.AnimReset();
+}
+
+bool Knight::AttackLoad()
+{
+
+	return true;
+}
+
+bool Knight::AttackWrite()
+{
+	return true;
 }
 
 void Knight::Uninit()
@@ -108,382 +120,61 @@ void Knight::Update(float decision, float elapsed_time)
 	//-----------------------------------------------------
 	// *概要*
 	//・攻撃を受けるなど操作不能の状態のみステートで区分けし、
-	//　それ以外は操作を受け付けるのでdefalutで処理している
+	//　それ以外は操作を受け付けるのでCANACTで処理している
 	//-----------------------------------------------------
-	switch (state)
+	switch (act_state)
 	{
-	case STATENONE:
+	case ActState::STATENONE:
 		//ステートを奪われた状態。相手に掴まれてる
 		StateNone();
 		break;
-	case WAKE:
+	case ActState::WAKE:
 		//ダウンから起き上がる
 		WakeUp();
 		break;
-	case PASSIVE:
+	case ActState::PASSIVE:
 		//受け身をとる
 		PassiveUpdate();
 		break;
-	case DOWN:
+	case ActState::DOWN:
 		//ダウン状態
 		DownUpdate();
 		break;
-	case FALL:
+	case ActState::FALL:
 		//空中でダウンしている状態
 		FallUpdate();
 		break;
-	case KNOCK:
+	case ActState::KNOCK:
 		//攻撃を受けてのけぞる
 		KnockUpdate();
 		break;
+	case ActState::ATTACK:
+		//攻撃中
+		Attack(decision, elapsed_time);
+		break;
 	default:
+		//その他個別処理
 		if (ground)
 		{
-			pos.y = POS_Y;
-			trackgauge = 2;
-			if (state == JUMP)
+			//地面設置時
+			pos.y = POS_Y;	//地面に設置しているときは高さを固定する
+			trackgauge = Track_max;	//ホーミングダッシュ回数を戻す
+			if (act_state == ActState::JUMP)
 			{
-				state = NONE;
+				//ステートがジャンプの時はNONEに戻す
+				act_state = ActState::NONE;
 			}
 		}
 		else
 		{
+			//空中時
 			if (pos.y < POS_Y)
 			{
-				/*speed.y += gravity;
-				if (speed.y > 30.0f)
-				{
-					speed.y = 30.0f;
-				}*/
+				//重力を付与する
 				pos.y += gravity;
 			}
 		}
 
-
-
-		//攻撃中の処理
-		if (attack)
-		{
-			//speed.x = 0;
-			if (ground)
-			{
-				if (speed.x > 0)
-				{
-					speed.x--;
-					if (speed.x < 0)
-					{
-						speed.x = 0;
-					}
-				}
-				if (speed.x < 0)
-				{
-					speed.x++;
-					if (speed.x > 0)
-					{
-						speed.x = 0;
-					}
-				}
-			}
-			for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
-			{
-				hit[i].guard = HitBox::NOGUARD;
-			}
-			switch (state)
-			{
-			case NONE:
-				break;
-			case WAIT:
-				//待機
-				finish = true;
-				later = -1;
-				attack = FALSE;
-				if (state != WAIT)
-				{
-					state = NONE;
-				}
-				for (int i = 0; i < scastI(KNIGHTATK::END); i++)
-				{
-					atk[i].Init();
-				}
-				break;
-			case MOVER://移動系は別で処理しているのでbreakしていない
-			case MOVEL://,,
-			case SLOW:
-				//投げ
-				Slow(elapsed_time);
-				break;
-			case STEAL:
-				//相手のステートを奪う。掴み
-				Steal(elapsed_time);
-				break;
-			case JAKU:
-				//弱攻撃
-				Jaku(elapsed_time);
-				//中攻撃(連打した場合は弱→中→強と繋がるように)
-				if (later > -1)
-				{
-					if (pad->x_input[static_cast<int>(PAD::X)] == 1)
-					{
-						pad->que.back().timer = 0;
-						FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-						attack = TRUE;
-						atk[scastI(KNIGHTATK::ONE)].start = FALSE;
-						later = -1;
-						for (int i = 0; i < scastI(KNIGHTATK::END); i++)
-						{
-							atk[i].Init();
-						}
-						moveflag = false;
-						atk[scastI(KNIGHTATK::ONE)].fin = FALSE;
-						if (ground)
-						{
-							//描画をセット
-						}
-						else
-						{
-							//描画をセット
-						}
-						state = THU;
-						pos.x += Getapply(50.0f);
-						specialfream = 2;
-					}
-					//下段中攻撃(コンボルート)
-					if (ground)
-					{
-						if (pad->x_input[static_cast<int>(PAD::Y)] == 1)
-						{
-							for (int atknum = 0; atknum < scastI(KNIGHTATK::END); atknum++)
-							{
-								if (atk[atknum].knock_start)
-								{
-									pad->que.back().timer = 0;
-									FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-									attack = TRUE;
-									atk[scastI(KNIGHTATK::ONE)].start = FALSE;
-									later = -1;
-									for (int i = 0; i < scastI(KNIGHTATK::END); i++)
-									{
-										atk[i].Init();
-									}
-									moveflag = false;
-									atk[scastI(KNIGHTATK::ONE)].fin = FALSE;
-									//描画をセット
-
-									state = D_THU;
-									pos.x += Getapply(50.0f);
-									specialfream = 3;
-									break;
-								}
-							}
-						}
-					}
-				}
-				break;
-			case THU:
-				//中攻撃
-				Thu(specialfream, elapsed_time);
-				if (later > -1)
-				{
-					if (pad->x_input[static_cast<int>(PAD::X)] == 1)
-					{
-						if (ground)
-						{
-							pad->que.back().timer = 0;
-							FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-							attack = TRUE;
-							atk[scastI(KNIGHTATK::ONE)].start = FALSE;
-							later = -1;
-							for (int i = 0; i < scastI(KNIGHTATK::END); i++)
-							{
-								atk[i].Init();
-							}
-							moveflag = false;
-							atk[scastI(KNIGHTATK::ONE)].fin = FALSE;
-							//描画をセット
-
-							state = KYO;
-							pos.x += Getapply(50.0f);
-							specialfream = 4;
-						}
-						else
-						{
-							pad->que.back().timer = 0;
-							FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-							attack = TRUE;
-							atk[scastI(KNIGHTATK::ONE)].start = FALSE;
-							later = -1;
-							for (int i = 0; i < scastI(KNIGHTATK::END); i++)
-							{
-								atk[i].Init();
-							}
-							moveflag = false;
-							atk[scastI(KNIGHTATK::ONE)].fin = FALSE;
-							//描画をセット
-
-							state = U_KYO;
-							pos.x += Getapply(50.0f);
-							specialfream = 4;
-							break;
-						}
-					}
-				}
-				break;
-			case KYO:
-				//強攻撃
-				Kyo(specialfream, elapsed_time);
-				if (later > -1)
-				{
-					if (pad->x_input[static_cast<int>(PAD::X)] == 1)
-					{
-						for (int atknum = 0; atknum < scastI(KNIGHTATK::END); atknum++)
-						{
-							if (atk[atknum].knock_start)
-							{
-								pad->que.back().timer = 0;
-								attack = TRUE;
-								atk[scastI(KNIGHTATK::ONE)].start = FALSE;
-								later = -1;
-								for (int i = 0; i < scastI(KNIGHTATK::END); i++)
-								{
-									atk[i].Init();
-								}
-								moveflag = false;
-								atk[scastI(KNIGHTATK::ONE)].fin = FALSE;
-								if (trackgauge > 0)
-								{
-									tracking.Init();
-									//描画をセット
-
-									state = TRACK_DASH;
-									pos.y -= 50.0f;
-									speed.y = 0.0f;
-									speed.x = 0.0f;
-									hightrigger = false;
-									jumpflag = false;
-									max_jump_flag = false;
-									speed_Y.Set(0.0f);
-									trackgauge--;
-								}
-								break;
-							}
-						}
-					}
-				}
-				break;
-			case D_THU:
-				//下段中攻撃
-				D_Thu(specialfream, elapsed_time);
-				if (later > -1)
-				{
-					if (pad->x_input[static_cast<int>(PAD::B)] == 1)
-					{
-						for (int atknum = 0; atknum < scastI(KNIGHTATK::END); atknum++)
-						{
-							if (atk[atknum].knock_start)
-							{
-								pad->que.back().timer = 0;
-								FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-								attack = TRUE;
-								atk[scastI(KNIGHTATK::ONE)].start = FALSE;
-								later = -1;
-								for (int i = 0; i < scastI(KNIGHTATK::END); i++)
-								{
-									atk[i].Init();
-								}
-								moveflag = false;
-								atk[scastI(KNIGHTATK::ONE)].fin = FALSE;
-								//描画をセット
-
-								state = U_KYO;
-								pos.x += Getapply(50.0f);
-								specialfream = 4;
-								break;
-							}
-						}
-					}
-				}
-				break;
-			case U_KYO:
-				//上段強攻撃
-				U_Kyo(specialfream, elapsed_time);
-				break;
-			case D_JAKU:
-				//下段弱攻撃
-				D_Jaku(elapsed_time);
-				break;
-			case HADOUKEN:
-				Hadouken(elapsed_time);
-				break;
-			case THU_HADOUKEN:
-				Thu_Hadouken(elapsed_time);
-				break;
-			case KYO_HADOUKEN:
-				Kyo_Hadouken(elapsed_time);
-				break;
-			case TRACK_DASH:
-				//ホーミングダッシュ
-				TrackDash(decision, elapsed_time);
-				break;
-			case P_KYO:
-				P_Kyo(elapsed_time);
-				break;
-			case EXTENDATK:
-				ExtendATK(elapsed_time);
-				break;
-			case PANISH_N:
-				Panish_N(elapsed_time);
-				break;
-			case PANISH_H:
-				Panish_H(elapsed_time);
-				break;
-			}
-
-
-			//攻撃判定の終了フラグが出たら後隙を決定し減らす処理を行う
-			for (int atknum = 0; atknum < scastI(KNIGHTATK::END); atknum++)
-			{
-				if (atk[atknum].fin)
-				{
-					if (later == -1)
-					{
-						later = atk[atknum].later;
-					}
-					later--;
-				}
-			}
-			//後隙中にキャンセルして技を行えるかチェックする
-			if (later > 0)
-			{
-				CancelList();
-			}
-
-			//後隙消費後元のステートに戻す
-			if (later == 0)
-			{
-				finish = true;
-				later = -1;
-				attack = FALSE;
-				//atk[scastI(RYUATK::ONE)].start = FALSE;
-				if (ground)
-				{
-					if (state != WAIT)
-					{
-						state = NONE;
-					}
-				}
-				else
-				{
-					state = JUMP;
-					//描画をセット
-
-				}
-				for (int i = 0; i < scastI(KNIGHTATK::END); i++)
-				{
-					atk[i].Init();
-				}
-			}
-		}
-		else
 		{
 		//攻撃を行っていないときの処理
 			if (ground && !step)
@@ -514,12 +205,12 @@ void Knight::Update(float decision, float elapsed_time)
 			GuardAnimSet();
 
 			//しゃがみ、ガードのどちらでもない時
-			if (state != SQUAT && state != GUARD)
+			if (act_state != ActState::SQUAT && act_state != ActState::GUARD)
 			{
 				Step();
 				if (step)
 				{
-
+					//ステップ中は処理しない
 				}
 				else
 				{
@@ -547,14 +238,14 @@ void Knight::Update(float decision, float elapsed_time)
 							pad->que.back().timer = 0;
 							attack = TRUE;
 							moveflag = false;
+							act_state = ActState::ATTACK;
 							//コマンド判定
 							int command = pad->com_list.CommandCheack(scastI(PAD::X), pad->input_history.data(), rightOrleft);
 							if (command == CommandList::RHURF)
 							{
 								//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
 								//描画をセット
-
-								state = HADOUKEN;
+								attack_state = AttackState::JAKU_RHURF;
 								//pos.x += Getapply(50.0f);
 								specialfream = 0;
 							}
@@ -562,14 +253,14 @@ void Knight::Update(float decision, float elapsed_time)
 							{
 								//描画をセット
 
-								state = PANISH_N;
+								attack_state = AttackState::JAKU_LHURF;
 								specialfream = 0;
 							}
 							else
 							{
 								//描画をセット
 
-								state = JAKU;
+								attack_state = AttackState::JAKU;
 							}
 						}
 
@@ -579,20 +270,21 @@ void Knight::Update(float decision, float elapsed_time)
 							pad->que.back().timer = 0;
 							attack = TRUE;
 							moveflag = false;
+							act_state = ActState::ATTACK;
 							//コマンド判定
 							int command = pad->com_list.CommandCheack(scastI(PAD::Y), pad->input_history.data(), rightOrleft);
 							if (command == CommandList::RHURF)
 							{
 								//描画をセット
 
-								state = THU_HADOUKEN;
+								attack_state = AttackState::THU_RHURF;
 								specialfream = 0;
 							}
 							else if (command == CommandList::LHURF)
 							{
 								//描画をセット
 
-								state = PANISH_H;
+								attack_state = AttackState::THU_LHURF;
 								specialfream = 0;
 							}
 							else
@@ -600,7 +292,7 @@ void Knight::Update(float decision, float elapsed_time)
 								FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
 								//描画をセット
 
-								state = D_THU;
+								attack_state = AttackState::D_THU;
 								pos.x += Getapply(50.0f);
 							}
 						}
@@ -611,6 +303,7 @@ void Knight::Update(float decision, float elapsed_time)
 							pad->que.back().timer = 0;
 							attack = TRUE;
 							moveflag = false;
+							act_state = ActState::ATTACK;
 							//コマンド判定
 							int command = pad->com_list.CommandCheack(scastI(PAD::B), pad->input_history.data(), rightOrleft);
 							if (command == CommandList::LHURF)
@@ -620,7 +313,7 @@ void Knight::Update(float decision, float elapsed_time)
 									//描画をセット
 
 									FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-									state = P_KYO;
+									attack_state = AttackState::KYO_LHURF;
 									//エフェクトセット
 
 									pos.x = tracking.rival_Pos.x - Getapply(100.0f);
@@ -631,7 +324,7 @@ void Knight::Update(float decision, float elapsed_time)
 								{
 									//描画をセット
 
-									state = PANISH_H;
+									attack_state = AttackState::THU_LHURF;
 									specialfream = 0;
 								}
 							}
@@ -642,7 +335,7 @@ void Knight::Update(float decision, float elapsed_time)
 									//エフェクトセット
 									//描画をセット
 
-									state = KYO_HADOUKEN;
+									attack_state = AttackState::KYO_RHURF;
 									specialfream = 0;
 									power--;
 								}
@@ -650,7 +343,7 @@ void Knight::Update(float decision, float elapsed_time)
 								{
 									//描画をセット
 
-									state = THU_HADOUKEN;
+									attack_state = AttackState::THU_RHURF;
 									specialfream = 0;
 								}
 							}
@@ -659,7 +352,7 @@ void Knight::Update(float decision, float elapsed_time)
 								FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
 								//描画をセット
 
-								state = U_KYO;
+								attack_state = AttackState::U_KYO;
 								pos.x += Getapply(50.0f);
 							}
 						}
@@ -670,9 +363,10 @@ void Knight::Update(float decision, float elapsed_time)
 							pad->que.back().timer = 0;
 							attack = TRUE;
 							moveflag = false;
+							act_state = ActState::ATTACK;
 							//描画をセット
 
-							state = STEAL;
+							attack_state = AttackState::STEAL;
 						}
 
 
@@ -687,9 +381,10 @@ void Knight::Update(float decision, float elapsed_time)
 							pad->que.back().timer = 0;
 							attack = TRUE;
 							moveflag = false;
+							act_state = ActState::ATTACK;
 							//描画をセット
 
-							state = JAKU;
+							attack_state = AttackState::JAKU;
 
 							//pad->com_list.Reset();
 						}
@@ -701,9 +396,10 @@ void Knight::Update(float decision, float elapsed_time)
 							FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
 							attack = TRUE;
 							moveflag = false;
+							act_state = ActState::ATTACK;
 							//描画をセット
 
-							state = THU;
+							attack_state = AttackState::THU;
 							pos.x += Getapply(50.0f);
 							specialfream = 0;
 						}
@@ -715,9 +411,10 @@ void Knight::Update(float decision, float elapsed_time)
 							FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
 							attack = TRUE;
 							moveflag = false;
+							act_state = ActState::ATTACK;
 							//描画をセット
 
-							state = U_KYO;
+							attack_state = AttackState::U_KYO;
 							pos.x += Getapply(50.0f);
 							specialfream = 0;
 							break;
@@ -732,9 +429,10 @@ void Knight::Update(float decision, float elapsed_time)
 						moveflag = false;
 						speed.x = Getapply(5.0f);
 						speed_Y.Set(70.0f);
+						act_state = ActState::ATTACK;
 						//描画をセット
 
-						state = EXTENDATK;
+						attack_state = AttackState::EXTENDATK;
 					}
 
 
@@ -748,9 +446,10 @@ void Knight::Update(float decision, float elapsed_time)
 							pad->que.back().timer = 0;
 							attack = true;
 							tracking.Init();
+							act_state = ActState::ATTACK;
 							//描画をセット
 
-							state = TRACK_DASH;
+							attack_state = AttackState::TRACK_DASH;
 							moveflag = false;
 							pos.y -= 50.0f;
 							speed.x = 0.0f;
@@ -768,16 +467,17 @@ void Knight::Update(float decision, float elapsed_time)
 				NoneChange();
 			}
 			//しゃがみ攻撃
-			if (state == SQUAT)
+			if (act_state == ActState::SQUAT)
 			{
 				if (pad->x_input[scastI(PAD::X)] == 1)
 				{
 					pad->que.back().timer = 0;
 					attack = TRUE;
 					moveflag = false;
+					act_state = ActState::ATTACK;
 					//描画をセット
 
-					state = D_JAKU;
+					attack_state = AttackState::D_JAKU;
 					//pad->com_list.Reset();
 				}
 				if (pad->x_input[scastI(PAD::Y)] == 1)
@@ -785,21 +485,23 @@ void Knight::Update(float decision, float elapsed_time)
 					pad->que.back().timer = 0;
 					attack = TRUE;
 					moveflag = false;
-					FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
+					act_state = ActState::ATTACK;
+					//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
 					//描画をセット
 
-					state = D_THU;
+					attack_state = AttackState::D_THU;
 					pos.x += Getapply(50.0f);
 				}
 				if (pad->x_input[static_cast<int>(PAD::B)] == 1)
 				{
 					pad->que.back().timer = 0;
-					FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
+					//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
 					attack = TRUE;
 					moveflag = false;
+					act_state = ActState::ATTACK;
 					//描画をセット
 
-					state = KYO;
+					attack_state = AttackState::KYO;
 					pos.x += Getapply(50.0f);
 					specialfream = 0;
 				}
@@ -822,8 +524,8 @@ void Knight::Update(float decision, float elapsed_time)
 	pos.x += speed.x;
 	pos.y -= speed_Y.Update(elapsed_time);
 
-#ifdef USE_IMGU
-	if (state != D_THU && state != DOWN && state != SQUAT && state != D_JAKU)
+#ifdef USE_IMGUI
+	if (attack_state != AttackState::D_THU && act_state != ActState::DOWN && act_state != ActState::SQUAT && attack_state != AttackState::D_JAKU)
 	{
 		Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(0.0f, -8.0f);
 		hit[scastI(KNIGHTHIT::BODY)].size = HitSize[scastI(KNIGHTHIT::BODY)];
@@ -837,11 +539,351 @@ void Knight::Update(float decision, float elapsed_time)
 
 
 
+void Knight::Attack(float decision, float elapsed_time)
+{
+	if (ground)
+	{
+		if (speed.x > 0)
+		{
+			speed.x--;
+			if (speed.x < 0)
+			{
+				speed.x = 0;
+			}
+		}
+		if (speed.x < 0)
+		{
+			speed.x++;
+			if (speed.x > 0)
+			{
+				speed.x = 0;
+			}
+		}
+	}
+	for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
+	{
+		hit[i].guard = HitBox::NOGUARD;
+	}
+	switch (attack_state)
+	{
+	case AttackState::NONE:
+		break;
+	//case AttackState::WAIT:
+	//	//待機
+	//	finish = true;
+	//	later = -1;
+	//	attack = FALSE;
+	//	if (state != WAIT)
+	//	{
+	//		state = NONE;
+	//	}
+	//	for (int i = 0; i < scastI(KNIGHTATK::END); i++)
+	//	{
+	//		atk[i].Init();
+	//	}
+	//	break;
+	//case MOVER://移動系は別で処理しているのでbreakしていない
+	//case MOVEL://,,
+	case AttackState::SLOW:
+		//投げ
+		Slow(elapsed_time);
+		break;
+	case AttackState::STEAL:
+		//相手のステートを奪う。掴み
+		Steal(elapsed_time);
+		break;
+	case AttackState::JAKU:
+		//弱攻撃
+		Jaku(elapsed_time);
+		//中攻撃(連打した場合は弱→中→強と繋がるように)
+		if (later > -1)
+		{
+			//中攻撃
+			if (pad->x_input[static_cast<int>(PAD::X)] == 1)
+			{
+				pad->que.back().timer = 0;
+				FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
+				attack = TRUE;
+				atk[scastI(KNIGHTATK::ONE)].start = FALSE;
+				later = -1;
+				for (int i = 0; i < scastI(KNIGHTATK::END); i++)
+				{
+					atk[i].Init();
+				}
+				moveflag = false;
+				atk[scastI(KNIGHTATK::ONE)].fin = FALSE;
+				act_state = ActState::ATTACK;
+				if (ground)
+				{
+					//描画をセット
+				}
+				else
+				{
+					//描画をセット
+				}
+				attack_state = AttackState::THU;
+				pos.x += Getapply(50.0f);
+				specialfream = 2;
+			}
+			//下段中攻撃(コンボルート。弱から下段中攻撃が繋がる)
+			if (ground)
+			{
+				if (pad->x_input[static_cast<int>(PAD::Y)] == 1)
+				{
+					for (int atknum = 0; atknum < scastI(KNIGHTATK::END); atknum++)
+					{
+						if (atk[atknum].knock_start)
+						{
+							pad->que.back().timer = 0;
+							FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
+							attack = TRUE;
+							atk[scastI(KNIGHTATK::ONE)].start = FALSE;
+							later = -1;
+							for (int i = 0; i < scastI(KNIGHTATK::END); i++)
+							{
+								atk[i].Init();
+							}
+							moveflag = false;
+							atk[scastI(KNIGHTATK::ONE)].fin = FALSE;
+							act_state = ActState::ATTACK;
+							//描画をセット
 
+							attack_state = AttackState::D_THU;
+							pos.x += Getapply(50.0f);
+							specialfream = 3;
+							break;
+						}
+					}
+				}
+			}
+		}
+		break;
+	case AttackState::THU:
+		//中攻撃
+		Thu(specialfream, elapsed_time);
+		if (later > -1)
+		{
+			//強攻撃
+			if (pad->x_input[static_cast<int>(PAD::X)] == 1)
+			{
+				if (ground)
+				{
+					pad->que.back().timer = 0;
+					FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
+					attack = TRUE;
+					atk[scastI(KNIGHTATK::ONE)].start = FALSE;
+					later = -1;
+					for (int i = 0; i < scastI(KNIGHTATK::END); i++)
+					{
+						atk[i].Init();
+					}
+					moveflag = false;
+					atk[scastI(KNIGHTATK::ONE)].fin = FALSE;
+					//描画をセット
+					act_state = ActState::ATTACK;
+					attack_state = AttackState::KYO;
+					pos.x += Getapply(50.0f);
+					specialfream = 4;
+				}
+				else
+				{
+					pad->que.back().timer = 0;
+					FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
+					attack = TRUE;
+					atk[scastI(KNIGHTATK::ONE)].start = FALSE;
+					later = -1;
+					for (int i = 0; i < scastI(KNIGHTATK::END); i++)
+					{
+						atk[i].Init();
+					}
+					moveflag = false;
+					atk[scastI(KNIGHTATK::ONE)].fin = FALSE;
+					//描画をセット
+
+					attack_state = AttackState::U_KYO;
+					act_state = ActState::ATTACK;
+					pos.x += Getapply(50.0f);
+					specialfream = 4;
+					break;
+				}
+			}
+		}
+		break;
+	case AttackState::KYO:
+		//強攻撃
+		Kyo(specialfream, elapsed_time);
+		if (later > -1)
+		{
+			//ホーミングダッシュ
+			if (pad->x_input[static_cast<int>(PAD::X)] == 1)
+			{
+				for (int atknum = 0; atknum < scastI(KNIGHTATK::END); atknum++)
+				{
+					if (atk[atknum].knock_start)
+					{
+						pad->que.back().timer = 0;
+						attack = TRUE;
+						atk[scastI(KNIGHTATK::ONE)].start = FALSE;
+						later = -1;
+						for (int i = 0; i < scastI(KNIGHTATK::END); i++)
+						{
+							atk[i].Init();
+						}
+						moveflag = false;
+						atk[scastI(KNIGHTATK::ONE)].fin = FALSE;
+						if (trackgauge > 0)
+						{
+							tracking.Init();
+							//描画をセット
+
+							attack_state = AttackState::TRACK_DASH;
+							act_state = ActState::ATTACK;
+							pos.y -= 50.0f;
+							speed.y = 0.0f;
+							speed.x = 0.0f;
+							hightrigger = false;
+							jumpflag = false;
+							max_jump_flag = false;
+							speed_Y.Set(0.0f);
+							trackgauge--;
+						}
+						break;
+					}
+				}
+			}
+		}
+		break;
+	case AttackState::D_THU:
+		//下段中攻撃
+		D_Thu(specialfream, elapsed_time);
+		if (later > -1)
+		{
+			//上段強攻撃
+			if (pad->x_input[static_cast<int>(PAD::B)] == 1)
+			{
+				for (int atknum = 0; atknum < scastI(KNIGHTATK::END); atknum++)
+				{
+					if (atk[atknum].knock_start)
+					{
+						pad->que.back().timer = 0;
+						FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
+						attack = TRUE;
+						atk[scastI(KNIGHTATK::ONE)].start = FALSE;
+						later = -1;
+						for (int i = 0; i < scastI(KNIGHTATK::END); i++)
+						{
+							atk[i].Init();
+						}
+						moveflag = false;
+						atk[scastI(KNIGHTATK::ONE)].fin = FALSE;
+						//描画をセット
+
+						attack_state = AttackState::U_KYO;
+						act_state = ActState::ATTACK;
+						pos.x += Getapply(50.0f);
+						specialfream = 4;
+						break;
+					}
+				}
+			}
+		}
+		break;
+	case AttackState::U_KYO:
+		//上段強攻撃
+		U_Kyo(specialfream, elapsed_time);
+		break;
+	case AttackState::D_JAKU:
+		//下段弱攻撃
+		D_Jaku(elapsed_time);
+		break;
+	case AttackState::JAKU_RHURF:
+		Hadouken(elapsed_time);
+		break;
+	case AttackState::THU_RHURF:
+		Thu_Hadouken(elapsed_time);
+		break;
+	case AttackState::KYO_RHURF:
+		Kyo_Hadouken(elapsed_time);
+		break;
+	case AttackState::TRACK_DASH:
+		//ホーミングダッシュ
+		TrackDash(decision, elapsed_time);
+		break;
+	case AttackState::KYO_LHURF:
+		P_Kyo(elapsed_time);
+		break;
+	case AttackState::EXTENDATK:
+		ExtendATK(elapsed_time);
+		break;
+	case AttackState::JAKU_LHURF:
+		Panish_N(elapsed_time);
+		break;
+	case AttackState::THU_LHURF:
+		Panish_H(elapsed_time);
+		break;
+	}
+
+
+	//攻撃判定の終了フラグが出たら後隙を決定し減らす処理を行う
+	for (int atknum = 0; atknum < scastI(KNIGHTATK::END); atknum++)
+	{
+		if (atk[atknum].fin)
+		{
+			if (later == -1)
+			{
+				later = atk[atknum].later;
+			}
+			later--;
+		}
+	}
+	//後隙中にキャンセルして技を行えるかチェックする
+	if (later > 0)
+	{
+		CancelList();
+	}
+
+	//後隙消費後元のステートに戻す
+	if (later == 0)
+	{
+		finish = true;
+		later = -1;
+		attack = FALSE;
+		//atk[scastI(RYUATK::ONE)].start = FALSE;
+		if (ground)
+		{
+			if (act_state != ActState::WAIT)
+			{
+				act_state = ActState::NONE;
+				attack_state = AttackState::NONE;
+			}
+		}
+		else
+		{
+			act_state = ActState::JUMP;
+			attack_state = AttackState::NONE;
+			//描画をセット
+
+		}
+		for (int i = 0; i < scastI(KNIGHTATK::END); i++)
+		{
+			atk[i].Init();
+		}
+	}
+}
+
+
+//-------------------------------
+//*攻撃のキャンセルリスト*
+//----------------------------------------------------------------------
+//・このリスト内にで定義した行動はほかの行動からキャンセルして出すことが出来る
+//・基本的にゲージを使う技は全技キャンセル出し可能
+//----------------------------------------------------------------------
 void Knight::CancelList()
 {
+	//ジャンプ
 	Jump();
 
+	//ホーミングダッシュ
 	if (pad->x_input[scastI(PAD::R_TRIGGER)] == 1)
 	{
 		if (trackgauge > 0)
@@ -854,15 +896,17 @@ void Knight::CancelList()
 			pad->que.back().timer = 0;
 			attack = true;
 			tracking.Init();
+			act_state = ActState::ATTACK;
 			//描画をセット
 
-			state = TRACK_DASH;
+			attack_state = AttackState::TRACK_DASH;
 			moveflag = false;
 			pos.y -= 50.0f;
 			trackgauge--;
 		}
 	}
 
+	//214・Xコマンド
 	if (pad->x_input[scastI(PAD::X)] == 1)
 	{
 		int command = pad->com_list.CommandCheack(scastI(PAD::X), pad->input_history.data(), rightOrleft);
@@ -875,18 +919,22 @@ void Knight::CancelList()
 			}
 			attack = TRUE;
 			moveflag = false;
+			act_state = ActState::ATTACK;
 			//描画をセット
 
-			state = HADOUKEN;
+			attack_state = AttackState::JAKU_RHURF;
 			specialfream = 0;
 		}
 	}
 
+	
+	//ゲージ技
 	if (pad->x_input[scastI(PAD::B)] == 1)
 	{
 		int command = pad->com_list.CommandCheack(scastI(PAD::B), pad->input_history.data(), rightOrleft);
 		if (command == CommandList::LHURF)
 		{
+			//214・Bコマンド
 			if (power > 0)
 			{
 				later = -1;
@@ -899,7 +947,8 @@ void Knight::CancelList()
 				FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
 				attack = TRUE;
 				moveflag = false;
-				state = P_KYO;
+				act_state = ActState::ATTACK;
+				attack_state = AttackState::KYO_LHURF;
 				//エフェクトセット
 
 				pos.x = tracking.rival_Pos.x - Getapply(100.0f);
@@ -909,6 +958,7 @@ void Knight::CancelList()
 		}
 		else if (command == CommandList::RHURF)
 		{
+			//236・Bコマンド
 			later = -1;
 			for (int i = 0; i < scastI(KNIGHTATK::END); i++)
 			{
@@ -917,7 +967,8 @@ void Knight::CancelList()
 			//描画をセット
 			//エフェクトセット
 
-			state = KYO_HADOUKEN;
+			act_state = ActState::ATTACK;
+			attack_state = AttackState::KYO_RHURF;
 			specialfream = 0;
 			power--;
 		}
@@ -942,7 +993,7 @@ void Knight::Draw(
 	
 	bool invincible = false;
 
-	if (state == EXTENDATK)
+	if (attack_state == AttackState::EXTENDATK)
 	{
 		for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
 		{
@@ -968,16 +1019,6 @@ void Knight::Draw(
 	{
 		angle.y = DirectX::XMConvertToRadians(180.0f);
 		inversion = true;
-		//多分これいらない
-		if (state == KYO)
-		{
-			drawset = true;
-		}
-
-		if (!drawset)
-		{
-			//強攻撃を描画したから描画しない
-		}
 		if (invincible)
 		{
 			//無敵状態
@@ -989,16 +1030,6 @@ void Knight::Draw(
 	{
 		angle.y = DirectX::XMConvertToRadians(0.0f);
 		inversion = false;
-		//というか絶対いらない
-		if (state == KYO)
-		{
-			drawset = true;
-		}
-
-		if (!drawset)
-		{
-			//そもそも今回3Dモデルだから描画分ける必要ない
-		}
 		if (invincible)
 		{
 			//ハイパー無敵！
@@ -1081,7 +1112,6 @@ void Knight::Draw(
 			bool show_another_window = true;*/
 			//static float f = 0.0f;
 			ImGui::Begin("RyuHitBox");
-			//ImGui::Text(u8"ようこそ、DXライブラリへ");
 			ImGui::InputFloat("BodyPosX", &Hitplus[scastI(KNIGHTHIT::BODY)].x, 0.1f, 0.1f);
 			ImGui::InputFloat("BodyPosY", &Hitplus[scastI(KNIGHTHIT::BODY)].y, 0.1f, 0.1f);
 			ImGui::InputFloat("BodySizeX", &hit[scastI(KNIGHTHIT::BODY)].size.x, 0.1f, 0.1f);
@@ -1186,7 +1216,7 @@ bool Knight::Step()
 			{
 				//描画をセット
 
-				state = AIR_F;
+				act_state = ActState::AIR_F;
 				step = true;
 				moveflag = false;
 				speed.x = -stepspeed;
@@ -1195,7 +1225,7 @@ bool Knight::Step()
 				if (rightOrleft > 0)
 				{
 					step = true;
-					state = AIR_B;
+					act_state = ActState::AIR_B;
 					moveflag = false;
 					jumpflag = false;
 					jumpcount = 0;
@@ -1218,7 +1248,7 @@ bool Knight::Step()
 				//描画をセット
 
 				step = true;
-				state = AIR_F;
+				act_state = ActState::AIR_F;
 				moveflag = false;
 				jumpflag = false;
 				jumpcount = 0;
@@ -1226,7 +1256,7 @@ bool Knight::Step()
 				if (rightOrleft < 0)
 				{
 					step = true;
-					state = AIR_B;
+					act_state = ActState::AIR_B;
 					jumpflag = false;
 					moveflag = false;
 					jumpcount = 0;
@@ -1248,7 +1278,7 @@ bool Knight::Step()
 	}
 
 	//バックステップ
-	if (state == BACK)
+	if (act_state == ActState::BACK)
 	{
 		//右向き
 		if (rightOrleft > 0)
@@ -1263,7 +1293,7 @@ bool Knight::Step()
 				pad->x_input[scastI(PAD::R_DASH)] = 0;
 				pad->x_input[scastI(PAD::L_DASH)] = 0;
 				moveflag = false;
-				state = NONE;
+				act_state = ActState::NONE;
 				return true;
 			}
 			if (speed.x < -stepspeed / 2)
@@ -1293,7 +1323,7 @@ bool Knight::Step()
 				moveflag = false;
 				pad->x_input[scastI(PAD::R_DASH)] = 0;
 				pad->x_input[scastI(PAD::L_DASH)] = 0;
-				state = NONE;
+				act_state = ActState::NONE;
 				return true;
 			}
 			if (speed.x > stepspeed / 2)
@@ -1313,7 +1343,7 @@ bool Knight::Step()
 		}
 	}
 
-	if (state == AIR_B)
+	if (act_state == ActState::AIR_B)
 	{
 		speed_Y.Set(0.0f);
 		pos.y -= gravity;
@@ -1323,7 +1353,7 @@ bool Knight::Step()
 			{
 				step = false;
 				pad->dash_trigger = false;
-				state = JUMP;
+				act_state = ActState::JUMP;
 				//描画をセット
 
 				return true;
@@ -1342,7 +1372,7 @@ bool Knight::Step()
 			{
 				step = false;
 				pad->dash_trigger = false;
-				state = JUMP;
+				act_state = ActState::JUMP;
 				//描画をセット
 
 				return true;
@@ -1357,7 +1387,7 @@ bool Knight::Step()
 		}
 	}
 
-	if (state == AIR_F)
+	if (act_state == ActState::AIR_F)
 	{
 		speed_Y.Set(0.0f);
 		pos.y -= gravity;
@@ -1368,7 +1398,7 @@ bool Knight::Step()
 				speed_Y.Set(40.0f);
 				step = false;
 				pad->dash_trigger = false;
-				state = JUMP;
+				act_state = ActState::JUMP;
 				//描画をセット
 
 				return true;
@@ -1388,7 +1418,7 @@ bool Knight::Step()
 				speed_Y.Set(40.0f);
 				step = false;
 				pad->dash_trigger = false;
-				state = JUMP;
+				act_state = ActState::JUMP;
 				//描画をセット
 
 				return true;
@@ -1419,7 +1449,7 @@ void Knight::Move(float decision)
 			if (rightOrleft > 0)
 			{
 				step = true;
-				state = BACK;
+				act_state = ActState::BACK;
 				moveflag = false;
 				//描画をセット
 
@@ -1436,7 +1466,7 @@ void Knight::Move(float decision)
 			if (rightOrleft < 0)
 			{
 				step = true;
-				state = BACK;
+				act_state = ActState::BACK;
 				moveflag = false;
 				//描画をセット
 
@@ -1458,7 +1488,7 @@ void Knight::Move(float decision)
 			if (!step)
 			{
 				speed.x = -dashspeed;
-				state = DASH;
+				act_state = ActState::DASH;
 			}
 		}
 	}
@@ -1467,7 +1497,7 @@ void Knight::Move(float decision)
 		if (pad->x_input[scastI(PAD::STICK_L)] > 0)
 		{
 			speed.x = -walkspeed;
-			state = MOVEL;
+			act_state = ActState::MOVEL;
 		}
 	}
 
@@ -1486,7 +1516,7 @@ void Knight::Move(float decision)
 			if (!step)
 			{
 				speed.x = dashspeed;
-				state = DASH;
+				act_state = ActState::DASH;
 			}
 		}
 	}
@@ -1495,24 +1525,25 @@ void Knight::Move(float decision)
 		if (pad->x_input[scastI(PAD::STICK_R)] > 0)
 		{
 			speed.x = walkspeed;
-			state = MOVER;
+			act_state = ActState::MOVER;
 		}
 	}
 
 
+	//どちらも押されているor押されていないなら元に戻す
 	if (pad->x_input[static_cast<int>(PAD::STICK_L)] == 0 && pad->x_input[static_cast<int>(PAD::STICK_R)] == 0)
 	{
-		if (state != WAIT)
+		if (act_state != ActState::WAIT)
 		{
-			state = NONE;
+			act_state = ActState::NONE;
 		}
 		moveflag = false;
 	}
 	if (pad->x_input[static_cast<int>(PAD::STICK_L)] > 0 && pad->x_input[static_cast<int>(PAD::STICK_R)] > 0)
 	{
-		if (state != WAIT)
+		if (act_state != ActState::WAIT)
 		{
-			state = NONE;
+			act_state = ActState::NONE;
 		}
 		moveflag = false;
 	}
@@ -1548,7 +1579,7 @@ void Knight::MoveAnimSet()
 
 void Knight::GuardAnimSet()
 {
-	if (state == GUARD)
+	if (act_state == ActState::GUARD)
 	{
 		if (pad->x_input[static_cast<int>(PAD::STICK_RDown)] > 0 || pad->x_input[static_cast<int>(PAD::STICK_LDown)] > 0)
 		{
@@ -1566,7 +1597,7 @@ void Knight::GuardAnimSet()
 
 void Knight::WaitAnimSet()
 {
-	if (state == NONE)
+	if (act_state == ActState::NONE)
 	{
 #ifdef USE_IMGU
 		hit[scastI(KNIGHTHIT::BODY)].size = HitSize[scastI(KNIGHTHIT::BODY)];
@@ -1574,7 +1605,7 @@ void Knight::WaitAnimSet()
 #endif // USE_IMGU
 		//描画をセット
 
-		state = WAIT;
+		act_state = ActState::WAIT;
 	}
 }
 
@@ -1598,7 +1629,7 @@ void Knight::Jump()
 			moveflag = false;
 			//描画をセット
 
-			state = JUMP;
+			act_state = ActState::JUMP;
 			jumpflag = true;
 		}
 		if (pad->x_input[scastI(PAD::HIGH_UP_R)] == 1)
@@ -1616,7 +1647,7 @@ void Knight::Jump()
 			moveflag = false;
 			//描画をセット
 
-			state = JUMP;
+			act_state = ActState::JUMP;
 			jumpflag = true;
 		}
 
@@ -1635,7 +1666,7 @@ void Knight::Jump()
 			moveflag = false;
 			//描画をセット
 
-			state = JUMP;
+			act_state = ActState::JUMP;
 			jumpflag = true;
 		}
 
@@ -1656,7 +1687,7 @@ void Knight::Jump()
 			moveflag = false;
 			//描画をセット
 
-			state = JUMP;
+			act_state = ActState::JUMP;
 			jumpflag = true;
 		}
 		if (pad->x_input[scastI(PAD::STICK_RUp)] == 1)
@@ -1680,7 +1711,7 @@ void Knight::Jump()
 			moveflag = false;
 			//描画をセット
 
-			state = JUMP;
+			act_state = ActState::JUMP;
 			jumpflag = true;
 		}
 		if (pad->x_input[scastI(PAD::STICK_LUp)] == 1)
@@ -1704,7 +1735,7 @@ void Knight::Jump()
 			moveflag = false;
 			//描画をセット
 
-			state = JUMP;
+			act_state = ActState::JUMP;
 			jumpflag = true;
 		}
 	}
@@ -1726,7 +1757,7 @@ void Knight::Jump()
 				speed.y = 40.0f;
 				moveflag = false;
 				max_jump_flag = false;
-				state = JUMP;
+				act_state = ActState::JUMP;
 				//描画をセット
 
 				jumpflag = true;
@@ -1751,7 +1782,7 @@ void Knight::Jump()
 				moveflag = false;
 				//描画をセット
 
-				state = JUMP;
+				act_state = ActState::JUMP;
 				jumpflag = true;
 			}
 			if (pad->x_input[scastI(PAD::STICK_LUp)] == 1)
@@ -1774,7 +1805,7 @@ void Knight::Jump()
 				moveflag = false;
 				//描画をセット
 
-				state = JUMP;
+				act_state = ActState::JUMP;
 				jumpflag = true;
 			}
 		}
@@ -1836,7 +1867,7 @@ void Knight::JumpUpdate()
 			max_jump_flag = false;
 			hightrigger = false;
 			speed.y = 0.0f;
-			state = NONE;
+			act_state = ActState::NONE;
 			pos.y = POS_Y;
 			jumpflag = false;
 		}
@@ -1881,7 +1912,8 @@ void Knight::DamageCheck()
 			{
 				atk[j].Init();
 			}
-			state = KNOCK;
+			act_state = ActState::KNOCK;
+			attack_state = AttackState::NONE;
 		}
 		if (hit[i].steal)
 		{
@@ -1913,7 +1945,8 @@ void Knight::DamageCheck()
 			hit[i].steal = false;
 			steal_escape = hit[i].steal_timer;
 			hit[i].steal_timer = 0.0f;
-			state = STATENONE;
+			act_state = ActState::STATENONE;
+			attack_state = AttackState::NONE;
 		}
 	}
 }
@@ -1946,13 +1979,13 @@ void Knight::KnockUpdate()
 	if (knocktimer < 0)
 	{
 		combo_count = 0;
-		if (state != WAIT)
+		if (act_state != ActState::WAIT)
 		{
-			state = NONE;
+			act_state = ActState::NONE;
 		}
 		if (!ground)
 		{
-			state = FALL;
+			act_state = ActState::FALL;
 			speed.y = 0.0f;
 			//描画をセット
 
@@ -1964,7 +1997,7 @@ void Knight::KnockUpdate()
 		}
 		if (hp == 0)
 		{
-			state = FALL;
+			act_state = ActState::FALL;
 		}
 		knocktimer = 0;
 		for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
@@ -2103,7 +2136,7 @@ void Knight::Guard(float decision)
 			knocktimer = hit[i].timer / 2;
 			pad->high_trigger = false;
 			hightrigger = false;
-			state = GUARD;
+			act_state = ActState::GUARD;
 		}
 	}
 
@@ -2111,7 +2144,7 @@ void Knight::Guard(float decision)
 
 void Knight::GuardBack()
 {
-	if (state != GUARD)
+	if (act_state != ActState::GUARD)
 	{
 		return;
 	}
@@ -2140,30 +2173,30 @@ void Knight::GuardBack()
 	}
 	if (knocktimer < 0)
 	{
-		if (state != WAIT)
+		if (act_state != ActState::WAIT)
 		{
-			state = NONE;
+			act_state = ActState::NONE;
 		}
 		if (ground)
 		{
 			if (pad->x_input[scastI(PAD::STICK_D)] > 0)
 			{
-				state = SQUAT;
+				act_state = ActState::SQUAT;
 			}
 			if (pad->x_input[scastI(PAD::STICK_LDown)] > 0)
 			{
-				state = SQUAT;
+				act_state = ActState::SQUAT;
 			}
 			if (pad->x_input[scastI(PAD::STICK_RDown)] > 0)
 			{
-				state = SQUAT;
+				act_state = ActState::SQUAT;
 			}
 		}
 		else
 		{
 			max_jump_flag = false;
 			jumpflag = false;
-			state = JUMP;
+			act_state = ActState::JUMP;
 			//描画をセット
 
 		}
@@ -2177,13 +2210,13 @@ void Knight::GuardBack()
 	}
 	else
 	{
-		state = GUARD;
+		act_state = ActState::GUARD;
 	}
 }
 
 void Knight::Squat()
 {
-	if (state == GUARD || state == BACK || state == AIR_B || state == AIR_F)
+	if (act_state == ActState::GUARD || act_state == ActState::BACK || act_state == ActState::AIR_B || act_state == ActState::AIR_F)
 	{
 		return;
 	}
@@ -2196,20 +2229,20 @@ void Knight::Squat()
 		Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(0.0f, 15.0f);
 		hit[scastI(KNIGHTHIT::BODY)].size = YR_Vector3(65.0f, 130.0f);
 		moveflag = false;
-		state = SQUAT;
+		act_state = ActState::SQUAT;
 		//描画をセット
 
 	}
 	if (pad->x_input[scastI(PAD::STICK_D)] == 0 && pad->x_input[scastI(PAD::STICK_RDown)] == 0 && pad->x_input[scastI(PAD::STICK_LDown)] == 0)
 	{
-		if (state == SQUAT)
+		if (act_state == ActState::SQUAT)
 		{
 			//描画をセット
 
 		}
-		if (state != WAIT)
+		if (act_state != ActState::WAIT)
 		{
-			state = NONE;
+			act_state = ActState::NONE;
 		}
 	}
 }
@@ -2224,7 +2257,7 @@ void Knight::FallUpdate()
 		{
 			speed.y = -5.0f;
 		}
-		state = DOWN;
+		act_state = ActState::DOWN;
 		//描画をセット
 
 	}
@@ -2240,7 +2273,7 @@ void Knight::FallUpdate()
 		{
 			speed.x = 0.0f;
 			speed.y = 0.0f;
-			state = PASSIVE;
+			act_state = ActState::PASSIVE;
 			//描画をセット
 
 			for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
@@ -2293,7 +2326,7 @@ void Knight::DownUpdate()
 		{
 			speed.x = 20.0f;
 			speed.y = -10.0f;
-			state = PASSIVE;
+			act_state = ActState::PASSIVE;
 			//描画をセット
 
 		}
@@ -2301,7 +2334,7 @@ void Knight::DownUpdate()
 		{
 			speed.x = -20.0f;
 			speed.y = -10.0f;
-			state = PASSIVE;
+			act_state = ActState::PASSIVE;
 			//描画をセット
 
 		}
@@ -2310,7 +2343,7 @@ void Knight::DownUpdate()
 		{
 			speed.x = 0.0f;
 			speed.y = 0.0f;
-			state = PASSIVE;
+			act_state = ActState::PASSIVE;
 			//描画をセット
 
 			for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
@@ -2337,7 +2370,7 @@ void Knight::DownUpdate()
 		{
 			//描画をセット
 
-			state = WAKE;
+			act_state = ActState::WAKE;
 		}
 	}
 	else
@@ -2399,11 +2432,11 @@ void Knight::PassiveUpdate()
 		}
 		if (ground)
 		{
-			state = NONE;
+			act_state = ActState::NONE;
 		}
 		else
 		{
-			state = JUMP;
+			act_state = ActState::JUMP;
 			//描画をセット
 
 		}
@@ -2421,7 +2454,7 @@ void Knight::StateNone()
 		{
 			steal_escape = 0;
 			pos.x -= Getapply(150.0f);
-			state = NONE;
+			act_state = ActState::NONE;
 			return;
 		}
 		steal_escape--;
@@ -2432,61 +2465,65 @@ void Knight::StateNone()
 	}
 }
 
-
+//掴み攻撃
 void Knight::Steal(float elapsed_time)
 {
 	YR_Vector3 cent{ pos.x + Getapply(100.0f),pos.y };
 	YR_Vector3 range{ 50.0f,50.0f };
 	atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 10, 10, 15, 20, 13, YR_Vector3(Getapply(0.0f), 0.0f), AttackBox::STEAL, Getapply(0.0f), true,elapsed_time);
-	if (rival_state != STATENONE)
-	{
-		if (atk[scastI(KNIGHTATK::ONE)].timer == 0)
-		{
-			atk[scastI(KNIGHTATK::ONE)].fin = TRUE;
-		}
-	}
-	if (rival_state == STATENONE)
-	{
-		if (atk[scastI(KNIGHTATK::ONE)].stealtimer > 0)
-		{
-			atk[scastI(KNIGHTATK::ONE)].stealtimer--;
-		}
-		else
-		{
-			later = -1;
-			for (int i = 0; i < scastI(KNIGHTATK::END); i++)
-			{
-				atk[i].Init();
-			}
-			state = SLOW;
-			//描画をセット
+	
+	//--------------------------------
+	//			※要変更
+	//--------------------------------
+	//if (rival_state != STATENONE)
+	//{
+	//	if (atk[scastI(KNIGHTATK::ONE)].timer == 0)
+	//	{
+	//		atk[scastI(KNIGHTATK::ONE)].fin = TRUE;
+	//	}
+	//}
+	//if (rival_state == STATENONE)
+	//{
+	//	if (atk[scastI(KNIGHTATK::ONE)].stealtimer > 0)
+	//	{
+	//		atk[scastI(KNIGHTATK::ONE)].stealtimer--;
+	//	}
+	//	else
+	//	{
+	//		later = -1;
+	//		for (int i = 0; i < scastI(KNIGHTATK::END); i++)
+	//		{
+	//			atk[i].Init();
+	//		}
+	//		attack_state = AttackState::SLOW;
+	//		//描画をセット
 
-			if (rightOrleft > 0)
-			{
-				if (pad->x_input[scastI(PAD::STICK_L)] > 0)
-				{
-					FastSet(pos);
-					rightOrleft = -rightOrleft;
-					pos.x = tracking.rival_Pos.x + 150.0f;
-				}
-			}
-			else
-			{
-				if (pad->x_input[scastI(PAD::STICK_R)] > 0)
-				{
-					FastSet(pos);
-					rightOrleft = -rightOrleft;
-					pos.x = tracking.rival_Pos.x - 150.0f;
-				}
-			}
-		}
-	}
+	//		if (rightOrleft > 0)
+	//		{
+	//			if (pad->x_input[scastI(PAD::STICK_L)] > 0)
+	//			{
+	//				FastSet(pos);
+	//				rightOrleft = -rightOrleft;
+	//				pos.x = tracking.rival_Pos.x + 150.0f;
+	//			}
+	//		}
+	//		else
+	//		{
+	//			if (pad->x_input[scastI(PAD::STICK_R)] > 0)
+	//			{
+	//				FastSet(pos);
+	//				rightOrleft = -rightOrleft;
+	//				pos.x = tracking.rival_Pos.x - 150.0f;
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 
 void Knight::TrackDash(float decision,float elapsed_time)
 {
-	if (state != TRACK_DASH)
+	if (attack_state != AttackState::TRACK_DASH)
 	{
 		return;
 	}
@@ -2574,7 +2611,7 @@ int Knight::GetMax(int n)
 
 void Knight::NoneChange()
 {
-	if (state != GUARD)
+	if (act_state != ActState::GUARD)
 	{
 		return;
 	}
@@ -2588,7 +2625,7 @@ void Knight::NoneChange()
 	}
 	if (none == 0)
 	{
-		state = NONE;
+		act_state = ActState::NONE;
 	}
 }
 

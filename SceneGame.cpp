@@ -83,6 +83,7 @@ void SceneGame::Init()
 	YRCamera.SetFocus(DirectX::XMFLOAT3(0.0f, 5.0f, 0.0f));			//注視点
 	YRCamera.SetUp(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));				//上方向
 	YRCamera.SetPerspective(10.0f * 0.01745f, 1920.0f / 1080.0f, 0.4f, 1000000.0f);
+	YRCamera.camera_state = Camera::CAMERA_STATE::MAIN;
 	
 	//画像選択位置初期化
 	for (int i = 0; i < static_cast<int>(p1combo.size()); i++)
@@ -374,7 +375,11 @@ void SceneGame::Update(float elapsed_time)
 	}
 	else
 	{
-		//メインループ
+		//----------------------------------------------------------------
+		//
+		//					メインループ
+		//
+		//----------------------------------------------------------------
 		switch (main_loop)
 		{
 		case SceneGame::INTRO1P:
@@ -441,6 +446,25 @@ void SceneGame::Update(float elapsed_time)
 				else
 				{
 					//対戦中
+
+
+					//カメラの挙動をステートごとに処理
+					switch (YRCamera.camera_state)
+					{
+					case Camera::CAMERA_STATE::MAIN:
+						//通常カメラ
+						CameraUpdate();
+						break;
+					case Camera::CAMERA_STATE::PLAYER1P:
+						//1Pがカメラを持っている
+						break;
+					case Camera::CAMERA_STATE::PLAYER2P:
+						//2Pがカメラを持っている
+						break;
+					default:
+						break;
+					}
+
 
 					//※要変更。ステートの[2]なんて見ただけじゃ何かわからない
 					if (player1p->state != 2 && player2p->state != 2)
@@ -676,7 +700,7 @@ void SceneGame::Draw(float elapsed_time)
 {
 	static float light_color[4] = { 1,1,1,1 };
 	//ライト方向
-	static DirectX::XMFLOAT4 light_direction = DirectX::XMFLOAT4(0, -1, 1, 0);
+	static DirectX::XMFLOAT4 light_direction = DirectX::XMFLOAT4(-1, 0, 1, 0);
 	static DirectX::XMFLOAT4 ambient_color(0.3f, 0.3f, 0.3f, 0.5f);
 	static float anim_count = 0.0f;
 	static DirectX::XMFLOAT3 box_angle = { DirectX::XMConvertToRadians(-90.0f),0.0f,0.0f };
@@ -937,8 +961,8 @@ void SceneGame::Draw(float elapsed_time)
 		);*/
 
 #if USE_IMGUI
-		/*player1p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
-		player2p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);*/
+		player1p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player2p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
 		
 		/*motion.DrawContinue(
 		skinShader.get(),
@@ -1219,6 +1243,19 @@ void SceneGame::FinUpdate()
 {
 	//ゲーム終了後の処理
 	fedo_start = true;
+}
+
+
+
+void SceneGame::CameraUpdate()
+{
+	//カメラのステートがMAINにある場合のカメラ処理を行う
+	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -140.0f));			//視点
+	YRCamera.SetFocus(DirectX::XMFLOAT3(0.0f, 5.0f, 0.0f));			//注視点
+	YRCamera.SetUp(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));				//上方向
+	YRCamera.SetPerspective(10.0f * 0.01745f, 1920.0f / 1080.0f, 0.4f, 1000000.0f);
+
+	YRCamera.Active();
 }
 
 

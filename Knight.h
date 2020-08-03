@@ -5,6 +5,7 @@
 #include "YR_VECTOR3.h"
 #include "AttackBox.h"
 #include "HitBox.h"
+#include <vector>
 
 
 enum class KNIGHTHIT :int
@@ -40,7 +41,7 @@ public:
 	YR_Vector3 hadou;
 	float hadouspeed;
 	
-	std::array<AttackBox, static_cast<int>(KNIGHTATK::ATKEND)> atk;
+	std::vector<AttackBox> atk;
 	std::array< HitBox, static_cast<int>(KNIGHTHIT::END)> hit;
 	std::array<YR_Vector3, scastI(KNIGHTHIT::END)> Hitplus;
 	std::array<YR_Vector3, scastI(KNIGHTHIT::END)> HitSize;
@@ -93,6 +94,8 @@ public:
 	bool WinPerformance();
 
 
+	void Attack(float decision, float elapsed_time);//以下の関数を制御する
+
 	void Jaku(float elapsed_time);
 	void Thu(float fream, float elapsed_time);
 	void Kyo(float fream, float elapsed_time);
@@ -136,44 +139,8 @@ public:
 
 	bool Intro();
 
-
-	//攻撃以外のステート
-	enum
-	{
-		NONE = 0,
-		WAIT,
-		STATENONE,
-		SLOW,
-		KNOCK,
-		FALL,
-		DOWN,
-		WAKE,
-		PASSIVE,
-		GUARD,
-		SQUAT,
-		MOVER,
-		MOVEL,
-		DASH,
-		BACK,
-		JUMP,
-		AIR_F,
-		AIR_B,
-		TRACK_DASH,
-		STEAL,
-		JAKU,
-		THU,
-		KYO,
-		D_JAKU,
-		D_THU,
-		U_KYO,
-		HADOUKEN,
-		THU_HADOUKEN,
-		KYO_HADOUKEN,
-		P_KYO,
-		PANISH_N,
-		PANISH_H,
-		EXTENDATK,
-	};
+	bool AttackLoad();			//生成時攻撃パラメーターを読み込む
+	bool AttackWrite();			//デバック時パラメーターを書き出す
 
 	//イントロ用列挙
 	enum class INTRO_KNIGHT : int
