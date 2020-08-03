@@ -33,6 +33,11 @@ void SceneTest::Init()
 		animShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::ANIM);
 		animShader->Create("./Data/Shader/AnimShader_vs.cso", "./Data/Shader/AnimShader_ps.cso", "./Data/Shader/AnimShader_gs.cso");
 	}
+	if (toGbuffer == nullptr)
+	{
+		toGbuffer = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::TOGBUF);
+		toGbuffer->Create("./Data/Shader/toGbufferShader_vs.cso", "./Data/Shader/toGbufferShader_ps.cso");
+	}
 
 	//カメラ初期設定
 	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -25));			//視点
@@ -221,60 +226,81 @@ void SceneTest::Draw(float elapsed_time)
 	DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(1, 1, 1, 1);
 
 
+	//定数バッファの設定
+	CB_Multi_Render_Target cb;
+	cb.light_direction = light_direction;
+	cb.light_color = lightColor;
+	cb.ambient_color = ambient_color;
+	cb.eye_pos.x = YRCamera.GetEye().x;
+	cb.eye_pos.y = YRCamera.GetEye().y;
+	cb.eye_pos.z = YRCamera.GetEye().z;
+	cb.eye_pos.w = 1.0f;
+
+	//定数バッファ更新
+	FRAMEWORK.context->UpdateSubresource(constantBuffer.Get(), 0, NULL, &cb, 0, 0);
+	FRAMEWORK.context->VSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
+	FRAMEWORK.context->PSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
+
+	//Gbufferへの描画
+	RenderTexture(V, P, light_direction, lightColor, ambient_color, elapsed_time);
+
+
+
 	//仮背景
-	test->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 0.5f);
+	//test->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 0.5f);
 
-	motion.DrawContinue(
-		skinShader.get(),
-		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-		DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
-		box_angle,
-		V, P, light_direction, lightColor, ambient_color, elapsed_time
-	);
+	//motion.DrawContinue(
+	//	skinShader.get(),
+	//	DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+	//	DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
+	//	box_angle,
+	//	V, P, light_direction, lightColor, ambient_color, elapsed_time
+	//);
 
-	geo->render(
-		geoShader.get(),
-		DirectX::XMFLOAT3(5.0f, 5.0f, 0.0f),
-		DirectX::XMFLOAT3(1.0f, 1.0f, 0.0f),
-		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-		V,
-		P,
-		DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)
-	);
+	//geo->render(
+	//	geoShader.get(),
+	//	DirectX::XMFLOAT3(5.0f, 5.0f, 0.0f),
+	//	DirectX::XMFLOAT3(1.0f, 1.0f, 0.0f),
+	//	DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+	//	V,
+	//	P,
+	//	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)
+	//);
 
-	sampler_wrap->Set(0);
+	//sampler_wrap->Set(0);
 
-	board->render(
-		boardShader.get(),
-		DirectX::XMFLOAT3(-5.0f, 3.0f, 0.0f),
-		DirectX::XMFLOAT3(3.0f, 3.0f, 0.0f),
-		box_angle,
-		V,
-		P,
-		off_x,
-		off_y,
-		DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)
-	);
+	//board->render(
+	//	boardShader.get(),
+	//	DirectX::XMFLOAT3(-5.0f, 3.0f, 0.0f),
+	//	DirectX::XMFLOAT3(3.0f, 3.0f, 0.0f),
+	//	box_angle,
+	//	V,
+	//	P,
+	//	off_x,
+	//	off_y,
+	//	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)
+	//);
 
-	//sampler->Set(0);
-	anim->Render(
-		animShader.get(),
-		DirectX::XMFLOAT3(5.0f, 3.0f, 0.0f),
-		DirectX::XMFLOAT2(1.0f, 1.0f),
-		box_angle,
-		0.1f,
-		V, P,
-		elapsed_time
-	);
+	////sampler->Set(0);
+	//anim->Render(
+	//	animShader.get(),
+	//	DirectX::XMFLOAT3(5.0f, 3.0f, 0.0f),
+	//	DirectX::XMFLOAT2(1.0f, 1.0f),
+	//	box_angle,
+	//	0.1f,
+	//	V, P,
+	//	elapsed_time
+	//);
 }
 
 
 void SceneTest::RenderTexture(
-	const DirectX::XMMATRIX& view,
-	const DirectX::XMMATRIX& projection,
-	const DirectX::XMFLOAT4& light_direction,
-	const DirectX::XMFLOAT4& light_color,
-	const DirectX::XMFLOAT4& ambient_color)
+	const DirectX::XMMATRIX&	view,
+	const DirectX::XMMATRIX&	projection,
+	const DirectX::XMFLOAT4&	light_direction,
+	const DirectX::XMFLOAT4&	light_color,
+	const DirectX::XMFLOAT4&	ambient_color,
+	float						elapsed_time)
 {
 	ID3D11RenderTargetView* rtv[3] = {
 		color_texture->GetRenderTargetView(),
@@ -314,5 +340,40 @@ void SceneTest::RenderTexture(
 	FRAMEWORK.context->VSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
 	FRAMEWORK.context->PSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
 
+	//ブレンドステート設定
 	FRAMEWORK.BlendSet(Blend::ALPHA);
+	//ラスタライザー設定
+	FRAMEWORK.context->RSSetState(FRAMEWORK.rasterizer_state[framework::RS_CULL_BACK].Get());
+	//デプスステンシルステート設定
+	FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[framework::DS_TRUE].Get(), 1);
+	
+	//サンプラー設定
+	sampler_clamp->Set(0);
+
+	//描画
+	static  XMFLOAT3 aY;
+	aY.x = 0.0f;
+	aY.y += elapsed_time;
+	aY.z = 0.0f;
+
+	bisuko->render(
+		toGbuffer.get(),
+		XMFLOAT3(2.0f, 2.0f, 0.0f),
+		XMFLOAT3(1.0f, 2.0f, 0.5f),
+		aY,
+		view,
+		projection
+	);
+
+	plane->render(
+		toGbuffer.get(),
+		XMFLOAT3(0.0f, 0.0f, 0.0f),
+		XMFLOAT3(10.0f, 10.0f, 1.0f),
+		XMFLOAT3(-XM_PI / 2.0f, 0.0f, 0.0f),
+		view,
+		projection
+	);
+
+	//レンダーターゲットの回復
+	FRAMEWORK.context.Get()->OMSetRenderTargets(1, FRAMEWORK.view.GetAddressOf(), FRAMEWORK.depth.Get());
 }

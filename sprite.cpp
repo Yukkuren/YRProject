@@ -257,7 +257,7 @@ void Sprite::Init(const wchar_t* wchar)
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 }
 
-Sprite::Sprite() : texture(nullptr)
+Sprite::Sprite()
 {
 	vertex vertics[] = {
 		{ DirectX::XMFLOAT3(0,0,0),DirectX::XMFLOAT4(1,1,1,1), DirectX::XMFLOAT2(0,0) },
@@ -588,6 +588,122 @@ void Sprite::render(YRShader* shader, float dx,float dy,float dw,float dh,float 
 
 	FRAMEWORK.context->Draw(4, 0);
 
+	shader->Inactivate();
+}
+
+void Sprite::render(
+	YRShader* shader,
+	Texture* tex,
+	float	dx, float	dy,
+	float	dw, float	dh,
+	float	sx, float	sy,
+	float	sw, float	sh,
+	float		angle,
+	float		alpha
+)
+{
+	D3D11_VIEWPORT vp;
+	UINT num = 1;
+
+	FRAMEWORK.context->RSGetViewports(&num, &vp);
+
+	float vw = static_cast<float>(FRAMEWORK.SCREEN_WIDTH);
+	float vh = static_cast<float>(FRAMEWORK.SCREEN_HEIGHT);
+	float screen_width = vw;
+	float screen_height = vh;
+
+	shader->Acivate();
+	//頂点データ設定
+	vertex_tex data[4];
+
+	data[0].Pos.x = dx;
+	data[0].Pos.y = dy;
+	data[0].Pos.z = 0.0f;
+
+	data[1].Pos.x = dx + dw;
+	data[1].Pos.y = dy;
+	data[1].Pos.z = 0.0f;
+
+	data[2].Pos.x = dx;
+	data[2].Pos.y = dy + dh;
+	data[2].Pos.z = 0.0f;
+
+	data[3].Pos.x = dx + dw;
+	data[3].Pos.y = dy + dh;
+	data[3].Pos.z = 0.0f;
+
+	//回転の中心
+	float workPosX = dx + dw * 0.5f;
+	float workPosY = dy + dh * 0.5f;
+
+	//回転処理
+	for (int i = 0; i < 4; i++) {
+
+		float workX = data[i].Pos.x - workPosX;
+		float workY = data[i].Pos.y - workPosY;
+		data[i].Pos.x = workX * cosf(angle) - workY * sinf(angle) + workPosX;
+		data[i].Pos.y = workX * sinf(angle) + workY * cosf(angle) + workPosY;
+		data[i].Pos.z = 0.0f;
+	}
+
+
+
+	// 正規化デバイス座標系
+
+	for (int i = 0; i < 4; i++) {
+		data[i].Pos.x = 2.0f * data[i].Pos.x / screen_width - 1.0f;
+		data[i].Pos.y = 1.0f - 2.0f * data[i].Pos.y / screen_height;
+		data[i].Pos.z = 0.0f;
+	}
+
+
+	//テクスチャ座標設定
+	data[0].Tex.x = sx;
+	data[0].Tex.y = sy;
+	data[1].Tex.x = sx + sw;
+	data[1].Tex.y = sy;
+	data[2].Tex.x = sx;
+	data[2].Tex.y = sy + sh;
+	data[3].Tex.x = sx + sw;
+	data[3].Tex.y = sy + sh;
+
+	//UV座標
+	for (int i = 0; i < 4; i++) {
+		data[i].Tex.x = data[i].Tex.x / tex->GetWidth();
+		data[i].Tex.y = data[i].Tex.y / tex->GetHeight();
+	}
+	//頂点カラー
+	data[0].Color = XMFLOAT4(1, 1, 1, alpha);
+	data[1].Color = XMFLOAT4(1, 1, 1, alpha);
+	data[2].Color = XMFLOAT4(1, 1, 1, alpha);
+	data[3].Color = XMFLOAT4(1, 1, 1, alpha);
+	//法線
+	data[0].Normal = XMFLOAT3(0, 0, 1);
+	data[1].Normal = XMFLOAT3(0, 0, 1);
+	data[2].Normal = XMFLOAT3(0, 0, 1);
+	data[3].Normal = XMFLOAT3(0, 0, 1);
+
+	//頂点データ更新
+	FRAMEWORK.context->UpdateSubresource(buffer.Get(), 0, NULL, data, 0, 0);
+
+	//	頂点バッファの指定
+	UINT stride = sizeof(vertex_tex);
+	UINT offset = 0;
+	FRAMEWORK.context->IASetVertexBuffers(
+		0, 1, buffer.GetAddressOf(), // スロット, 数, バッファ
+		&stride,		// １頂点のサイズ
+		&offset			// 開始位置
+	);
+	FRAMEWORK.context->IASetPrimitiveTopology(
+		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP
+	);
+	FRAMEWORK.context->OMSetDepthStencilState(depthstate.Get(), 1);
+
+	//テクスチャの設定
+	if (tex) tex->Set(0);
+
+	FRAMEWORK.context->Draw(4, 0);
+	//シェーダ無効か
 	shader->Inactivate();
 }
 

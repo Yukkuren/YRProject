@@ -68,6 +68,25 @@ public:
 	//MeshMotion										motion2;
 	//std::unique_ptr<Skinned_mesh>					ground;
 
+	static const int Rasterizer_Size = 4;
+	enum
+	{
+		RS_CULL_BACK = 0,
+		RS_CULL_FRONT,
+		RS_WIRE,
+		RS_NONE,
+	};
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState>	rasterizer_state[Rasterizer_Size];
+
+	static const int Depth_Size = 3;
+	enum
+	{
+		DS_FALSE,
+		DS_TRUE,
+		DS_WRITE_FALSE
+	};
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>	depthstencil_state[Depth_Size];
+
 	SceneGame scenegame;
 	SceneLoad sceneload;
 	SceneTitle scenetitle;
@@ -142,6 +161,7 @@ public:
 		return instance;
 	}
 
+	void Clear(DWORD color);
 
 	framework(HWND hwnd) : hwnd(hwnd)
 	{
@@ -330,6 +350,8 @@ private:
 	void update(float elapsed_time/*Elapsed seconds from last frame*/);
 	void render(float elapsed_time/*Elapsed seconds from last frame*/);
 
+	bool CreateRasterizerState();
+	bool CreateDepthStencilState();
 private:
 	high_resolution_timer timer;
 	void calculate_frame_stats()

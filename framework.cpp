@@ -125,6 +125,149 @@ void BlendCreate(ID3D11Device *device, ID3D11BlendState **blendstate)
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 }
 
+
+bool framework::CreateRasterizerState()
+{
+	D3D11_RASTERIZER_DESC rd;
+	for (int i = 0; i < Rasterizer_Size; i++)
+	{
+		switch (i)
+		{
+		case RS_CULL_BACK:
+			ZeroMemory(&rd, sizeof(rd));
+			rd.FillMode = D3D11_FILL_SOLID;
+			rd.CullMode = D3D11_CULL_BACK;
+			rd.FrontCounterClockwise = FALSE;
+			rd.DepthBias = 0;
+			rd.DepthBiasClamp = 0;
+			rd.SlopeScaledDepthBias = 0;
+			rd.DepthClipEnable = TRUE;
+			rd.ScissorEnable = FALSE;
+			rd.MultisampleEnable = FALSE;
+			rd.AntialiasedLineEnable = FALSE;
+			break;
+		case RS_CULL_FRONT:
+			ZeroMemory(&rd, sizeof(rd));
+			rd.FillMode = D3D11_FILL_SOLID;
+			rd.CullMode = D3D11_CULL_FRONT;
+			rd.FrontCounterClockwise = FALSE;
+			rd.DepthBias = 0;
+			rd.DepthBiasClamp = 0;
+			rd.SlopeScaledDepthBias = 0;
+			rd.DepthClipEnable = TRUE;
+			rd.ScissorEnable = FALSE;
+			rd.MultisampleEnable = FALSE;
+			rd.AntialiasedLineEnable = FALSE;
+			break;
+		case RS_WIRE:
+			ZeroMemory(&rd, sizeof(rd));
+			rd.FillMode = D3D11_FILL_WIREFRAME;
+			rd.CullMode = D3D11_CULL_BACK;
+			rd.FrontCounterClockwise = FALSE;
+			rd.DepthBias = 0;
+			rd.DepthBiasClamp = 0;
+			rd.SlopeScaledDepthBias = 0;
+			rd.DepthClipEnable = TRUE;
+			rd.ScissorEnable = FALSE;
+			rd.MultisampleEnable = FALSE;
+			rd.AntialiasedLineEnable = FALSE;
+			break;
+		case RS_NONE:
+			ZeroMemory(&rd, sizeof(rd));
+			rd.FillMode = D3D11_FILL_SOLID;
+			rd.CullMode = D3D11_CULL_NONE;
+			rd.FrontCounterClockwise = FALSE;
+			rd.DepthBias = 0;
+			rd.DepthBiasClamp = 0;
+			rd.SlopeScaledDepthBias = 0;
+			rd.DepthClipEnable = TRUE;
+			rd.ScissorEnable = FALSE;
+			rd.MultisampleEnable = FALSE;
+			rd.AntialiasedLineEnable = FALSE;
+			break;
+		default:
+			break;
+		}
+
+		HRESULT hr = device->CreateRasterizerState(&rd, rasterizer_state[i].GetAddressOf());
+		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+	}
+	return true;
+}
+
+bool framework::CreateDepthStencilState()
+{
+	D3D11_DEPTH_STENCIL_DESC dd;
+
+	for (int i = 0; i < Depth_Size; i++)
+	{
+		switch (i)
+		{
+		case DS_FALSE:
+			ZeroMemory(&dd, sizeof(dd));
+			dd.DepthEnable = FALSE;
+			dd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+			dd.DepthFunc = D3D11_COMPARISON_LESS;
+			dd.StencilEnable = TRUE;
+			dd.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+			dd.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+			dd.FrontFace.StencilFunc = dd.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+			dd.FrontFace.StencilDepthFailOp = dd.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+			dd.FrontFace.StencilPassOp = dd.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+			dd.FrontFace.StencilFailOp = dd.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+			break;
+		case DS_TRUE:
+			ZeroMemory(&dd, sizeof(dd));
+			dd.DepthEnable = TRUE;
+			dd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+			dd.DepthFunc = D3D11_COMPARISON_LESS;
+			dd.StencilEnable = TRUE;
+			dd.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+			dd.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+			dd.FrontFace.StencilFunc = dd.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+			dd.FrontFace.StencilDepthFailOp = dd.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+			dd.FrontFace.StencilPassOp = dd.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+			dd.FrontFace.StencilFailOp = dd.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+			break;
+		case DS_WRITE_FALSE:
+			ZeroMemory(&dd, sizeof(dd));
+			dd.DepthEnable = TRUE;
+			dd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+			dd.DepthFunc = D3D11_COMPARISON_LESS;
+			dd.StencilEnable = TRUE;
+			dd.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+			dd.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+			dd.FrontFace.StencilFunc = dd.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+			dd.FrontFace.StencilDepthFailOp = dd.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+			dd.FrontFace.StencilPassOp = dd.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+			dd.FrontFace.StencilFailOp = dd.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+			break;
+		default:
+			break;
+
+			HRESULT hr = device->CreateDepthStencilState(&dd, depthstencil_state[i].GetAddressOf());
+			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+		}
+	}
+	return true;
+}
+
+
+void framework::Clear(DWORD color)
+{
+	// デフォルトレンダーターゲットビュー設定
+	context->OMSetRenderTargets(1, .GetAddressOf(), DepthStencilView.Get());
+
+	float clearColor[4];
+	for (int i = 3; i >= 0; i--) {
+		clearColor[i] = ((color >> 8 * (3 - i)) & 0x000000FF) / 255.0f;
+	}
+	DeviceContext->ClearRenderTargetView(RenderTargetView.Get(), clearColor);
+	DeviceContext->ClearDepthStencilView(DepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	DeviceContext->OMSetDepthStencilState(DepthStencilState[DS_TRUE].Get(), 1);
+
+}
+
 bool framework::initialize()
 {
 	//D3D_DRIVER_TYPE         g_driverType = D3D_DRIVER_TYPE_NULL;
@@ -366,6 +509,9 @@ bool framework::initialize()
 	}
 
 	pColSprite.SetSprite();
+
+	CreateRasterizerState();
+	CreateDepthStencilState();
 
 	return true;
 }

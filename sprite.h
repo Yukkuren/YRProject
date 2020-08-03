@@ -38,7 +38,7 @@ public:
 	float numY;						//画像縦分割数
 	int	num = 0;
 	float time = 0;
-	std::shared_ptr<Texture> texture = nullptr;
+	//std::shared_ptr<Texture> texture = nullptr;
 public:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader>			vert;
 	Microsoft::WRL::ComPtr<ID3D11PixelShader>			pixel;
@@ -59,6 +59,13 @@ public:
 		DirectX::XMFLOAT2 texcord;
 	};
 
+	struct vertex_tex
+	{
+		DirectX::XMFLOAT3 Pos;
+		DirectX::XMFLOAT3 Normal;
+		DirectX::XMFLOAT4 Color;
+		DirectX::XMFLOAT2 Tex;
+	};
 
 	void render(
 		//UNIT.03
@@ -71,6 +78,18 @@ public:
 		float r,float g,float b,	//Color of sprite's each vertices
 		float a
 	);
+
+	void render(
+		YRShader*	shader,
+		Texture*	 tex,
+		float	dx, float	dy,
+		float	dw, float	dh,
+		float	sx, float	sy,
+		float	sw, float	sh,
+		float		angle,
+		float		alpha
+	);
+
 	//画像を読み込む(画像横サイズ,画像縦サイズ)
 	void LoadGraph(float sw, float sh)
 	{

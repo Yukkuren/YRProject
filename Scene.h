@@ -336,12 +336,14 @@ public:
 	std::shared_ptr<Sampler> sampler_wrap = nullptr;
 	std::shared_ptr<Sampler> sampler_clamp = nullptr;
 
+
 	//シェーダー
 	std::unique_ptr<YRShader> skinShader = nullptr;
 	std::unique_ptr<YRShader> spriteShader = nullptr;
 	std::unique_ptr<YRShader> geoShader = nullptr;
 	std::unique_ptr<YRShader> boardShader = nullptr;
 	std::unique_ptr<YRShader> animShader = nullptr;
+	std::unique_ptr<YRShader> toGbuffer = nullptr;
 
 	//テクスチャ
 	std::unique_ptr<Texture> color_texture = nullptr;
@@ -357,11 +359,12 @@ public:
 	void Draw(float elapsed_time);
 
 	void RenderTexture(
-		const DirectX::XMMATRIX& view,
-		const DirectX::XMMATRIX& projection,
-		const DirectX::XMFLOAT4& light_direction,
-		const DirectX::XMFLOAT4& light_color,
-		const DirectX::XMFLOAT4& ambient_color);
+		const DirectX::XMMATRIX&	view,
+		const DirectX::XMMATRIX&	projection,
+		const DirectX::XMFLOAT4&	light_direction,
+		const DirectX::XMFLOAT4&	light_color,
+		const DirectX::XMFLOAT4&	ambient_color,
+		float						elapsed_time);
 public:
 	struct CB_Multi_Render_Target
 	{
