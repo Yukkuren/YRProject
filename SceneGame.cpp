@@ -467,7 +467,7 @@ void SceneGame::Update(float elapsed_time)
 
 
 					//※要変更。ステートの[2]なんて見ただけじゃ何かわからない
-					if (player1p->state != 2 && player2p->state != 2)
+					if (player1p->act_state != ActState::STATENONE && player2p->act_state != ActState::STATENONE)
 					{
 						//プレイヤーのステートが奪われた状態以外は押し出しを行う
 						//Hitcheak::HitPlayer(player1p->GetHit(), player1p->pos.x, player2p->GetHit(), player2p->pos.x);
@@ -587,7 +587,7 @@ void SceneGame::Update(float elapsed_time)
 						}
 
 						//プレイヤーの移動距離制限(※要変更)
-						if (player1p->state != 2 && player2p->state != 2)
+						if (player1p->act_state != ActState::STATENONE && player2p->act_state != ActState::STATENONE)
 						{
 							Limit::Stop(player1p->pos.x, player2p->pos.x);
 						}
@@ -1234,8 +1234,8 @@ void SceneGame::TrackSet()
 	//ホーミングダッシュ用の値を変更する
 	player1p->tracking.rival_Pos = player2p->pos;
 	player2p->tracking.rival_Pos = player1p->pos;
-	player1p->rival_state = player2p->state;
-	player2p->rival_state = player1p->state;
+	//player1p->rival_state = player2p->state;
+	//player2p->rival_state = player1p->state;
 }
 
 

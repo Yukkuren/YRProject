@@ -11,17 +11,71 @@
 
 void Knight::Slow(float elapsed_time)
 {
-	YR_Vector3 cent{ pos.x + Getapply(100.0f),pos.y };
+	/*YR_Vector3 cent{ pos.x + Getapply(100.0f),pos.y };
 	YR_Vector3 range{ 200.0f,50.0f };
 	atk[scastI(KNIGHTATK::ONE)].Update(
-		cent, range, 5, 5, 15, 20, 40, YR_Vector3(Getapply(10.0f), 30.0f), AttackBox::MIDDLE, Getapply(0.0f),elapsed_time);
+		cent, range, 5, 5, 15, 20, 40, YR_Vector3(Getapply(10.0f), 30.0f), AttackBox::MIDDLE, Getapply(0.0f),elapsed_time);*/
 }
 
 
 
 void Knight::Jaku(float elapsed_time)
 {
-	if (atk[scastI(KNIGHTATK::ONE)].knock_start)
+	if (later > -1 && later < target_max)
+	{
+		return;
+	}
+
+	if (fream < 100.0f)
+	{
+		fream -= elapsed_time;
+	}
+	
+
+	if (fream < 0.0f)
+	{
+		attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft);
+		fream = 110.0f;
+	}
+
+	int now_at_list = scastI(attack_state);
+
+	bool knock = false;	//ˆê“x‚Å‚àknock_start‚É“ü‚Á‚½‚çc‚è‚Ì“–‚½‚è”»’è‚Ìknockback‚ğ‘S‚Ä0.0f‚É‚·‚é
+	if (!atk.empty())
+	{
+		for (auto& a : atk)
+		{
+			if (knock)
+			{
+				a.parameter.knockback = 0.0f;
+			}
+			if (a.knock_start)
+			{
+				pos.x -= a.parameter.knockback;
+				a.parameter.knockback = 0.0f;
+				if (!ground)
+				{
+					speed_Y.Set(60.0f);
+				}
+				knock = true;
+			}
+		}
+	}
+
+	if (AttackEndCheck())
+	{
+		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
+		{
+			fream = attack_list[scastI(attack_state)].attack_single[attack_list[now_at_list].now_attack_num].fream;
+		}
+		else
+		{
+			later = attack_list[now_at_list].later;
+		}
+	}
+
+	specialfream = 0;
+	/*if (atk[scastI(KNIGHTATK::ONE)].knock_start)
 	{
 		pos.x -= atk[scastI(KNIGHTATK::ONE)].knockback;
 		atk[scastI(KNIGHTATK::ONE)].knockback = 0.0f;;
@@ -42,7 +96,7 @@ void Knight::Jaku(float elapsed_time)
 		atk[scastI(KNIGHTATK::ONE)].Update(
 			cent, range, 5, 5, 15, 10, 20, YR_Vector3(Getapply(5.0f), 20.0f), AttackBox::MIDDLE, Getapply(10.0f),elapsed_time);
 	}
-	specialfream = 0;
+	specialfream = 0;*/
 }
 
 void Knight::Thu(float fream, float elapsed_time)

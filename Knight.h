@@ -41,7 +41,6 @@ public:
 	YR_Vector3 hadou;
 	float hadouspeed;
 	
-	std::vector<AttackBox> atk;
 	std::array< HitBox, static_cast<int>(KNIGHTHIT::END)> hit;
 	std::array<YR_Vector3, scastI(KNIGHTHIT::END)> Hitplus;
 	std::array<YR_Vector3, scastI(KNIGHTHIT::END)> HitSize;
@@ -141,6 +140,10 @@ public:
 
 	bool AttackLoad();			//生成時攻撃パラメーターを読み込む
 	bool AttackWrite();			//デバック時パラメーターを書き出す
+
+	bool AttackEndCheck();		//攻撃当たり判定が全て終了しているか確認する
+	void EndAttackErase();		//終了した攻撃当たり判定を全て消去する。
+	void AllAttackClear();		//全ての攻撃当たり判定を消去する
 
 	//イントロ用列挙
 	enum class INTRO_KNIGHT : int

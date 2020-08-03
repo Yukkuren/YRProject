@@ -21,6 +21,8 @@
 #define		GAUGE_MAX	(100.0f)
 
 const int	Track_max = 2;		//ホーミングダッシュ最大数
+const float	non_target = 110.0f;//この値を入れられたフレームは条件から外れるようにする
+const float target_max = 100.0f;//条件式でこの値以上は外れるようにする
 
 //--------------------------------------
 //	**キャラ名設定
@@ -93,15 +95,15 @@ enum class ActState : int
 enum class AttackState : int
 {
 	NONE,
-	SLOW,
-	TRACK_DASH,
-	STEAL,
 	JAKU,
 	THU,
 	KYO,
 	D_JAKU,
 	D_THU,
 	U_KYO,
+	STEAL,
+	SLOW,
+	TRACK_DASH,
 	JAKU_RHURF,
 	THU_RHURF,
 	KYO_RHURF,
@@ -112,40 +114,69 @@ enum class AttackState : int
 };
 
 
-
-//--------------------------------------------------
-// **攻撃パラメーター構造体**
-//・攻撃のパラメーターを当たり判定ごとに保存する構造体
-//--------------------------------------------------
-struct AttackParameter
+//---------------------------------------------------------------
+// **攻撃内容保存構造体**
+//・攻撃の発生フレーム、内部パラメータ変数、その生成数を保存する構造体
+//---------------------------------------------------------------
+struct AttackSingle
 {
 public:
-	YR_Vector3	center;		//攻撃判定の中心座標
-	YR_Vector3	size;		//攻撃判定の大きさ
-	float		timer;		//持続フレーム
-	float		fream;		//発生フレーム
-	float		later;		//後隙フレーム
-	float		damege;		//この攻撃で与えるダメージ
-	float		HB_timer;	//攻撃を当てた時の相手ののけぞり時間
-	YR_Vector3	hitback;	//攻撃を当てた時の相手の吹っ飛びベクトル
-	int			type;		//攻撃の属性(上段・中段・下段)
-	float		knockback;	//ノックバック(Xベクトルのみ)
-	bool		gaugeout;	//falseならゲージ獲得攻撃
-	float		stealtimer; //掴みぬけされる時間
+	std::vector<AttackParameter>	parameter;		//内部パラメーター
+	int								quantity;		//一度の攻撃で生成する当たり判定の数量
+	float							fream;			//発生フレーム
 };
 
 
-//--------------------------------------------------
-// **攻撃リスト構造体**
+//------------------------------------------------------------------------
+// **攻撃リストクラス**
 //・攻撃のパラメーターをキャラ生成時に読み込み、
 //　攻撃を行う際に当たり判定に対応したパラメーターを送る
-//--------------------------------------------------
-struct AttackList
+//			以下、整理用
+//１：攻撃発生ボタンを押す
+//２：プレイヤーに発生フレームを送る
+//３：発生フレームになったらSetAttack関数で当たり判定を生成
+//４：当たり判定の持続は当たり判定本体で調整する為何も触らない
+//５：攻撃が複数回発生する場合はattack_maxにその回数を入れてその分ループさせる
+//
+//		攻撃当たり判定
+//１：生成時にInit関数でパラメーターを送る。
+//		この時、distanceに入れるのはプレイヤーからどれだけ離れているかという値
+//２：Update関数の引数にプレイヤーのposを渡し、常に位置が更新されるようにする
+//３：AttackBoxクラスに「攻撃判定に付与するスピードを増加させる関数」を作り、Updateで値を変える
+//etc...Update内：pos=player_pos+distance+speed;
+//						speedは関数で変えられるため、posの位置が変わっていく
+//-------------------------------------------------------------------------
+class AttackList
 {
 public:
-	std::string						attack_name;	//攻撃名
-	std::vector<AttackParameter>	parameter;		//内部パラメーター
-	int								quantity;		//生成する当たり判定の数量
+	AttackState						attack_name;	//攻撃名(プレイヤー生成時に保存)
+	int								attack_max;		//攻撃回数
+	std::vector<AttackSingle>		attack_single;	//攻撃内容保存
+	float							later;			//後隙フレーム
+	int								now_attack_num;	//現在実行している攻撃番号は何番かを示す(attack_maxまで回ったらlaterをプレイヤーに)
+public:
+	AttackList() : now_attack_num(0), attack_name(AttackState::NONE), later(0.0f), attack_max(0) {};
+	//攻撃当たり判定を生成する
+	void SetAttack(std::vector<AttackBox> *atk, float rightOrleft)
+	{
+		for (int quantity = 0; quantity < attack_single[now_attack_num].quantity; quantity++)
+		{
+			atk->push_back(AttackBox());
+			atk->back().Init(attack_single[now_attack_num].parameter[quantity],rightOrleft);
+		}
+		now_attack_num++;
+	}
+
+	//飛び道具攻撃当たり判定をセットする
+	void SetAttack(std::vector<AttackBox>* atk, float rightOrleft, YR_Vector3 plus_speed)
+	{
+		for (int quantity = 0; quantity < attack_single[now_attack_num].quantity; quantity++)
+		{
+			atk->push_back(AttackBox());
+			atk->back().Init(attack_single[now_attack_num].parameter[quantity], rightOrleft, plus_speed);
+		}
+		now_attack_num++;
+	}
 };
 
 
@@ -160,11 +191,12 @@ public:
 	bool				ground;			//TRUEなら地面についている
 	bool				drawset;		//特定の画像を描画したときにtrueにして通常の画像を描画しない
 	bool				attack;			//TRUEなら攻撃中
-	ActState			act_state;	//今行動可能か。また行動不可ならどういう状態か
-	AttackState			attack_state;			//今何をしているか
+	ActState			act_state;		//今行動可能か。また行動不可ならどういう状態か
+	AttackState			attack_state;	//今何の攻撃をしているか
 	float				rightOrleft;	//右向きなら*1左向きなら*-1
 	bool				moveflag;		//TRUEなら動いている
-	float				later;			//後隙フレーム
+	float				fream;			//発生フレーム
+	float				later;			//後隙フレーム(初期値にnon_targetを入れておく)
 	float				knocktimer;		//喰らい時間
 	float				gravity;		//重力値
 	float				specialfream;	//弱コンボ等でフレームを減らす際の数値
@@ -177,6 +209,7 @@ public:
 	int					rival_state;	//相手のステート
 	float				steal_escape;	//投げ抜け可能時間
 	int					combo_count;	//コンボカウント
+	std::vector<AttackBox> atk;
 
 
 	std::vector<AttackList>		attack_list;	//攻撃のリスト。生成時に読み込み、保存する(攻撃発生時にパラメーターを送る)
@@ -261,6 +294,12 @@ public:
 
 	virtual bool AttackLoad() = 0;
 	virtual bool AttackWrite() = 0;
+
+public:
+	virtual bool AttackEndCheck() = 0;				//攻撃当たり判定が全て終了しているか確認する
+	virtual void EndAttackErase() = 0;				//終了した攻撃当たり判定を全て消去する。
+	virtual void AllAttackClear() = 0;				//全ての攻撃当たり判定を消去する
+
 };
 
 #endif // !PLAYERBASE_H_
