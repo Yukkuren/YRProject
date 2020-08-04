@@ -474,13 +474,13 @@ void SceneGame::Update(float elapsed_time)
 					}
 
 					//UŒ‚“¯Žm‚Ì”»’è
-					Hitcheak::HitCheakAttack(player1p->GetAttack(), player1p->GetMax(1), player2p->GetAttack(), player2p->GetMax(1));
+					Hitcheak::HitCheakAttack(player1p->atk,player2p->atk);
 					player1p->GaugeUp(Hitcheak::add1P);
 					player2p->GaugeUp(Hitcheak::add2P);
 
 					//UŒ‚‚Æ“–‚½‚è”»’è‚Ì”»’è
-					Hitcheak::add1P = Hitcheak::HitCheak(player1p->GetAttack(), player1p->GetMax(1), player2p->GetHit(), player2p->GetMax(0), 2);
-					Hitcheak::add2P = Hitcheak::HitCheak(player2p->GetAttack(), player2p->GetMax(1), player1p->GetHit(), player1p->GetMax(0), 1);
+					Hitcheak::add1P = Hitcheak::HitCheak(player1p->atk, player2p->GetHit(), player2p->GetMax(0), 2);
+					Hitcheak::add2P = Hitcheak::HitCheak(player2p->atk, player1p->GetHit(), player1p->GetMax(0), 1);
 					player1p->GaugeUp(Hitcheak::add1P);
 					player2p->GaugeUp(Hitcheak::add2P);
 

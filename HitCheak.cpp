@@ -4,21 +4,29 @@
 #include "YR_VECTOR3.h"
 //#include "Music.h"
 
-float Hitcheak::HitCheak(AttackBox* attack, int a_max, HitBox* hit, int h_max, int player)
+float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max, int player)
 {
-	for (int atknum = 0; atknum < a_max; atknum++)
+	if (attack.empty())
+	{
+		//UŒ‚”»’è‚ª‘¶İ‚µ‚È‚¢ê‡‚Íreturn
+		return 0.0f;
+	}
+
+	for (int atknum = 0; atknum < attack.size(); atknum++)
 	{
 		if (attack[atknum].hit_ok)
 		{
 			for (int hitnum = 0; hitnum < h_max; hitnum++)
 			{
-				if (attack[atknum].center.x - attack[atknum].size.x<hit[hitnum].center.x + hit[hitnum].size.x && attack[atknum].center.x + attack[atknum].size.x>hit[hitnum].center.x - hit[hitnum].size.x)
+				if (attack[atknum].parameter.distance.x - attack[atknum].parameter.size.x<hit[hitnum].center.x + hit[hitnum].size.x &&
+					attack[atknum].parameter.distance.x + attack[atknum].parameter.size.x>hit[hitnum].center.x - hit[hitnum].size.x)
 				{
-					if (attack[atknum].center.y - attack[atknum].size.y<hit[hitnum].center.y + hit[hitnum].size.y && attack[atknum].center.y + attack[atknum].size.y>hit[hitnum].center.y - hit[hitnum].size.y)
+					if (attack[atknum].parameter.distance.y - attack[atknum].parameter.size.y<hit[hitnum].center.y + hit[hitnum].size.y &&
+						attack[atknum].parameter.distance.y + attack[atknum].parameter.size.y>hit[hitnum].center.y - hit[hitnum].size.y)
 					{
 						int flag = 0;
 
-						switch (attack[atknum].type)
+						switch (attack[atknum].parameter.type)
 						{
 						case AttackBox::UP:
 							if (hit[hitnum].guard == HitBox::NOGUARD)
@@ -84,17 +92,17 @@ float Hitcheak::HitCheak(AttackBox* attack, int a_max, HitBox* hit, int h_max, i
 						{
 
 							float add = 0.0f;
-							if (!attack[atknum].gaugeout)
+							if (!attack[atknum].parameter.gaugeout)
 							{
-								add = attack[atknum].damege;
+								add = attack[atknum].parameter.damege;
 							}
 							hit[hitnum].hit = true;
 							attack[atknum].hit_ok = false;
 							attack[atknum].knock_start = true;
-							hit[hitnum].damege = attack[atknum].damege;
-							hit[hitnum].timer = attack[atknum].HB_timer;
-							hit[hitnum].hitback = attack[atknum].hitback;
-							Hitcheak::timer = (attack[atknum].damege / 4);
+							hit[hitnum].damege = attack[atknum].parameter.damege;
+							hit[hitnum].timer = attack[atknum].parameter.HB_timer;
+							hit[hitnum].hitback = attack[atknum].parameter.hitback;
+							Hitcheak::timer = (attack[atknum].parameter.damege / 4);
 							if (Hitcheak::timer > 40)
 							{
 								Hitcheak::timer = 40;
@@ -108,41 +116,41 @@ float Hitcheak::HitCheak(AttackBox* attack, int a_max, HitBox* hit, int h_max, i
 								Hitcheak::stop2p = true;
 							}
 
-							if (attack[atknum].center.x >= hit[atknum].center.x)
+							if (attack[atknum].parameter.distance.x >= hit[atknum].center.x)
 							{
-								float dis = attack[atknum].center.x - hit[hitnum].center.x;
+								float dis = attack[atknum].parameter.distance.x - hit[hitnum].center.x;
 								dis /= 2;
 								effectpos.x = hit[hitnum].center.x + dis;
 								effecttimer = 10;
 							}
-							if (hit[hitnum].center.x > attack[atknum].center.x)
+							if (hit[hitnum].center.x > attack[atknum].parameter.distance.x)
 							{
-								float dis = hit[hitnum].center.x - attack[atknum].center.x;
+								float dis = hit[hitnum].center.x - attack[atknum].parameter.distance.x;
 								dis /= 2;
-								effectpos.x = attack[atknum].center.x + dis;
+								effectpos.x = attack[atknum].parameter.distance.x + dis;
 								effecttimer = 10;
 							}
 
-							if (attack[atknum].center.y >= hit[hitnum].center.y)
+							if (attack[atknum].parameter.distance.y >= hit[hitnum].center.y)
 							{
-								float dis = attack[atknum].center.y - hit[hitnum].center.y;
+								float dis = attack[atknum].parameter.distance.y - hit[hitnum].center.y;
 								dis /= 2;
 								effectpos.y = hit[hitnum].center.y + dis;
 								effecttimer = 10;
 							}
-							if (hit[hitnum].center.y > attack[atknum].center.y)
+							if (hit[hitnum].center.y > attack[atknum].parameter.distance.y)
 							{
-								float dis = hit[hitnum].center.y - attack[atknum].center.y;
+								float dis = hit[hitnum].center.y - attack[atknum].parameter.distance.y;
 								dis /= 2;
-								effectpos.y = attack[atknum].center.y + dis;
+								effectpos.y = attack[atknum].parameter.distance.y + dis;
 								effecttimer = 10;
 							}
 
-							for (int n = 0; n < a_max; n++)
+							for (int n = 0; n < attack.size(); n++)
 							{
-								attack[n].damege = 0;
+								attack[n].parameter.damege = 0;
 								//attack[n].HB_timer = 0;
-								attack[n].hitback = YR_Vector3(0.0f, 0.0f);
+								attack[n].parameter.hitback = YR_Vector3(0.0f, 0.0f);
 								attack[n].hit_ok = false;
 							}
 							//PlaySE(SE_HIT);
@@ -151,22 +159,22 @@ float Hitcheak::HitCheak(AttackBox* attack, int a_max, HitBox* hit, int h_max, i
 						if (flag == 0)
 						{
 							float add = 0.0f;
-							if (!attack[atknum].gaugeout)
+							if (!attack[atknum].parameter.gaugeout)
 							{
-								add = attack[atknum].damege / 3.0f;
+								add = attack[atknum].parameter.damege / 3.0f;
 							}
 							hit[hitnum].guard_ok = true;
 							attack[atknum].hit_ok = false;
 							attack[atknum].knock_start = true;
-							hit[hitnum].damege = attack[atknum].damege / 2;
-							hit[hitnum].timer = attack[atknum].HB_timer;
-							hit[hitnum].hitback.x = attack[atknum].hitback.x / 2;
-							hit[hitnum].hitback.y = attack[atknum].hitback.y / 2;
-							for (int n = 0; n < a_max; n++)
+							hit[hitnum].damege = attack[atknum].parameter.damege / 2;
+							hit[hitnum].timer = attack[atknum].parameter.HB_timer;
+							hit[hitnum].hitback.x = attack[atknum].parameter.hitback.x / 2;
+							hit[hitnum].hitback.y = attack[atknum].parameter.hitback.y / 2;
+							for (int n = 0; n < attack.size(); n++)
 							{
-								attack[n].damege = 0;
+								attack[n].parameter.damege = 0;
 								//attack[n].HB_timer = 0;
-								attack[n].hitback = YR_Vector3(0.0f, 0.0f);
+								attack[n].parameter.hitback = YR_Vector3(0.0f, 0.0f);
 								attack[n].hit_ok = false;
 							}
 							return add;
@@ -308,85 +316,96 @@ void Hitcheak::HitPlayer(HitBox* pl1, float& pos1, HitBox* pl2, float& pos2)
 }
 
 
-void Hitcheak::HitCheakAttack(AttackBox* attack1p, int a_max1p, AttackBox* attack2p, int a_max2p)
+void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<AttackBox> &attack2p)
 {
 	add1P = 0.0f;
 	add2P = 0.0f;
-	for (int atknum = 0; atknum < a_max1p; atknum++)
+	if (attack1p.empty())
+	{
+		return;
+	}
+	if (attack2p.empty())
+	{
+		return;
+	}
+
+	for (int atknum = 0; atknum < attack1p.size(); atknum++)
 	{
 		if (attack1p[atknum].hit_ok)
 		{
-			for (int hitnum = 0; hitnum < a_max2p; hitnum++)
+			for (int hitnum = 0; hitnum < attack2p.size(); hitnum++)
 			{
 				if (attack2p[hitnum].hit_ok)
 				{
-					if (attack1p[atknum].center.x - attack1p[atknum].size.x<attack2p[hitnum].center.x + attack2p[hitnum].size.x && attack1p[atknum].center.x + attack1p[atknum].size.x>attack2p[hitnum].center.x - attack2p[hitnum].size.x)
+					if (attack1p[atknum].parameter.distance.x - attack1p[atknum].parameter.size.x<attack2p[hitnum].parameter.distance.x + attack2p[hitnum].parameter.size.x &&
+						attack1p[atknum].parameter.distance.x + attack1p[atknum].parameter.size.x>attack2p[hitnum].parameter.distance.x - attack2p[hitnum].parameter.size.x)
 					{
-						if (attack1p[atknum].center.y - attack1p[atknum].size.y<attack2p[hitnum].center.y + attack2p[hitnum].size.y && attack1p[atknum].center.y + attack1p[atknum].size.y>attack2p[hitnum].center.y - attack2p[hitnum].size.y)
+						if (attack1p[atknum].parameter.distance.y - attack1p[atknum].parameter.size.y<attack2p[hitnum].parameter.distance.y + attack2p[hitnum].parameter.size.y &&
+							attack1p[atknum].parameter.distance.y + attack1p[atknum].parameter.size.y>attack2p[hitnum].parameter.distance.y - attack2p[hitnum].parameter.size.y)
 						{
-							if (attack1p[atknum].gaugeout && !attack2p[hitnum].gaugeout)
+							if (attack1p[atknum].parameter.gaugeout && !attack2p[hitnum].parameter.gaugeout)
 							{
-								attack2p[hitnum].damege = 0;
+								attack2p[hitnum].parameter.damege = 0;
 								attack2p[hitnum].hit_ok = false;
 								return;
 							}
-							if (attack2p[hitnum].gaugeout && !attack1p[atknum].gaugeout)
+							if (attack2p[hitnum].parameter.gaugeout && !attack1p[atknum].parameter.gaugeout)
 							{
-								attack1p[atknum].damege = 0;
+								attack1p[atknum].parameter.damege = 0;
 								attack1p[atknum].hit_ok = false;
 								return;
 							}
 
 							clash = true;
-							Hitcheak::timer = ((attack1p[atknum].damege + attack2p[hitnum].damege) / 4);
+							Hitcheak::timer = ((attack1p[atknum].parameter.damege + attack2p[hitnum].parameter.damege) / 4);
 							if (Hitcheak::timer > 40)
 							{
 								Hitcheak::timer = 40;
 							}
-							add1P = attack1p[atknum].damege;
-							add2P = attack2p[hitnum].damege;
-							if (attack1p[atknum].center.x >= attack2p[hitnum].center.x)
+							add1P = attack1p[atknum].parameter.damege;
+							add2P = attack2p[hitnum].parameter.damege;
+							if (attack1p[atknum].parameter.distance.x >= attack2p[hitnum].parameter.distance.x)
 							{
-								float dis = attack1p[atknum].center.x - attack2p[hitnum].center.x;
+								float dis = attack1p[atknum].parameter.distance.x - attack2p[hitnum].parameter.distance.x;
 								dis /= 2;
-								clashpos.x = attack2p[hitnum].center.x + dis;
+								clashpos.x = attack2p[hitnum].parameter.distance.x + dis;
 							}
-							if (attack2p[hitnum].center.x > attack1p[atknum].center.x)
+							if (attack2p[hitnum].parameter.distance.x > attack1p[atknum].parameter.distance.x)
 							{
-								float dis = attack2p[hitnum].center.x - attack1p[atknum].center.x;
+								float dis = attack2p[hitnum].parameter.distance.x - attack1p[atknum].parameter.distance.x;
 								dis /= 2;
-								clashpos.x = attack1p[atknum].center.x + dis;
-							}
-
-							if (attack1p[atknum].center.y >= attack2p[hitnum].center.y)
-							{
-								float dis = attack1p[atknum].center.y - attack2p[hitnum].center.y;
-								dis /= 2;
-								clashpos.y = attack2p[hitnum].center.y + dis;
-							}
-							if (attack2p[hitnum].center.y > attack1p[atknum].center.y)
-							{
-								float dis = attack2p[hitnum].center.y - attack1p[atknum].center.y;
-								dis /= 2;
-								clashpos.y = attack1p[atknum].center.y + dis;
+								clashpos.x = attack1p[atknum].parameter.distance.x + dis;
 							}
 
-							attack2p[hitnum].damege = 0;
+							if (attack1p[atknum].parameter.distance.y >= attack2p[hitnum].parameter.distance.y)
+							{
+								float dis = attack1p[atknum].parameter.distance.y - attack2p[hitnum].parameter.distance.y;
+								dis /= 2;
+								clashpos.y = attack2p[hitnum].parameter.distance.y + dis;
+							}
+							if (attack2p[hitnum].parameter.distance.y > attack1p[atknum].parameter.distance.y)
+							{
+								float dis = attack2p[hitnum].parameter.distance.y - attack1p[atknum].parameter.distance.y;
+								dis /= 2;
+								clashpos.y = attack1p[atknum].parameter.distance.y + dis;
+							}
+
+							attack2p[hitnum].parameter.damege = 0;
 							attack2p[hitnum].hit_ok = false;
-							attack1p[atknum].damege = 0;
+							attack1p[atknum].parameter.damege = 0;
 							attack1p[atknum].hit_ok = false;
-							for (int n = 0; n < a_max1p; n++)
+							for (int n = 0; n < attack1p.size(); n++)
 							{
-								attack1p[n].damege = 0;
+								attack1p[n].parameter.damege = 0;
 								//attack[n].HB_timer = 0;
-								attack1p[n].hitback = YR_Vector3(0.0f, 0.0f);
+								attack1p[n].parameter.hitback = YR_Vector3(0.0f, 0.0f);
 								attack1p[n].hit_ok = false;
 							}
-							for (int n = 0; n < a_max2p; n++)
+							for (int n = 0; n < attack2p.size(); n++)
 							{
-								attack2p[n].damege = 0;
+								attack2p[n].parameter.damege = 0;
 								//attack[n].HB_timer = 0;
-								attack2p[n].hitback = YR_Vector3(0.0f, 0.0f);
+								attack2p[n].parameter.hitback = YR_Vector3(0.0f, 0.0f);
 								attack2p[n].hit_ok = false;
 							}
 						}

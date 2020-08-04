@@ -29,12 +29,13 @@ enum class KNIGHTATK :int
 class Knight : public Player
 {
 private:
-	const float walkspeed = 0.05f;
-	const float dashspeed = 0.1f;
+	const float walkspeed = 10.1f;		//歩く速度(代入)
+	const float dashspeed = 0.1f;		//ダッシュ速度
 	const float backstepS = 0.5f;
 	const float stepspeed = 0.5f;
 	const float jump_max = 0.5f;
 	const float high_jump_max = 0.5f;
+	const float brake_speed =10000.0f;	//停止時にかかるブレーキ(基本ピタッと止まるので数値は大きめ)
 public:
 	bool fast;
 	YR_Vector3 FastPos;
@@ -42,8 +43,8 @@ public:
 	float hadouspeed;
 	
 	std::array< HitBox, static_cast<int>(KNIGHTHIT::END)> hit;
-	std::array<YR_Vector3, scastI(KNIGHTHIT::END)> Hitplus;
-	std::array<YR_Vector3, scastI(KNIGHTHIT::END)> HitSize;
+	//std::array<YR_Vector3, scastI(KNIGHTHIT::END)> Hitplus;
+	//std::array<YR_Vector3, scastI(KNIGHTHIT::END)> HitSize;
 	
 
 	~Knight();
@@ -144,6 +145,7 @@ public:
 	bool AttackEndCheck();		//攻撃当たり判定が全て終了しているか確認する
 	void EndAttackErase();		//終了した攻撃当たり判定を全て消去する。
 	void AllAttackClear();		//全ての攻撃当たり判定を消去する
+	void AttackUpdate(float elapsed_time);		//攻撃判定が存在する時のみ更新
 
 	//イントロ用列挙
 	enum class INTRO_KNIGHT : int

@@ -9,7 +9,7 @@
 //
 //   row_major float4x4 world_view_projection;// Offset:    0 Size:    64 [unused]
 //   row_major float4x4 world;          // Offset:   64 Size:    64 [unused]
-//   float4 material_color;             // Offset:  128 Size:    16 [unused]
+//   float4 material_color;             // Offset:  128 Size:    16
 //   float4 light_direction;            // Offset:  144 Size:    16
 //   float4 light_color;                // Offset:  160 Size:    16
 //   float4 ambient_color;              // Offset:  176 Size:    16
@@ -193,7 +193,8 @@ if_nz r1.w
 endif 
 
 #line 60
-add r2.xyz, r4.xyzx, r6.xyzx
+mul r2.xyz, r6.xyzx, cb0[8].xyzx
+add r2.xyz, r2.xyzx, r4.xyzx
 add r1.xyz, r1.xyzx, r2.xyzx
 mul r1.xyz, r1.xyzx, v3.xyzx
 mul r0.xyz, r0.xyzx, r1.xyzx
@@ -202,4 +203,4 @@ mul r0.xyz, r0.xyzx, r1.xyzx
 mov o0.xyz, r0.xyzx  // o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z
 mov o0.w, r0.w  // o0.w <- <main return value>.w
 ret 
-// Approximately 77 instruction slots used
+// Approximately 78 instruction slots used

@@ -57,6 +57,6 @@ float4 main(PSInput input) : SV_TARGET
 		 return float4(input.Color.rgb, 1);
 	 }
 
-	color.rgb *= input.Color.rgb * float3(A + D + S);
+	color.rgb *= input.Color.rgb * float3(A + D* material_color.rgb + S);
 	return color;
 }

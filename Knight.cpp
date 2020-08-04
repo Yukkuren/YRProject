@@ -47,12 +47,12 @@ void Knight::Init(YR_Vector3 InitPos)
 	fream = 0.0f;
 
 #pragma region HITBOXINIT
-	Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(0.0f, 1.0f);
-	hit[scastI(KNIGHTHIT::BODY)].Init(pos + Hitplus[scastI(KNIGHTHIT::BODY)], YR_Vector3(2.0f, 2.9f));
-	HitSize[scastI(KNIGHTHIT::BODY)] = hit[scastI(KNIGHTHIT::BODY)].size;
-	Hitplus[scastI(KNIGHTHIT::LEG)] = YR_Vector3(0.0f, 0.2f);
-	hit[scastI(KNIGHTHIT::LEG)].Init(pos + Hitplus[scastI(KNIGHTHIT::LEG)], YR_Vector3(1.4f, 0.8f));
-	HitSize[scastI(KNIGHTHIT::LEG)] = hit[scastI(KNIGHTHIT::LEG)].size;
+	//Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(0.0f, 1.0f);
+	hit[scastI(KNIGHTHIT::BODY)].Init(pos, YR_Vector3(2.0f, 2.9f));
+	//HitSize[scastI(KNIGHTHIT::BODY)] = hit[scastI(KNIGHTHIT::BODY)].size;
+	//Hitplus[scastI(KNIGHTHIT::LEG)] = YR_Vector3(0.0f, 0.2f);
+	hit[scastI(KNIGHTHIT::LEG)].Init(pos , YR_Vector3(1.4f, 0.8f));
+	//HitSize[scastI(KNIGHTHIT::LEG)] = hit[scastI(KNIGHTHIT::LEG)].size;
 #pragma endregion
 
 	hadouspeed = 0.0f;
@@ -81,6 +81,8 @@ void Knight::LoadData(std::shared_ptr<Texture> texture)
 	}
 	motion.MeshSet(base);
 	motion.AnimReset();
+
+	AttackLoad();
 }
 
 bool Knight::AttackLoad()
@@ -91,12 +93,14 @@ bool Knight::AttackLoad()
 	attack_list.back().attack_name = AttackState::NONE;
 	attack_list.push_back(AttackList());
 	attack_list.back().attack_name = AttackState::JAKU;
-	attack_list.back().attack_max = 1;
+	attack_list.back().attack_max = 2;
 	attack_list.back().later = 1.0f;
+	attack_list.back().attack_single.resize(attack_list.back().attack_max);
 	for (int i = 0; i < attack_list.back().attack_max; i++)
 	{
-		attack_list.back().attack_single[i].fream = 0.8f;
-		attack_list.back().attack_single[i].quantity = 1;
+		attack_list.back().attack_single[i].fream = 1.0f;
+		attack_list.back().attack_single[i].quantity = 2;
+		attack_list.back().attack_single[i].parameter.resize(attack_list.back().attack_single[i].quantity);
 		for (int v = 0; v < attack_list.back().attack_single[i].quantity; v++)
 		{
 			attack_list.back().attack_single[i].parameter[v].damege = 5;
@@ -112,6 +116,22 @@ bool Knight::AttackLoad()
 			attack_list.back().attack_single[i].parameter[v].stealtimer = 0.0f;
 			attack_list.back().attack_single[i].parameter[v].timer = 2.0f;
 			attack_list.back().attack_single[i].parameter[v].type = AttackBox::MIDDLE;
+			if (v > 0)
+			{
+				attack_list.back().attack_single[i].parameter[v].damege = 5;
+				attack_list.back().attack_single[i].parameter[v].distance.x = 3.0f;
+				attack_list.back().attack_single[i].parameter[v].distance.y = 5.0f;
+				attack_list.back().attack_single[i].parameter[v].gaugeout = true;
+				attack_list.back().attack_single[i].parameter[v].HB_timer = 1.0f;
+				attack_list.back().attack_single[i].parameter[v].hitback.x = Getapply(1.0f);
+				attack_list.back().attack_single[i].parameter[v].hitback.y = 1.0f;
+				attack_list.back().attack_single[i].parameter[v].knockback = 1.0f;
+				attack_list.back().attack_single[i].parameter[v].size.x = 5.0f;
+				attack_list.back().attack_single[i].parameter[v].size.y = 5.0f;
+				attack_list.back().attack_single[i].parameter[v].stealtimer = 0.0f;
+				attack_list.back().attack_single[i].parameter[v].timer = 2.0f;
+				attack_list.back().attack_single[i].parameter[v].type = AttackBox::MIDDLE;
+			}
 		}
 	}
 	return true;
@@ -212,7 +232,7 @@ void Knight::Update(float decision, float elapsed_time)
 				rightOrleft = decision;
 				if (speed.x > 0.0f)
 				{
-					speed.x-=elapsed_time;
+					speed.x -= brake_speed*elapsed_time;
 					if (speed.x < 0.0f)
 					{
 						speed.x = 0;
@@ -220,7 +240,7 @@ void Knight::Update(float decision, float elapsed_time)
 				}
 				if (speed.x < 0.0f)
 				{
-					speed.x+=elapsed_time;
+					speed.x += brake_speed * elapsed_time;
 					if (speed.x > 0.0f)
 					{
 						speed.x = 0.0f;
@@ -558,22 +578,21 @@ void Knight::Update(float decision, float elapsed_time)
 #ifdef USE_IMGUI
 	if (attack_state != AttackState::D_THU && act_state != ActState::DOWN && act_state != ActState::SQUAT && attack_state != AttackState::D_JAKU)
 	{
-		Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(0.0f, -8.0f);
 		hit[scastI(KNIGHTHIT::BODY)].size = HitSize[scastI(KNIGHTHIT::BODY)];
-		Hitplus[scastI(KNIGHTHIT::LEG)] = YR_Vector3(0.0f, 163.0f);
 		hit[scastI(KNIGHTHIT::LEG)].size = HitSize[scastI(KNIGHTHIT::LEG)];
 	}
 #endif // USE_IMGUI
 	hit[scastI(KNIGHTHIT::BODY)].Update(pos + Hitplus[scastI(KNIGHTHIT::BODY)], hit[scastI(KNIGHTHIT::BODY)].size,elapsed_time);
 	hit[scastI(KNIGHTHIT::LEG)].Update(pos + Hitplus[scastI(KNIGHTHIT::LEG)], hit[scastI(KNIGHTHIT::LEG)].size,elapsed_time);
 
-	EndAttackErase();
+	EndAttackErase();			//çUåÇîªíËÇÃè¡ãé
 }
 
 
 
 void Knight::Attack(float decision, float elapsed_time)
 {
+	AttackUpdate(elapsed_time);	//çUåÇîªíËÇÃçXêV
 	if (ground)
 	{
 		if (speed.x > 0)
@@ -1058,30 +1077,42 @@ void Knight::Draw(
 		scale.GetDXFLOAT3(),
 		angle.GetDXFLOAT3(),
 		view, projection, light_direction, light_color, ambient_color, elapsed_time, 0.0f);*/
+
+	DirectX::XMFLOAT4 material_color = { 1.0f,1.0f,1.0f,1.0f };
+
+	if (fream < target_max && fream>0.0f)
+	{
+		material_color = { 0.0f,0.0f,1.0f,1.0f };
+	}
+	if (later < target_max && later>0.0f)
+	{
+		material_color = { 1.0f,0.0f,0.0f,1.0f };
+	}
+
 	motion.DrawContinue(
 		shader,
 		pos.GetDXFLOAT3(),
 		scale.GetDXFLOAT3(),
 		angle.GetDXFLOAT3(),
 		view, projection, light_direction, light_color, ambient_color, elapsed_time,
-		inversion
+		inversion,material_color
 	);
 
 
-	if (atk[scastI(KNIGHTATK::HADOU)].hit_ok)
-	{
-		//îgìÆåùÇÃï`âÊ
-	}
+	//if (atk[scastI(KNIGHTATK::HADOU)].hit_ok)
+	//{
+	//	//îgìÆåùÇÃï`âÊ
+	//}
 
-	if (atk[scastI(KNIGHTATK::THU_HADOU)].hit_ok)
-	{
-		//íÜîgìÆåùÇÃï`âÊÅBÇ±ÇÍÇ‹Ç∆ÇﬂÇƒÇ‡Ç¢Ç¢ÇæÇÎ
-	}
+	//if (atk[scastI(KNIGHTATK::THU_HADOU)].hit_ok)
+	//{
+	//	//íÜîgìÆåùÇÃï`âÊÅBÇ±ÇÍÇ‹Ç∆ÇﬂÇƒÇ‡Ç¢Ç¢ÇæÇÎ
+	//}
 
-	if (atk[scastI(KNIGHTATK::KYO_HADOU)].hit_ok)
-	{
-		//Ç≈Ç©Ç¢îgìÆåùÇÃï`âÊÅBÇ±ÇÍÇÕëÂÇ´Ç≥à·Ç§Ç©ÇÁédï˚Ç»Ç¢
-	}
+	//if (atk[scastI(KNIGHTATK::KYO_HADOU)].hit_ok)
+	//{
+	//	//Ç≈Ç©Ç¢îgìÆåùÇÃï`âÊÅBÇ±ÇÍÇÕëÂÇ´Ç≥à·Ç§Ç©ÇÁédï˚Ç»Ç¢
+	//}
 
 
 
@@ -1169,13 +1200,16 @@ void Knight::DrawDEBUG(
 
 	if (attack)
 	{
-		for (int atknum = 0; atknum < scastI(KNIGHTATK::ATKEND); atknum++)
+		if (!atk.empty())
 		{
-			if (atk[atknum].attack)
+			for (auto& a : atk)
 			{
-				if (atk[atknum].hit_ok)
+				if (a.attack)
 				{
-					atk[atknum].Draw(geoshader, view, projection, light_direction, light_color, ambient_color);
+					if (a.hit_ok)
+					{
+						a.Draw(geoshader, view, projection, light_direction, light_color, ambient_color);
+					}
 				}
 			}
 		}
@@ -2617,7 +2651,7 @@ int Knight::GetMax(int n)
 	}
 	if (n == 1)
 	{
-		return scastI(KNIGHTATK::ATKEND);
+		return atk.size();
 	}
 	return 0;
 }
@@ -2844,5 +2878,17 @@ void Knight::AllAttackClear()
 		}
 
 		EndAttackErase();
+	}
+}
+
+//çUåÇîªíËÇ™ë∂ç›Ç∑ÇÈéûÇÃÇ›çXêV
+void Knight::AttackUpdate(float elapsed_time)
+{
+	if (!atk.empty())
+	{
+		for (auto& a : atk)
+		{
+			a.Update(pos, elapsed_time);
+		}
 	}
 }

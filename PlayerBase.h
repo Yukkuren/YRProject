@@ -16,13 +16,11 @@
 #include <string>
 
 
-#define		POS_Y	(0.0f)
-
-#define		GAUGE_MAX	(100.0f)
-
-const int	Track_max = 2;		//ホーミングダッシュ最大数
-const float	non_target = 110.0f;//この値を入れられたフレームは条件から外れるようにする
-const float target_max = 100.0f;//条件式でこの値以上は外れるようにする
+constexpr float POS_Y = 0.0f;		//最低の高さ
+constexpr float GAUGE_MAX = 100.0f;	//ゲージ最大量
+constexpr int	Track_max = 2;		//ホーミングダッシュ最大数
+constexpr float	non_target = 110.0f;//この値を入れられたフレームは条件から外れるようにする
+constexpr float target_max = 100.0f;//条件式でこの値以上は外れるようにする
 
 //--------------------------------------
 //	**キャラ名設定
@@ -299,6 +297,7 @@ public:
 	virtual bool AttackEndCheck() = 0;				//攻撃当たり判定が全て終了しているか確認する
 	virtual void EndAttackErase() = 0;				//終了した攻撃当たり判定を全て消去する。
 	virtual void AllAttackClear() = 0;				//全ての攻撃当たり判定を消去する
+	virtual void AttackUpdate(float elapsed_time) = 0;				//攻撃判定が存在する時のみ更新
 
 };
 
