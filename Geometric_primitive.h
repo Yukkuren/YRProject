@@ -58,6 +58,11 @@ public:
 		DirectX::XMFLOAT4X4		world_view_projection;	//ワールド・ビュー・プロジェクション合成行列
 		DirectX::XMFLOAT4X4		world;					//ワールド変換行列
 		DirectX::XMFLOAT4		material_color;			//材質色
+		DirectX::XMFLOAT4		eyePos;
+		DirectX::XMFLOAT4X4		view;
+		DirectX::XMFLOAT4X4		projection;
+		DirectX::XMFLOAT3		at;						//カメラ座標からfocusまでの単位ベクトル
+		float					dummy;
 	};
 };
 

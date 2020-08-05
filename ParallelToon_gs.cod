@@ -14,10 +14,10 @@
 //   float4 light_color;                // Offset:  160 Size:    16 [unused]
 //   float4 ambient_color;              // Offset:  176 Size:    16 [unused]
 //   row_major float4x4 bone_transforms[128];// Offset:  192 Size:  8192 [unused]
-//   float4 EyePos;                     // Offset: 8384 Size:    16 [unused]
+//   float4 EyePos;                     // Offset: 8384 Size:    16
 //   row_major float4x4 view;           // Offset: 8400 Size:    64
 //   row_major float4x4 projection;     // Offset: 8464 Size:    64
-//   float3 at;                         // Offset: 8528 Size:    12 [unused]
+//   float3 at;                         // Offset: 8528 Size:    12
 //   float dummy;                       // Offset: 8540 Size:     4 [unused]
 //
 // }
@@ -56,7 +56,7 @@
 //
 gs_5_0
 dcl_globalFlags refactoringAllowed | skipOptimization
-dcl_constantbuffer CB0[533], immediateIndexed
+dcl_constantbuffer CB0[534], immediateIndexed
 dcl_input v[3][0].xyzw
 dcl_input v[3][1].xyz
 dcl_input v[3][2].xy
@@ -64,7 +64,7 @@ dcl_input v[3][3].xyzw
 dcl_input v[3][4].xyz
 dcl_input v[3][5].xyz
 dcl_input vPrim
-dcl_temps 7
+dcl_temps 11
 dcl_inputprimitive triangle 
 dcl_stream m0
 dcl_outputtopology trianglestrip 
@@ -97,35 +97,83 @@ dcl_maxout 6
 //   v[2][4].x <- input[2].wNormal.x; v[2][4].y <- input[2].wNormal.y; v[2][4].z <- input[2].wNormal.z; 
 //   v[2][5].x <- input[2].wPos.x; v[2][5].y <- input[2].wPos.y; v[2][5].z <- input[2].wPos.z
 //
-#line 3 "E:\ゲーム制作\YRProject\ToonShader.hlsli"
+#line 3 "E:\ゲーム制作\YRProject\ParallelToon.hlsli"
 mov r0.x, l(0.007000)  // r0.x <- LW
 
 #line 4
 itof r1.xyzw, l(0, 0, 0, -1)  // r1.x <- LC.x; r1.y <- LC.y; r1.z <- LC.z; r1.w <- LC.w
 
-#line 39 "E:\ゲーム制作\YRProject\ToonShader_gs.hlsl"
+#line 39 "E:\ゲーム制作\YRProject\ParallelToon_gs.hlsl"
 mov r0.y, l(0)  // r0.y <- i
 mov r0.z, r0.y  // r0.z <- i
 loop 
   ilt r0.w, r0.z, l(3)
   breakc_z r0.w
 
+#line 43
+  mov r2.xyz, cb0[524].xyzx  // r2.x <- E.x; r2.y <- E.y; r2.z <- E.z
+
+#line 45
+  mov r3.xyz, -r2.xyzx
+  add r3.xyz, r3.xyzx, v[r0.z + 0][5].xyzx
+  dp3 r0.w, cb0[533].xyzx, r3.xyzx
+  mul r3.xyz, r0.wwww, cb0[533].xyzx
+  add r3.xyz, r2.xyzx, r3.xyzx  // r3.x <- P.x; r3.y <- P.y; r3.z <- P.z
+
+#line 46
+  mov r2.xyz, -r2.xyzx
+  add r2.xyz, r2.xyzx, r3.xyzx
+  dp3 r0.w, r2.xyzx, r2.xyzx
+  sqrt r0.w, r0.w  // r0.w <- len
+
+#line 47
+  mov r2.xyz, -r3.xyzx
+  add r2.xyz, r2.xyzx, v[r0.z + 0][5].xyzx
+  dp3 r2.x, r2.xyzx, r2.xyzx
+  sqrt r2.x, r2.x
+  div r0.w, r2.x, r0.w  // r0.w <- h
+
+#line 48
+  max r2.z, r0.w, l(0.100000)  // r2.z <- h
+
+#line 49
+  itof r3.xyzw, l(1, 0, 0, 0)  // r3.x <- Mat._m00; r3.y <- Mat._m10; r3.z <- Mat._m20; r3.w <- Mat._m30
+  itof r4.xyzw, l(0, 1, 0, 0)  // r4.x <- Mat._m01; r4.y <- Mat._m11; r4.z <- Mat._m21; r4.w <- Mat._m31
+  itof r5.xyzw, l(0, 0, 0, 1)  // r5.x <- Mat._m03; r5.y <- Mat._m13; r5.z <- Mat._m23; r5.w <- Mat._m33
+  itof r2.xyw, l(0, 0, 0, 0)  // r2.x <- Mat._m02; r2.y <- Mat._m12; r2.w <- Mat._m32
+  mov r2.z, r2.z  // r2.z <- Mat._m22
+
+#line 55
+  dp4 r6.x, cb0[4].xyzw, r3.xyzw  // r6.x <- newWorld._m00
+  dp4 r7.x, cb0[4].xyzw, r4.xyzw  // r7.x <- newWorld._m01
+  dp4 r8.x, cb0[4].xyzw, r2.xyzw  // r8.x <- newWorld._m02
+  dp4 r9.x, cb0[4].xyzw, r5.xyzw  // r9.x <- newWorld._m03
+  dp4 r6.y, cb0[5].xyzw, r3.xyzw  // r6.y <- newWorld._m10
+  dp4 r7.y, cb0[5].xyzw, r4.xyzw  // r7.y <- newWorld._m11
+  dp4 r8.y, cb0[5].xyzw, r2.xyzw  // r8.y <- newWorld._m12
+  dp4 r9.y, cb0[5].xyzw, r5.xyzw  // r9.y <- newWorld._m13
+  dp4 r6.z, cb0[6].xyzw, r3.xyzw  // r6.z <- newWorld._m20
+  dp4 r7.z, cb0[6].xyzw, r4.xyzw  // r7.z <- newWorld._m21
+  dp4 r8.z, cb0[6].xyzw, r2.xyzw  // r8.z <- newWorld._m22
+  dp4 r9.z, cb0[6].xyzw, r5.xyzw  // r9.z <- newWorld._m23
+  dp4 r6.w, cb0[7].xyzw, r3.xyzw  // r6.w <- newWorld._m30
+  dp4 r7.w, cb0[7].xyzw, r4.xyzw  // r7.w <- newWorld._m31
+  dp4 r8.w, cb0[7].xyzw, r2.xyzw  // r8.w <- newWorld._m32
+  dp4 r9.w, cb0[7].xyzw, r5.xyzw  // r9.w <- newWorld._m33
+
 #line 56
-  mul r2.xyzw, cb0[4].xyzw, v[r0.z + 0][0].xxxx
-  mul r3.xyzw, cb0[5].xyzw, v[r0.z + 0][0].yyyy
-  add r2.xyzw, r2.xyzw, r3.xyzw
-  mul r3.xyzw, cb0[6].xyzw, v[r0.z + 0][0].zzzz
-  add r2.xyzw, r2.xyzw, r3.xyzw
-  mul r3.xyzw, cb0[7].xyzw, v[r0.z + 0][0].wwww
-  add r2.xyzw, r2.xyzw, r3.xyzw  // r2.x <- Pos.x; r2.y <- Pos.y; r2.z <- Pos.z; r2.w <- Pos.w
+  dp4 r0.w, v[r0.z + 0][0].xyzw, r6.xyzw  // r0.w <- Pos.x
+  dp4 r2.x, v[r0.z + 0][0].xyzw, r7.xyzw  // r2.x <- Pos.y
+  dp4 r2.y, v[r0.z + 0][0].xyzw, r8.xyzw  // r2.y <- Pos.z
+  dp4 r2.z, v[r0.z + 0][0].xyzw, r9.xyzw  // r2.z <- Pos.w
 
 #line 57
-  mul r3.xyzw, r2.xxxx, cb0[525].xyzw
-  mul r4.xyzw, r2.yyyy, cb0[526].xyzw
+  mul r3.xyzw, r0.wwww, cb0[525].xyzw
+  mul r4.xyzw, r2.xxxx, cb0[526].xyzw
   add r3.xyzw, r3.xyzw, r4.xyzw
-  mul r4.xyzw, r2.zzzz, cb0[527].xyzw
+  mul r4.xyzw, r2.yyyy, cb0[527].xyzw
   add r3.xyzw, r3.xyzw, r4.xyzw
-  mul r2.xyzw, r2.wwww, cb0[528].xyzw
+  mul r2.xyzw, r2.zzzz, cb0[528].xyzw
   add r2.xyzw, r2.xyzw, r3.xyzw  // r2.x <- Pos.x; r2.y <- Pos.y; r2.z <- Pos.z; r2.w <- Pos.w
 
 #line 58
@@ -180,22 +228,79 @@ add r2.xyzw, r2.xyzw, v[0][0].xyzw  // r2.x <- P.x; r2.y <- P.y; r2.z <- P.z; r2
 nop 
 mov r2.xyzw, r2.xyzw
 
+#line 6
+mov r0.yzw, cb0[524].xxyz  // r0.y <- E.x; r0.z <- E.y; r0.w <- E.z
+
+#line 8
+mul r3.xyz, r2.xxxx, cb0[4].xyzx
+mul r4.xyz, r2.yyyy, cb0[5].xyzx
+add r3.xyz, r3.xyzx, r4.xyzx
+mul r4.xyz, r2.zzzz, cb0[6].xyzx
+add r3.xyz, r3.xyzx, r4.xyzx
+mul r4.xyz, r2.wwww, cb0[7].xyzx
+add r3.xyz, r3.xyzx, r4.xyzx  // r3.x <- wPOS.x; r3.y <- wPOS.y; r3.z <- wPOS.z
+
+#line 9
+mov r4.xyz, -r0.yzwy
+add r4.xyz, r3.xyzx, r4.xyzx
+dp3 r3.w, cb0[533].xyzx, r4.xyzx
+mul r4.xyz, r3.wwww, cb0[533].xyzx
+add r4.xyz, r0.yzwy, r4.xyzx  // r4.x <- P.x; r4.y <- P.y; r4.z <- P.z
+
+#line 10
+mov r0.yzw, -r0.yyzw
+add r0.yzw, r0.yyzw, r4.xxyz
+dp3 r0.y, r0.yzwy, r0.yzwy
+sqrt r0.y, r0.y  // r0.y <- len
+
+#line 11
+mov r4.xyz, -r4.xyzx
+add r3.xyz, r3.xyzx, r4.xyzx
+dp3 r0.z, r3.xyzx, r3.xyzx
+sqrt r0.z, r0.z
+div r0.y, r0.z, r0.y  // r0.y <- h
+
+#line 12
+max r3.z, r0.y, l(0.100000)  // r3.z <- h
+
+#line 15
+itof r4.xyzw, l(1, 0, 0, 0)  // r4.x <- Mat._m00; r4.y <- Mat._m10; r4.z <- Mat._m20; r4.w <- Mat._m30
+itof r5.xyzw, l(0, 1, 0, 0)  // r5.x <- Mat._m01; r5.y <- Mat._m11; r5.z <- Mat._m21; r5.w <- Mat._m31
+itof r6.xyzw, l(0, 0, 0, 1)  // r6.x <- Mat._m03; r6.y <- Mat._m13; r6.z <- Mat._m23; r6.w <- Mat._m33
+itof r3.xyw, l(0, 0, 0, 0)  // r3.x <- Mat._m02; r3.y <- Mat._m12; r3.w <- Mat._m32
+mov r3.z, r3.z  // r3.z <- Mat._m22
+
+#line 21
+dp4 r7.x, cb0[4].xyzw, r4.xyzw  // r7.x <- newWorld._m00
+dp4 r8.x, cb0[4].xyzw, r5.xyzw  // r8.x <- newWorld._m01
+dp4 r9.x, cb0[4].xyzw, r3.xyzw  // r9.x <- newWorld._m02
+dp4 r10.x, cb0[4].xyzw, r6.xyzw  // r10.x <- newWorld._m03
+dp4 r7.y, cb0[5].xyzw, r4.xyzw  // r7.y <- newWorld._m10
+dp4 r8.y, cb0[5].xyzw, r5.xyzw  // r8.y <- newWorld._m11
+dp4 r9.y, cb0[5].xyzw, r3.xyzw  // r9.y <- newWorld._m12
+dp4 r10.y, cb0[5].xyzw, r6.xyzw  // r10.y <- newWorld._m13
+dp4 r7.z, cb0[6].xyzw, r4.xyzw  // r7.z <- newWorld._m20
+dp4 r8.z, cb0[6].xyzw, r5.xyzw  // r8.z <- newWorld._m21
+dp4 r9.z, cb0[6].xyzw, r3.xyzw  // r9.z <- newWorld._m22
+dp4 r10.z, cb0[6].xyzw, r6.xyzw  // r10.z <- newWorld._m23
+dp4 r7.w, cb0[7].xyzw, r4.xyzw  // r7.w <- newWorld._m30
+dp4 r8.w, cb0[7].xyzw, r5.xyzw  // r8.w <- newWorld._m31
+dp4 r9.w, cb0[7].xyzw, r3.xyzw  // r9.w <- newWorld._m32
+dp4 r10.w, cb0[7].xyzw, r6.xyzw  // r10.w <- newWorld._m33
+
 #line 22
-mul r3.xyzw, r2.xxxx, cb0[4].xyzw
-mul r4.xyzw, r2.yyyy, cb0[5].xyzw
-add r3.xyzw, r3.xyzw, r4.xyzw
-mul r4.xyzw, r2.zzzz, cb0[6].xyzw
-add r3.xyzw, r3.xyzw, r4.xyzw
-mul r2.xyzw, r2.wwww, cb0[7].xyzw
-add r2.xyzw, r2.xyzw, r3.xyzw  // r2.x <- Posi.x; r2.y <- Posi.y; r2.z <- Posi.z; r2.w <- Posi.w
+dp4 r0.y, r2.xyzw, r7.xyzw  // r0.y <- Posi.x
+dp4 r0.z, r2.xyzw, r8.xyzw  // r0.z <- Posi.y
+dp4 r0.w, r2.xyzw, r9.xyzw  // r0.w <- Posi.z
+dp4 r2.x, r2.xyzw, r10.xyzw  // r2.x <- Posi.w
 
 #line 23
-mul r3.xyzw, r2.xxxx, cb0[525].xyzw
-mul r4.xyzw, r2.yyyy, cb0[526].xyzw
+mul r3.xyzw, r0.yyyy, cb0[525].xyzw
+mul r4.xyzw, r0.zzzz, cb0[526].xyzw
 add r3.xyzw, r3.xyzw, r4.xyzw
-mul r4.xyzw, r2.zzzz, cb0[527].xyzw
+mul r4.xyzw, r0.wwww, cb0[527].xyzw
 add r3.xyzw, r3.xyzw, r4.xyzw
-mul r2.xyzw, r2.wwww, cb0[528].xyzw
+mul r2.xyzw, r2.xxxx, cb0[528].xyzw
 add r2.xyzw, r2.xyzw, r3.xyzw  // r2.x <- Posi.x; r2.y <- Posi.y; r2.z <- Posi.z; r2.w <- Posi.w
 
 #line 24
@@ -246,22 +351,79 @@ add r2.xyzw, r2.xyzw, v[2][0].xyzw  // r2.x <- P.x; r2.y <- P.y; r2.z <- P.z; r2
 nop 
 mov r2.xyzw, r2.xyzw
 
+#line 6
+mov r0.yzw, cb0[524].xxyz  // r0.y <- E.x; r0.z <- E.y; r0.w <- E.z
+
+#line 8
+mul r3.xyz, r2.xxxx, cb0[4].xyzx
+mul r4.xyz, r2.yyyy, cb0[5].xyzx
+add r3.xyz, r3.xyzx, r4.xyzx
+mul r4.xyz, r2.zzzz, cb0[6].xyzx
+add r3.xyz, r3.xyzx, r4.xyzx
+mul r4.xyz, r2.wwww, cb0[7].xyzx
+add r3.xyz, r3.xyzx, r4.xyzx  // r3.x <- wPOS.x; r3.y <- wPOS.y; r3.z <- wPOS.z
+
+#line 9
+mov r4.xyz, -r0.yzwy
+add r4.xyz, r3.xyzx, r4.xyzx
+dp3 r3.w, cb0[533].xyzx, r4.xyzx
+mul r4.xyz, r3.wwww, cb0[533].xyzx
+add r4.xyz, r0.yzwy, r4.xyzx  // r4.x <- P.x; r4.y <- P.y; r4.z <- P.z
+
+#line 10
+mov r0.yzw, -r0.yyzw
+add r0.yzw, r0.yyzw, r4.xxyz
+dp3 r0.y, r0.yzwy, r0.yzwy
+sqrt r0.y, r0.y  // r0.y <- len
+
+#line 11
+mov r4.xyz, -r4.xyzx
+add r3.xyz, r3.xyzx, r4.xyzx
+dp3 r0.z, r3.xyzx, r3.xyzx
+sqrt r0.z, r0.z
+div r0.y, r0.z, r0.y  // r0.y <- h
+
+#line 12
+max r3.z, r0.y, l(0.100000)  // r3.z <- h
+
+#line 15
+itof r4.xyzw, l(1, 0, 0, 0)  // r4.x <- Mat._m00; r4.y <- Mat._m10; r4.z <- Mat._m20; r4.w <- Mat._m30
+itof r5.xyzw, l(0, 1, 0, 0)
+itof r6.xyzw, l(0, 0, 0, 1)
+itof r3.xyw, l(0, 0, 0, 0)  // r3.x <- Mat._m02; r3.y <- Mat._m12; r3.w <- Mat._m32
+mov r3.z, r3.z  // r3.z <- Mat._m22
+
+#line 21
+dp4 r7.x, cb0[4].xyzw, r4.xyzw
+dp4 r8.x, cb0[4].xyzw, r5.xyzw
+dp4 r9.x, cb0[4].xyzw, r3.xyzw
+dp4 r10.x, cb0[4].xyzw, r6.xyzw
+dp4 r7.y, cb0[5].xyzw, r4.xyzw
+dp4 r8.y, cb0[5].xyzw, r5.xyzw
+dp4 r9.y, cb0[5].xyzw, r3.xyzw
+dp4 r10.y, cb0[5].xyzw, r6.xyzw
+dp4 r7.z, cb0[6].xyzw, r4.xyzw
+dp4 r8.z, cb0[6].xyzw, r5.xyzw
+dp4 r9.z, cb0[6].xyzw, r3.xyzw
+dp4 r10.z, cb0[6].xyzw, r6.xyzw
+dp4 r7.w, cb0[7].xyzw, r4.xyzw
+dp4 r8.w, cb0[7].xyzw, r5.xyzw
+dp4 r9.w, cb0[7].xyzw, r3.xyzw
+dp4 r10.w, cb0[7].xyzw, r6.xyzw
+
 #line 22
-mul r3.xyzw, r2.xxxx, cb0[4].xyzw
-mul r4.xyzw, r2.yyyy, cb0[5].xyzw
-add r3.xyzw, r3.xyzw, r4.xyzw
-mul r4.xyzw, r2.zzzz, cb0[6].xyzw
-add r3.xyzw, r3.xyzw, r4.xyzw
-mul r2.xyzw, r2.wwww, cb0[7].xyzw
-add r2.xyzw, r2.xyzw, r3.xyzw  // r2.x <- Posi.x; r2.y <- Posi.y; r2.z <- Posi.z; r2.w <- Posi.w
+dp4 r0.y, r2.xyzw, r7.xyzw  // r0.y <- Posi.x
+dp4 r0.z, r2.xyzw, r8.xyzw  // r0.z <- Posi.y
+dp4 r0.w, r2.xyzw, r9.xyzw  // r0.w <- Posi.z
+dp4 r2.x, r2.xyzw, r10.xyzw  // r2.x <- Posi.w
 
 #line 23
-mul r3.xyzw, r2.xxxx, cb0[525].xyzw
-mul r4.xyzw, r2.yyyy, cb0[526].xyzw
+mul r3.xyzw, r0.yyyy, cb0[525].xyzw
+mul r4.xyzw, r0.zzzz, cb0[526].xyzw
 add r3.xyzw, r3.xyzw, r4.xyzw
-mul r4.xyzw, r2.zzzz, cb0[527].xyzw
+mul r4.xyzw, r0.wwww, cb0[527].xyzw
 add r3.xyzw, r3.xyzw, r4.xyzw
-mul r2.xyzw, r2.wwww, cb0[528].xyzw
+mul r2.xyzw, r2.xxxx, cb0[528].xyzw
 add r2.xyzw, r2.xyzw, r3.xyzw  // r2.x <- Posi.x; r2.y <- Posi.y; r2.z <- Posi.z; r2.w <- Posi.w
 
 #line 24
@@ -283,7 +445,7 @@ mov r2.xyzw, r2.xyzw  // r2.x <- <MatPos return value>.x; r2.y <- <MatPos return
 mov r2.xyzw, r2.xyzw  // r2.x <- data.SV_Position.x; r2.y <- data.SV_Position.y; r2.z <- data.SV_Position.z; r2.w <- data.SV_Position.w
 
 #line 107
-mov r0.yzw, -v[2][4].xxyz
+mov r0.yzw, -v[2][4].xxyz  // r0.y <- data.wNormal.x; r0.z <- data.wNormal.y; r0.w <- data.wNormal.z
 
 #line 108
 mov r3.xy, v[2][2].xyxx  // r3.x <- data.Tex.x; r3.y <- data.Tex.y
@@ -309,22 +471,79 @@ add r0.xyzw, r0.xyzw, v[1][0].xyzw  // r0.x <- P.x; r0.y <- P.y; r0.z <- P.z; r0
 nop 
 mov r0.xyzw, r0.xyzw
 
+#line 6
+mov r2.xyz, cb0[524].xyzx  // r2.x <- E.x; r2.y <- E.y; r2.z <- E.z
+
+#line 8
+mul r3.xyz, r0.xxxx, cb0[4].xyzx
+mul r4.xyz, r0.yyyy, cb0[5].xyzx
+add r3.xyz, r3.xyzx, r4.xyzx
+mul r4.xyz, r0.zzzz, cb0[6].xyzx
+add r3.xyz, r3.xyzx, r4.xyzx
+mul r4.xyz, r0.wwww, cb0[7].xyzx
+add r3.xyz, r3.xyzx, r4.xyzx  // r3.x <- wPOS.x; r3.y <- wPOS.y; r3.z <- wPOS.z
+
+#line 9
+mov r4.xyz, -r2.xyzx
+add r4.xyz, r3.xyzx, r4.xyzx
+dp3 r2.w, cb0[533].xyzx, r4.xyzx
+mul r4.xyz, r2.wwww, cb0[533].xyzx
+add r4.xyz, r2.xyzx, r4.xyzx  // r4.x <- P.x; r4.y <- P.y; r4.z <- P.z
+
+#line 10
+mov r2.xyz, -r2.xyzx
+add r2.xyz, r2.xyzx, r4.xyzx
+dp3 r2.x, r2.xyzx, r2.xyzx
+sqrt r2.x, r2.x  // r2.x <- len
+
+#line 11
+mov r2.yzw, -r4.xxyz
+add r2.yzw, r2.yyzw, r3.xxyz
+dp3 r2.y, r2.yzwy, r2.yzwy
+sqrt r2.y, r2.y
+div r2.x, r2.y, r2.x  // r2.x <- h
+
+#line 12
+max r2.z, r2.x, l(0.100000)  // r2.z <- h
+
+#line 15
+itof r3.xyzw, l(1, 0, 0, 0)  // r3.x <- Mat._m00; r3.y <- Mat._m10; r3.z <- Mat._m20; r3.w <- Mat._m30
+itof r4.xyzw, l(0, 1, 0, 0)  // r4.x <- Mat._m01; r4.y <- Mat._m11; r4.z <- Mat._m21; r4.w <- Mat._m31
+itof r5.xyzw, l(0, 0, 0, 1)  // r5.x <- Mat._m03; r5.y <- Mat._m13; r5.z <- Mat._m23; r5.w <- Mat._m33
+itof r2.xyw, l(0, 0, 0, 0)  // r2.x <- Mat._m02; r2.y <- Mat._m12; r2.w <- Mat._m32
+mov r2.z, r2.z  // r2.z <- Mat._m22
+
+#line 21
+dp4 r6.x, cb0[4].xyzw, r3.xyzw  // r6.x <- newWorld._m00
+dp4 r7.x, cb0[4].xyzw, r4.xyzw  // r7.x <- newWorld._m01
+dp4 r8.x, cb0[4].xyzw, r2.xyzw  // r8.x <- newWorld._m02
+dp4 r9.x, cb0[4].xyzw, r5.xyzw  // r9.x <- newWorld._m03
+dp4 r6.y, cb0[5].xyzw, r3.xyzw  // r6.y <- newWorld._m10
+dp4 r7.y, cb0[5].xyzw, r4.xyzw  // r7.y <- newWorld._m11
+dp4 r8.y, cb0[5].xyzw, r2.xyzw  // r8.y <- newWorld._m12
+dp4 r9.y, cb0[5].xyzw, r5.xyzw  // r9.y <- newWorld._m13
+dp4 r6.z, cb0[6].xyzw, r3.xyzw  // r6.z <- newWorld._m20
+dp4 r7.z, cb0[6].xyzw, r4.xyzw  // r7.z <- newWorld._m21
+dp4 r8.z, cb0[6].xyzw, r2.xyzw  // r8.z <- newWorld._m22
+dp4 r9.z, cb0[6].xyzw, r5.xyzw  // r9.z <- newWorld._m23
+dp4 r6.w, cb0[7].xyzw, r3.xyzw  // r6.w <- newWorld._m30
+dp4 r7.w, cb0[7].xyzw, r4.xyzw  // r7.w <- newWorld._m31
+dp4 r8.w, cb0[7].xyzw, r2.xyzw  // r8.w <- newWorld._m32
+dp4 r9.w, cb0[7].xyzw, r5.xyzw  // r9.w <- newWorld._m33
+
 #line 22
-mul r2.xyzw, r0.xxxx, cb0[4].xyzw
-mul r3.xyzw, r0.yyyy, cb0[5].xyzw
-add r2.xyzw, r2.xyzw, r3.xyzw
-mul r3.xyzw, r0.zzzz, cb0[6].xyzw
-add r2.xyzw, r2.xyzw, r3.xyzw
-mul r0.xyzw, r0.wwww, cb0[7].xyzw
-add r0.xyzw, r0.xyzw, r2.xyzw  // r0.x <- Posi.x; r0.y <- Posi.y; r0.z <- Posi.z; r0.w <- Posi.w
+dp4 r2.x, r0.xyzw, r6.xyzw  // r2.x <- Posi.x
+dp4 r2.y, r0.xyzw, r7.xyzw  // r2.y <- Posi.y
+dp4 r2.z, r0.xyzw, r8.xyzw  // r2.z <- Posi.z
+dp4 r0.x, r0.xyzw, r9.xyzw  // r0.x <- Posi.w
 
 #line 23
-mul r2.xyzw, r0.xxxx, cb0[525].xyzw
-mul r3.xyzw, r0.yyyy, cb0[526].xyzw
+mul r3.xyzw, r2.xxxx, cb0[525].xyzw
+mul r4.xyzw, r2.yyyy, cb0[526].xyzw
+add r3.xyzw, r3.xyzw, r4.xyzw
+mul r2.xyzw, r2.zzzz, cb0[527].xyzw
 add r2.xyzw, r2.xyzw, r3.xyzw
-mul r3.xyzw, r0.zzzz, cb0[527].xyzw
-add r2.xyzw, r2.xyzw, r3.xyzw
-mul r0.xyzw, r0.wwww, cb0[528].xyzw
+mul r0.xyzw, r0.xxxx, cb0[528].xyzw
 add r0.xyzw, r0.xyzw, r2.xyzw  // r0.x <- Posi.x; r0.y <- Posi.y; r0.z <- Posi.z; r0.w <- Posi.w
 
 #line 24
@@ -352,7 +571,7 @@ mov r2.xyz, -v[1][4].xyzx  // r2.x <- data.wNormal.x; r2.y <- data.wNormal.y; r2
 mov r3.xy, v[1][2].xyxx  // r3.x <- data.Tex.x; r3.y <- data.Tex.y
 
 #line 120
-mov r4.xyz, v[1][5].xyzx
+mov r4.xyz, v[1][5].xyzx  // r4.x <- data.wPos.x; r4.y <- data.wPos.y; r4.z <- data.wPos.z
 
 #line 121
 mov o0.xyzw, r0.xyzw
@@ -367,4 +586,4 @@ cut_stream m0
 
 #line 124
 ret 
-// Approximately 163 instruction slots used
+// Approximately 320 instruction slots used

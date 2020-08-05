@@ -29,6 +29,8 @@ private:
 
 	DirectX::XMFLOAT2		start_Pos;	//カメラ移動開始時にカーソルの位置を保存する変数
 
+	DirectX::XMFLOAT3		at = { 0.0f,0.0f,0.0f };
+
 	Camera() {};
 public:
 
@@ -62,6 +64,8 @@ public:
 	const float& GetAspect()const;
 	const float& GetNear()const;
 	const float& GetFar()const;
+
+	const DirectX::XMFLOAT3& GetAt()const;
 
 	static Camera &getInstance()
 	{

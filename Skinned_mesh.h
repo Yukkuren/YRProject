@@ -169,6 +169,10 @@ public:
 		DirectX::XMFLOAT4		ambient_color;
 		DirectX::XMFLOAT4X4		bone_transforms[BONE_MAX];
 		DirectX::XMFLOAT4		eyePos;
+		DirectX::XMFLOAT4X4		view;
+		DirectX::XMFLOAT4X4		projection;
+		DirectX::XMFLOAT3		at;//eye‚©‚çfocus‚ÉŒü‚©‚¤³‹K‰»ƒxƒNƒgƒ‹
+		float					dummy;
 		/*int						inverse;
 		int		dummy1;
 		int		dummy2;

@@ -59,8 +59,8 @@ struct PlayerALL
 	float				correction_value = 0.0f;
 	float				gauge1P = 0.0f;
 	float				gauge2P = 0.0f;
-	YR_Vector3			pos1P{ -5.0f,0.0f };
-	YR_Vector3			pos2P{ 5.0f,0.0f };
+	YR_Vector3			pos1P{ -8.0f,0.0f };
+	YR_Vector3			pos2P{ 8.0f,0.0f };
 
 	
 };
@@ -72,6 +72,9 @@ private:
 public:
 	float	timer = 0.0f;
 	int		sco[6] = { 0,0,0,0,0,0 };
+
+	float p1_elapsed_time = 0.0f;
+	float p2_elapsed_time = 0.0f;
 
 	enum MAIN_LOOP
 	{
@@ -124,7 +127,7 @@ public:
 	std::unique_ptr<YRShader> skinShader = nullptr;
 	std::unique_ptr<YRShader> spriteShader = nullptr;
 	std::unique_ptr<YRShader> geoShader = nullptr;
-	std::unique_ptr<YRShader> toonShader = nullptr;
+	std::unique_ptr<YRShader> ParallelToonShader = nullptr;
 
 	//ÉvÉåÉCÉÑÅ[ä«óùån
 	PlayerALL						PL;

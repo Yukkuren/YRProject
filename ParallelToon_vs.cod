@@ -90,7 +90,7 @@ dcl_temps 7
 //   o1.x <- <main return value>.Normal.x; o1.y <- <main return value>.Normal.y; o1.z <- <main return value>.Normal.z; 
 //   o0.x <- <main return value>.Position.x; o0.y <- <main return value>.Position.y; o0.z <- <main return value>.Position.z; o0.w <- <main return value>.Position.w
 //
-#line 7 "E:\ゲーム制作\YRProject\ToonShader_vs.hlsl"
+#line 7 "E:\ゲーム制作\YRProject\ParallelToon_vs.hlsl"
 itof r0.xyz, l(0, 0, 0, 0)  // r0.x <- ps.x; r0.y <- ps.y; r0.z <- ps.z
 
 #line 8

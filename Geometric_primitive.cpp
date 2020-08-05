@@ -215,6 +215,18 @@ void  geometric_primitive::render(
 	cb.world = world;
 	cb.world_view_projection = world_view_projection;
 	cb.material_color = material_color;
+	cb.eyePos.x = YRCamera.GetEye().x;
+	cb.eyePos.y = YRCamera.GetEye().y;
+	cb.eyePos.z = YRCamera.GetEye().z;
+	cb.eyePos.w = 1.0f;
+	DirectX::XMFLOAT4X4 v;
+	DirectX::XMStoreFloat4x4(&v, view);
+	cb.view = v;
+	DirectX::XMFLOAT4X4 p;
+	DirectX::XMStoreFloat4x4(&p, projection);
+	cb.projection = p;
+	cb.at = YRCamera.GetAt();
+	cb.dummy = 0.0f;
 	FRAMEWORK.context->UpdateSubresource(constant_buffer.Get(),0,0,&cb,0,0);
 	FRAMEWORK.context->VSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
 	FRAMEWORK.context->PSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());

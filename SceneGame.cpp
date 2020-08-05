@@ -72,10 +72,10 @@ void SceneGame::Init()
 		geoShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::GEO);
 		geoShader->Create("./Data/Shader/geometric_primitive_vs.cso", "./Data/Shader/geometric_primitive_ps.cso");
 	}
-	if (toonShader == nullptr)
+	if (ParallelToonShader == nullptr)
 	{
-		toonShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::TOON);
-		toonShader->Create("./Data/Shader/ToonShader_vs.cso", "./Data/Shader/ToonShader_ps.cso", "./Data/Shader/ToonShader_gs.cso");
+		ParallelToonShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::TOON);
+		ParallelToonShader->Create("./Data/Shader/ParallelToon_vs.cso", "./Data/Shader/ParallelToon_ps.cso", "./Data/Shader/ParallelToon_gs.cso");
 	}
 
 	//カメラ初期設定
@@ -96,6 +96,9 @@ void SceneGame::Init()
 
 	motion.MeshSet(box);
 	motion.AnimReset();
+
+	p1_elapsed_time = 1.0f;
+	p2_elapsed_time = 1.0f;
 }
 
 
@@ -256,8 +259,8 @@ void SceneGame::UnInit()
 	skinShader = nullptr;
 	geoShader.reset();
 	geoShader = nullptr;
-	toonShader.reset();
-	toonShader = nullptr;
+	ParallelToonShader.reset();
+	ParallelToonShader = nullptr;
 }
 
 
@@ -271,7 +274,7 @@ void SceneGame::StartSet()
 	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -140.0f));			//視点
 	YRCamera.SetFocus(DirectX::XMFLOAT3(0.0f, 5.0f, 0.0f));			//注視点
 	YRCamera.SetUp(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));				//上方向
-	YRCamera.SetPerspective(10.0f * 0.01745f, 1920.0f / 1080.0f, 0.4f, 1000000.0f);
+	YRCamera.SetPerspective(10.0f * 0.01745f, 1920.0f / 1080.0f, 1.4f, 1000.0f);
 	//YRCamera.SetPerspective(1080.0f, 1920.0f, 0.0001f, 1000000.0f);
 
 }
@@ -576,14 +579,14 @@ void SceneGame::Update(float elapsed_time)
 						//1Pが左
 						if (player1p->pos.x < player2p->pos.x)
 						{
-							player1p->Update(1.0f, elapsed_time);
-							player2p->Update(-1.0f, elapsed_time);
+							player1p->Update(1.0f, elapsed_time * p1_elapsed_time);
+							player2p->Update(-1.0f, elapsed_time * p2_elapsed_time);
 						}
 						//2Pが左
 						else
 						{
-							player1p->Update(-1.0f, elapsed_time);
-							player2p->Update(1.0f, elapsed_time);
+							player1p->Update(-1.0f, elapsed_time * p1_elapsed_time);
+							player2p->Update(1.0f, elapsed_time * p2_elapsed_time);
 						}
 
 						//プレイヤーの移動距離制限(※要変更)
@@ -813,12 +816,12 @@ void SceneGame::Draw(float elapsed_time)
 	case SceneGame::INTRO1P:
 		//1Pのイントロ
 		//プレイヤー描画
-		player1p->Draw(toonShader.get(),V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player1p->Draw(ParallelToonShader.get(),V, P, light_direction, lightColor, ambient_color, elapsed_time);
 		break;
 	case SceneGame::INTRO2P:
 		//2Pのイントロ
 		//プレイヤー描画
-		player2p->Draw(toonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player2p->Draw(ParallelToonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
 		break;
 	case SceneGame::READY:
 	case SceneGame::MAIN:
@@ -950,8 +953,8 @@ void SceneGame::Draw(float elapsed_time)
 		}
 
 		//プレイヤー描画
-		player1p->Draw(toonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
-		player2p->Draw(toonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player1p->Draw(ParallelToonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time*p1_elapsed_time);
+		player2p->Draw(ParallelToonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time*p2_elapsed_time);
 		
 		/*skin->Render(
 			skinShader.get(), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
@@ -961,8 +964,8 @@ void SceneGame::Draw(float elapsed_time)
 		);*/
 
 #if USE_IMGUI
-		player1p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
-		player2p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player1p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time*p1_elapsed_time);
+		player2p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time*p2_elapsed_time);
 		
 		/*motion.DrawContinue(
 		skinShader.get(),
@@ -1013,11 +1016,11 @@ void SceneGame::Draw(float elapsed_time)
 		break;
 	case SceneGame::WIN1P:
 		//プレイヤー描画
-		player1p->Draw(toonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player1p->Draw(ParallelToonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
 		break;
 	case SceneGame::WIN2P:
 		//プレイヤー描画
-		player2p->Draw(toonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player2p->Draw(ParallelToonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
 		break;
 	case SceneGame::GAME_FIN:
 		break;
@@ -1250,10 +1253,10 @@ void SceneGame::FinUpdate()
 void SceneGame::CameraUpdate()
 {
 	//カメラのステートがMAINにある場合のカメラ処理を行う
-	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -140.0f));			//視点
-	YRCamera.SetFocus(DirectX::XMFLOAT3(0.0f, 5.0f, 0.0f));			//注視点
-	YRCamera.SetUp(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));				//上方向
-	YRCamera.SetPerspective(10.0f * 0.01745f, 1920.0f / 1080.0f, 0.4f, 1000000.0f);
+	//YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -140.0f));			//視点
+	//YRCamera.SetFocus(DirectX::XMFLOAT3(0.0f, 5.0f, 0.0f));			//注視点
+	//YRCamera.SetUp(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));				//上方向
+	//YRCamera.SetPerspective(10.0f * 0.01745f, 1920.0f / 1080.0f, 0.4f, 1000000.0f);
 
 	YRCamera.Active();
 }

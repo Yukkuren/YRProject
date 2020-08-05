@@ -1,6 +1,6 @@
-#include "ToonShader.hlsli"
+#include "ParallelToon.hlsli"
 
-GSInput main(VSInput input) 
+GSInput main(VSInput input)
 {
 	GSInput output = (GSInput)0;
 
@@ -10,7 +10,7 @@ GSInput main(VSInput input)
 	int i2 = 0;
 	for (i2 = 0; i2 < 4; i2++)
 	{
-		ps += (input.bone_weights[i2] * mul(float4(input.Position,1.0f), bone_transforms[input.bone_indices[i2]])).xyz;
+		ps += (input.bone_weights[i2] * mul(float4(input.Position, 1.0f), bone_transforms[input.bone_indices[i2]])).xyz;
 		n += (input.bone_weights[i2] * mul(float4(input.Normal.xyz, 0), bone_transforms[input.bone_indices[i2]])).xyz;
 	}
 	input.Position = float4(ps, 1.0f);

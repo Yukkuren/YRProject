@@ -10,7 +10,11 @@
 //   row_major float4x4 world_view_projection;// Offset:    0 Size:    64 [unused]
 //   row_major float4x4 world;          // Offset:   64 Size:    64 [unused]
 //   float4 material_color;             // Offset:  128 Size:    16
-//   float4 light_direction;            // Offset:  144 Size:    16 [unused]
+//   float4 EyePos;                     // Offset:  144 Size:    16 [unused]
+//   row_major float4x4 view;           // Offset:  160 Size:    64 [unused]
+//   row_major float4x4 projection;     // Offset:  224 Size:    64 [unused]
+//   float3 at;                         // Offset:  288 Size:    12 [unused]
+//   float dummy;                       // Offset:  300 Size:     4 [unused]
 //
 // }
 //

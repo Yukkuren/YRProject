@@ -70,7 +70,7 @@ dcl_temps 8
 //   v4.x <- input.wPos.x; v4.y <- input.wPos.y; v4.z <- input.wPos.z; 
 //   o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
 //
-#line 38 "E:\ゲーム制作\YRProject\ToonShader_ps.hlsl"
+#line 38 "E:\ゲーム制作\YRProject\ParallelToon_ps.hlsl"
 sample_indexable(texture2d)(float,float,float,float) r0.xyzw, v1.xyxx, t0.xyzw, s0  // r0.x <- color.x; r0.y <- color.y; r0.z <- color.z; r0.w <- color.w
 
 #line 39

@@ -2,9 +2,10 @@
 #include "PlayerBase.h"
 #include "framework.h"
 
-void HitBox::Init(YR_Vector3 cent, YR_Vector3 range)
+void HitBox::Init(YR_Vector3 pl_pos, YR_Vector3 distance, YR_Vector3 range)
 {
-	center = cent;
+	center = pl_pos + distance;
+	this->distance = distance;
 	size = range;
 	hit = false;
 	damege = 0.0f;
@@ -17,33 +18,33 @@ void HitBox::Init(YR_Vector3 cent, YR_Vector3 range)
 	steal_timer = 0.0f;
 }
 
-void HitBox::Update(YR_Vector3 cent, YR_Vector3 range,float elapsed_time)
+void HitBox::Update(YR_Vector3 pl_pos,float elapsed_time)
 {
-	center = cent;
-	size = range;
+	center = pl_pos + distance;
+	//size = range;
 	//if (DEBUG_MODE)Draw();
 	if (timer > 0.0f)
 	{
 		timer -= elapsed_time;
-		if (hitback.x > 0)
+		if (hitback.x > 0.0f)
 		{
-			hitback.x--;
-			if (hitback.x < 0)
+			hitback.x -= elapsed_time*10.0f;
+			if (hitback.x < 0.0f)
 			{
-				hitback.x = 0;
+				hitback.x = 0.0f;
 			}
 		}
-		if (hitback.x < 0)
+		if (hitback.x < 0.0f)
 		{
-			hitback.x++;
-			if (hitback.x > 0)
+			hitback.x += elapsed_time * 10.0f;
+			if (hitback.x > 0.0f)
 			{
-				hitback.x = 0;
+				hitback.x = 0.0f;
 			}
 		}
-		if (hitback.y > -50)
+		if (hitback.y > -50.0f)
 		{
-			hitback.y--;
+			hitback.y -= elapsed_time * 10.0f;
 		}
 		if (timer < 0.0f)
 		{

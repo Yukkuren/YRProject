@@ -1,4 +1,4 @@
-#include "ToonShader.hlsli"
+#include "ParallelToon.hlsli"
 
 
 float4 MatPos(float4 POS)
@@ -19,7 +19,7 @@ float4 MatPos(float4 POS)
 		0, 0, 0, 1
 	};
 	row_major float4x4 newWorld = mul(world, Mat);
-	float4 Posi = mul(POS, world);
+	float4 Posi = mul(POS, newWorld);
 	Posi = mul(Posi, view);
 	Posi = mul(Posi, projection);
 	Posi /= Posi.w;
@@ -45,15 +45,15 @@ void main(
 		float3 P = E + at * dot(at, input[i].wPos - E);
 		float len = length(P - E);
 		float h = length(input[i].wPos - P) / len;
-		h = max(0.1,h);
+		h = max(0.1, h);
 		row_major float4x4 Mat = {
 			1, 0, 0, 0,
 			0, 1, 0, 0,
 			0, 0, h, 0,
 			0, 0, 0, 1
 		};
-		row_major float4x4 newWorld = mul(world,Mat);
-		float4 Pos = mul(input[i].Position, world);
+		row_major float4x4 newWorld = mul(world, Mat);
+		float4 Pos = mul(input[i].Position, newWorld);
 		Pos = mul(Pos, view);
 		Pos = mul(Pos, projection);
 		Pos /= Pos.w;

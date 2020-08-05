@@ -17,6 +17,7 @@ void Knight::Init(YR_Vector3 InitPos)
 	//ImGui::Begin("RYU HitBox");
 	pos = InitPos;
 	scale = YR_Vector3( 0.1f,0.1f,0.1f );
+	//scale = YR_Vector3( 0.05f,0.05f,0.05f );
 	angle = YR_Vector3(DirectX::XMConvertToRadians(-90.0f), 0.0f, 0.0f);
 
 	speed.x = 0;
@@ -48,10 +49,10 @@ void Knight::Init(YR_Vector3 InitPos)
 
 #pragma region HITBOXINIT
 	//Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(0.0f, 1.0f);
-	hit[scastI(KNIGHTHIT::BODY)].Init(pos, YR_Vector3(2.0f, 2.9f));
+	hit[scastI(KNIGHTHIT::BODY)].Init(pos,YR_Vector3(0.0f,0.0f), YR_Vector3(2.0f, 2.9f));
 	//HitSize[scastI(KNIGHTHIT::BODY)] = hit[scastI(KNIGHTHIT::BODY)].size;
 	//Hitplus[scastI(KNIGHTHIT::LEG)] = YR_Vector3(0.0f, 0.2f);
-	hit[scastI(KNIGHTHIT::LEG)].Init(pos , YR_Vector3(1.4f, 0.8f));
+	hit[scastI(KNIGHTHIT::LEG)].Init(pos , YR_Vector3(0.0f, 0.0f), YR_Vector3(1.4f, 0.8f));
 	//HitSize[scastI(KNIGHTHIT::LEG)] = hit[scastI(KNIGHTHIT::LEG)].size;
 #pragma endregion
 
@@ -77,6 +78,7 @@ void Knight::LoadData(std::shared_ptr<Texture> texture)
 		else
 		{
 			base = std::make_unique<Skinned_mesh>("./Data/FBX/knight.fbx");
+			//base = std::make_unique<Skinned_mesh>("./Data/FBX/cross.fbx");
 		}
 	}
 	motion.MeshSet(base);
@@ -575,15 +577,37 @@ void Knight::Update(float decision, float elapsed_time)
 	pos.x += speed.x * elapsed_time;
 	pos.y -= speed_Y.Update(elapsed_time);
 
-#ifdef USE_IMGUI
 	if (attack_state != AttackState::D_THU && act_state != ActState::DOWN && act_state != ActState::SQUAT && attack_state != AttackState::D_JAKU)
 	{
-		hit[scastI(KNIGHTHIT::BODY)].size = HitSize[scastI(KNIGHTHIT::BODY)];
-		hit[scastI(KNIGHTHIT::LEG)].size = HitSize[scastI(KNIGHTHIT::LEG)];
+		//hit[scastI(KNIGHTHIT::BODY)].size = HitSize[scastI(KNIGHTHIT::BODY)];
+		//hit[scastI(KNIGHTHIT::LEG)].size = HitSize[scastI(KNIGHTHIT::LEG)];
+	}
+#ifdef USE_IMGUI
+	{
+		ImGui::Begin("RyuHitBox");
+		ImGui::InputFloat("BodyPosX", &hit[scastI(KNIGHTHIT::BODY)].distance.x, 0.1f, 0.1f);
+		ImGui::InputFloat("BodyPosY", &hit[scastI(KNIGHTHIT::BODY)].distance.y, 0.1f, 0.1f);
+		ImGui::InputFloat("BodySizeX", &hit[scastI(KNIGHTHIT::BODY)].size.x, 0.1f, 0.1f);
+		ImGui::InputFloat("BodySizeY", &hit[scastI(KNIGHTHIT::BODY)].size.y, 0.1f, 0.1f);
+
+		ImGui::InputFloat("LegPosX", &hit[scastI(KNIGHTHIT::LEG)].distance.x, 0.1f, 0.1f);
+		ImGui::InputFloat("LegPosY", &hit[scastI(KNIGHTHIT::LEG)].distance.y, 0.1f, 0.1f);
+		ImGui::InputFloat("LegSizeX", &hit[scastI(KNIGHTHIT::LEG)].size.x, 0.1f, 0.1f);
+		ImGui::InputFloat("LegSizeY", &hit[scastI(KNIGHTHIT::LEG)].size.y, 0.1f, 0.1f);
+		//ImGui::SliderFloat("camera.y", &camera.y, -world_max_y, world_max_y);
+		//ImGui::SliderFloat("camera.x", &camera.x, -world_max_x, world_max_x);
+		ImGui::Text("player.y:%f", pos.y);
+		ImGui::Text("player.x:%f", pos.x);
+
+		//ImGui::ColorEdit3("clear color", (float*)&ImColor(114, 144, 154));
+		//if (ImGui::Button("Test Window")) show_test_window ^= 1;
+		//if (ImGui::Button("Another Window")) show_another_window ^= 1;
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::End();
 	}
 #endif // USE_IMGUI
-	hit[scastI(KNIGHTHIT::BODY)].Update(pos + Hitplus[scastI(KNIGHTHIT::BODY)], hit[scastI(KNIGHTHIT::BODY)].size,elapsed_time);
-	hit[scastI(KNIGHTHIT::LEG)].Update(pos + Hitplus[scastI(KNIGHTHIT::LEG)], hit[scastI(KNIGHTHIT::LEG)].size,elapsed_time);
+	hit[scastI(KNIGHTHIT::BODY)].Update(pos,elapsed_time);
+	hit[scastI(KNIGHTHIT::LEG)].Update(pos, elapsed_time);
 
 	EndAttackErase();			//UŒ‚”»’è‚ÌÁ‹Ž
 }
@@ -1063,6 +1087,7 @@ void Knight::Draw(
 	else
 	{
 		angle.y = DirectX::XMConvertToRadians(0.0f);
+		//angle.y = DirectX::XMConvertToRadians(80.0f);
 		inversion = false;
 		if (invincible)
 		{
@@ -1158,7 +1183,7 @@ void Knight::Draw(
 			bool show_another_window = true;*/
 			//static float f = 0.0f;
 			ImGui::Begin("RyuHitBox");
-			ImGui::InputFloat("BodyPosX", &Hitplus[scastI(KNIGHTHIT::BODY)].x, 0.1f, 0.1f);
+			/*ImGui::InputFloat("BodyPosX", &Hitplus[scastI(KNIGHTHIT::BODY)].x, 0.1f, 0.1f);
 			ImGui::InputFloat("BodyPosY", &Hitplus[scastI(KNIGHTHIT::BODY)].y, 0.1f, 0.1f);
 			ImGui::InputFloat("BodySizeX", &hit[scastI(KNIGHTHIT::BODY)].size.x, 0.1f, 0.1f);
 			ImGui::InputFloat("BodySizeY", &hit[scastI(KNIGHTHIT::BODY)].size.y, 0.1f, 0.1f);
@@ -1166,7 +1191,7 @@ void Knight::Draw(
 			ImGui::InputFloat("LegPosX", &Hitplus[scastI(KNIGHTHIT::LEG)].x, 0.1f, 0.1f);
 			ImGui::InputFloat("LegPosY", &Hitplus[scastI(KNIGHTHIT::LEG)].y, 0.1f, 0.1f);
 			ImGui::InputFloat("LegSizeX", &hit[scastI(KNIGHTHIT::LEG)].size.x, 0.1f, 0.1f);
-			ImGui::InputFloat("LegSizeY", &hit[scastI(KNIGHTHIT::LEG)].size.y, 0.1f, 0.1f);
+			ImGui::InputFloat("LegSizeY", &hit[scastI(KNIGHTHIT::LEG)].size.y, 0.1f, 0.1f);*/
 			//ImGui::SliderFloat("camera.y", &camera.y, -world_max_y, world_max_y);
 			//ImGui::SliderFloat("camera.x", &camera.x, -world_max_x, world_max_x);
 			ImGui::Text("player.y:%f", pos.y);
@@ -2278,7 +2303,7 @@ void Knight::Squat()
 	}
 	if (pad->x_input[scastI(PAD::STICK_D)] > 0 || pad->x_input[scastI(PAD::STICK_RDown)] > 0 || pad->x_input[scastI(PAD::STICK_LDown)] > 0)
 	{
-		Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(0.0f, 15.0f);
+		//Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(0.0f, 15.0f);
 		hit[scastI(KNIGHTHIT::BODY)].size = YR_Vector3(65.0f, 130.0f);
 		moveflag = false;
 		act_state = ActState::SQUAT;
@@ -2365,9 +2390,9 @@ void Knight::FallUpdate()
 
 void Knight::DownUpdate()
 {
-	Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(-31.0f, 134.0f);
+	//Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(-31.0f, 134.0f);
 	hit[scastI(KNIGHTHIT::BODY)].size = YR_Vector3(110.0f, 62.0f);
-	Hitplus[scastI(KNIGHTHIT::LEG)] = YR_Vector3(110.0f, 149.0f);
+	//Hitplus[scastI(KNIGHTHIT::LEG)] = YR_Vector3(110.0f, 149.0f);
 	hit[scastI(KNIGHTHIT::LEG)].size = YR_Vector3(39.0f, 47.0f);
 	pos.y += speed.y;
 	if (pos.y > POS_Y)

@@ -9,8 +9,8 @@ using namespace fbxsdk;
 #include<wrl.h>
 #include<Shlwapi.h>
 #include <codecvt>
-#include <locale>
 #include "framework.h"
+#include <locale>
 
 
 using convert_t = std::codecvt_utf8<wchar_t>;
@@ -1387,8 +1387,8 @@ void Skinned_mesh::Render(
 		0,0,0,1
 	};
 	DirectX::XMMATRIX	m = DirectX::XMLoadFloat4x4(&mirror);
-	DirectX::XMMATRIX V;
-	V = view;
+	/*DirectX::XMMATRIX V;
+	V = view;*/
 	//if (inversion)
 	//{
 	//	V = m * view;
@@ -1408,7 +1408,7 @@ void Skinned_mesh::Render(
 	UINT offset = 0;
 	//ワールド・ビュー・プロジェクション行列作成
 	DirectX::XMFLOAT4X4 world_view_projection;
-	DirectX::XMStoreFloat4x4(&world_view_projection, world_matrix* V*projection);
+	DirectX::XMStoreFloat4x4(&world_view_projection, world_matrix* view*projection);
 	//context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	//ステート・シェーダー設定
@@ -1559,6 +1559,14 @@ void Skinned_mesh::Render(
 			cb.eyePos.y = YRCamera.GetEye().y;
 			cb.eyePos.z = YRCamera.GetEye().z;
 			cb.eyePos.w = 1.0f;
+			DirectX::XMFLOAT4X4 v;
+			DirectX::XMStoreFloat4x4(&v, view);
+			cb.view = v;
+			DirectX::XMFLOAT4X4 p;
+			DirectX::XMStoreFloat4x4(&p, projection);
+			cb.projection = p;
+			cb.at = YRCamera.GetAt();
+			cb.dummy = 0.0f;
 
 			/*if (inversion)
 			{

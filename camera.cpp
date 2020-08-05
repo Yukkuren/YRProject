@@ -1,6 +1,7 @@
 #include "camera.h"
 #include "YRMouse.h"
 #include "collision.h"
+#include "YR_VECTOR3.h"
 
 void Camera::Active()
 {
@@ -26,6 +27,16 @@ void Camera::Active()
 		farZ
 	);
 	DirectX::XMStoreFloat4x4(&projection, P);
+
+	YR_Vector3 at = YR_Vector3(focus) - YR_Vector3(eye);
+
+	at.Normalize();
+	this->at = at.GetDXFLOAT3();
+
+	/*DirectX::XMFLOAT4X4 projection_Orth;
+	DirectX::XMStoreFloat4x4(&projection_Orth, P1);
+
+	projection.m[0][0] = projection_Orth.m[0][0];*/
 }
 
 //setter
@@ -95,6 +106,11 @@ const float& Camera::GetNear()const
 const float& Camera::GetFar()const
 {
 	return farZ;
+}
+
+const DirectX::XMFLOAT3& Camera::GetAt()const
+{
+	return at;
 }
 
 void Camera::CameraMove(YRShader *shader)
