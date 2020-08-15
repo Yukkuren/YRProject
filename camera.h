@@ -40,8 +40,23 @@ public:
 		PLAYER1P,
 		PLAYER2P,
 	};
+	CAMERA_STATE camera_state = CAMERA_STATE::MAIN;
 
-	CAMERA_STATE camera_state = MAIN;
+	enum Request
+	{
+		NONE,
+		HOLD,		//カメラをつかむ(自分のステートにする)
+		RELEASE,	//カメラを離す(ステートをMAINに即座に戻す)
+		WEAKEN,		//カメラを持つ手を弱める(ステートは戻さず、位置を少しずつMAINに戻す)
+	};
+private:
+	Request		camera_Request = Request::NONE;
+	int			request_player = 0;
+public:
+
+	void RequestCamera(Request request, int now_player);
+	const Request& GetRequest()const;
+	const int& GetRequestPlayer()const;
 
 	//行列更新
 	void Active();
@@ -52,6 +67,7 @@ public:
 	void SetEye(const DirectX::XMFLOAT3& eye);
 	void SetFocus(const DirectX::XMFLOAT3& focus);
 	void SetUp(const DirectX::XMFLOAT3& up);
+	void SetFov(const float fov);
 
 	void CameraMove(YRShader* shader);
 

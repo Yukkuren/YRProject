@@ -3,22 +3,22 @@
 
 float4 MatPos(float4 POS)
 {
-	float3 E = EyePos.xyz;
-	//float4 POS = input[0].Position + float4(input[0].Normal, 0.0) * LW;
-	float4 wPOS = mul(POS, world);
-	float3 P = E + at * dot(at, wPOS - E);
-	float len = length(P - E);
-	float h = length(wPOS - P) / len;
-	h = max(0.1, h);
-	//float h = (abs(len) < 0.001) ? 1.0 : length(wPOS - P) / len;
-	//h *= dot(wPOS - P, at) > 0 ? -1 : 1;
-	row_major float4x4 Mat = {
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, h, 0,
-		0, 0, 0, 1
-	};
-	row_major float4x4 newWorld = mul(world, Mat);
+	//float3 E = EyePos.xyz;
+	////float4 POS = input[0].Position + float4(input[0].Normal, 0.0) * LW;
+	//float4 wPOS = mul(POS, world);
+	//float3 P = E + at * dot(at, wPOS - E);
+	//float len = length(P - E);
+	//float h = length(wPOS - P) / len;
+	//h = max(0.1, h);
+	////float h = (abs(len) < 0.001) ? 1.0 : length(wPOS - P) / len;
+	////h *= dot(wPOS - P, at) > 0 ? -1 : 1;
+	//row_major float4x4 Mat = {
+	//	1, 0, 0, 0,
+	//	0, 1, 0, 0,
+	//	0, 0, h, 0,
+	//	0, 0, 0, 1
+	//};
+	//row_major float4x4 newWorld = mul(world, Mat);
 	float4 Posi = mul(POS, world);
 	Posi = mul(Posi, view);
 	Posi = mul(Posi, projection);
@@ -40,19 +40,19 @@ void main(
 	{
 		PSInput data;
 
-		float3 E = EyePos.xyz;
+		//float3 E = EyePos.xyz;
 
-		float3 P = E + at * dot(at, input[i].wPos - E);
-		float len = length(P - E);
-		float h = length(input[i].wPos - P) / len;
-		h = max(0.1,h);
-		row_major float4x4 Mat = {
-			1, 0, 0, 0,
-			0, 1, 0, 0,
-			0, 0, h, 0,
-			0, 0, 0, 1
-		};
-		row_major float4x4 newWorld = mul(world,Mat);
+		//float3 P = E + at * dot(at, input[i].wPos - E);
+		//float len = length(P - E);
+		//float h = length(input[i].wPos - P) / len;
+		//h = max(0.1,h);
+		//row_major float4x4 Mat = {
+		//	1, 0, 0, 0,
+		//	0, 1, 0, 0,
+		//	0, 0, h, 0,
+		//	0, 0, 0, 1
+		//};
+		//row_major float4x4 newWorld = mul(world,Mat);
 		float4 Pos = mul(input[i].Position, world);
 		Pos = mul(Pos, view);
 		Pos = mul(Pos, projection);

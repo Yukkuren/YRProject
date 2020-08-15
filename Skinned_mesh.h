@@ -74,12 +74,12 @@ public:
 	};
 	//Y軸とZ軸を入れ替える
 
-	Skinned_mesh(const char* fbx_filename, std::shared_ptr<Texture> tex);
+	Skinned_mesh(const char* fbx_filename, std::shared_ptr<Texture> tex, u_int sampling_rate = 0);
 
-	Skinned_mesh(const char *fbx_filename);
+	Skinned_mesh(const char *fbx_filename, u_int sampling_rate = 0);
 
-	bool Load(const char* fbx_filename);
-	bool Load(const char* fbx_filename, std::shared_ptr<Texture> tex);
+	bool Load(const char* fbx_filename, u_int sampling_rate = 0);
+	bool Load(const char* fbx_filename, std::shared_ptr<Texture> tex, u_int sampling_rate = 0);
 
 	~Skinned_mesh()
 	{
@@ -273,7 +273,7 @@ class MeshMotion
 {
 public:
 	Skinned_mesh*	skin;		//モデル付け替え用アドレス
-	float			anim_timer;	//モーション用タイマー
+	float			anim_timer = 0.0f;	//モーション用タイマー
 public:
 	//モーションデータをセットする
 	void MeshSet(std::unique_ptr<Skinned_mesh>& mesh);

@@ -36,6 +36,13 @@ private:
 	const float jump_max = 0.5f;
 	const float high_jump_max = 0.5f;
 	const float brake_speed =10000.0f;	//停止時にかかるブレーキ(基本ピタッと止まるので数値は大きめ)
+
+	float		production_time = 0.0f;	//カメラ演出に使う変数
+	
+	//個別モーション用変数
+	std::unique_ptr<Skinned_mesh>	jaku_r_f = nullptr;
+	std::unique_ptr<Skinned_mesh>	jaku_r_t = nullptr;
+	std::unique_ptr<Skinned_mesh>	special_r_f = nullptr;
 public:
 	bool fast;
 	YR_Vector3 FastPos;
@@ -53,6 +60,7 @@ public:
 	void LoadData(std::shared_ptr<Texture> texture = nullptr);
 	void Update(float decision, float elapsed_time);
 	void Draw(
+		YRShader				*parallel_shader,
 		YRShader				*shader,
 		const DirectX::XMMATRIX& view,
 		const DirectX::XMMATRIX& projection,
@@ -97,7 +105,7 @@ public:
 	void Attack(float decision, float elapsed_time);//以下の関数を制御する
 
 	void Jaku(float elapsed_time);
-	void Thu(float fream, float elapsed_time);
+	void Thu(float elapsed_time);
 	void Kyo(float fream, float elapsed_time);
 	void D_Jaku(float elapsed_time);
 	void D_Thu(float fream, float elapsed_time);

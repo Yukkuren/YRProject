@@ -9,7 +9,8 @@ float4 MatPos(float4 POS)
 	float3 P = E + at * dot(at, wPOS - E);
 	float len = length(P - E);
 	float h = length(wPOS - P) / len;
-	h = max(0.1, h);
+	h = max(0.05, h);
+	
 	//float h = (abs(len) < 0.001) ? 1.0 : length(wPOS - P) / len;
 	//h *= dot(wPOS - P, at) > 0 ? -1 : 1;
 	row_major float4x4 Mat = {
@@ -45,7 +46,7 @@ void main(
 		float3 P = E + at * dot(at, input[i].wPos - E);
 		float len = length(P - E);
 		float h = length(input[i].wPos - P) / len;
-		h = max(0.1, h);
+		h = max(0.05, h);
 		row_major float4x4 Mat = {
 			1, 0, 0, 0,
 			0, 1, 0, 0,

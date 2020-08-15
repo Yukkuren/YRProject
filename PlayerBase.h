@@ -92,23 +92,29 @@ enum class ActState : int
 
 enum class AttackState : int
 {
-	NONE,
-	JAKU,
-	THU,
-	KYO,
-	D_JAKU,
-	D_THU,
-	U_KYO,
-	STEAL,
-	SLOW,
-	TRACK_DASH,
-	JAKU_RHURF,
-	THU_RHURF,
-	KYO_RHURF,
-	JAKU_LHURF,
-	THU_LHURF,
-	KYO_LHURF,
-	EXTENDATK,
+	NONE = 0,		//攻撃無し
+	JAKU,			//弱
+	THU,			//中
+	KYO,			//強(対空)
+	D_JAKU,			//下弱
+	D_THU,			//下中
+	U_KYO,			//下強
+	A_JAKU,			//空弱攻撃
+	A_THU,			//空中攻撃
+	A_KYO,			//空強攻撃
+	STEAL,			//掴み
+	SLOW,			//投げ
+	TRACK_DASH,		//ホーミングダッシュ
+	JAKU_RHURF,		//前弱必殺
+	THU_RHURF,		//前中必殺
+	KYO_RHURF,		//前強必殺
+	JAKU_LHURF,		//後弱必殺
+	THU_LHURF,		//後中必殺
+	KYO_LHURF,		//後強必殺
+	SPECIAL_ATTACK,	//前超必殺
+	SUPER_ATTACK,	//後超必殺
+	EXTENDATK,		//無敵攻撃
+	ATTACK_END,		//最大サイズ
 };
 
 
@@ -207,6 +213,8 @@ public:
 	int					rival_state;	//相手のステート
 	float				steal_escape;	//投げ抜け可能時間
 	int					combo_count;	//コンボカウント
+	int					now_player;		//どのプレイヤーがこのキャラを操作しているか(1:1P、2:2P)
+	float				anim_ccodinate;	//アニメーション速度を調整する変数
 	std::vector<AttackBox> atk;
 
 
@@ -234,7 +242,8 @@ public:
 	virtual void Uninit() = 0;
 	virtual void Update(float decision,float elapsed_time) = 0;
 	virtual void Draw(
-		YRShader				*geoshader,
+		YRShader				*parallel_shader,
+		YRShader				*shader,
 		const DirectX::XMMATRIX& view,
 		const DirectX::XMMATRIX& projection,
 		const DirectX::XMFLOAT4& light_direction,

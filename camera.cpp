@@ -65,6 +65,11 @@ void Camera::SetUp(const DirectX::XMFLOAT3& up)
 	this->up = up;
 }
 
+void Camera::SetFov(const float fov)
+{
+	this->fov = fov;
+}
+
 
 //getter
 
@@ -111,6 +116,22 @@ const float& Camera::GetFar()const
 const DirectX::XMFLOAT3& Camera::GetAt()const
 {
 	return at;
+}
+
+void Camera::RequestCamera(Request request, int now_player)
+{
+	this->camera_Request = request;
+	this->request_player = now_player;
+}
+
+const Camera::Request& Camera::GetRequest()const
+{
+	return camera_Request;
+}
+
+const int& Camera::GetRequestPlayer()const
+{
+	return request_player;
 }
 
 void Camera::CameraMove(YRShader *shader)

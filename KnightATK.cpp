@@ -2,6 +2,7 @@
 #include "PlayerBase.h"
 #include "Key.h"
 #include "YRGamePad.h"
+#include "camera.h"
 
 //**************************************************************************************************************
 //				攻撃関数
@@ -21,21 +22,160 @@ void Knight::Slow(float elapsed_time)
 
 void Knight::Jaku(float elapsed_time)
 {
+	//後隙が設定された後はこの関数には入らない
 	if (later > -1 && later < target_max)
 	{
 		return;
 	}
 
-	if (fream < 100.0f)
+	//発生フレームになるまで回す
+	if (fream < target_max)
 	{
 		fream -= elapsed_time;
 	}
 	
 
+	//発生フレームになったら攻撃判定を生成する
 	if (fream < 0.0f)
 	{
-		attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft, YR_Vector3(5.0f, 5.0f));
+		int attack_num = attack_list[scastI(attack_state)].now_attack_num;
+		anim_ccodinate = attack_list[scastI(attack_state)].attack_single[attack_num].parameter[0].timer * 100.0f;
+		attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft);
 		fream = non_target;
+		motion.MeshSet(jaku_r_t);
+		motion.AnimReset();
+		
+	}
+
+	int now_at_list = scastI(attack_state);
+
+	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
+	if (!atk.empty())
+	{
+		for (auto& a : atk)
+		{
+			if (knock)
+			{
+				a.parameter.knockback = 0.0f;
+			}
+			if (a.knock_start)
+			{
+				pos.x -= a.parameter.knockback;
+				a.parameter.knockback = 0.0f;
+				if (!ground)
+				{
+					speed_Y.Set(60.0f);
+				}
+				knock = true;
+			}
+		}
+	}
+
+	if (atk.empty())
+	{
+		//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
+		return;
+	}
+
+	//atk.back().SpeedPlus(YR_Vector3(5.0f, 5.0f), elapsed_time);
+
+	//攻撃が全て終了したことを確認する
+	if (AttackEndCheck())
+	{
+		//まだ攻撃が残っていれば次の攻撃に移る
+		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
+		{
+			fream = attack_list[scastI(attack_state)].attack_single[attack_list[now_at_list].now_attack_num].fream;
+		}
+		else
+		{
+			attack_list[now_at_list].now_attack_num = 0;
+			later = attack_list[now_at_list].later;
+			anim_ccodinate = 1.0f;
+			//motion.MeshSet(base);
+			//motion.AnimReset();
+		}
+	}
+
+	specialfream = 0;
+	/*if (atk[scastI(KNIGHTATK::ONE)].knock_start)
+	{
+		pos.x -= atk[scastI(KNIGHTATK::ONE)].knockback;
+		atk[scastI(KNIGHTATK::ONE)].knockback = 0.0f;;
+		if (!ground)
+		{
+			speed_Y.Set(60.0f);
+		}
+	}
+	YR_Vector3 cent{ pos.x + Getapply(100.0f),pos.y };
+	YR_Vector3 range{ 50.0f,50.0f };
+	if (ground)
+	{
+		atk[scastI(KNIGHTATK::ONE)].Update(
+			cent, range, 5, 5, 15, 10, 15, YR_Vector3(Getapply(5.0f), 0.0f), AttackBox::MIDDLE, Getapply(10.0f),elapsed_time);
+	}
+	else
+	{
+		atk[scastI(KNIGHTATK::ONE)].Update(
+			cent, range, 5, 5, 15, 10, 20, YR_Vector3(Getapply(5.0f), 20.0f), AttackBox::MIDDLE, Getapply(10.0f),elapsed_time);
+	}
+	specialfream = 0;*/
+}
+
+void Knight::Thu(float elapsed_time)
+{
+
+	if (later > -1 && later < target_max)
+	{
+		return;
+	}
+
+	if (fream < target_max)
+	{
+		fream -= elapsed_time;
+
+		YR_Vector3	eye = YRCamera.GetEye();
+		YR_Vector3	focus = YRCamera.GetFocus();
+		YRCamera.SetFov(50.0f * 0.01745f);
+		if (fream > 1.5f)
+		{
+			focus = pos;
+			eye.x = focus.x;
+			eye.y = focus.y + 2.0f;
+			eye.z = focus.z - 8.0f;
+		}
+		else if(fream > 1.0f)
+		{
+
+			focus = pos;
+			eye.x = pos.x - Getapply(7.0f);
+			eye.y = focus.y - 2.0f;
+			eye.z = pos.z - 7.0f;
+		}
+		else if(fream > 0.5f)
+		{
+			focus = pos;
+			focus.x + 2.0f;
+			focus.y - 2.0f;
+			eye.x = focus.x + Getapply(9.0f);
+			eye.y = focus.y + 6.0f;
+			eye.z = focus.z - 6.0f;
+		}
+		else
+		{
+			//カメラを徐々にメインに戻す
+			YRCamera.RequestCamera(Camera::Request::WEAKEN, now_player);
+		}
+		YRCamera.SetEye(eye.GetDXFLOAT3());
+		YRCamera.SetFocus(focus.GetDXFLOAT3());
+	}
+
+
+	if (fream < 0.0f)
+	{
+		attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft);
+		fream = non_target;
+		YRCamera.RequestCamera(Camera::Request::RELEASE, now_player);
 	}
 
 	int now_at_list = scastI(attack_state);
@@ -84,32 +224,6 @@ void Knight::Jaku(float elapsed_time)
 	}
 
 	specialfream = 0;
-	/*if (atk[scastI(KNIGHTATK::ONE)].knock_start)
-	{
-		pos.x -= atk[scastI(KNIGHTATK::ONE)].knockback;
-		atk[scastI(KNIGHTATK::ONE)].knockback = 0.0f;;
-		if (!ground)
-		{
-			speed_Y.Set(60.0f);
-		}
-	}
-	YR_Vector3 cent{ pos.x + Getapply(100.0f),pos.y };
-	YR_Vector3 range{ 50.0f,50.0f };
-	if (ground)
-	{
-		atk[scastI(KNIGHTATK::ONE)].Update(
-			cent, range, 5, 5, 15, 10, 15, YR_Vector3(Getapply(5.0f), 0.0f), AttackBox::MIDDLE, Getapply(10.0f),elapsed_time);
-	}
-	else
-	{
-		atk[scastI(KNIGHTATK::ONE)].Update(
-			cent, range, 5, 5, 15, 10, 20, YR_Vector3(Getapply(5.0f), 20.0f), AttackBox::MIDDLE, Getapply(10.0f),elapsed_time);
-	}
-	specialfream = 0;*/
-}
-
-void Knight::Thu(float fream, float elapsed_time)
-{
 	/*if (atk[scastI(KNIGHTATK::ONE)].knock_start)
 	{
 		pos.x -= atk[scastI(KNIGHTATK::ONE)].knockback;

@@ -18,6 +18,8 @@
 #include "Sampler.h"
 #include "AnimBoard.h"
 
+constexpr float start_time = 0.0f;
+
 enum class INPUT_PLAYER : int
 {
 	P1 = 0,
@@ -65,16 +67,28 @@ struct PlayerALL
 	
 };
 
+
+
 class SceneGame : public SceneBase
 {
 private:
 	POINT mouse_pos;
+	bool camera_move_debug;
 public:
 	float	timer = 0.0f;
 	int		sco[6] = { 0,0,0,0,0,0 };
 
 	float p1_elapsed_time = 0.0f;
 	float p2_elapsed_time = 0.0f;
+
+	//カメラステートがメインの時のカメラ座標
+	YR_Vector3	Scene_eye;
+	YR_Vector3	Scene_focus;
+	YR_Vector3	Scene_up;
+	float		Scene_fov = 0.0f;		//画角
+	float		Scene_aspect = 0.0f;	//アスペクト比
+	float		Scene_nearZ = 0.0f;		//ニアクリップ面までの距離
+	float		Scene_farZ = 0.0f;		//ファークリップ面までの距離
 
 	enum MAIN_LOOP
 	{
@@ -128,6 +142,8 @@ public:
 	std::unique_ptr<YRShader> spriteShader = nullptr;
 	std::unique_ptr<YRShader> geoShader = nullptr;
 	std::unique_ptr<YRShader> ParallelToonShader = nullptr;
+	std::unique_ptr<YRShader> ToonShader = nullptr;
+
 
 	//プレイヤー管理系
 	PlayerALL						PL;
@@ -137,14 +153,14 @@ public:
 	std::unique_ptr<GamepadBase>	pad2		= nullptr;
 
 	//ゲームループ制御変数
-	bool			pause = false;			//ポーズ中
-	bool			start = false;			//対戦開始
-	JUDGE_VICTORY	judge = NO_VICTORY;		//勝敗の有無
-	float			start_timer = 0.0f;		//開始までの時間。Are You Ready?
-	bool			end = false;			//勝敗がついた
-	bool			fin = false;			//全て終わった
-	float			endtimer = 0.0f;		//勝敗がついてから勝利画面に移行するまでに使用
-	float			mix_fedo = 0.0f;		//フェードインの速度変更用
+	bool			pause = false;						//ポーズ中
+	bool			start = false;						//対戦開始
+	JUDGE_VICTORY	judge = JUDGE_VICTORY::NO_VICTORY;	//勝敗の有無
+	float			start_timer = 0.0f;					//開始までの時間。Are You Ready?
+	bool			end = false;						//勝敗がついた
+	bool			fin = false;						//全て終わった
+	float			endtimer = 0.0f;					//勝敗がついてから勝利画面に移行するまでに使用
+	float			mix_fedo = 0.0f;					//フェードインの速度変更用
 
 public:
 
@@ -173,6 +189,7 @@ public:
 	void	StartSet();			//イントロ終了後のゲーム画面のセット(カメラ)
 	void	FinSet();			//ゲーム終了後のゲーム画面のセット(カメラ)
 	void	CameraUpdate();		//カメラのステートがMAINにある場合のカメラ処理を行う
+	void	CameraRequest(float elapsed_time);	//カメラのリクエストを確認し、リクエストがあれば処理を行う
 };
 
 

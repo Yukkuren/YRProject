@@ -77,12 +77,14 @@ void SceneGame::Init()
 		ParallelToonShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::TOON);
 		ParallelToonShader->Create("./Data/Shader/ParallelToon_vs.cso", "./Data/Shader/ParallelToon_ps.cso", "./Data/Shader/ParallelToon_gs.cso");
 	}
+	if (ToonShader == nullptr)
+	{
+		ToonShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::TOON);
+		ToonShader->Create("./Data/Shader/ToonShader_vs.cso", "./Data/Shader/ToonShader_ps.cso", "./Data/Shader/ToonShader_gs.cso");
+	}
 
 	//カメラ初期設定
-	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -140.0f));			//視点
-	YRCamera.SetFocus(DirectX::XMFLOAT3(0.0f, 5.0f, 0.0f));			//注視点
-	YRCamera.SetUp(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));				//上方向
-	YRCamera.SetPerspective(10.0f * 0.01745f, 1920.0f / 1080.0f, 0.4f, 1000000.0f);
+	StartSet();
 	YRCamera.camera_state = Camera::CAMERA_STATE::MAIN;
 	
 	//画像選択位置初期化
@@ -99,6 +101,7 @@ void SceneGame::Init()
 
 	p1_elapsed_time = 1.0f;
 	p2_elapsed_time = 1.0f;
+	camera_move_debug = false;
 }
 
 
@@ -118,11 +121,11 @@ void SceneGame::LoadData()
 
 	if (skin == nullptr)
 	{
-		skin = std::make_unique<Skinned_mesh>("./Data/FBX/knight.fbx");
+		//skin = std::make_unique<Skinned_mesh>("./Data/FBX/knight.fbx");
 	}
 	if (knight2P_texture == nullptr)
 	{
-		knight2P_texture = std::make_shared<Texture>(L"./Data/FBX/knight_tex2P.png");
+		knight2P_texture = std::make_shared<Texture>(L"./Data/FBX/Knight/knight_tex2P.png");
 	}
 	
 #if USE_IMGUI
@@ -200,6 +203,9 @@ void SceneGame::LoadData()
 	player2p->Init(PL.pos2P);
 	player1p->LoadData();
 	player2p->LoadData(knight2P_texture);
+	//キャラにどのプレイヤーが操作しているかの情報を与える
+	player1p->now_player = 1;
+	player2p->now_player = 2;
 	PL.HP_MAX1P = player1p->hp;
 	PL.HP_MAX2P = player2p->hp;
 	PL.ratio1P = player1p->hp / PL.HP_MAX1P * 800.0f;
@@ -261,6 +267,8 @@ void SceneGame::UnInit()
 	geoShader = nullptr;
 	ParallelToonShader.reset();
 	ParallelToonShader = nullptr;
+	ToonShader.reset();
+	ToonShader = nullptr;
 }
 
 
@@ -270,11 +278,21 @@ void SceneGame::UnInit()
 void SceneGame::StartSet()
 {
 	//イントロ終了後のゲーム画面のセット
+
+	//カメラ初期座標
+	Scene_eye = YR_Vector3(0.0f, 6.0f, -140.0f);
+	Scene_focus = YR_Vector3(0.0f, 6.0f, 0.0f);
+	Scene_up = YR_Vector3(0.0f, 1.0f, 0.0f);
+	Scene_fov = 10.0f * 0.01745f;
+	Scene_aspect = 1920.0f / 1080.0f;
+	Scene_nearZ = 1.4f;
+	Scene_farZ = 1000.0f;
+
 	//カメラ初期設定
-	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -140.0f));			//視点
-	YRCamera.SetFocus(DirectX::XMFLOAT3(0.0f, 5.0f, 0.0f));			//注視点
-	YRCamera.SetUp(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));				//上方向
-	YRCamera.SetPerspective(10.0f * 0.01745f, 1920.0f / 1080.0f, 1.4f, 1000.0f);
+	YRCamera.SetEye(Scene_eye.GetDXFLOAT3());			//視点
+	YRCamera.SetFocus(Scene_focus.GetDXFLOAT3());			//注視点
+	YRCamera.SetUp(Scene_up.GetDXFLOAT3());				//上方向
+	YRCamera.SetPerspective(Scene_fov, Scene_aspect, Scene_nearZ, Scene_farZ);
 	//YRCamera.SetPerspective(1080.0f, 1920.0f, 0.0001f, 1000000.0f);
 
 }
@@ -314,6 +332,7 @@ void SceneGame::Update(float elapsed_time)
 			if (fedo_alpha > 1.0f)
 			{
 				main_loop = MAIN_LOOP::READY;
+				YRCamera.camera_state = Camera::CAMERA_STATE::MAIN;
 				//ここでメイン画面設定関数を呼ぶ
 				StartSet();
 				fedo_start = false;
@@ -387,7 +406,7 @@ void SceneGame::Update(float elapsed_time)
 		{
 		case SceneGame::INTRO1P:
 			//プレイヤー1のイントロ
-
+			YRCamera.camera_state = Camera::CAMERA_STATE::PLAYER1P;
 			//パッドの更新
 			player1p->pad->Update(elapsed_time);
 			player2p->pad->Update(elapsed_time);
@@ -407,7 +426,7 @@ void SceneGame::Update(float elapsed_time)
 			break;
 		case SceneGame::INTRO2P:
 			//プレイヤー2のイントロ
-
+			YRCamera.camera_state = Camera::CAMERA_STATE::PLAYER2P;
 			//パッドの更新
 			player1p->pad->Update(elapsed_time);
 			player2p->pad->Update(elapsed_time);
@@ -451,23 +470,11 @@ void SceneGame::Update(float elapsed_time)
 					//対戦中
 
 
-					//カメラの挙動をステートごとに処理
-					switch (YRCamera.camera_state)
-					{
-					case Camera::CAMERA_STATE::MAIN:
-						//通常カメラ
-						CameraUpdate();
-						break;
-					case Camera::CAMERA_STATE::PLAYER1P:
-						//1Pがカメラを持っている
-						break;
-					case Camera::CAMERA_STATE::PLAYER2P:
-						//2Pがカメラを持っている
-						break;
-					default:
-						break;
-					}
+					//カメラリクエスト更新
+					CameraRequest(elapsed_time);
 
+					//カメラの挙動をステートごとに処理
+					CameraUpdate();
 
 					//※要変更。ステートの[2]なんて見ただけじゃ何かわからない
 					if (player1p->act_state != ActState::STATENONE && player2p->act_state != ActState::STATENONE)
@@ -610,7 +617,7 @@ void SceneGame::Update(float elapsed_time)
 			else
 			{
 				//カウント中
-				if (start_timer < 3.0f)
+				if (start_timer < start_time)
 				{
 					start_timer += elapsed_time;
 				}
@@ -725,6 +732,7 @@ void SceneGame::Draw(float elapsed_time)
 		ImGui::Begin("palam", &show_another_window);
 		//ImGui::Text("anim : %f", motion.anim_timer);
 		ImGui::Text("time : %f", timer);
+		ImGui::Checkbox("Camera_Debug", &camera_move_debug);
 		//ImGui::InputFloat("scroll", &scall, 0.01f, 100.0f);
 		//ImGui::SliderFloat("rollX", &roll.x, 0.0f, 30.00f);
 		//ImGui::SliderFloat("rollY", &roll.y, 0.0f, 30.00f);
@@ -816,12 +824,12 @@ void SceneGame::Draw(float elapsed_time)
 	case SceneGame::INTRO1P:
 		//1Pのイントロ
 		//プレイヤー描画
-		player1p->Draw(ParallelToonShader.get(),V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player1p->Draw(ParallelToonShader.get(),ToonShader.get(),V, P, light_direction, lightColor, ambient_color, elapsed_time);
 		break;
 	case SceneGame::INTRO2P:
 		//2Pのイントロ
 		//プレイヤー描画
-		player2p->Draw(ParallelToonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
 		break;
 	case SceneGame::READY:
 	case SceneGame::MAIN:
@@ -953,8 +961,8 @@ void SceneGame::Draw(float elapsed_time)
 		}
 
 		//プレイヤー描画
-		player1p->Draw(ParallelToonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time*p1_elapsed_time);
-		player2p->Draw(ParallelToonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time*p2_elapsed_time);
+		player1p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time*p1_elapsed_time);
+		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time*p2_elapsed_time);
 		
 		/*skin->Render(
 			skinShader.get(), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
@@ -1016,11 +1024,11 @@ void SceneGame::Draw(float elapsed_time)
 		break;
 	case SceneGame::WIN1P:
 		//プレイヤー描画
-		player1p->Draw(ParallelToonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player1p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
 		break;
 	case SceneGame::WIN2P:
 		//プレイヤー描画
-		player2p->Draw(ParallelToonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
 		break;
 	case SceneGame::GAME_FIN:
 		break;
@@ -1252,15 +1260,139 @@ void SceneGame::FinUpdate()
 
 void SceneGame::CameraUpdate()
 {
-	//カメラのステートがMAINにある場合のカメラ処理を行う
-	//YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -140.0f));			//視点
-	//YRCamera.SetFocus(DirectX::XMFLOAT3(0.0f, 5.0f, 0.0f));			//注視点
-	//YRCamera.SetUp(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));				//上方向
-	//YRCamera.SetPerspective(10.0f * 0.01745f, 1920.0f / 1080.0f, 0.4f, 1000000.0f);
-
+	switch (YRCamera.camera_state)
+	{
+	case Camera::CAMERA_STATE::MAIN:
+		//通常カメラ
+		//カメラのステートがMAINにある場合のカメラ処理を行う
+		if (!camera_move_debug)
+		{
+			YRCamera.SetEye(Scene_eye.GetDXFLOAT3());			//視点
+			YRCamera.SetFocus(Scene_focus.GetDXFLOAT3());			//注視点
+			YRCamera.SetUp(Scene_up.GetDXFLOAT3());				//上方向
+			YRCamera.SetPerspective(Scene_fov, Scene_aspect, Scene_nearZ, Scene_farZ);
+		}
+		break;
+	case Camera::CAMERA_STATE::PLAYER1P:
+		//1Pがカメラを持っている
+		break;
+	case Camera::CAMERA_STATE::PLAYER2P:
+		//2Pがカメラを持っている
+		break;
+	default:
+		break;
+	}
 	YRCamera.Active();
 }
 
+
+void SceneGame::CameraRequest(float elapsed_time)
+{
+	switch (YRCamera.GetRequest())
+	{
+	case Camera::Request::NONE:
+		break;
+	case Camera::Request::HOLD:
+	{
+		int req_player = YRCamera.GetRequestPlayer();
+		if (req_player == 1)
+		{
+			YRCamera.camera_state = Camera::CAMERA_STATE::PLAYER1P;
+			p2_elapsed_time = 0.0f;
+		}
+		if (req_player == 2)
+		{
+			YRCamera.camera_state = Camera::CAMERA_STATE::PLAYER2P;
+			p1_elapsed_time = 0.0f;
+		}
+	}
+		break;
+	case Camera::Request::RELEASE:
+	{
+		int req_player = YRCamera.GetRequestPlayer();
+		if (req_player == 1)
+		{
+			YRCamera.camera_state = Camera::CAMERA_STATE::MAIN;
+			p2_elapsed_time = 1.0f;
+		}
+		if (req_player == 2)
+		{
+			YRCamera.camera_state = Camera::CAMERA_STATE::MAIN;
+			p1_elapsed_time = 1.0f;
+		}
+	}
+		break;
+	case Camera::Request::WEAKEN:
+	{
+		YR_Vector3 eye = YRCamera.GetEye();
+		YR_Vector3 focus = YRCamera.GetFocus();
+		float fov = YRCamera.GetFov() / 0.01745f;
+		float elap = 50.0f;
+			if (eye.x > Scene_eye.x)
+			{
+				eye.x -= elapsed_time*elap;
+			}
+			if (eye.x < Scene_eye.x)
+			{
+				eye.x += elapsed_time * elap;
+			}
+			if (eye.y > Scene_eye.y)
+			{
+				eye.y -= elapsed_time * elap;
+			}
+			if (eye.y < Scene_eye.y)
+			{
+				eye.y += elapsed_time * elap;
+			}
+			if (eye.z > Scene_eye.z)
+			{
+				eye.z -= elapsed_time*elap;
+			}
+			if (eye.z < Scene_eye.z)
+			{
+				eye.z += elapsed_time * elap;
+			}
+			if (focus.x > Scene_focus.x)
+			{
+				focus.x -= elapsed_time * elap;
+			}
+			if (focus.x < Scene_focus.x)
+			{
+				focus.x += elapsed_time * elap;
+			}
+			if (focus.y > Scene_focus.y)
+			{
+				focus.y -= elapsed_time * elap;
+			}
+			if (focus.y < Scene_focus.y)
+			{
+				focus.y += elapsed_time * elap;
+			}
+			if (focus.z > Scene_focus.z)
+			{
+				focus.z -= elapsed_time * elap;
+			}
+			if (focus.z < Scene_focus.z)
+			{
+				focus.z += elapsed_time * elap;
+			}
+			if (fov < Scene_fov)
+			{
+				fov += elapsed_time*elap;
+			}
+			if (fov > Scene_fov)
+			{
+				fov -= elapsed_time*elap;
+			}
+			YRCamera.SetEye(eye.GetDXFLOAT3());
+			YRCamera.SetFocus(focus.GetDXFLOAT3());
+			YRCamera.SetFov(fov * 0.01745f);
+	}
+		break;
+	default:
+		break;
+	}
+}
 
 
 
