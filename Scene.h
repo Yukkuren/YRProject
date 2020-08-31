@@ -114,6 +114,7 @@ public:
 	std::array<int, 3>		p1combo;
 	std::array<int, 3>		p2combo;
 
+
 	//画像
 	std::unique_ptr<Skinned_mesh> box = nullptr;
 	std::shared_ptr<Texture> box_texture = nullptr;
@@ -331,6 +332,8 @@ public:
 	std::shared_ptr<Texture> test_normal_texture = nullptr;
 	std::shared_ptr<Texture> scorpion_specular_texture = nullptr;
 
+	//Gbuffer用スプライト
+	std::unique_ptr<Sprite>	sprite = nullptr;
 
 	//サンプラー
 	std::shared_ptr<Sampler> sampler_wrap = nullptr;

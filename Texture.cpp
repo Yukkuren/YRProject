@@ -10,10 +10,10 @@ Texture::Texture() : ShaderResouceView(nullptr)
 
 }
 
-Texture::Texture(const wchar_t* fbx_filename)
+Texture::Texture(const wchar_t* filename)
 {
 	ShaderResouceView = nullptr;
-	Load(fbx_filename);
+	Load(filename);
 }
 
 Texture::~Texture()
@@ -21,7 +21,7 @@ Texture::~Texture()
 
 }
 
-bool Texture::Load(const wchar_t* fbx_filename)
+bool Texture::Load(const wchar_t* filename)
 {
 	
 	
@@ -30,7 +30,7 @@ bool Texture::Load(const wchar_t* fbx_filename)
 	ID3D11Resource* pResouse;
 
 	//ˆê“x“Ç‚Ýž‚ñ‚¾‰æ‘œ‚Í‹L˜^‚µ‚Ä‚¨‚­
-	auto it = texAll::tex.find(fbx_filename);
+	auto it = texAll::tex.find(filename);
 	if (it != texAll::tex.end())
 	{
 		ShaderResouceView = it->second.Get();
@@ -39,9 +39,9 @@ bool Texture::Load(const wchar_t* fbx_filename)
 	}
 	else
 	{
-		hr = DirectX::CreateWICTextureFromFile(FRAMEWORK.device.Get(), fbx_filename, &pResouse, ShaderResouceView.GetAddressOf());
-		std::wstring extension = PathFindExtensionW(fbx_filename);
-		texAll::tex.insert(std::make_pair(fbx_filename, ShaderResouceView));
+		hr = DirectX::CreateWICTextureFromFile(FRAMEWORK.device.Get(), filename, &pResouse, ShaderResouceView.GetAddressOf());
+		std::wstring extension = PathFindExtensionW(filename);
+		texAll::tex.insert(std::make_pair(filename, ShaderResouceView));
 		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 	}
 

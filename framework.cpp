@@ -256,15 +256,15 @@ bool framework::CreateDepthStencilState()
 void framework::Clear(DWORD color)
 {
 	// デフォルトレンダーターゲットビュー設定
-	context->OMSetRenderTargets(1, .GetAddressOf(), DepthStencilView.Get());
+	context->OMSetRenderTargets(1, view.GetAddressOf(), depth.Get());
 
 	float clearColor[4];
 	for (int i = 3; i >= 0; i--) {
 		clearColor[i] = ((color >> 8 * (3 - i)) & 0x000000FF) / 255.0f;
 	}
-	DeviceContext->ClearRenderTargetView(RenderTargetView.Get(), clearColor);
-	DeviceContext->ClearDepthStencilView(DepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	DeviceContext->OMSetDepthStencilState(DepthStencilState[DS_TRUE].Get(), 1);
+	context->ClearRenderTargetView(view.Get(), clearColor);
+	context->ClearDepthStencilView(depth.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	context->OMSetDepthStencilState(depthstencil_state[DS_TRUE].Get(), 1);
 
 }
 

@@ -40,6 +40,12 @@
     <FxCompile Include="AnimShader_gs.hlsl">
       <Filter>Shader\AnimShader</Filter>
     </FxCompile>
+    <FxCompile Include="toGbuffer_vs.hlsl">
+      <Filter>Shader\toGbuffer</Filter>
+    </FxCompile>
+    <FxCompile Include="toGbuffer_ps.hlsl">
+      <Filter>Shader\toGbuffer</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="YR_VECTOR3.cpp">
@@ -283,6 +289,9 @@
     <None Include="AnimShader.hlsli">
       <Filter>Shader\AnimShader</Filter>
     </None>
+    <None Include="toGbuffer.hlsli">
+      <Filter>Shader\toGbuffer</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shader">
@@ -338,6 +347,9 @@
     </Filter>
     <Filter Include="Shader\AnimShader">
       <UniqueIdentifier>{ecbdc193-3721-4da3-9c1e-b2fdf60a4770}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\toGbuffer">
+      <UniqueIdentifier>{d444db1c-be48-4b8f-a679-6fb9d80c529c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -36,7 +36,7 @@ void SceneTest::Init()
 	if (toGbuffer == nullptr)
 	{
 		toGbuffer = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::TOGBUF);
-		toGbuffer->Create("./Data/Shader/toGbufferShader_vs.cso", "./Data/Shader/toGbufferShader_ps.cso");
+		toGbuffer->Create("./Data/Shader/toGbuffer_vs.cso", "./Data/Shader/toGbuffer_ps.cso");
 	}
 
 	//カメラ初期設定
@@ -110,7 +110,7 @@ void SceneTest::Init()
 	}
 	if (test_normal_texture == nullptr)
 	{
-		test_normal_texture = std::make_shared<Texture>(L"Data/ASSETS/Test_normal2.jpg");
+		test_normal_texture = std::make_shared<Texture>(L"Data/ASSETS/Test_normal2.png");
 	}
 	if (scorpion_specular_texture == nullptr)
 	{
@@ -140,6 +140,12 @@ void SceneTest::Init()
 	if (sampler_clamp == nullptr)
 	{
 		sampler_clamp = std::make_shared<Sampler>(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_CLAMP);
+	}
+
+	//Gbuffer用スプライト
+	if (sprite == nullptr)
+	{
+		sprite = std::make_unique<Sprite>();
 	}
 }
 
@@ -244,18 +250,52 @@ void SceneTest::Draw(float elapsed_time)
 	//Gbufferへの描画
 	RenderTexture(V, P, light_direction, lightColor, ambient_color, elapsed_time);
 
+	//画面のクリア
+	FRAMEWORK.Clear(0x8080FFFF);
+
+	//ビュー更新
+	YRCamera.Active();
+
+	//ビューポート設定
+	FRAMEWORK.SetViewPort(FRAMEWORK.SCREEN_WIDTH, FRAMEWORK.SCREEN_HEIGHT);
+
+	//ブレンドステート設定
+	FRAMEWORK.BlendSet(Blend::ALPHA);
+
+	//ラスタライザー設定
+	FRAMEWORK.context->RSGetState(FRAMEWORK.rasterizer_state[FRAMEWORK.RS_CULL_BACK].GetAddressOf());
+
+	//デプスステンシルステート設定
+	FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[FRAMEWORK.DS_TRUE].Get(), 1);
+
+	//Gbuffer描画
+	//sprite->render(
+	//	spriteShader.get(),
+	//	color_texture.get(),
+	//	0.0f, 0.0f, 640.0f, 360.0f,
+	//	0.0f, 0.0f, 1920.0f, 1080.0f,0.0f,1.0f);
+	sprite->render(
+		spriteShader.get(),
+		normal_texture.get(),
+		640.0f, 0.0f, 640.0f, 360.0f,
+		0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
+	//sprite->render(
+	//	spriteShader.get(),
+	//	position_texture.get(),
+	//	0.0f, 360.0f, 640.0f, 360.0f,
+	//	0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
 
 
 	//仮背景
 	//test->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 0.5f);
 
-	//motion.DrawContinue(
-	//	skinShader.get(),
-	//	DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-	//	DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
-	//	box_angle,
-	//	V, P, light_direction, lightColor, ambient_color, elapsed_time
-	//);
+	/*motion.DrawContinue(
+		skinShader.get(),
+		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+		DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
+		box_angle,
+		V, P, light_direction, lightColor, ambient_color, elapsed_time
+	);*/
 
 	//geo->render(
 	//	geoShader.get(),
@@ -313,7 +353,7 @@ void SceneTest::RenderTexture(
 
 	//画面クリア
 	float clearColor[4] = { 0.2f,0.2f,0.2f,1.0f };
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		FRAMEWORK.context->ClearRenderTargetView(rtv[i], clearColor);
 	}
@@ -359,7 +399,7 @@ void SceneTest::RenderTexture(
 	bisuko->render(
 		toGbuffer.get(),
 		XMFLOAT3(2.0f, 2.0f, 0.0f),
-		XMFLOAT3(1.0f, 2.0f, 0.5f),
+		XMFLOAT3(1.0f, 2.0f, 0.0f),
 		aY,
 		view,
 		projection
