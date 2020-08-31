@@ -104,8 +104,8 @@ enum class AttackState : int
 	A_KYO,			//空強攻撃m
 	A_UKYO,			//空上強攻撃(打ち上げ攻撃)m
 	STEAL,			//掴みm
-	SLOW,			//投げ
-	TRACK_DASH,		//ホーミングダッシュ
+	SLOW,			//投げm
+	TRACK_DASH,		//ホーミングダッシュm
 	JAKU_RHURF,		//前弱必殺
 	THU_RHURF,		//前中必殺
 	KYO_RHURF,		//前強必殺

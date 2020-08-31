@@ -1532,10 +1532,14 @@ void Skinned_mesh::Render(
 				mesh.skeletal_animation.animation_tick = anime_count;
 				int index = static_cast<int>(mesh.skeletal_animation.animation_tick / mesh.skeletal_animation.sampling_time);
 				int indexR = index + 1;
+				if (indexR > static_cast<int>(mesh.skeletal_animation.size()) - 1)
+				{
+					indexR = 1;
+				}
 				if (index >= static_cast<int>(mesh.skeletal_animation.size()) - 1)
 				{
 					index = static_cast<int>(mesh.skeletal_animation.size()) - 1;
-					indexR = index;
+					indexR = 1;
 					//mesh.skeletal_animation.animation_tick = 0;
 					//mesh.skeletal_animation.anim_fin = true;
 				}

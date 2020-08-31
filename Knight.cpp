@@ -48,7 +48,7 @@ void Knight::Init(YR_Vector3 InitPos)
 	fream = 0.0f;
 
 	production_time = 0.0f;
-	anim_ccodinate = 1.0f;
+	anim_ccodinate = 2.0f;
 #pragma region HITBOXINIT
 	//Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(0.0f, 1.0f);
 	hit[scastI(KNIGHTHIT::BODY)].Init(pos,YR_Vector3(0.0f,0.0f), YR_Vector3(2.0f, 2.9f));
@@ -1108,6 +1108,8 @@ void Knight::Draw(
 	DrawFastMove(FastPos);
 	drawset = false;
 
+	//Trackの時は回す
+	//angle.x += elapsed_time * 10.0f;
 	//エフェクト描画
 	
 	bool invincible = false;
