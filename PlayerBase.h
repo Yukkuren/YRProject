@@ -71,14 +71,14 @@ public:
 enum class ActState : int
 {
 	NONE = 0,		//何もない(default)
-	WAIT,			//待機(default)
+	WAIT,			//待機(default)m
 	GUARD,			//ガード(default)
-	SQUAT,			//しゃがみ(default)
+	SQUAT,			//しゃがみ(default)m
 	MOVER,			//右移動(default)
 	MOVEL,			//左移動(default)
 	DASH,			//ダッシュ(default)
 	BACK,			//バックステップ(default)
-	JUMP,			//ジャンプ(default)
+	JUMP,			//ジャンプ(default)m
 	AIR_F,			//空中前ダッシュ(default)
 	AIR_B,			//空中後ダッシュ(default)
 	STATENONE,		//ステートを奪われた状態。相手に掴まれてるor超必？
@@ -93,16 +93,17 @@ enum class ActState : int
 enum class AttackState : int
 {
 	NONE = 0,		//攻撃無し
-	JAKU,			//弱
-	THU,			//中
-	KYO,			//強(対空)
-	D_JAKU,			//下弱
-	D_THU,			//下中
-	U_KYO,			//下強
-	A_JAKU,			//空弱攻撃
-	A_THU,			//空中攻撃
-	A_KYO,			//空強攻撃
-	STEAL,			//掴み
+	JAKU,			//弱m
+	THU,			//中m
+	KYO,			//強(対空&下強)m
+	D_JAKU,			//下弱m
+	D_THU,			//下中m
+	U_KYO,			//上強m
+	A_JAKU,			//空弱攻撃m
+	A_THU,			//空中攻撃m
+	A_KYO,			//空強攻撃m
+	A_UKYO,			//空上強攻撃(打ち上げ攻撃)m
+	STEAL,			//掴みm
 	SLOW,			//投げ
 	TRACK_DASH,		//ホーミングダッシュ
 	JAKU_RHURF,		//前弱必殺

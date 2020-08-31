@@ -165,6 +165,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="CoList.cpp" />
     <ClCompile Include="1PGamePad.cpp" />
+    <ClCompile Include="Font.cpp" />
     <ClCompile Include="Geometric_primitive.cpp" />
     <ClCompile Include="HitBox.cpp" />
     <ClCompile Include="HitCheak.cpp" />
@@ -204,6 +205,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="CoList.h" />
     <ClInclude Include="collision.h" />
+    <ClInclude Include="Font.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="HitBox.h" />
     <ClInclude Include="HitCheak.h" />
@@ -237,6 +239,7 @@
   <ItemGroup>
     <None Include="AnimShader.hlsli" />
     <None Include="board.hlsli" />
+    <None Include="Font.hlsli" />
     <None Include="geometric_primitive.hlsli" />
     <None Include="Mesh_Static.hlsli" />
     <None Include="ParallelToon.hlsli" />
@@ -316,6 +319,30 @@
       <AssemblerOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).cod</AssemblerOutputFile>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Font_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)Data\Shader\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)Data\Shader\%(Filename).cso</ObjectFileOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyCode</AssemblerOutput>
+      <AssemblerOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).cod</AssemblerOutputFile>
+      <AssemblerOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename).cod</AssemblerOutputFile>
+    </FxCompile>
+    <FxCompile Include="Font_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)Data\Shader\%(Filename).cso</ObjectFileOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyCode</AssemblerOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)Data\Shader\%(Filename).cso</ObjectFileOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyCode</AssemblerOutput>
+      <AssemblerOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename).cod</AssemblerOutputFile>
+      <AssemblerOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).cod</AssemblerOutputFile>
     </FxCompile>
     <FxCompile Include="geometric_primitive_ps.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>

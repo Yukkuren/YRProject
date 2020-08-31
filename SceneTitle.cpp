@@ -1,11 +1,11 @@
-#include "Scene.h"
+ï»¿#include "Scene.h"
 #include "framework.h"
 
 //-------------------------------------------------------------
-// **ƒV[ƒ“ŠT—v**
-//Eƒ{ƒ^ƒ“‚ğ‰Ÿ‚·‚ÆƒRƒ“ƒgƒ[ƒ‰[İ’è‚ªo‚é‚æ‚¤‚É‚µ‚Ä
-//@1P,2P‚Ì“ü—Í‚ğŒˆ’è‚·‚é
-//Eİ’è‚µ‚½‚çˆÃ“]BSceneSelect‚Ö‘JˆÚ‚·‚é
+// **ã‚·ãƒ¼ãƒ³æ¦‚è¦**
+//ãƒ»ãƒœã‚¿ãƒ³ã‚’æŠ¼ã™ã¨ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼è¨­å®šãŒå‡ºã‚‹ã‚ˆã†ã«ã—ã¦
+//ã€€1P,2Pã®å…¥åŠ›ã‚’æ±ºå®šã™ã‚‹
+//ãƒ»è¨­å®šã—ãŸã‚‰æš—è»¢ã€‚SceneSelectã¸é·ç§»ã™ã‚‹
 //-------------------------------------------------------------
 
 void SceneTitle::Init()
@@ -23,7 +23,7 @@ void SceneTitle::Init()
 	fedo_start = false;
 	fedo_alpha = 1.0f;
 
-	//«—ˆ“I‚ÉÁ‚·
+	//å°†æ¥çš„ã«æ¶ˆã™
 	select_p1 = scastI(INPUT_PLAYER::NONE);
 	select_p2 = scastI(INPUT_PLAYER::NONE);
 	//-------------------------------------
@@ -81,7 +81,7 @@ void SceneTitle::UnInit()
 
 void SceneTitle::Update(float elapsed_time)
 {
-	//ƒ[ƒhI—¹
+	//ãƒ­ãƒ¼ãƒ‰çµ‚äº†
 	if (load_fin)
 	{
 
@@ -108,7 +108,7 @@ void SceneTitle::Update(float elapsed_time)
 
 #endif // USE_IMGUI
 
-		//timer‚Íƒtƒ[‚µ‚È‚¢‚æ‚¤‚ÉƒŠƒZƒbƒg‚·‚é
+		//timerã¯ãƒ•ãƒ­ãƒ¼ã—ãªã„ã‚ˆã†ã«ãƒªã‚»ãƒƒãƒˆã™ã‚‹
 		if (timer < 1000.0f)
 		{
 			timer += elapsed_time;
@@ -121,7 +121,7 @@ void SceneTitle::Update(float elapsed_time)
 		g1.Update(elapsed_time);
 		g2.Update(elapsed_time);
 
-		//ƒvƒŒƒCƒ„[1‚ÌƒJ[ƒ\ƒ‹ˆÚ“®ˆ—
+		//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼1ã®ã‚«ãƒ¼ã‚½ãƒ«ç§»å‹•å‡¦ç†
 		if (p1Enter)
 		{
 			if (g1.x_input[scastI(PAD::B)] == 1)
@@ -158,7 +158,7 @@ void SceneTitle::Update(float elapsed_time)
 			}
 		}
 
-		//ƒvƒŒƒCƒ„[2‚ÌƒJ[ƒ\ƒ‹ˆÚ“®ˆ—
+		//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼2ã®ã‚«ãƒ¼ã‚½ãƒ«ç§»å‹•å‡¦ç†
 		if (p2Enter)
 		{
 			if (g2.x_input[scastI(PAD::B)] == 1)
@@ -198,23 +198,23 @@ void SceneTitle::Update(float elapsed_time)
 		p1 = PosSet(select_p1);
 		p2 = PosSet(select_p2);
 
-		//—¼•û‚ÌƒvƒŒƒCƒ„[‚ªŒˆ’è‚µ‚½‚ç
+		//ä¸¡æ–¹ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæ±ºå®šã—ãŸã‚‰
 		if (p1Enter && p2Enter)
 		{
 			end = true;
 		}
 		if (end)
 		{
-			//ƒtƒF[ƒhƒAƒEƒg‚ğƒXƒ^[ƒg‚³‚¹‚é
+			//ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆã‚’ã‚¹ã‚¿ãƒ¼ãƒˆã•ã›ã‚‹
 			fedo_start = true;
 		}
 		if (fedo_start)
 		{
 			if (FedoOut(elapsed_time))
 			{
-				//ƒtƒF[ƒhƒAƒEƒg‚ªI‚í‚Á‚½‚çƒZƒŒƒNƒg‰æ–Ê‚Ö
-				//‚±‚±‚Å“ü—Í‚ğ•Û‘¶‚·‚é
-				//ŠÖ”‚É‚·‚é
+				//ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆãŒçµ‚ã‚ã£ãŸã‚‰ã‚»ãƒ¬ã‚¯ãƒˆç”»é¢ã¸
+				//ã“ã“ã§å…¥åŠ›ã‚’ä¿å­˜ã™ã‚‹
+				//é–¢æ•°ã«ã™ã‚‹
 				FRAMEWORK.scenegame.PadSet(select_p1);
 				FRAMEWORK.SetScene(SCENE_SELECT);
 				UnInit();
@@ -223,7 +223,7 @@ void SceneTitle::Update(float elapsed_time)
 		}
 		else
 		{
-			//ƒtƒF[ƒhƒAƒEƒg‚ªƒXƒ^[ƒg‚µ‚Ä‚È‚¢ê‡‚Í‰æ–Ê‚ğ‰f‚·
+			//ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆãŒã‚¹ã‚¿ãƒ¼ãƒˆã—ã¦ãªã„å ´åˆã¯ç”»é¢ã‚’æ˜ ã™
 			if (fedo_alpha > 0.0f)
 			{
 				fedo_alpha -= FEDO_MIX(elapsed_time);
@@ -271,7 +271,7 @@ void SceneTitle::Draw(float elapsed_time)
 	{
 		test->DrawGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f);
 		
-		//ƒAƒCƒRƒ“•`‰æ
+		//ã‚¢ã‚¤ã‚³ãƒ³æç”»
 		knight_icon->DrawRotaGraph(
 			spriteShader.get(),
 			p1_pos.x,
@@ -287,7 +287,7 @@ void SceneTitle::Draw(float elapsed_time)
 			Rato
 		);
 
-		//‘I‘ğ‰æ‘œ•`‰æ
+		//é¸æŠç”»åƒæç”»
 		//1P
 		if (p1Enter)
 		{
@@ -345,6 +345,19 @@ void SceneTitle::Draw(float elapsed_time)
 				);
 			}
 		}
+
+		// ãƒ•ã‚©ãƒ³ãƒˆã®æç”»
+		{
+			FRAMEWORK.font->Begin(FRAMEWORK.context.Get());
+			FRAMEWORK.font->Draw(500, 0, L"abcdefg");
+			FRAMEWORK.font->Draw(500, 50, L"ã‚ã„ã†ãˆãŠ");
+			FRAMEWORK.font->Draw(500, 100, L"ã‚«ã‚­ã‚¯ã‚±ã‚³");
+			FRAMEWORK.font->Draw(500, 150, L"æ¼¢å­—æœ€é«˜ï¼");
+			FRAMEWORK.font->Draw(500, 200, L"æ”¹è¡ŒãŒ\nã§ãã‚‹ã‚ˆ");
+			FRAMEWORK.font->Draw(500, 300, L"è‰²ã€…æ”¹é€ ã—ã¦ã­ã€‚");
+			FRAMEWORK.font->End(FRAMEWORK.context.Get());
+		}
+
 	}
 
 	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fedo_alpha));

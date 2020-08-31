@@ -58,6 +58,12 @@
     <FxCompile Include="ParallelToon_ps.hlsl">
       <Filter>Shader\Parallel</Filter>
     </FxCompile>
+    <FxCompile Include="Font_vs.hlsl">
+      <Filter>Shader\Font</Filter>
+    </FxCompile>
+    <FxCompile Include="Font_ps.hlsl">
+      <Filter>Shader\Font</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="YR_VECTOR3.cpp">
@@ -171,6 +177,9 @@
     <ClCompile Include="AnimBoard.cpp">
       <Filter>Cpp</Filter>
     </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>Cpp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="YR_VECTOR3.h">
@@ -281,6 +290,9 @@
     <ClInclude Include="AnimBoard.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Font.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="board.hlsli">
@@ -306,6 +318,9 @@
     </None>
     <None Include="ParallelToon.hlsli">
       <Filter>Shader\Parallel</Filter>
+    </None>
+    <None Include="Font.hlsli">
+      <Filter>Shader\Font</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -368,6 +383,9 @@
     </Filter>
     <Filter Include="Shader\Parallel">
       <UniqueIdentifier>{fac956a6-d3f0-46ce-9b2a-b86e0b05874a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Font">
+      <UniqueIdentifier>{aafb3922-42c1-45b0-84a9-d5b83a172012}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

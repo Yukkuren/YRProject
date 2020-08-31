@@ -21,7 +21,7 @@
 #include"./imgui/imgui_impl_dx11.h"
 #include"YRMouse.h"
 #include"Key.h"
-
+#include"Font.h"
 
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam);
@@ -54,6 +54,8 @@ public:
 	static CONST LONG SCREEN_HEIGHT = 1080;
 
 	std::unique_ptr<Sprite>							fedo_img = nullptr;
+
+	std::unique_ptr<Font> font = nullptr;
 
 	Microsoft::WRL::ComPtr<ID3D11Device>			device;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>		context;

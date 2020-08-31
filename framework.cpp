@@ -365,6 +365,11 @@ bool framework::initialize()
 		fedo_img = std::make_unique<Sprite>(L"./Data/Shader/white_bourd.png", 1920.0f, 1080.0f);
 	}
 
+	if (font == nullptr)
+	{
+		font = std::make_unique<Font>(device.Get(), "Data/Font/03_SmartFont/03_SmartFont.fnt", 1024);
+	}
+
 	pColSprite.SetSprite();
 
 	return true;
