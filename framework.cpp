@@ -367,6 +367,7 @@ bool framework::initialize()
 
 	if (font == nullptr)
 	{
+		//font = std::make_unique<Font>(device.Get(), "Data/Font/MS Gothic/MS Gothic.fnt", 1024);
 		font = std::make_unique<Font>(device.Get(), "Data/Font/03_SmartFont/03_SmartFont.fnt", 1024);
 	}
 

@@ -180,6 +180,12 @@
     <ClCompile Include="Font.cpp">
       <Filter>Cpp</Filter>
     </ClCompile>
+    <ClCompile Include="YRModel.cpp">
+      <Filter>Cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="YRModelAnim.cpp">
+      <Filter>Cpp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="YR_VECTOR3.h">
@@ -291,6 +297,12 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Font.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="YRModel.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="YRModelAnim.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>

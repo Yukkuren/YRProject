@@ -354,7 +354,7 @@ void SceneTitle::Draw(float elapsed_time)
 			FRAMEWORK.font->Draw(500, 100, L"カキクケコ");
 			FRAMEWORK.font->Draw(500, 150, L"漢字最高！");
 			FRAMEWORK.font->Draw(500, 200, L"改行が\nできるよ");
-			FRAMEWORK.font->Draw(500, 300, L"色々改造してね。");
+			FRAMEWORK.font->Draw(500, 300, L"色々　改造してね。");
 			FRAMEWORK.font->End(FRAMEWORK.context.Get());
 		}
 

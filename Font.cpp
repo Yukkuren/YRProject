@@ -392,7 +392,10 @@ Font::Font(ID3D11Device* device, const char* filename, int maxSpriteCount)
 			n++;
 		}
 	}
-
+	characterIndices.at(0x00) = CharacterInfo::EndCode;
+	characterIndices.at(0x0a) = CharacterInfo::ReturnCode;
+	characterIndices.at(0x09) = CharacterInfo::TabCode;
+	characterIndices.at(0x20) = CharacterInfo::SpaceCode;
 
 }
 

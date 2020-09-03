@@ -180,6 +180,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="framework.cpp" />
     <ClCompile Include="MainCamera.cpp" />
+    <ClCompile Include="YRModel.cpp" />
     <ClCompile Include="Sampler.cpp" />
     <ClCompile Include="SceneClear.cpp" />
     <ClCompile Include="SceneGame.cpp" />
@@ -193,6 +194,7 @@
     <ClCompile Include="static_mesh.cpp" />
     <ClCompile Include="World.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="YRModelAnim.cpp" />
     <ClCompile Include="YRMotion.cpp" />
     <ClCompile Include="YRShader.cpp" />
     <ClCompile Include="YR_VECTOR3.cpp" />
@@ -210,6 +212,7 @@
     <ClInclude Include="HitBox.h" />
     <ClInclude Include="HitCheak.h" />
     <ClInclude Include="Knight.h" />
+    <ClInclude Include="YRModel.h" />
     <ClInclude Include="Sampler.h" />
     <ClInclude Include="World.h" />
     <ClInclude Include="Texture.h" />
@@ -232,6 +235,7 @@
     <ClInclude Include="sprite.h" />
     <ClInclude Include="static_mesh.h" />
     <ClInclude Include="Tracking.h" />
+    <ClInclude Include="YRModelAnim.h" />
     <ClInclude Include="YRMouse.h" />
     <ClInclude Include="YRShader.h" />
     <ClInclude Include="YR_VECTOR3.h" />

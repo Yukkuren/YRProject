@@ -61,89 +61,6 @@ namespace ALL_SkinSet
 
 		return hr;
 	}
-
-	//HRESULT create_vertex(const char *cso_file, ID3D11VertexShader **vert, D3D11_INPUT_ELEMENT_DESC *layout, UINT numElements, ID3D11InputLayout **input)
-	//{
-
-	//	struct Vertex_and_Layout
-	//	{
-	//		Vertex_and_Layout(ID3D11VertexShader *vert, ID3D11InputLayout *input) : pVertex(vert), pInput(input) {}
-	//		Microsoft::WRL::ComPtr<ID3D11VertexShader> pVertex;
-	//		Microsoft::WRL::ComPtr<ID3D11InputLayout> pInput;
-	//	};
-	//	static std::map<std::string, Vertex_and_Layout> cache;
-
-	//	auto it = cache.find(cso_file);
-	//	if (it != cache.end())
-	//	{
-	//		*vert = it->second.pVertex.Get();
-	//		(*vert)->AddRef();
-	//		*input = it->second.pInput.Get();
-	//		(*input)->AddRef();
-	//		return S_OK;
-	//	}
-
-
-	//	HRESULT hr = S_OK;
-	//	FILE *fp = 0;
-
-	//	fopen_s(&fp, cso_file, "rb");
-	//	_ASSERT_EXPR_A(fp, "CSO File not found");
-	//	fseek(fp, 0, SEEK_END);
-	//	long cso_sz = ftell(fp);
-	//	fseek(fp, 0, SEEK_SET);
-	//	std::unique_ptr< unsigned char[] >cso_data = std::make_unique< unsigned char[]>(cso_sz);
-	//	fread(cso_data.get(), cso_sz, 1, fp);
-	//	fclose(fp);
-
-	//	hr = FRAMEWORK.device->CreateVertexShader(cso_data.get(), cso_sz, NULL, vert);
-	//	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-
-	//	hr = FRAMEWORK.device->CreateInputLayout(layout, numElements, cso_data.get(),
-	//		cso_sz, input);
-	//	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-
-	//	//delete[]cso_data;
-
-
-	//	cache.insert(std::make_pair(cso_file, Vertex_and_Layout(*vert, *input)));
-	//	return hr;
-	//}
-
-	//HRESULT CreatePixel(const char *ps_file, ID3D11PixelShader **pixel)
-	//{
-	//	static std::map < std::string, Microsoft::WRL::ComPtr<ID3D11PixelShader>> pixelcache;
-
-	//	auto it = pixelcache.find(ps_file);
-	//	if (it != pixelcache.end())
-	//	{
-	//		*pixel = it->second.Get();
-	//		(*pixel)->AddRef();
-	//		return S_OK;
-	//	}
-
-	//	HRESULT hr = S_OK;
-
-	//	FILE *fpp = 0;
-
-	//	fopen_s(&fpp, ps_file, "rb");
-	//	_ASSERT_EXPR_A(fpp, "CSO File not found");
-	//	fseek(fpp, 0, SEEK_END);
-	//	long cso_szp = ftell(fpp);
-	//	fseek(fpp, 0, SEEK_SET);
-	//	std::unique_ptr<unsigned char[]> cso_datap = std::make_unique< unsigned char[]>(cso_szp);
-	//	fread(cso_datap.get(), cso_szp, 1, fpp);
-	//	fclose(fpp);
-
-	//	hr = FRAMEWORK.device->CreatePixelShader(cso_datap.get(), cso_szp, NULL, pixel);
-	//	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-
-	//	//delete[]cso_datap;
-
-	//	pixelcache.insert(std::make_pair(ps_file, *pixel));
-
-	//	return hr;
-	//}
 }
 
 //UNIT.22
@@ -377,6 +294,8 @@ bool Skinned_mesh::Load(const char *fbx_filename, u_int sampling_rate)
 	// Import the contents of the file into the scene. 
 	import_status = importer->Import(scene);
 	_ASSERT_EXPR_A(import_status, importer->GetStatus().GetErrorString());
+	importer->Destroy();
+	
 
 
 	// Convert mesh, NURBS and patch into triangle mesh 
@@ -418,6 +337,7 @@ bool Skinned_mesh::Load(const char *fbx_filename, u_int sampling_rate)
 	for (size_t i = 0; i < fetched_skeleton.size(); i++)
 	{
 		FbxMesh* fbx_mesh = fetched_skeleton.at(i)->GetMesh();
+		fetched_skeleton.at(i);
 
 		//FbxSkeleton* ske = fetched_skeleton.at(i)->GetSkeleton();
 		FbxNodeAttribute *at=
@@ -1532,14 +1452,14 @@ void Skinned_mesh::Render(
 				mesh.skeletal_animation.animation_tick = anime_count;
 				int index = static_cast<int>(mesh.skeletal_animation.animation_tick / mesh.skeletal_animation.sampling_time);
 				int indexR = index + 1;
-				if (indexR > static_cast<int>(mesh.skeletal_animation.size()) - 1)
+				/*if (indexR > static_cast<int>(mesh.skeletal_animation.size()) - 1)
 				{
-					indexR = 1;
-				}
+					indexR = 0;
+				}*/
 				if (index >= static_cast<int>(mesh.skeletal_animation.size()) - 1)
 				{
 					index = static_cast<int>(mesh.skeletal_animation.size()) - 1;
-					indexR = 1;
+					indexR = 0;
 					//mesh.skeletal_animation.animation_tick = 0;
 					//mesh.skeletal_animation.anim_fin = true;
 				}
@@ -1557,7 +1477,7 @@ void Skinned_mesh::Render(
 				{
 					//XMStoreFloat4x4(&cb.bone_transforms[i], XMLoadFloat4x4(&skeletal.at(i).transform));
 					float left = static_cast<float>(index)* mesh.skeletal_animation.sampling_time;
-					float right = static_cast<float>(index + 1)* mesh.skeletal_animation.sampling_time;
+					float right = static_cast<float>(indexR)* mesh.skeletal_animation.sampling_time;
 					float t = (mesh.skeletal_animation.animation_tick - left) / (right - left);
 
 					XMVECTOR	S, R, T;
