@@ -103,6 +103,7 @@ bool Texture::Create(u_int width, u_int height, DXGI_FORMAT format)
 	hr = FRAMEWORK.device->CreateRenderTargetView(texture2d.Get(), &rtvd, RenderTargetView.GetAddressOf());
 	assert(SUCCEEDED(hr));
 
+
 	//シェーダーリソースビュー作成
 	CD3D11_SHADER_RESOURCE_VIEW_DESC srvd;
 	ZeroMemory(&srvd, sizeof(srvd));
@@ -155,7 +156,7 @@ bool Texture::CreateDepth(u_int width, u_int height, DXGI_FORMAT format)
 	srvd.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvd.Texture2D.MostDetailedMip = 0;
 	srvd.Texture2D.MipLevels = 1;
-	hr = FRAMEWORK.device->CreateShaderResourceView(Texture2D.Get(), &srvd, ShaderResouceView.GetAddressOf());
+	hr = FRAMEWORK.device->CreateShaderResourceView(Texture2D.Get(), &srvd, DepthShaderResouceView.GetAddressOf());
 
 	assert(SUCCEEDED(hr));
 

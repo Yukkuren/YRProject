@@ -46,6 +46,12 @@
     <FxCompile Include="toGbuffer_ps.hlsl">
       <Filter>Shader\toGbuffer</Filter>
     </FxCompile>
+    <FxCompile Include="SpriteEx_vs.hlsl">
+      <Filter>Shader\SpriteEx</Filter>
+    </FxCompile>
+    <FxCompile Include="SpriteEx_ps.hlsl">
+      <Filter>Shader\SpriteEx</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="YR_VECTOR3.cpp">
@@ -292,6 +298,9 @@
     <None Include="toGbuffer.hlsli">
       <Filter>Shader\toGbuffer</Filter>
     </None>
+    <None Include="SpriteEx.hlsli">
+      <Filter>Shader\SpriteEx</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shader">
@@ -350,6 +359,9 @@
     </Filter>
     <Filter Include="Shader\toGbuffer">
       <UniqueIdentifier>{d444db1c-be48-4b8f-a679-6fb9d80c529c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\SpriteEx">
+      <UniqueIdentifier>{795631a5-74a7-4d27-9aed-3024b818cdd5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

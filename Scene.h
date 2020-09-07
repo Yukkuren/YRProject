@@ -331,6 +331,8 @@ public:
 	std::shared_ptr<Texture> test_texture = nullptr;
 	std::shared_ptr<Texture> test_normal_texture = nullptr;
 	std::shared_ptr<Texture> scorpion_specular_texture = nullptr;
+	std::shared_ptr<Texture> specular_texture = nullptr;
+
 
 	//Gbuffer用スプライト
 	std::unique_ptr<Sprite>	sprite = nullptr;
@@ -347,6 +349,7 @@ public:
 	std::unique_ptr<YRShader> boardShader = nullptr;
 	std::unique_ptr<YRShader> animShader = nullptr;
 	std::unique_ptr<YRShader> toGbuffer = nullptr;
+	std::unique_ptr<YRShader> spriteEx = nullptr;
 
 	//テクスチャ
 	std::unique_ptr<Texture> color_texture = nullptr;

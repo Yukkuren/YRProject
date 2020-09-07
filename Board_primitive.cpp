@@ -534,7 +534,7 @@ void  board_primitive::render(
 	const bool						viewflag
 )
 {
-	shader->Acivate();
+	
 	//ワールド変換行列の初期化
 	DirectX::XMMATRIX s, r, t;
 	//拡大行列作成
@@ -573,8 +573,8 @@ void  board_primitive::render(
 	cboff.dummy00 = 0.0f;
 	cboff.dummy01 = 0.0f;
 	FRAMEWORK.context->UpdateSubresource(cbuffer_off.Get(), 0, 0, &cboff, 0, 0);
-	FRAMEWORK.context->VSSetConstantBuffers(2, 1, cbuffer_off.GetAddressOf());
-	FRAMEWORK.context->PSSetConstantBuffers(2, 1, cbuffer_off.GetAddressOf());
+	FRAMEWORK.context->VSSetConstantBuffers(3, 1, cbuffer_off.GetAddressOf());
+	FRAMEWORK.context->PSSetConstantBuffers(3, 1, cbuffer_off.GetAddressOf());
 
 	//頂点バッファのバインド
 	FRAMEWORK.context->IASetVertexBuffers(0, 1, vertex_buffer.GetAddressOf(), &stride, &offset);
@@ -583,7 +583,7 @@ void  board_primitive::render(
 	FRAMEWORK.context->IASetIndexBuffer(index_buffer.Get(), DXGI_FORMAT_R32_UINT, offset);
 
 	FRAMEWORK.context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
+	shader->Acivate();
 
 	//ステート・シェーダー設定
 	if (viewflag)

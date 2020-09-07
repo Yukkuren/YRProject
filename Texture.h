@@ -17,6 +17,7 @@ class Texture
 {
 protected:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>	ShaderResouceView = nullptr;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>	DepthShaderResouceView = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>		DepthStencilView = nullptr;
 
 	//テクスチャ情報
@@ -41,5 +42,7 @@ public:
 
 	ID3D11RenderTargetView* GetRenderTargetView() { return RenderTargetView.Get(); };
 	ID3D11DepthStencilView* GetDepthStencilView() { return DepthStencilView.Get(); };
+	ID3D11ShaderResourceView* GetShaderResource() { return ShaderResouceView.Get(); };
+	ID3D11ShaderResourceView* GetDepthShaderResource() { return DepthShaderResouceView.Get(); };
 
 };

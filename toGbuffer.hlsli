@@ -22,8 +22,9 @@ struct PSInput
 struct PSOutput
 {
 	float4 Color : SV_TARGET0;
-	float4 Normal : SV_TARGET1;
-	float4 Position : SV_TARGET2;
+	float4 wNormal : SV_TARGET1;
+	float4 wPosition : SV_TARGET2;
+	//float4 specular : SV_TARGET3;
 };
 
 
@@ -41,3 +42,11 @@ cbuffer CBPerFrame2 : register(b2)
 	float4	AmbientColor;	//環境光
 	float4  EyePos;			//カメラ座標
 };
+
+cbuffer CBPerFrame3 : register(b3)
+{
+	float Offset_X;		//テクスチャX方向ずれ
+	float Offset_Y;		//テクスチャY方向ずれ
+	float dummy00;
+	float dummy01;
+}

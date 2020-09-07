@@ -38,6 +38,11 @@ void SceneTest::Init()
 		toGbuffer = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::TOGBUF);
 		toGbuffer->Create("./Data/Shader/toGbuffer_vs.cso", "./Data/Shader/toGbuffer_ps.cso");
 	}
+	if (spriteEx == nullptr)
+	{
+		spriteEx = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE_EX);
+		spriteEx->Create("./Data/Shader/SpriteEx_vs.cso", "./Data/Shader/SpriteEx_ps.cso");
+	}
 
 	//カメラ初期設定
 	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -25));			//視点
@@ -85,16 +90,19 @@ void SceneTest::Init()
 	{
 		color_texture = std::make_unique<Texture>();
 		color_texture->Create(1280, 720, DXGI_FORMAT_R8G8B8A8_UNORM);
+		color_texture->CreateDepth(1280, 720, DXGI_FORMAT_R24G8_TYPELESS);
 	}
 	if (normal_texture == nullptr)
 	{
 		normal_texture = std::make_unique<Texture>();
 		normal_texture->Create(1280, 720, DXGI_FORMAT_R16G16B16A16_FLOAT);
+		normal_texture->CreateDepth(1280, 720, DXGI_FORMAT_R24G8_TYPELESS);
 	}
 	if (position_texture == nullptr)
 	{
 		position_texture = std::make_unique<Texture>();
 		position_texture->Create(1280, 720, DXGI_FORMAT_R16G16B16A16_FLOAT);
+		position_texture->CreateDepth(1280, 720, DXGI_FORMAT_R24G8_TYPELESS);
 	}
 	if (bisuko_normal_texture == nullptr)
 	{
@@ -115,6 +123,11 @@ void SceneTest::Init()
 	if (scorpion_specular_texture == nullptr)
 	{
 		scorpion_specular_texture = std::make_shared<Texture>(L"Data/ASSETS/Sdaiou.png");
+	}
+	if (specular_texture == nullptr)
+	{
+		specular_texture = std::make_shared<Texture>();
+		specular_texture->Create(1280, 720, DXGI_FORMAT_R8G8B8A8_UNORM);
 	}
 
 
@@ -247,14 +260,29 @@ void SceneTest::Draw(float elapsed_time)
 	FRAMEWORK.context->VSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
 	FRAMEWORK.context->PSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
 
+	//ビュー更新
+	YRCamera.Active();
+
 	//Gbufferへの描画
 	RenderTexture(V, P, light_direction, lightColor, ambient_color, elapsed_time);
 
+
+#if USE_IMGUI
+	//ImGui
+	{
+		if (ImGui::TreeNode("texture"))
+		{
+			ImGui::Image((void *)(color_texture->GetShaderResource()), ImVec2(360, 360));
+			ImGui::Image((void *)(normal_texture->GetShaderResource()), ImVec2(360, 360));
+			ImGui::Image((void *)(position_texture->GetShaderResource()), ImVec2(360, 360));
+
+			ImGui::TreePop();
+		}
+	}
+#endif
+
 	//画面のクリア
 	FRAMEWORK.Clear(0x8080FFFF);
-
-	//ビュー更新
-	YRCamera.Active();
 
 	//ビューポート設定
 	FRAMEWORK.SetViewPort(FRAMEWORK.SCREEN_WIDTH, FRAMEWORK.SCREEN_HEIGHT);
@@ -269,21 +297,21 @@ void SceneTest::Draw(float elapsed_time)
 	FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[FRAMEWORK.DS_TRUE].Get(), 1);
 
 	//Gbuffer描画
-	//sprite->render(
-	//	spriteShader.get(),
-	//	color_texture.get(),
-	//	0.0f, 0.0f, 640.0f, 360.0f,
-	//	0.0f, 0.0f, 1920.0f, 1080.0f,0.0f,1.0f);
 	sprite->render(
-		spriteShader.get(),
+		spriteEx.get(),
+		color_texture.get(),
+		0.0f, 0.0f, 640.0f, 360.0f,
+		0.0f, 0.0f, 1920.0f, 1080.0f,0.0f,1.0f);
+	sprite->render(
+		spriteEx.get(),
 		normal_texture.get(),
 		640.0f, 0.0f, 640.0f, 360.0f,
+		0.0f, 0.0f, 1280.0f, 720.0f, 0.0f, 1.0f);
+	sprite->render(
+		spriteEx.get(),
+		position_texture.get(),
+		0.0f, 360.0f, 640.0f, 360.0f,
 		0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
-	//sprite->render(
-	//	spriteShader.get(),
-	//	position_texture.get(),
-	//	0.0f, 360.0f, 640.0f, 360.0f,
-	//	0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
 
 
 	//仮背景
@@ -348,7 +376,7 @@ void SceneTest::RenderTexture(
 		position_texture->GetRenderTargetView()
 	};
 
-	ID3D11DepthStencilView* dsv = FRAMEWORK.depth.Get();
+	ID3D11DepthStencilView* dsv = color_texture->GetDepthStencilView();
 	FRAMEWORK.context->OMSetRenderTargets(3, rtv, dsv);
 
 	//画面クリア
@@ -363,7 +391,8 @@ void SceneTest::RenderTexture(
 	YRCamera.Active();
 
 	//ビューポート設定
-	FRAMEWORK.SetViewPort(static_cast<float>(FRAMEWORK.SCREEN_WIDTH), static_cast<float>(FRAMEWORK.SCREEN_HEIGHT));
+	//FRAMEWORK.SetViewPort(static_cast<float>(FRAMEWORK.SCREEN_WIDTH), static_cast<float>(FRAMEWORK.SCREEN_HEIGHT));
+	FRAMEWORK.SetViewPort(1280.0f, 720.0f);
 
 	//定数バッファの設定
 	CB_Multi_Render_Target cb;
@@ -414,6 +443,9 @@ void SceneTest::RenderTexture(
 		projection
 	);
 
+	rtv[0] = FRAMEWORK.view.Get();
+	rtv[1] = NULL;
+	rtv[2] = NULL;
 	//レンダーターゲットの回復
-	FRAMEWORK.context.Get()->OMSetRenderTargets(1, FRAMEWORK.view.GetAddressOf(), FRAMEWORK.depth.Get());
+	FRAMEWORK.context.Get()->OMSetRenderTargets(3, rtv, FRAMEWORK.depth.Get());
 }

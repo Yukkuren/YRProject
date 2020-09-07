@@ -64,6 +64,12 @@ private:
 		toGbuf_element_desc.push_back(normal);
 		toGbuf_element_desc.push_back(tex);
 		toGbuf_element_desc.push_back(color);
+
+		//spriteEx
+		spriteEx_element_desc.push_back(pos);
+		spriteEx_element_desc.push_back(normal);
+		spriteEx_element_desc.push_back(tex);
+		spriteEx_element_desc.push_back(color);
 	};
 public:
 	enum ShaderType
@@ -75,6 +81,7 @@ public:
 		BOARD,
 		ANIM,
 		TOGBUF,
+		SPRITE_EX,
 	};
 
 	std::vector<D3D11_INPUT_ELEMENT_DESC> skin_element_desc;
@@ -84,6 +91,8 @@ public:
 	std::vector<D3D11_INPUT_ELEMENT_DESC> board_element_desc;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> anim_element_desc;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> toGbuf_element_desc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> spriteEx_element_desc;
+
 
 
 	static INPUT_ELEMENT_DESC &getInstance()

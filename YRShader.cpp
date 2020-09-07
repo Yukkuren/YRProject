@@ -266,6 +266,16 @@ bool YRShader::Create_element(const char* VS_cso_file)
 			numElements,
 			VertextLayout.GetAddressOf());
 	}
+	case INPUT_ELEMENT_DESC::SPRITE_EX:
+	{
+		UINT numElements = YRINPUT_ELEMENT_DESC.spriteEx_element_desc.size();
+		create_vertex(
+			VS_cso_file,
+			VSShader.GetAddressOf(),
+			YRINPUT_ELEMENT_DESC.spriteEx_element_desc.data(),
+			numElements,
+			VertextLayout.GetAddressOf());
+	}
 	break;
 	default:
 		break;
