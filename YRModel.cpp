@@ -2,7 +2,21 @@
 #include "YRModel.h"
 #include "misc.h"
 #include "framework.h"
-#include <fbxsdk.h> 
+#include <codecvt>
+#include <array>
+
+using convert_t = std::codecvt_utf8<wchar_t>;
+std::wstring_convert<convert_t, wchar_t> strconverterModel;
+
+std::string to_stringModel(std::wstring wstr)
+{
+	return strconverterModel.to_bytes(wstr);
+}
+
+std::wstring to_wstringModel(std::string str)
+{
+	return strconverterModel.from_bytes(str);
+}
 
 Model::Model(const char* filename)
 {
@@ -25,11 +39,122 @@ Model::Model(const char* filename)
 		if (!src.texture_filename.empty())
 		{
 			size_t length;
-			wchar_t filename[256];
-			::mbstowcs_s(&length, filename, 256, src.texture_filename.c_str(), _TRUNCATE);
+			std::array<wchar_t,256> file;
+			::mbstowcs_s(&length, file.data(), 256, src.texture_filename.c_str(), _TRUNCATE);
+
+			std::array<char,256> char_file;
+			
+			for (int i = 0; i < file.size(); i++)
+			{
+				char_file[i] = file[i];
+			}
+
+			std::string fbx_name = filename;
+			std::string tex_file_name = std::string(char_file.data());
+			std::string tex_name;
+			//äKëwîªíË
+			//if (Fbx_Tex_LevelCheck(&fbx_name, &tex_file_name))
+			//{
+			//	//ìØÇ∂äKëwÇæÇ¡ÇΩèÍçáÇÃèàóùÇì¸ÇÍÇÈ
+			//	int hoge = 0;
+			//}
+			//else
+			//{
+			//ëäëŒÉpÉXÇ™ê‚ëŒÉpÉXÇæÇ¡ÇΩèÍçáÇÃèàóù(ëÂëÃMaya)
+			if (tex_file_name[0] == 'C')
+			{
+				int size = 0;
+				int slash = 0;
+				for (int i = tex_file_name.size() - 1; i > 0; i--)
+				{
+
+					if (tex_file_name.at(i) == '/' || tex_file_name.at(i) == '\\')
+					{
+						slash = i;
+						break;
+					}
+					size++;
+				}
+				tex_file_name = tex_file_name.substr(slash + 1, size);
+			}
+			else if (tex_file_name[0] == 'D')
+			{
+				int size = 0;
+				int slash = 0;
+				for (int i = tex_file_name.size() - 1; i > 0; i--)
+				{
+
+					if (tex_file_name.at(i) == '/' || tex_file_name.at(i) == '\\')
+					{
+						slash = i;
+						break;
+					}
+					size++;
+				}
+				tex_file_name = tex_file_name.substr(slash + 1, size);
+			}
+			else if (tex_file_name[0] == 'G')
+			{
+				int size = 0;
+				int slash = 0;
+				for (int i = tex_file_name.size() - 1; i > 0; i--)
+				{
+
+					if (tex_file_name.at(i) == '/' || tex_file_name.at(i) == '\\')
+					{
+						slash = i;
+						break;
+					}
+					size++;
+				}
+				tex_file_name = tex_file_name.substr(slash + 1, size);
+			}
+			else if (tex_file_name[0] == 'E')
+			{
+				int size = 0;
+				int slash = 0;
+				for (int i = tex_file_name.size() - 1; i > 0; i--)
+				{
+
+					if (tex_file_name.at(i) == '/' || tex_file_name.at(i) == '\\')
+					{
+						slash = i;
+						break;
+					}
+					size++;
+				}
+				tex_file_name = tex_file_name.substr(slash + 1, size);
+			}
+			else if (tex_file_name[0] == '.')
+			{
+				//tex_file_name = tex_file_name.substr(3, tex_file_name.size() - 3);
+				int size = 0;
+				int slash = 0;
+				for (int i = 0; i < static_cast<int>(tex_file_name.size()) - 1; i++)
+				{
+					if (tex_file_name.at(i) != '/' && tex_file_name.at(i) != '\\' && tex_file_name.at(i) != '.')
+					{
+						slash = i;
+						break;
+					}
+					size++;
+				}
+				tex_file_name = tex_file_name.substr(slash, tex_file_name.size() + 1 - size);
+			}
+			//ï∂éöóÒçÏê¨
+			tex_name = fbx_name.substr(0, fbx_name.find_last_of('/'));
+			tex_name += '/';
+			tex_name += tex_file_name;
+			//}
+
+			//stringÇwstringÇ…ÅBwstringÇwchar_t*Ç…ÅB
+			std::wstring tex_wname = to_wstringModel(tex_name);
+			const wchar_t* w_tex = tex_wname.data();
+
+
 
 			Microsoft::WRL::ComPtr<ID3D11Resource> resource;
-			HRESULT hr = DirectX::CreateWICTextureFromFile(FRAMEWORK.device.Get(), filename, resource.GetAddressOf(), dst.shader_resource_view.GetAddressOf());
+			HRESULT hr = DirectX::CreateWICTextureFromFile(FRAMEWORK.device.Get(), w_tex, resource.GetAddressOf(), dst.shader_resource_view.GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 		}
 	}
@@ -545,9 +670,11 @@ void Model::BuildMaterial(const char* dirname, FbxSurfaceMaterial* fbx_surface_m
 		{
 			FbxFileTexture* fbx_texture = fbx_diffuse_property.GetSrcObject<FbxFileTexture>();
 
-			char filename[256];
+			/*char filename[256];
 			::_makepath_s(filename, 256, nullptr, dirname, fbx_texture->GetRelativeFileName(), nullptr);
-			material.texture_filename = filename;
+			material.texture_filename = filename;*/
+			const char* filename = fbx_texture->GetRelativeFileName();
+			material.texture_filename = std::string(filename);
 		}
 	}
 

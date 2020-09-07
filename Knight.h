@@ -6,6 +6,7 @@
 #include "AttackBox.h"
 #include "HitBox.h"
 #include <vector>
+#include "YRModelAnim.h"
 
 
 enum class KNIGHTHIT :int
@@ -43,6 +44,10 @@ private:
 	std::unique_ptr<Skinned_mesh>	jaku_r_f = nullptr;
 	std::unique_ptr<Skinned_mesh>	jaku_r_t = nullptr;
 	std::unique_ptr<Skinned_mesh>	special_r_f = nullptr;
+
+	std::shared_ptr<Model>			main = nullptr;
+	std::unique_ptr<ModelAnim>		anim = nullptr;
+
 public:
 	bool fast;
 	YR_Vector3 FastPos;

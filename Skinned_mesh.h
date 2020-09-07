@@ -7,7 +7,6 @@
 #include<memory>
 #include "Texture.h"
 
-
 //#include "framework.h"
 
 

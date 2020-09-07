@@ -87,6 +87,16 @@ void Knight::LoadData(std::shared_ptr<Texture> texture)
 			//base = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_jaku_R_l.fbx");
 		}
 	}
+	if (main == nullptr)
+	{
+		main = std::make_shared<Model>("./Data/FBX/Knight/knight_save.fbx");
+	}
+
+	if (anim == nullptr)
+	{
+		anim = std::make_unique<ModelAnim>(main);
+		anim->PlayAnimation(0, true);
+	}
 	if (special_r_f == nullptr)
 	{
 		if (texture != nullptr)
@@ -1179,37 +1189,42 @@ void Knight::Draw(
 
 	if (static_cast<int>(YRCamera.camera_state) == now_player)
 	{
-		motion.DrawContinue(
+		/*motion.DrawContinue(
 			shader,
 			pos.GetDXFLOAT3(),
 			scale.GetDXFLOAT3(),
 			angle.GetDXFLOAT3(),
 			view, projection, light_direction, light_color, ambient_color, elapsed_time*anim_ccodinate,
 			inversion, material_color
-		);
+		);*/
 	}
 	if (YRCamera.camera_state == Camera::CAMERA_STATE::MAIN)
 	{
-		motion.DrawContinue(
+		/*motion.DrawContinue(
 			parallel_shader,
 			pos.GetDXFLOAT3(),
 			scale.GetDXFLOAT3(),
 			angle.GetDXFLOAT3(),
 			view, projection, light_direction, light_color, ambient_color, elapsed_time*anim_ccodinate,
 			inversion, material_color
-		);
+		);*/
 	}
 	if (YRCamera.GetRequest() == Camera::Request::WEAKEN)
 	{
-		motion.DrawContinue(
+		/*motion.DrawContinue(
 			shader,
 			pos.GetDXFLOAT3(),
 			scale.GetDXFLOAT3(),
 			angle.GetDXFLOAT3(),
 			view, projection, light_direction, light_color, ambient_color, elapsed_time * anim_ccodinate,
 			inversion, material_color
-		);
+		);*/
 	}
+
+	anim->UpdateAnimation(elapsed_time * anim_ccodinate);
+	anim->CalculateLocalTransform();
+	anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
+	anim->Draw(parallel_shader, view, projection, light_direction, light_color, ambient_color, material_color);
 
 
 	//if (atk[scastI(KNIGHTATK::HADOU)].hit_ok)

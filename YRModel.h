@@ -6,6 +6,7 @@
 #include<array>
 #include<memory>
 #include "Texture.h"
+#include <fbxsdk.h> 
 
 struct ModelData
 {
@@ -143,9 +144,9 @@ public:
 	const std::vector<Mesh>& GetMeshes() const { return m_meshes; }
 	const std::vector<ModelData::Node>& GetNodes() const { return m_data->nodes; }
 	const std::vector<ModelData::Animation>& GetAnimations() const { return m_data->animations; }
-
+	std::vector<Mesh>		m_meshes;
 private:
 	std::unique_ptr<ModelData>	m_data;
 	std::vector<Material>	m_materials;
-	std::vector<Mesh>		m_meshes;
+	
 };

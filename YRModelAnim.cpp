@@ -278,43 +278,82 @@ void ModelAnim::Draw(
 	DirectX::XMFLOAT4X4 world;
 	DirectX::XMStoreFloat4x4(&world, world_matrix);
 
-	const std::vector<Node>& nodes = GetNodes();
+	DirectX::XMFLOAT4X4 world_view_projection;
+	DirectX::XMStoreFloat4x4(&world_view_projection, world_matrix * view * projection);
 
-	for (const Model::Mesh& mesh : m_model_resource->GetMeshes())
+	const std::vector<Node>& nodes = GetNodes();
+	std::vector<Model::Mesh> test = m_model_resource->GetMeshes();
+
+	for (const Model::Mesh mesh : m_model_resource->m_meshes)
 	{
 		// メッシュ用定数バッファ更新
 		cbuffer cb;
 		::memset(&cb, 0, sizeof(cb));
 		if (mesh.node_indices.size() > 0)
 		{
-			for (size_t i = 0; i < mesh.node_indices.size(); ++i)
+			for (size_t i = 0; i < mesh.node_indices.size(); i++)
 			{
 				DirectX::XMMATRIX inverse_transform = DirectX::XMLoadFloat4x4(mesh.inverse_transforms.at(i));
 				DirectX::XMMATRIX world_transform = DirectX::XMLoadFloat4x4(&nodes.at(mesh.node_indices.at(i)).world_transform);
 				DirectX::XMMATRIX bone_transform = inverse_transform * world_transform;
 				DirectX::XMStoreFloat4x4(&cb.bone_transforms[i], bone_transform);
+				DirectX::XMStoreFloat4x4(&cb.world_view_projection,
+					world_transform *
+					DirectX::XMLoadFloat4x4(&coodinate_conversion) *
+					DirectX::XMLoadFloat4x4(&world_view_projection));
+				DirectX::XMStoreFloat4x4(&cb.world,
+					 world_transform*
+					DirectX::XMLoadFloat4x4(&coodinate_conversion) *
+					DirectX::XMLoadFloat4x4(&world));
+
 			}
 		}
 		else
 		{
 			cb.bone_transforms[0] = nodes.at(mesh.node_index).world_transform;
 		}
-		FRAMEWORK.context.Get()->UpdateSubresource(constant_buffer.Get(), 0, 0, &cb, 0, 0);
 
 		UINT stride = sizeof(ModelData::Vertex);
 		UINT offset = 0;
+		FRAMEWORK.context->RSSetState(m_rasterizer_state.Get());
+		FRAMEWORK.context->OMSetDepthStencilState(m_depth_stencil_state.Get(), 1);
+		shader->Acivate();
 		FRAMEWORK.context.Get()->IASetVertexBuffers(0, 1, mesh.vertex_buffer.GetAddressOf(), &stride, &offset);
 		FRAMEWORK.context.Get()->IASetIndexBuffer(mesh.index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 		FRAMEWORK.context.Get()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		
 
-		for (const ModelResource::Subset& subset : mesh.subsets)
+		for (const Model::Subset& subset : mesh.subsets)
 		{
-			CbSubset cb_subset;
-			cb_subset.material_color = subset.material->color;
-			context->UpdateSubresource(m_cb_subset.Get(), 0, 0, &cb_subset, 0, 0);
-			context->PSSetShaderResources(0, 1, subset.material->shader_resource_view.Get() ? subset.material->shader_resource_view.GetAddressOf() : m_dummy_srv.GetAddressOf());
-			context->PSSetSamplers(0, 1, m_sampler_state.GetAddressOf());
-			context->DrawIndexed(subset.index_count, subset.start_index, 0);
+			//cb.material_color = subset.material->color;
+			cb.light_direction = light_direction;
+			cb.light_color = light_color;
+			cb.ambient_color = ambient_color;
+			cb.material_color.x = material_color.x * subset.material->color.x;
+			cb.material_color.y = material_color.y * subset.material->color.y;
+			cb.material_color.z = material_color.z * subset.material->color.z;
+			cb.material_color.w = material_color.w * subset.material->color.w;
+			cb.eyePos.x = YRCamera.GetEye().x;
+			cb.eyePos.y = YRCamera.GetEye().y;
+			cb.eyePos.z = YRCamera.GetEye().z;
+			cb.eyePos.w = 1.0f;
+			DirectX::XMFLOAT4X4 v;
+			DirectX::XMStoreFloat4x4(&v, view);
+			cb.view = v;
+			DirectX::XMFLOAT4X4 p;
+			DirectX::XMStoreFloat4x4(&p, projection);
+			cb.projection = p;
+			cb.at = YRCamera.GetAt();
+			cb.dummy = 0.0f;
+
+			FRAMEWORK.context->UpdateSubresource(constant_buffer.Get(), 0, 0, &cb, 0, 0);
+			FRAMEWORK.context->VSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
+			FRAMEWORK.context->PSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
+			FRAMEWORK.context->GSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
+			
+			FRAMEWORK.context->PSSetShaderResources(0, 1, subset.material->shader_resource_view.Get() ? subset.material->shader_resource_view.GetAddressOf() : m_dummy_srv.GetAddressOf());
+			FRAMEWORK.context->PSSetSamplers(0, 1, m_sampler_state.GetAddressOf());
+			FRAMEWORK.context->DrawIndexed(subset.index_count, subset.start_index, 0);
 		}
 	}
 }
