@@ -46,6 +46,8 @@ private:
 	std::unique_ptr<Skinned_mesh>	special_r_f = nullptr;
 
 	std::shared_ptr<Model>			main = nullptr;
+	std::shared_ptr<Model>			wait = nullptr;
+	std::shared_ptr<Model>			jaku_R_f = nullptr;
 	std::unique_ptr<ModelAnim>		anim = nullptr;
 
 public:

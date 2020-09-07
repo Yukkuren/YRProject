@@ -81,7 +81,6 @@ void Knight::LoadData(std::shared_ptr<Texture> texture)
 		}
 		else
 		{
-			
 			//base = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight.fbx");
 			base = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_save.fbx");
 			//base = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_jaku_R_l.fbx");
@@ -89,45 +88,64 @@ void Knight::LoadData(std::shared_ptr<Texture> texture)
 	}
 	if (main == nullptr)
 	{
-		main = std::make_shared<Model>("./Data/FBX/Knight/knight_save.fbx");
+		
+		if (texture != nullptr)
+		{
+			main = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx", texture);
+		}
+		else
+		{
+			main = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
+		}
+	}
+
+	if (wait == nullptr)
+	{
+		wait = std::make_shared<Model>("./Data/FBX/Knight/knight_wait.fbx");
+	}
+
+	if (jaku_R_f == nullptr)
+	{
+		jaku_R_f = std::make_shared<Model>("./Data/FBX/Knight/knight_save.fbx");
 	}
 
 	if (anim == nullptr)
 	{
 		anim = std::make_unique<ModelAnim>(main);
 		anim->PlayAnimation(0, true);
+		anim->NodeChange(jaku_R_f);
 	}
 	if (special_r_f == nullptr)
 	{
 		if (texture != nullptr)
 		{
-			special_r_f = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knightR_special_f.fbx", texture);
+			//special_r_f = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knightR_special_f.fbx", texture);
 		}
 		else
 		{
-			special_r_f = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knightR_special_f.fbx");
+			//special_r_f = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knightR_special_f.fbx");
 		}
 	}
 	if (jaku_r_f == nullptr)
 	{
 		if (texture != nullptr)
 		{
-			jaku_r_f = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_jaku_R_f.fbx", texture);
+			//jaku_r_f = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_jaku_R_f.fbx", texture);
 		}
 		else
 		{
-			jaku_r_f = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_jaku_R_f.fbx");
+			//jaku_r_f = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_jaku_R_f.fbx");
 		}
 	}
 	if (jaku_r_t == nullptr)
 	{
 		if (texture != nullptr)
 		{
-			jaku_r_t = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_jaku_R_t.fbx", texture);
+			//jaku_r_t = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_jaku_R_t.fbx", texture);
 		}
 		else
 		{
-			jaku_r_t = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_jaku_R_t.fbx");
+			//jaku_r_t = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_jaku_R_t.fbx");
 		}
 	}
 	
@@ -372,9 +390,10 @@ void Knight::Update(float decision, float elapsed_time)
 
 								attack_state = AttackState::JAKU;
 								fream = attack_list[scastI(attack_state)].attack_single[0].fream;
-								motion.MeshSet(jaku_r_f);
-								motion.AnimReset();
+								//motion.MeshSet(jaku_r_f);
+								//motion.AnimReset();
 								anim_ccodinate = attack_list[scastI(attack_state)].attack_single[0].fream * 100.0f;
+								anim->NodeChange(wait);
 								//attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft);
 							}
 						}
@@ -1221,6 +1240,14 @@ void Knight::Draw(
 		);*/
 	}
 
+	/*motion.DrawContinue(
+			parallel_shader,
+			pos.GetDXFLOAT3(),
+			scale.GetDXFLOAT3(),
+			angle.GetDXFLOAT3(),
+			view, projection, light_direction, light_color, ambient_color, elapsed_time*anim_ccodinate,
+			inversion, material_color
+		);*/
 	anim->UpdateAnimation(elapsed_time * anim_ccodinate);
 	anim->CalculateLocalTransform();
 	anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());

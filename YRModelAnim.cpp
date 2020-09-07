@@ -4,6 +4,7 @@
 ModelAnim::ModelAnim(std::shared_ptr<Model>& resource)
 {
 	m_model_resource = resource;
+	model_resource_anim = nullptr;
 
 	// ノード
 	const std::vector<ModelData::Node>& res_nodes = resource->GetNodes();
@@ -140,72 +141,147 @@ void ModelAnim::UpdateAnimation(float elapsed_time)
 
 	if (m_model_resource->GetAnimations().empty())
 	{
-		return;
+		if (model_resource_anim == nullptr)
+		{
+			return;
+		}
 	}
 
-	const ModelData::Animation& animation = m_model_resource->GetAnimations().at(m_current_animation);
-
-	const std::vector<ModelData::Keyframe>& keyframes = animation.keyframes;
-	int key_count = static_cast<int>(keyframes.size());
-	for (int key_index = 0; key_index < key_count - 1; ++key_index)
+	if (model_resource_anim->GetAnimations().empty())
 	{
-		// 現在の時間がどのキーフレームの間にいるか判定する
-		const ModelData::Keyframe& keyframe0 = keyframes.at(key_index);
-		const ModelData::Keyframe& keyframe1 = keyframes.at(key_index + 1);
-		if (m_current_seconds >= keyframe0.seconds && m_current_seconds < keyframe1.seconds)
-		{
-			float rate = (m_current_seconds - keyframe0.seconds / keyframe1.seconds - keyframe0.seconds);
 
-			assert(m_nodes.size() == keyframe0.node_keys.size());
-			assert(m_nodes.size() == keyframe1.node_keys.size());
-			int node_count = static_cast<int>(m_nodes.size());
-			for (int node_index = 0; node_index < node_count; ++node_index)
+		const ModelData::Animation& animation = m_model_resource->GetAnimations().at(m_current_animation);
+
+		const std::vector<ModelData::Keyframe>& keyframes = animation.keyframes;
+		int key_count = static_cast<int>(keyframes.size());
+		for (int key_index = 0; key_index < key_count - 1; ++key_index)
+		{
+			// 現在の時間がどのキーフレームの間にいるか判定する
+			const ModelData::Keyframe& keyframe0 = keyframes.at(key_index);
+			const ModelData::Keyframe& keyframe1 = keyframes.at(key_index + 1);
+			if (m_current_seconds >= keyframe0.seconds && m_current_seconds < keyframe1.seconds)
 			{
-				// ２つのキーフレーム間の補完計算
-				const ModelData::NodeKeyData& key0 = keyframe0.node_keys.at(node_index);
-				const ModelData::NodeKeyData& key1 = keyframe1.node_keys.at(node_index);
+				float rate = (m_current_seconds - keyframe0.seconds / keyframe1.seconds - keyframe0.seconds);
 
-				Node& node = m_nodes[node_index];
+				assert(m_nodes.size() == keyframe0.node_keys.size());
+				assert(m_nodes.size() == keyframe1.node_keys.size());
+				int node_count = static_cast<int>(m_nodes.size());
+				for (int node_index = 0; node_index < node_count; ++node_index)
+				{
+					// ２つのキーフレーム間の補完計算
+					const ModelData::NodeKeyData& key0 = keyframe0.node_keys.at(node_index);
+					const ModelData::NodeKeyData& key1 = keyframe1.node_keys.at(node_index);
 
-				DirectX::XMVECTOR s0 = DirectX::XMLoadFloat3(&key0.scale);
-				DirectX::XMVECTOR s1 = DirectX::XMLoadFloat3(&key1.scale);
-				DirectX::XMVECTOR r0 = DirectX::XMLoadFloat4(&key0.rotate);
-				DirectX::XMVECTOR r1 = DirectX::XMLoadFloat4(&key1.rotate);
-				DirectX::XMVECTOR t0 = DirectX::XMLoadFloat3(&key0.translate);
-				DirectX::XMVECTOR t1 = DirectX::XMLoadFloat3(&key1.translate);
+					Node& node = m_nodes[node_index];
 
-				DirectX::XMVECTOR s = DirectX::XMVectorLerp(s0, s1, rate);
-				DirectX::XMVECTOR r = DirectX::XMQuaternionSlerp(r0, r1, rate);
-				DirectX::XMVECTOR t = DirectX::XMVectorLerp(t0, t1, rate);
+					DirectX::XMVECTOR s0 = DirectX::XMLoadFloat3(&key0.scale);
+					DirectX::XMVECTOR s1 = DirectX::XMLoadFloat3(&key1.scale);
+					DirectX::XMVECTOR r0 = DirectX::XMLoadFloat4(&key0.rotate);
+					DirectX::XMVECTOR r1 = DirectX::XMLoadFloat4(&key1.rotate);
+					DirectX::XMVECTOR t0 = DirectX::XMLoadFloat3(&key0.translate);
+					DirectX::XMVECTOR t1 = DirectX::XMLoadFloat3(&key1.translate);
 
-				DirectX::XMStoreFloat3(&node.scale, s);
-				DirectX::XMStoreFloat4(&node.rotate, r);
-				DirectX::XMStoreFloat3(&node.translate, t);
+					DirectX::XMVECTOR s = DirectX::XMVectorLerp(s0, s1, rate);
+					DirectX::XMVECTOR r = DirectX::XMQuaternionSlerp(r0, r1, rate);
+					DirectX::XMVECTOR t = DirectX::XMVectorLerp(t0, t1, rate);
+
+					DirectX::XMStoreFloat3(&node.scale, s);
+					DirectX::XMStoreFloat4(&node.rotate, r);
+					DirectX::XMStoreFloat3(&node.translate, t);
+				}
+				break;
 			}
-			break;
+		}
+
+		// 最終フレーム処理
+		if (m_end_animation)
+		{
+			m_end_animation = false;
+			m_current_animation = -1;
+			return;
+		}
+
+		// 時間経過
+		m_current_seconds += elapsed_time;
+		if (m_current_seconds >= animation.seconds_length)
+		{
+			if (m_loop_animation)
+			{
+				m_current_seconds -= animation.seconds_length;
+			}
+			else
+			{
+				m_current_seconds = animation.seconds_length;
+				m_end_animation = true;
+			}
 		}
 	}
-
-	// 最終フレーム処理
-	if (m_end_animation)
+	else
 	{
-		m_end_animation = false;
-		m_current_animation = -1;
-		return;
-	}
+		const ModelData::Animation& animation = model_resource_anim->GetAnimations().at(m_current_animation);
 
-	// 時間経過
-	m_current_seconds += elapsed_time;
-	if (m_current_seconds >= animation.seconds_length)
-	{
-		if (m_loop_animation)
+		const std::vector<ModelData::Keyframe>& keyframes = animation.keyframes;
+		int key_count = static_cast<int>(keyframes.size());
+		for (int key_index = 0; key_index < key_count - 1; ++key_index)
 		{
-			m_current_seconds -= animation.seconds_length;
+			// 現在の時間がどのキーフレームの間にいるか判定する
+			const ModelData::Keyframe& keyframe0 = keyframes.at(key_index);
+			const ModelData::Keyframe& keyframe1 = keyframes.at(key_index + 1);
+			if (m_current_seconds >= keyframe0.seconds && m_current_seconds < keyframe1.seconds)
+			{
+				float rate = (m_current_seconds - keyframe0.seconds / keyframe1.seconds - keyframe0.seconds);
+
+				assert(m_nodes.size() == keyframe0.node_keys.size());
+				assert(m_nodes.size() == keyframe1.node_keys.size());
+				int node_count = static_cast<int>(m_nodes.size());
+				for (int node_index = 0; node_index < node_count; ++node_index)
+				{
+					// ２つのキーフレーム間の補完計算
+					const ModelData::NodeKeyData& key0 = keyframe0.node_keys.at(node_index);
+					const ModelData::NodeKeyData& key1 = keyframe1.node_keys.at(node_index);
+
+					Node& node = m_nodes[node_index];
+
+					DirectX::XMVECTOR s0 = DirectX::XMLoadFloat3(&key0.scale);
+					DirectX::XMVECTOR s1 = DirectX::XMLoadFloat3(&key1.scale);
+					DirectX::XMVECTOR r0 = DirectX::XMLoadFloat4(&key0.rotate);
+					DirectX::XMVECTOR r1 = DirectX::XMLoadFloat4(&key1.rotate);
+					DirectX::XMVECTOR t0 = DirectX::XMLoadFloat3(&key0.translate);
+					DirectX::XMVECTOR t1 = DirectX::XMLoadFloat3(&key1.translate);
+
+					DirectX::XMVECTOR s = DirectX::XMVectorLerp(s0, s1, rate);
+					DirectX::XMVECTOR r = DirectX::XMQuaternionSlerp(r0, r1, rate);
+					DirectX::XMVECTOR t = DirectX::XMVectorLerp(t0, t1, rate);
+
+					DirectX::XMStoreFloat3(&node.scale, s);
+					DirectX::XMStoreFloat4(&node.rotate, r);
+					DirectX::XMStoreFloat3(&node.translate, t);
+				}
+				break;
+			}
 		}
-		else
+
+		// 最終フレーム処理
+		if (m_end_animation)
 		{
-			m_current_seconds = animation.seconds_length;
-			m_end_animation = true;
+			m_end_animation = false;
+			m_current_animation = -1;
+			return;
+		}
+
+		// 時間経過
+		m_current_seconds += elapsed_time;
+		if (m_current_seconds >= animation.seconds_length)
+		{
+			if (m_loop_animation)
+			{
+				m_current_seconds -= animation.seconds_length;
+			}
+			else
+			{
+				m_current_seconds = animation.seconds_length;
+				m_end_animation = true;
+			}
 		}
 	}
 }
@@ -259,7 +335,7 @@ void ModelAnim::CalculateWorldTransform(
 		else
 		{
 			DirectX::XMMATRIX local_transform = DirectX::XMLoadFloat4x4(&node.local_transform);
-			DirectX::XMStoreFloat4x4(&node.world_transform, local_transform * world_transform);
+			DirectX::XMStoreFloat4x4(&node.world_transform, local_transform);
 		}
 	}
 }
@@ -282,29 +358,24 @@ void ModelAnim::Draw(
 	DirectX::XMStoreFloat4x4(&world_view_projection, world_matrix * view * projection);
 
 	const std::vector<Node>& nodes = GetNodes();
-	std::vector<Model::Mesh> test = m_model_resource->GetMeshes();
+	//std::vector<Model::Mesh> test = m_model_resource->GetMeshes();
 
-	for (const Model::Mesh mesh : m_model_resource->m_meshes)
+	const Model* model_res = m_model_resource.get();
+
+	for (const Model::Mesh& mesh : model_res->GetMeshes())
 	{
 		// メッシュ用定数バッファ更新
 		cbuffer cb;
 		::memset(&cb, 0, sizeof(cb));
 		if (mesh.node_indices.size() > 0)
 		{
-			for (size_t i = 0; i < mesh.node_indices.size(); i++)
+			size_t max = mesh.node_indices.size();
+			for (size_t i = 0; i < max; i++)
 			{
 				DirectX::XMMATRIX inverse_transform = DirectX::XMLoadFloat4x4(mesh.inverse_transforms.at(i));
 				DirectX::XMMATRIX world_transform = DirectX::XMLoadFloat4x4(&nodes.at(mesh.node_indices.at(i)).world_transform);
 				DirectX::XMMATRIX bone_transform = inverse_transform * world_transform;
 				DirectX::XMStoreFloat4x4(&cb.bone_transforms[i], bone_transform);
-				DirectX::XMStoreFloat4x4(&cb.world_view_projection,
-					world_transform *
-					DirectX::XMLoadFloat4x4(&coodinate_conversion) *
-					DirectX::XMLoadFloat4x4(&world_view_projection));
-				DirectX::XMStoreFloat4x4(&cb.world,
-					 world_transform*
-					DirectX::XMLoadFloat4x4(&coodinate_conversion) *
-					DirectX::XMLoadFloat4x4(&world));
 
 			}
 		}
@@ -322,9 +393,24 @@ void ModelAnim::Draw(
 		FRAMEWORK.context.Get()->IASetIndexBuffer(mesh.index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 		FRAMEWORK.context.Get()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		
+		DirectX::XMFLOAT4X4 global_transform = 
+		{
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1 
+		};
 
 		for (const Model::Subset& subset : mesh.subsets)
 		{
+			DirectX::XMStoreFloat4x4(&cb.world_view_projection,
+				DirectX::XMLoadFloat4x4(&global_transform) *
+				DirectX::XMLoadFloat4x4(&coodinate_conversion) *
+				DirectX::XMLoadFloat4x4(&world_view_projection));
+			DirectX::XMStoreFloat4x4(&cb.world,
+				DirectX::XMLoadFloat4x4(&global_transform) *
+				DirectX::XMLoadFloat4x4(&coodinate_conversion) *
+				DirectX::XMLoadFloat4x4(&world));
 			//cb.material_color = subset.material->color;
 			cb.light_direction = light_direction;
 			cb.light_color = light_color;
@@ -351,9 +437,68 @@ void ModelAnim::Draw(
 			FRAMEWORK.context->PSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
 			FRAMEWORK.context->GSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
 			
-			FRAMEWORK.context->PSSetShaderResources(0, 1, subset.material->shader_resource_view.Get() ? subset.material->shader_resource_view.GetAddressOf() : m_dummy_srv.GetAddressOf());
+			if (m_model_resource->texture)
+			{
+				m_model_resource->texture->Set(0);
+			}
+			else
+			{
+				FRAMEWORK.context->PSSetShaderResources(0, 1, subset.material->shader_resource_view.Get() ? subset.material->shader_resource_view.GetAddressOf() : m_dummy_srv.GetAddressOf());
+			}
 			FRAMEWORK.context->PSSetSamplers(0, 1, m_sampler_state.GetAddressOf());
 			FRAMEWORK.context->DrawIndexed(subset.index_count, subset.start_index, 0);
 		}
 	}
+}
+
+
+void ModelAnim::NodeChange(std::shared_ptr<Model>& resource)
+{
+
+	// ノード
+	const std::vector<ModelData::Node>& res_nodes = resource->GetNodes();
+
+	//m_nodes.resize(res_nodes.size());
+	int res = 0;
+	model_resource_anim = resource;
+
+	
+	ModelData::NodeKeyData dummy = 
+	{
+		DirectX::XMFLOAT3(0.0f,0.0f,0.0f),
+		DirectX::XMFLOAT4(0.0f,0.0f,0.0f,0.0f),
+		DirectX::XMFLOAT3(0.0f,0.0f,0.0f) 
+	};
+
+	if (res_nodes.size() != m_nodes.size())
+	{
+		for (int i = 0; i < model_resource_anim->m_data->animations.size(); i++)
+		{
+			for (int o = 0; o < model_resource_anim->m_data->animations[i].keyframes.size(); o++)
+			{
+				model_resource_anim->m_data->animations[i].keyframes[o].node_keys.insert(model_resource_anim->m_data->animations[i].keyframes[o].node_keys.begin() + 1, dummy);
+			}
+		}
+	}
+
+	res = 0;
+
+	for (size_t node_index = 0; node_index < m_nodes.size(); ++node_index)
+	{
+		if (res == 1&&m_nodes.size()!=res_nodes.size())
+		{
+			continue;
+		}
+		auto&& src = res_nodes.at(res);
+		auto&& dst = m_nodes.at(node_index);
+
+		dst.name = src.name.c_str();
+		dst.parent = src.parent_index >= 0 ? &m_nodes.at(src.parent_index) : nullptr;
+		dst.scale = src.scale;
+		dst.rotate = src.rotate;
+		dst.translate = src.translate;
+		res++;
+	}
+	m_current_animation = 0;
+	m_current_seconds = 0.0f;
 }

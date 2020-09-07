@@ -42,8 +42,8 @@ void Knight::Jaku(float elapsed_time)
 		anim_ccodinate = attack_list[scastI(attack_state)].attack_single[attack_num].parameter[0].timer * 100.0f;
 		attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft);
 		fream = non_target;
-		motion.MeshSet(jaku_r_t);
-		motion.AnimReset();
+		//motion.MeshSet(jaku_r_t);
+		//motion.AnimReset();
 		
 	}
 

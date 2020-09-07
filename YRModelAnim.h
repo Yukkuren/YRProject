@@ -47,8 +47,11 @@ public:
 		const DirectX::XMFLOAT4		material_color = { 1.0f,1.0f,1.0f,1.0f }
 		);
 
+	void NodeChange(std::shared_ptr<Model>& resource);
+
 private:
 	std::shared_ptr<Model>			m_model_resource;
+	std::shared_ptr<Model>			model_resource_anim = nullptr;
 	std::vector<Node>				m_nodes;
 	int								m_current_animation = -1;
 	float							m_current_seconds = 0.0f;
@@ -56,7 +59,7 @@ private:
 	bool							m_end_animation = false;
 	DirectX::XMMATRIX				world_matrix;
 
-	static const int MaxBones = 32;
+	static const int MaxBones = 128;
 
 	/*struct CbScene
 	{

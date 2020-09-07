@@ -24,6 +24,8 @@ Model::Model(const char* filename)
 
 	m_data = std::make_unique<ModelData>();
 
+	texture = nullptr;
+
 	Load(filename);
 
 	// マテリアル
@@ -157,6 +159,100 @@ Model::Model(const char* filename)
 			HRESULT hr = DirectX::CreateWICTextureFromFile(FRAMEWORK.device.Get(), w_tex, resource.GetAddressOf(), dst.shader_resource_view.GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 		}
+	}
+
+	// メッシュ
+	m_meshes.resize(m_data->meshes.size());
+	for (size_t mesh_index = 0; mesh_index < m_meshes.size(); ++mesh_index)
+	{
+		auto&& src = m_data->meshes.at(mesh_index);
+		auto&& dst = m_meshes.at(mesh_index);
+
+		// 頂点バッファ
+		{
+			D3D11_BUFFER_DESC buffer_desc = {};
+			D3D11_SUBRESOURCE_DATA subresource_data = {};
+
+			buffer_desc.ByteWidth = static_cast<UINT>(sizeof(ModelData::Vertex) * src.vertices.size());
+			//buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+			buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;
+			buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+			buffer_desc.CPUAccessFlags = 0;
+			buffer_desc.MiscFlags = 0;
+			buffer_desc.StructureByteStride = 0;
+			subresource_data.pSysMem = src.vertices.data();
+			subresource_data.SysMemPitch = 0;
+			subresource_data.SysMemSlicePitch = 0;
+
+			HRESULT hr = FRAMEWORK.device.Get()->CreateBuffer(&buffer_desc, &subresource_data, dst.vertex_buffer.GetAddressOf());
+			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+		}
+
+		// インデックスバッファ
+		{
+			D3D11_BUFFER_DESC buffer_desc = {};
+			D3D11_SUBRESOURCE_DATA subresource_data = {};
+
+			buffer_desc.ByteWidth = static_cast<UINT>(sizeof(u_int) * src.indices.size());
+			//buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+			buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;
+			buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+			buffer_desc.CPUAccessFlags = 0;
+			buffer_desc.MiscFlags = 0;
+			buffer_desc.StructureByteStride = 0;
+			subresource_data.pSysMem = src.indices.data();
+			subresource_data.SysMemPitch = 0; //Not use for index buffers.
+			subresource_data.SysMemSlicePitch = 0; //Not use for index buffers.
+			HRESULT hr = FRAMEWORK.device.Get()->CreateBuffer(&buffer_desc, &subresource_data, dst.index_buffer.GetAddressOf());
+			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+		}
+
+		dst.node_index = src.node_index;
+
+		// サブセット
+		dst.subsets.resize(src.subsets.size());
+		for (size_t subset_index = 0; subset_index < src.subsets.size(); ++subset_index)
+		{
+			auto&& src_subset = src.subsets.at(subset_index);
+			auto&& dst_subset = dst.subsets.at(subset_index);
+
+			dst_subset.start_index = src_subset.start_index;
+			dst_subset.index_count = src_subset.index_count;
+			dst_subset.material = &m_materials.at(src_subset.material_index);
+		}
+
+		// ボーン変換行列用
+		dst.node_indices.resize(src.node_indices.size());
+		::memcpy(dst.node_indices.data(), src.node_indices.data(), sizeof(int) * dst.node_indices.size());
+
+		dst.inverse_transforms.resize(src.inverse_transforms.size());
+		for (size_t index = 0; index < dst.inverse_transforms.size(); ++index)
+		{
+			dst.inverse_transforms.at(index) = &src.inverse_transforms.at(index);
+		}
+	}
+}
+
+
+Model::Model(const char* filename, std::shared_ptr<Texture> tex)
+{
+	//m_data = std::move(data);
+
+	m_data = std::make_unique<ModelData>();
+
+	Load(filename);
+
+	// マテリアル
+	m_materials.resize(m_data->materials.size());
+	for (size_t material_index = 0; material_index < m_materials.size(); ++material_index)
+	{
+		auto&& src = m_data->materials.at(material_index);
+		auto&& dst = m_materials.at(material_index);
+
+		dst.color = src.color;
+
+		// テクスチャ読み込み
+		texture = tex;
 	}
 
 	// メッシュ
