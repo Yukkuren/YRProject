@@ -135,7 +135,7 @@ public:
 	std::unique_ptr<Skinned_mesh> box = nullptr;
 	std::shared_ptr<Texture> box_texture = nullptr;
 	MeshMotion motion;
-	std::shared_ptr<Texture> knight2P_texture = nullptr;
+	//std::shared_ptr<Texture> knight2P_texture = nullptr;
 
 	//シェーダー
 	std::unique_ptr<YRShader> skinShader = nullptr;

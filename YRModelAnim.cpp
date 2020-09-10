@@ -349,6 +349,7 @@ void ModelAnim::Draw(
 	const DirectX::XMFLOAT4&	light_color,
 	const DirectX::XMFLOAT4&	ambient_color,
 	const DirectX::XMFLOAT2&	off_set_eye,
+	const DirectX::XMFLOAT2&	off_set_mouse,
 	const DirectX::XMFLOAT4		material_color
 )
 {
@@ -363,7 +364,7 @@ void ModelAnim::Draw(
 
 	const Model* model_res = m_model_resource.get();
 
-	for (auto& material : model_res->m_data->materials)
+	/*for (auto& material : model_res->m_data->materials)
 	{
 		std::string file = material.texture_filename;
 		const char* name = file.c_str();
@@ -377,7 +378,7 @@ void ModelAnim::Draw(
 			int i = v.material_index;
 			int hoge = 0;
 		}
-	}
+	}*/
 
 	for (const Model::Mesh& mesh : model_res->GetMeshes())
 	{
@@ -456,14 +457,26 @@ void ModelAnim::Draw(
 			case Model::Material_Attribute::EYE:
 				cb.Offset_X = off_set_eye.x;
 				cb.Offset_Y = off_set_eye.y;
+				if (m_model_resource->color_texture_face)
+				{
+					m_model_resource->color_texture_face->Set(0);
+				}
 				break;
 			case Model::Material_Attribute::MOUSE:
-				cb.Offset_X = 0.0f;
-				cb.Offset_Y = 0.0f;
+				cb.Offset_X = off_set_mouse.x;
+				cb.Offset_Y = off_set_mouse.y;
+				if (m_model_resource->color_texture_face)
+				{
+					m_model_resource->color_texture_face->Set(0);
+				}
 				break;
 			default:
 				cb.Offset_X = 0.0f;
 				cb.Offset_Y = 0.0f;
+				if (m_model_resource->color_texture_main)
+				{
+					m_model_resource->color_texture_main->Set(0);
+				}
 				break;
 			}
 
@@ -472,11 +485,7 @@ void ModelAnim::Draw(
 			FRAMEWORK.context->PSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
 			FRAMEWORK.context->GSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
 			
-			if (m_model_resource->texture)
-			{
-				m_model_resource->texture->Set(0);
-			}
-			else
+			if (m_model_resource->color_texture_main == nullptr)
 			{
 				FRAMEWORK.context->PSSetShaderResources(0, 1, subset.material->shader_resource_view.Get() ? subset.material->shader_resource_view.GetAddressOf() : m_dummy_srv.GetAddressOf());
 			}

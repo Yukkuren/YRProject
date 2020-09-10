@@ -45,6 +45,7 @@ public:
 		const DirectX::XMFLOAT4&	light_color,
 		const DirectX::XMFLOAT4&	ambient_color,
 		const DirectX::XMFLOAT2&	off_set_eye = { 0.0f,0.0f },
+		const DirectX::XMFLOAT2&	off_set_mouse = { 0.0f,0.0f },
 		const DirectX::XMFLOAT4		material_color = { 1.0f,1.0f,1.0f,1.0f }
 		);
 

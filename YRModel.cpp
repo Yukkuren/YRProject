@@ -24,7 +24,8 @@ Model::Model(const char* filename)
 
 	m_data = std::make_unique<ModelData>();
 
-	texture = nullptr;
+	color_texture_main = nullptr;
+	color_texture_face = nullptr;
 
 	Load(filename);
 
@@ -235,7 +236,7 @@ Model::Model(const char* filename)
 }
 
 
-Model::Model(const char* filename, std::shared_ptr<Texture> tex)
+Model::Model(const char* filename, std::shared_ptr<Texture> tex_main, std::shared_ptr<Texture> tex_face)
 {
 	//m_data = std::move(data);
 
@@ -253,7 +254,8 @@ Model::Model(const char* filename, std::shared_ptr<Texture> tex)
 		dst.color = src.color;
 
 		// テクスチャ読み込み
-		texture = tex;
+		color_texture_main = tex_main;
+		color_texture_face = tex_face;
 	}
 
 	// メッシュ
@@ -314,6 +316,7 @@ Model::Model(const char* filename, std::shared_ptr<Texture> tex)
 			dst_subset.start_index = src_subset.start_index;
 			dst_subset.index_count = src_subset.index_count;
 			dst_subset.material = &m_materials.at(src_subset.material_index);
+			dst_subset.material_index = static_cast<Material_Attribute>(src_subset.material_index);
 		}
 
 		// ボーン変換行列用

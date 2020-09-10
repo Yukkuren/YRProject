@@ -55,18 +55,19 @@ public:
 	YR_Vector3 FastPos;
 	YR_Vector3 hadou;
 	float hadouspeed;
-
-	DirectX::XMFLOAT2	eye_offset = { 0.0f,0.0f };
 	
 	std::array< HitBox, static_cast<int>(KNIGHTHIT::END)> hit;
 	//std::array<YR_Vector3, scastI(KNIGHTHIT::END)> Hitplus;
 	//std::array<YR_Vector3, scastI(KNIGHTHIT::END)> HitSize;
 	
+	//カラーチェンジ用テクスチャ
+	std::shared_ptr<Texture>	color_texture_main = nullptr;
+	std::shared_ptr<Texture>	color_texture_face = nullptr;
 
 	~Knight();
 	void Init(YR_Vector3 InitPos);
 	void Uninit();
-	void LoadData(std::shared_ptr<Texture> texture = nullptr);
+	void LoadData(int color_number);
 	void Update(float decision, float elapsed_time);
 	void Draw(
 		YRShader				*parallel_shader,
@@ -180,6 +181,82 @@ public:
 		FINISH,
 	};
 	WIN_PERFORMANCE_KNIGHT win_state;
+
+
+
+public:
+	//テクスチャアニメーション用
+
+	//現在の顔の状態
+	enum class FaceAnim : int
+	{
+		NORMAL = 0,
+		WINK,
+	};
+
+	//目の識別用列挙
+	enum FaceEye_Num : int
+	{
+		NORMAL_EYE = 0,
+		WINK1,
+		WINK2,
+		CLOSE,
+		TURI,
+		KAOMOJI,
+		EYE_MAX,
+	};
+
+	DirectX::XMFLOAT2	face_eye_offset[FaceEye_Num::EYE_MAX] =
+	{
+		{ 0.0f,0.0f },
+		{ 0.2f,0.0f },
+		{ 0.4f,0.0f },
+		{ 0.0f,0.1f },
+		{ 0.2f,0.1f },
+		{ 0.4f,0.1f }
+	};
+
+	//口の列挙
+	enum FaceMouse_Num : int
+	{
+		NORMAL_MOUSE = 0,
+		TOZI,
+		KUMON,
+		KURI,
+		OOGUTI,
+		MOUSE_MAX,
+	};
+
+	DirectX::XMFLOAT2	face_mouse_offset[FaceMouse_Num::MOUSE_MAX] =
+	{
+		{ 0.0f,0.0f },
+		{ 0.2f,0.0f },
+		{ 0.4f,0.0f },
+		{ 0.0f,0.1f },
+		{ 0.2f,0.1f }
+	};
+
+	FaceAnim face_anim = FaceAnim::NORMAL;
+	float face_wink_time;
+
+	//まばたき用列挙
+	enum Wink_State : int
+	{
+		FIRST = 0,
+		SECOND,
+		THIRD,
+		FOURTH,
+		FIVE,
+		SIX,
+	};
+
+	Wink_State wink_state = Wink_State::FIRST;
+
+	DirectX::XMFLOAT2	eye_offset = { 0.0f,0.0f };
+	DirectX::XMFLOAT2	mouse_offset = { 0.0f,0.0f };
+
+	void FaceAnimation(float elapsed_time);
+	void FaceWink(float elapsed_time);
 };
 
 #endif // !_KNIGHT_H_

@@ -67,16 +67,35 @@ void Knight::Init(YR_Vector3 InitPos)
 	hadou = { pos.x + Getapply(100),pos.y };
 
 	eye_offset = { 0.0f,0.0f };
+	mouse_offset = { 0.0f,0.0f };
+
+	face_anim = FaceAnim::NORMAL;
+	face_wink_time = 0.0f;
+	wink_state = Wink_State::FIRST;
 }
 
 
-void Knight::LoadData(std::shared_ptr<Texture> texture)
+void Knight::LoadData(int color_number)
 {
 	AttackLoad();
+
+	switch (color_number)
+	{
+	case 1:
+		break;
+	case 2:
+		color_texture_main = std::make_shared<Texture>(L"./Data/FBX/Knight/knight_tex_nofaces2.png");
+		color_texture_face = std::make_shared<Texture>(L"./Data/FBX/Knight/knight_tex_face2.png");
+		break;
+	default:
+		break;
+	}
+
+
 	if (base == nullptr)
 	{
 		//base = std::make_unique<Skinned_mesh>("./Data/FBX/danbo_fbx/danbo_taiki.fbx");
-		if (texture != nullptr)
+		if (color_texture_main != nullptr)
 		{
 			//base = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight.fbx",texture);
 			//base = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_wait_mesh.fbx");
@@ -92,9 +111,9 @@ void Knight::LoadData(std::shared_ptr<Texture> texture)
 	if (main == nullptr)
 	{
 		
-		if (texture != nullptr)
+		if (color_texture_main != nullptr)
 		{
-			main = std::make_shared<Model>("./Data/FBX/Knight/knight_face_anim.fbx", texture);
+			main = std::make_shared<Model>("./Data/FBX/Knight/knight_face_anim.fbx", color_texture_main, color_texture_face);
 			//main = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
 		}
 		else
@@ -106,7 +125,7 @@ void Knight::LoadData(std::shared_ptr<Texture> texture)
 
 	if (wait == nullptr)
 	{
-		//wait = std::make_shared<Model>("./Data/FBX/Knight/knight_wait.fbx");
+		wait = std::make_shared<Model>("./Data/FBX/Knight/knight_wait.fbx");
 	}
 
 	if (jaku_R_f == nullptr)
@@ -118,11 +137,11 @@ void Knight::LoadData(std::shared_ptr<Texture> texture)
 	{
 		anim = std::make_unique<ModelAnim>(main);
 		anim->PlayAnimation(0, true);
-		anim->NodeChange(jaku_R_f);
+		anim->NodeChange(wait);
 	}
 	if (special_r_f == nullptr)
 	{
-		if (texture != nullptr)
+		if (color_texture_main != nullptr)
 		{
 			//special_r_f = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knightR_special_f.fbx", texture);
 		}
@@ -133,7 +152,7 @@ void Knight::LoadData(std::shared_ptr<Texture> texture)
 	}
 	if (jaku_r_f == nullptr)
 	{
-		if (texture != nullptr)
+		if (color_texture_main != nullptr)
 		{
 			//jaku_r_f = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_jaku_R_f.fbx", texture);
 		}
@@ -144,7 +163,7 @@ void Knight::LoadData(std::shared_ptr<Texture> texture)
 	}
 	if (jaku_r_t == nullptr)
 	{
-		if (texture != nullptr)
+		if (color_texture_main != nullptr)
 		{
 			//jaku_r_t = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_jaku_R_t.fbx", texture);
 		}
@@ -398,7 +417,7 @@ void Knight::Update(float decision, float elapsed_time)
 								//motion.MeshSet(jaku_r_f);
 								//motion.AnimReset();
 								anim_ccodinate = attack_list[scastI(attack_state)].attack_single[0].fream * 100.0f;
-								anim->NodeChange(wait);
+								//anim->NodeChange(wait);
 								//attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft);
 							}
 						}
@@ -670,7 +689,9 @@ void Knight::Update(float decision, float elapsed_time)
 	}
 #ifdef USE_IMGUI
 	{
-		ImGui::Begin("RyuHitBox");
+		std::string now_play = std::to_string(now_player);
+		now_play += std::string(":RyuHitBox");
+		ImGui::Begin(now_play.c_str());
 		ImGui::InputFloat("BodyPosX", &hit[scastI(KNIGHTHIT::BODY)].distance.x, 0.1f, 0.1f);
 		ImGui::InputFloat("BodyPosY", &hit[scastI(KNIGHTHIT::BODY)].distance.y, 0.1f, 0.1f);
 		ImGui::InputFloat("BodySizeX", &hit[scastI(KNIGHTHIT::BODY)].size.x, 0.1f, 0.1f);
@@ -680,10 +701,12 @@ void Knight::Update(float decision, float elapsed_time)
 		ImGui::InputFloat("LegPosY", &hit[scastI(KNIGHTHIT::LEG)].distance.y, 0.1f, 0.1f);
 		ImGui::InputFloat("LegSizeX", &hit[scastI(KNIGHTHIT::LEG)].size.x, 0.1f, 0.1f);
 		ImGui::InputFloat("LegSizeY", &hit[scastI(KNIGHTHIT::LEG)].size.y, 0.1f, 0.1f);
-		ImGui::SliderFloat("eye_offset.x", &eye_offset.x, 0.0f, 2048.0f);
-		ImGui::SliderFloat("eye_offset.y", &eye_offset.y, 0.0f, 2048.0f);
-		ImGui::InputFloat("eye_offset.x", &eye_offset.x, 0.1f, 0.1f);
-		ImGui::InputFloat("eye_offset.y", &eye_offset.y, 0.1f, 0.1f);
+		/*ImGui::SliderFloat("eye_offset.x", &eye_offset.x, 0.0f, 2048.0f);
+		ImGui::SliderFloat("eye_offset.y", &eye_offset.y, 0.0f, 2048.0f);*/
+		ImGui::InputFloat("eye_offset.x", &eye_offset.x, 0.01f, 0.01f);
+		ImGui::InputFloat("eye_offset.y", &eye_offset.y, 0.01f, 0.01f);
+		ImGui::InputFloat("mouse_offset.x", &mouse_offset.x, 0.01f, 0.01f);
+		ImGui::InputFloat("mouse_offset.y", &mouse_offset.y, 0.01f, 0.01f);
 		ImGui::Text("player.y:%f", pos.y);
 		ImGui::Text("player.x:%f", pos.x);
 
@@ -698,6 +721,8 @@ void Knight::Update(float decision, float elapsed_time)
 	hit[scastI(KNIGHTHIT::LEG)].Update(pos, elapsed_time);
 
 	EndAttackErase();			//攻撃判定の消去
+
+	FaceAnimation(elapsed_time);
 }
 
 
@@ -1185,7 +1210,7 @@ void Knight::Draw(
 	//左向き
 	if (rightOrleft < 0)
 	{
-		angle.y = DirectX::XMConvertToRadians(180.0f);
+		//angle.y = DirectX::XMConvertToRadians(180.0f);
 		inversion = true;
 		if (invincible)
 		{
@@ -1273,8 +1298,7 @@ void Knight::Draw(
 	anim->UpdateAnimation(elapsed_time * anim_ccodinate);
 	anim->CalculateLocalTransform();
 	anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
-	anim->Draw(parallel_shader, view, projection, light_direction, light_color, ambient_color,eye_offset, material_color);
-
+	anim->Draw(parallel_shader, view, projection, light_direction, light_color, ambient_color, eye_offset, mouse_offset, material_color);
 
 	//if (atk[scastI(KNIGHTATK::HADOU)].hit_ok)
 	//{
@@ -3072,5 +3096,68 @@ void Knight::AttackUpdate(float elapsed_time)
 		{
 			a.Update(pos, elapsed_time);
 		}
+	}
+}
+
+
+//顔のテクスチャアニメーション
+void Knight::FaceAnimation(float elapsed_time)
+{
+	switch (face_anim)
+	{
+	case Knight::FaceAnim::NORMAL:
+		face_wink_time += elapsed_time;
+		if (face_wink_time > static_cast<float>(now_player) * 3.0f)
+		{
+			face_anim = FaceAnim::WINK;
+			face_wink_time = 0.0f;
+		}
+		break;
+	case Knight::FaceAnim::WINK:
+		FaceWink(elapsed_time);
+		break;
+	default:
+		break;
+	}
+}
+
+
+//瞬き
+void Knight::FaceWink(float elapsed_time)
+{
+	face_wink_time += elapsed_time;
+	if (face_wink_time > 0.05f)
+	{
+		switch (wink_state)
+		{
+		case Knight::FIRST:
+			eye_offset = face_eye_offset[FaceEye_Num::WINK1];
+			wink_state = Wink_State::SECOND;
+			break;
+		case Knight::SECOND:
+			eye_offset = face_eye_offset[FaceEye_Num::WINK2];
+			wink_state = Wink_State::THIRD;
+			break;
+		case Knight::THIRD:
+			eye_offset = face_eye_offset[FaceEye_Num::CLOSE];
+			wink_state = Wink_State::FOURTH;
+			break;
+		case Knight::FOURTH:
+			eye_offset = face_eye_offset[FaceEye_Num::WINK2];
+			wink_state = Wink_State::FIVE;
+			break;
+		case Knight::FIVE:
+			eye_offset = face_eye_offset[FaceEye_Num::WINK1];
+			wink_state = Wink_State::SIX;
+			break;
+		case Knight::SIX:
+			eye_offset = face_eye_offset[FaceEye_Num::NORMAL_EYE];
+			wink_state = Wink_State::FIRST;
+			face_anim = FaceAnim::NORMAL;
+			break;
+		default:
+			break;
+		}
+		face_wink_time = 0.0f;
 	}
 }

@@ -236,10 +236,12 @@ public:
 	Speed			speed_Y;
 	std::unique_ptr<GamepadBase> pad;
 
+	int				chara_color;		//キャラのカラー番号
+
 public:
 	//基本処理関数
 	virtual void Init(YR_Vector3 InitPos) = 0;
-	virtual void LoadData(std::shared_ptr<Texture> texture =nullptr) = 0;
+	virtual void LoadData(int color_number) = 0;
 	virtual void Uninit() = 0;
 	virtual void Update(float decision,float elapsed_time) = 0;
 	virtual void Draw(

@@ -123,10 +123,10 @@ void SceneGame::LoadData()
 	{
 		//skin = std::make_unique<Skinned_mesh>("./Data/FBX/knight.fbx");
 	}
-	if (knight2P_texture == nullptr)
+	/*if (knight2P_texture == nullptr)
 	{
-		knight2P_texture = std::make_shared<Texture>(L"./Data/FBX/Knight/knight_tex2P.png");
-	}
+		knight2P_texture = std::make_shared<Texture>(L"./Data/FBX/Knight/knight_tex_nofaces.png");
+	}*/
 	
 #if USE_IMGUI
 	if (box_texture == nullptr)
@@ -201,8 +201,8 @@ void SceneGame::LoadData()
 	//生成後初期化する(座標系、HP、UI座標など)
 	player1p->Init(PL.pos1P);
 	player2p->Init(PL.pos2P);
-	player1p->LoadData();
-	player2p->LoadData(knight2P_texture);
+	player1p->LoadData(1);
+	player2p->LoadData(2);
 	//キャラにどのプレイヤーが操作しているかの情報を与える
 	player1p->now_player = 1;
 	player2p->now_player = 2;

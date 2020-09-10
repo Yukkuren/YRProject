@@ -88,7 +88,7 @@ class Model
 {
 public:
 	Model(const char* filename);
-	Model(const char* filename, std::shared_ptr<Texture> tex);
+	Model(const char* filename, std::shared_ptr<Texture> tex_main, std::shared_ptr<Texture> tex_face);
 	~Model() {}
 
 private:
@@ -155,7 +155,8 @@ public:
 	const std::vector<ModelData::Animation>& GetAnimations() const { return m_data->animations; }
 	std::vector<Mesh>		m_meshes;
 	//テクスチャ利用
-	std::shared_ptr<Texture> texture = nullptr;
+	std::shared_ptr<Texture> color_texture_main = nullptr;
+	std::shared_ptr<Texture> color_texture_face = nullptr;
 	std::unique_ptr<ModelData>	m_data;
 private:
 	std::vector<Material>	m_materials;
