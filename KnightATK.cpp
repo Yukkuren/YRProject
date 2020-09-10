@@ -594,5 +594,108 @@ void Knight::ExtendATK(float elapsed_time)
 }
 
 
+
+void Knight::SpecialAttack(float elapsed_time)
+{
+	if (later > -1 && later < target_max)
+	{
+		return;
+	}
+
+	if (fream < target_max)
+	{
+		fream -= elapsed_time;
+
+		YR_Vector3	eye = YRCamera.GetEye();
+		YR_Vector3	focus = YRCamera.GetFocus();
+		YRCamera.SetFov(50.0f * 0.01745f);
+		if (fream > 1.5f)
+		{
+			focus = pos;
+			eye.x = focus.x;
+			eye.y = focus.y + 2.0f;
+			eye.z = focus.z - 8.0f;
+		}
+		else if (fream > 1.0f)
+		{
+
+			focus = pos;
+			eye.x = pos.x - Getapply(7.0f);
+			eye.y = focus.y - 2.0f;
+			eye.z = pos.z - 7.0f;
+		}
+		else if (fream > 0.5f)
+		{
+			focus = pos;
+			focus.x + 2.0f;
+			focus.y - 2.0f;
+			eye.x = focus.x + Getapply(9.0f);
+			eye.y = focus.y + 6.0f;
+			eye.z = focus.z - 6.0f;
+		}
+		else
+		{
+			//カメラを徐々にメインに戻す
+			YRCamera.RequestCamera(Camera::Request::WEAKEN, now_player);
+		}
+		YRCamera.SetEye(eye.GetDXFLOAT3());
+		YRCamera.SetFocus(focus.GetDXFLOAT3());
+	}
+
+
+	if (fream < 0.0f)
+	{
+		attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft);
+		fream = non_target;
+		YRCamera.RequestCamera(Camera::Request::RELEASE, now_player);
+	}
+
+	int now_at_list = scastI(attack_state);
+
+	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
+	if (!atk.empty())
+	{
+		for (auto& a : atk)
+		{
+			if (knock)
+			{
+				a.parameter.knockback = 0.0f;
+			}
+			if (a.knock_start)
+			{
+				pos.x -= a.parameter.knockback;
+				a.parameter.knockback = 0.0f;
+				if (!ground)
+				{
+					speed_Y.Set(60.0f);
+				}
+				knock = true;
+			}
+		}
+	}
+
+	if (atk.empty())
+	{
+		//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
+		return;
+	}
+
+	if (AttackEndCheck())
+	{
+		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
+		{
+			fream = attack_list[scastI(attack_state)].attack_single[attack_list[now_at_list].now_attack_num].fream;
+		}
+		else
+		{
+			attack_list[now_at_list].now_attack_num = 0;
+			later = attack_list[now_at_list].later;
+		}
+	}
+
+	specialfream = 0;
+}
+
+
 //
 //***************************************************************************************************************

@@ -113,11 +113,13 @@ enum class AttackState : int
 	THU_LHURF,		//後中必殺
 	KYO_LHURF,		//後強必殺
 	SPECIAL_ATTACK,	//前超必殺
-	SUPER_ATTACK,	//後超必殺
+	DESIRE_SPECIAL,	//後超必殺
+	DESIRE_METEOR,	//即死技
 	EXTENDATK,		//無敵攻撃
 	ATTACK_END,		//最大サイズ
 };
 
+//Desire(欲望、望み)とCrystal(結晶)
 
 //---------------------------------------------------------------
 // **攻撃内容保存構造体**
@@ -223,8 +225,8 @@ public:
 
 public:
 	//モデル用変数
-	MeshMotion						motion;
-	std::unique_ptr<Skinned_mesh>	base = nullptr;
+	//MeshMotion						motion;
+	//std::unique_ptr<Skinned_mesh>	base = nullptr;
 public:
 	//座標、モデル描画用変数
 	YR_Vector3		pos;

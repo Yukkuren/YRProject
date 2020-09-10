@@ -40,15 +40,12 @@ private:
 
 	float		production_time = 0.0f;	//カメラ演出に使う変数
 	
-	//個別モーション用変数
-	std::unique_ptr<Skinned_mesh>	jaku_r_f = nullptr;
-	std::unique_ptr<Skinned_mesh>	jaku_r_t = nullptr;
-	std::unique_ptr<Skinned_mesh>	special_r_f = nullptr;
+	std::shared_ptr<Model>			main = nullptr;	//モデルメインデータ(メッシュのみ。アニメーション無し)
+	std::unique_ptr<ModelAnim>		anim = nullptr;	//モデル描画&アニメーション適用変数
 
-	std::shared_ptr<Model>			main = nullptr;
+	//個別モーション用変数
 	std::shared_ptr<Model>			wait = nullptr;
-	std::shared_ptr<Model>			jaku_R_f = nullptr;
-	std::unique_ptr<ModelAnim>		anim = nullptr;
+	std::shared_ptr<Model>			special_R_f = nullptr;
 
 public:
 	bool fast;
@@ -114,6 +111,10 @@ public:
 
 	void Attack(float decision, float elapsed_time);//以下の関数を制御する
 
+
+	//----------------------------------//
+	//			攻撃関数					//
+	//----------------------------------//
 	void Jaku(float elapsed_time);
 	void Thu(float elapsed_time);
 	void Kyo(float fream, float elapsed_time);
@@ -130,6 +131,8 @@ public:
 	void TrackDash(float decision, float elapsed_time);
 	void Steal(float elapsed_time);
 	void Slow(float elapsed_time);
+	void SpecialAttack(float elapsed_time);
+
 	void Panish_N(float elapsed_time);
 	void Panish_H(float elapsed_time);
 
@@ -192,6 +195,7 @@ public:
 	{
 		NORMAL = 0,
 		WINK,
+		Damage,
 	};
 
 	//目の識別用列挙
@@ -224,6 +228,8 @@ public:
 		KUMON,
 		KURI,
 		OOGUTI,
+		OTYOBO,
+		POKAN,
 		MOUSE_MAX,
 	};
 
@@ -233,7 +239,9 @@ public:
 		{ 0.2f,0.0f },
 		{ 0.4f,0.0f },
 		{ 0.0f,0.1f },
-		{ 0.2f,0.1f }
+		{ 0.2f,0.1f },
+		{ 0.0f,0.09f },
+		{ 0.0f,0.11f }
 	};
 
 	FaceAnim face_anim = FaceAnim::NORMAL;
@@ -257,6 +265,8 @@ public:
 
 	void FaceAnimation(float elapsed_time);
 	void FaceWink(float elapsed_time);
+
+	void ChangeFace(FaceAnim anim);
 };
 
 #endif // !_KNIGHT_H_

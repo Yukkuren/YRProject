@@ -82,100 +82,57 @@ void Knight::LoadData(int color_number)
 	switch (color_number)
 	{
 	case 1:
+		color_texture_main = nullptr;
+		color_texture_face = nullptr;
 		break;
 	case 2:
 		color_texture_main = std::make_shared<Texture>(L"./Data/FBX/Knight/knight_tex_nofaces2.png");
 		color_texture_face = std::make_shared<Texture>(L"./Data/FBX/Knight/knight_tex_face2.png");
 		break;
 	default:
+		color_texture_main = nullptr;
+		color_texture_face = nullptr;
 		break;
 	}
 
 
-	if (base == nullptr)
-	{
-		//base = std::make_unique<Skinned_mesh>("./Data/FBX/danbo_fbx/danbo_taiki.fbx");
-		if (color_texture_main != nullptr)
-		{
-			//base = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight.fbx",texture);
-			//base = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_wait_mesh.fbx");
-			//base = std::make_unique<Skinned_mesh>("./Data/FBX/knight_bone.fbx");
-		}
-		else
-		{
-			//base = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight.fbx");
-			//base = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_wait_mesh.fbx");
-			//base = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_main.fbx");
-		}
-	}
 	if (main == nullptr)
 	{
 		
 		if (color_texture_main != nullptr)
 		{
-			main = std::make_shared<Model>("./Data/FBX/Knight/knight_face_anim.fbx", color_texture_main, color_texture_face);
-			//main = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
+			main = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx", color_texture_main, color_texture_face);
 		}
 		else
 		{
 			//main = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
-			main = std::make_shared<Model>("./Data/FBX/Knight/knight_face_anim.fbx");
+			main = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
 		}
 	}
 
+	//------------------------------------------//
+	//		アニメーションボーンデータ読み込み		//
+	//------------------------------------------//
 	if (wait == nullptr)
 	{
 		wait = std::make_shared<Model>("./Data/FBX/Knight/knight_wait.fbx");
 	}
-
-	if (jaku_R_f == nullptr)
+	if (special_R_f == nullptr)
 	{
-		jaku_R_f = std::make_shared<Model>("./Data/FBX/Knight/knight_face_anim.fbx");
+		special_R_f = std::make_shared<Model>("./Data/FBX/Knight/knight_special_R_f.fbx");
 	}
 
+
+
+	//------------------------------------------//
+	//			アニメーション設定				//
+	//------------------------------------------//
 	if (anim == nullptr)
 	{
 		anim = std::make_unique<ModelAnim>(main);
 		anim->PlayAnimation(0, true);
 		anim->NodeChange(wait);
 	}
-	if (special_r_f == nullptr)
-	{
-		if (color_texture_main != nullptr)
-		{
-			//special_r_f = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knightR_special_f.fbx", texture);
-		}
-		else
-		{
-			//special_r_f = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knightR_special_f.fbx");
-		}
-	}
-	if (jaku_r_f == nullptr)
-	{
-		if (color_texture_main != nullptr)
-		{
-			//jaku_r_f = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_jaku_R_f.fbx", texture);
-		}
-		else
-		{
-			//jaku_r_f = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_jaku_R_f.fbx");
-		}
-	}
-	if (jaku_r_t == nullptr)
-	{
-		if (color_texture_main != nullptr)
-		{
-			//jaku_r_t = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_jaku_R_t.fbx", texture);
-		}
-		else
-		{
-			//jaku_r_t = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_jaku_R_t.fbx");
-		}
-	}
-	
-
-	//motion.MeshSet(base);
-	//motion.AnimReset();
 }
 
 bool Knight::AttackLoad()
@@ -211,30 +168,30 @@ bool Knight::AttackLoad()
 		}
 	}
 	//attack_list.push_back(AttackList());
-	attack_list[scastI(AttackState::THU)].attack_name = AttackState::THU;
-	attack_list[scastI(AttackState::THU)].attack_max = 1;
-	attack_list[scastI(AttackState::THU)].later = 1.0f;
-	attack_list[scastI(AttackState::THU)].attack_single.resize(attack_list[scastI(AttackState::THU)].attack_max);
-	for (int i = 0; i < attack_list[scastI(AttackState::THU)].attack_max; i++)
+	attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_name = AttackState::SPECIAL_ATTACK;
+	attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_max = 1;
+	attack_list[scastI(AttackState::SPECIAL_ATTACK)].later = 1.0f;
+	attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single.resize(attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_max);
+	for (int i = 0; i < attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_max; i++)
 	{
-		attack_list[scastI(AttackState::THU)].attack_single[i].fream = 2.0f;
-		attack_list[scastI(AttackState::THU)].attack_single[i].quantity = 1;
-		attack_list[scastI(AttackState::THU)].attack_single[i].parameter.resize(attack_list[scastI(AttackState::THU)].attack_single[i].quantity);
-		for (int v = 0; v < attack_list[scastI(AttackState::THU)].attack_single[i].quantity; v++)
+		attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].fream = 2.0f;
+		attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].quantity = 1;
+		attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter.resize(attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].quantity);
+		for (int v = 0; v < attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].quantity; v++)
 		{
-			attack_list[scastI(AttackState::THU)].attack_single[i].parameter[v].damege = 5;
-			attack_list[scastI(AttackState::THU)].attack_single[i].parameter[v].distance.x = 1.0f;
-			attack_list[scastI(AttackState::THU)].attack_single[i].parameter[v].distance.y = 2.0f;
-			attack_list[scastI(AttackState::THU)].attack_single[i].parameter[v].gaugeout = true;
-			attack_list[scastI(AttackState::THU)].attack_single[i].parameter[v].HB_timer = 1.0f;
-			attack_list[scastI(AttackState::THU)].attack_single[i].parameter[v].hitback.x = Getapply(1.0f);
-			attack_list[scastI(AttackState::THU)].attack_single[i].parameter[v].hitback.y = 1.0f;
-			attack_list[scastI(AttackState::THU)].attack_single[i].parameter[v].knockback = 1.0f;
-			attack_list[scastI(AttackState::THU)].attack_single[i].parameter[v].size.x = 5.0f;
-			attack_list[scastI(AttackState::THU)].attack_single[i].parameter[v].size.y = 5.0f;
-			attack_list[scastI(AttackState::THU)].attack_single[i].parameter[v].stealtimer = 0.0f;
-			attack_list[scastI(AttackState::THU)].attack_single[i].parameter[v].timer = 2.0f;
-			attack_list[scastI(AttackState::THU)].attack_single[i].parameter[v].type = AttackBox::MIDDLE;
+			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].damege = 5;
+			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].distance.x = 1.0f;
+			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].distance.y = 2.0f;
+			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].gaugeout = true;
+			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].HB_timer = 1.0f;
+			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].hitback.x = Getapply(1.0f);
+			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].hitback.y = 1.0f;
+			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].knockback = 1.0f;
+			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].size.x = 5.0f;
+			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].size.y = 5.0f;
+			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].stealtimer = 0.0f;
+			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].timer = 2.0f;
+			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].type = AttackBox::MIDDLE;
 		}
 	}
 	return true;
@@ -248,8 +205,7 @@ bool Knight::AttackWrite()
 
 void Knight::Uninit()
 {
-	base.reset();
-	base = nullptr;
+	
 }
 void Knight::Update(float decision, float elapsed_time)
 {
@@ -447,11 +403,12 @@ void Knight::Update(float decision, float elapsed_time)
 							}
 							else
 							{
-								FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
+								//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
 								//描画をセット
 
 								attack_state = AttackState::D_THU;
-								pos.x += Getapply(50.0f);
+								//pos.x += Getapply(50.0f);
+								ChangeFace(FaceAnim::Damage);
 							}
 						}
 
@@ -507,11 +464,31 @@ void Knight::Update(float decision, float elapsed_time)
 							}
 							else
 							{
-								FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
+								//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
 								//描画をセット
 
-								attack_state = AttackState::U_KYO;
-								pos.x += Getapply(50.0f);
+								//attack_state = AttackState::U_KYO;
+								//pos.x += Getapply(50.0f);
+								pad->que.back().timer = 0;
+								attack = TRUE;
+								later = non_target;
+								moveflag = false;
+								act_state = ActState::ATTACK;
+								if (ground)
+								{
+									//描画をセット
+								}
+								else
+								{
+									//描画をセット
+								}
+								attack_state = AttackState::SPECIAL_ATTACK;
+								fream = attack_list[scastI(attack_state)].attack_single[0].fream;
+								YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
+								production_time = 0.0f;
+								anim->PlayAnimation(0, true);
+								anim->NodeChange(special_R_f);
+								anim_ccodinate = 1.0f;
 							}
 						}
 
@@ -790,33 +767,23 @@ void Knight::Attack(float decision, float elapsed_time)
 			//中攻撃
 			if (pad->x_input[static_cast<int>(PAD::X)] == 1)
 			{
-				pad->que.back().timer = 0;
-				//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-				attack = TRUE;
-				//atk[scastI(KNIGHTATK::ONE)].start = FALSE;
-				later = non_target;
-				/*for (int i = 0; i < scastI(KNIGHTATK::END); i++)
-				{
-					atk[i].Init();
-				}*/
-				moveflag = false;
-				//atk[scastI(KNIGHTATK::ONE)].fin = FALSE;
-				act_state = ActState::ATTACK;
-				if (ground)
-				{
-					//描画をセット
-				}
-				else
-				{
-					//描画をセット
-				}
-				attack_state = AttackState::THU;
-				//pos.x += Getapply(50.0f);
-				fream = attack_list[scastI(attack_state)].attack_single[0].fream;
-				YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
-				production_time = 0.0f;
-				motion.MeshSet(special_r_f);
-				motion.AnimReset();
+				//pad->que.back().timer = 0;
+				//attack = TRUE;
+				//later = non_target;
+				//moveflag = false;
+				//act_state = ActState::ATTACK;
+				//if (ground)
+				//{
+				//	//描画をセット
+				//}
+				//else
+				//{
+				//	//描画をセット
+				//}
+				//attack_state = AttackState::SPECIAL_ATTACK;
+				//fream = attack_list[scastI(attack_state)].attack_single[0].fream;
+				//YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
+				//production_time = 0.0f;
 
 				specialfream = 2;
 			}
@@ -1016,6 +983,11 @@ void Knight::Attack(float decision, float elapsed_time)
 	case AttackState::THU_LHURF:
 		Panish_H(elapsed_time);
 		break;
+	case AttackState::SPECIAL_ATTACK:
+		SpecialAttack(elapsed_time);
+		break;
+	default:
+		break;
 	}
 
 
@@ -1052,8 +1024,8 @@ void Knight::Attack(float decision, float elapsed_time)
 			{
 				act_state = ActState::NONE;
 				attack_state = AttackState::NONE;
-				motion.MeshSet(base);
-				motion.AnimReset();
+				anim->PlayAnimation(0, true);
+				anim->NodeChange(wait);
 			}
 		}
 		else
@@ -1255,36 +1227,24 @@ void Knight::Draw(
 
 	if (static_cast<int>(YRCamera.camera_state) == now_player)
 	{
-		/*motion.DrawContinue(
-			shader,
-			pos.GetDXFLOAT3(),
-			scale.GetDXFLOAT3(),
-			angle.GetDXFLOAT3(),
-			view, projection, light_direction, light_color, ambient_color, elapsed_time*anim_ccodinate,
-			inversion, material_color
-		);*/
+		anim->UpdateAnimation(elapsed_time * anim_ccodinate);
+		anim->CalculateLocalTransform();
+		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
+		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, mouse_offset, material_color);
 	}
 	if (YRCamera.camera_state == Camera::CAMERA_STATE::MAIN)
 	{
-		/*motion.DrawContinue(
-			parallel_shader,
-			pos.GetDXFLOAT3(),
-			scale.GetDXFLOAT3(),
-			angle.GetDXFLOAT3(),
-			view, projection, light_direction, light_color, ambient_color, elapsed_time*anim_ccodinate,
-			inversion, material_color
-		);*/
+		anim->UpdateAnimation(elapsed_time * anim_ccodinate);
+		anim->CalculateLocalTransform();
+		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
+		anim->Draw(parallel_shader, view, projection, light_direction, light_color, ambient_color, eye_offset, mouse_offset, material_color);
 	}
 	if (YRCamera.GetRequest() == Camera::Request::WEAKEN)
 	{
-		/*motion.DrawContinue(
-			shader,
-			pos.GetDXFLOAT3(),
-			scale.GetDXFLOAT3(),
-			angle.GetDXFLOAT3(),
-			view, projection, light_direction, light_color, ambient_color, elapsed_time * anim_ccodinate,
-			inversion, material_color
-		);*/
+		anim->UpdateAnimation(elapsed_time * anim_ccodinate);
+		anim->CalculateLocalTransform();
+		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
+		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, mouse_offset, material_color);
 	}
 
 	/*motion.DrawContinue(
@@ -1295,10 +1255,6 @@ void Knight::Draw(
 			view, projection, light_direction, light_color, ambient_color, elapsed_time*anim_ccodinate,
 			inversion, material_color
 		);*/
-	anim->UpdateAnimation(elapsed_time * anim_ccodinate);
-	anim->CalculateLocalTransform();
-	anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
-	anim->Draw(parallel_shader, view, projection, light_direction, light_color, ambient_color, eye_offset, mouse_offset, material_color);
 
 	//if (atk[scastI(KNIGHTATK::HADOU)].hit_ok)
 	//{
@@ -3116,6 +3072,10 @@ void Knight::FaceAnimation(float elapsed_time)
 	case Knight::FaceAnim::WINK:
 		FaceWink(elapsed_time);
 		break;
+	case Knight::FaceAnim::Damage:
+		eye_offset = face_eye_offset[FaceEye_Num::KAOMOJI];
+		mouse_offset = face_mouse_offset[FaceMouse_Num::POKAN];
+		break;
 	default:
 		break;
 	}
@@ -3160,4 +3120,11 @@ void Knight::FaceWink(float elapsed_time)
 		}
 		face_wink_time = 0.0f;
 	}
+}
+
+void Knight::ChangeFace(FaceAnim anim)
+{
+	face_anim = anim;
+	face_wink_time = 0.0f;
+	wink_state = Wink_State::FIRST;
 }
