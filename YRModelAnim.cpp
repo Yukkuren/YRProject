@@ -348,6 +348,7 @@ void ModelAnim::Draw(
 	const DirectX::XMFLOAT4&	light_direction,
 	const DirectX::XMFLOAT4&	light_color,
 	const DirectX::XMFLOAT4&	ambient_color,
+	const DirectX::XMFLOAT2&	off_set_eye,
 	const DirectX::XMFLOAT4		material_color
 )
 {
@@ -361,6 +362,22 @@ void ModelAnim::Draw(
 	//std::vector<Model::Mesh> test = m_model_resource->GetMeshes();
 
 	const Model* model_res = m_model_resource.get();
+
+	for (auto& material : model_res->m_data->materials)
+	{
+		std::string file = material.texture_filename;
+		const char* name = file.c_str();
+		int hoge = 0;
+	}
+
+	for (auto& data : model_res->m_data->meshes)
+	{
+		for (auto& v : data.subsets)
+		{
+			int i = v.material_index;
+			int hoge = 0;
+		}
+	}
 
 	for (const Model::Mesh& mesh : model_res->GetMeshes())
 	{
@@ -431,6 +448,24 @@ void ModelAnim::Draw(
 			cb.projection = p;
 			cb.at = YRCamera.GetAt();
 			cb.dummy = 0.0f;
+			cb.dummy00 = 0.0f;
+			cb.dummy01 = 0.0f;
+
+			switch (subset.material_index)
+			{
+			case Model::Material_Attribute::EYE:
+				cb.Offset_X = off_set_eye.x;
+				cb.Offset_Y = off_set_eye.y;
+				break;
+			case Model::Material_Attribute::MOUSE:
+				cb.Offset_X = 0.0f;
+				cb.Offset_Y = 0.0f;
+				break;
+			default:
+				cb.Offset_X = 0.0f;
+				cb.Offset_Y = 0.0f;
+				break;
+			}
 
 			FRAMEWORK.context->UpdateSubresource(constant_buffer.Get(), 0, 0, &cb, 0, 0);
 			FRAMEWORK.context->VSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());

@@ -219,6 +219,7 @@ Model::Model(const char* filename)
 			dst_subset.start_index = src_subset.start_index;
 			dst_subset.index_count = src_subset.index_count;
 			dst_subset.material = &m_materials.at(src_subset.material_index);
+			dst_subset.material_index = static_cast<Material_Attribute>(src_subset.material_index);
 		}
 
 		// ボーン変換行列用
@@ -695,6 +696,14 @@ void Model::BuildMesh(FbxNode* fbx_node, FbxMesh* fbx_mesh)
 				fbx_mesh->GetPolygonVertexUV(fbx_polygon_index, fbx_vertex_index, fbx_uv_names[0], fbx_uv, fbx_unmapped_uv);
 				fbx_uv[1] = 1.0 - fbx_uv[1];
 				vertex.texcoord = FbxDouble2ToFloat2(fbx_uv);
+				/*if (vertex.texcoord.x > 1.0f)
+				{
+					int hoge = 0;
+				}
+				if (vertex.texcoord.y > 1.0f)
+				{
+					int hoge = 0;
+				}*/
 			}
 			else
 			{
@@ -795,7 +804,7 @@ void Model::BuildAnimations(FbxScene* fbx_scene)
 		FbxTime fbx_frame_time;
 		fbx_frame_time.SetTime(0, 0, 0, 1, 0, fbx_time_mode);
 
-		float sampling_rate = static_cast<float>(fbx_frame_time.GetFrameRate(fbx_time_mode));
+		u_int sampling_rate = static_cast<u_int>(fbx_frame_time.GetFrameRate(fbx_time_mode));
 		float sampling_time = 1.0f / sampling_rate;
 
 		FbxString* fbx_anim_stack_name = fbx_anim_stack_names.GetAt(fbx_animation_index);

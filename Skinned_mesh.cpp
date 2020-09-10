@@ -345,6 +345,10 @@ bool Skinned_mesh::Load(const char *fbx_filename, u_int sampling_rate)
 		at->GetScene()->FillAnimStackNameArray(array_of_animation_stack_names);
 
 		// Get the number of animations.
+		if (array_of_animation_stack_names.Size() == 0)
+		{
+			continue;
+		}
 		int number_of_animations = array_of_animation_stack_names.Size();
 		FbxString* animation_stack_name = array_of_animation_stack_names.GetAt(0);
 		FbxAnimStack* current_animation_stack = at->GetScene()->FindMember<FbxAnimStack>(animation_stack_name->Buffer());

@@ -50,4 +50,8 @@ cbuffer CONSTANT_BUFFER : register(b0)
 	row_major float4x4 projection;	//透視投影行列
 	float3 at;						//カメラ座標からカメラの注視点へ向かう単位ベクトル
 	float dummy;
+	float Offset_X;					//テクスチャX方向ずれ
+	float Offset_Y;					//テクスチャY方向ずれ
+	float dummy00;
+	float dummy01;
 };

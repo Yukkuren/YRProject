@@ -37,5 +37,8 @@ GSInput main(VSInput input)
 	output.wNormal = N.xyz;
 	output.wPos = worldPos;
 
+	output.Tex.x = input.Tex.x + Offset_X;
+	output.Tex.y = input.Tex.y + Offset_Y;
+
 	return output;
 }

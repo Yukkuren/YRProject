@@ -118,6 +118,13 @@ private:
 	bool Load(const char* filename);
 
 public:
+	enum Material_Attribute : int
+	{
+		MAIN = 0,
+		EYE,
+		MOUSE,
+	};	//このenumでどのテクスチャを使っているかを判別し、必要によってoffset値を入力する
+
 	struct Material
 	{
 		DirectX::XMFLOAT4 color = { 0.8f, 0.8f, 0.8f, 1.0f };
@@ -129,6 +136,7 @@ public:
 		u_int		start_index = 0;
 		u_int		index_count = 0;
 		Material* material;
+		Material_Attribute			material_index;
 	};
 
 	struct Mesh

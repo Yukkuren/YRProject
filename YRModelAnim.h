@@ -44,6 +44,7 @@ public:
 		const DirectX::XMFLOAT4&	light_direction,
 		const DirectX::XMFLOAT4&	light_color,
 		const DirectX::XMFLOAT4&	ambient_color,
+		const DirectX::XMFLOAT2&	off_set_eye = { 0.0f,0.0f },
 		const DirectX::XMFLOAT4		material_color = { 1.0f,1.0f,1.0f,1.0f }
 		);
 
@@ -86,11 +87,15 @@ private:
 		DirectX::XMFLOAT4		light_color;
 		DirectX::XMFLOAT4		ambient_color;
 		DirectX::XMFLOAT4X4		bone_transforms[MaxBones];
-		DirectX::XMFLOAT4		eyePos;
-		DirectX::XMFLOAT4X4		view;
-		DirectX::XMFLOAT4X4		projection;
-		DirectX::XMFLOAT3		at;//eyeからfocusに向かう正規化ベクトル
+		DirectX::XMFLOAT4		eyePos;						//カメラの位置
+		DirectX::XMFLOAT4X4		view;						//トゥーンシェーダー用view行列
+		DirectX::XMFLOAT4X4		projection;					//トゥーンシェーダー用projection行列
+		DirectX::XMFLOAT3		at;							//eyeからfocusに向かう正規化ベクトル
 		float					dummy;
+		float					Offset_X;					//テクスチャの位置調整X
+		float					Offset_Y;					//テクスチャの位置調整Y
+		float					dummy00;
+		float					dummy01;
 		/*int						inverse;
 		int		dummy1;
 		int		dummy2;

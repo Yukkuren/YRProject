@@ -65,6 +65,8 @@ void Knight::Init(YR_Vector3 InitPos)
 	act_state = ActState::NONE;
 	later = non_target;
 	hadou = { pos.x + Getapply(100),pos.y };
+
+	eye_offset = { 0.0f,0.0f };
 }
 
 
@@ -76,14 +78,15 @@ void Knight::LoadData(std::shared_ptr<Texture> texture)
 		//base = std::make_unique<Skinned_mesh>("./Data/FBX/danbo_fbx/danbo_taiki.fbx");
 		if (texture != nullptr)
 		{
-			base = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight.fbx",texture);
+			//base = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight.fbx",texture);
+			//base = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_wait_mesh.fbx");
 			//base = std::make_unique<Skinned_mesh>("./Data/FBX/knight_bone.fbx");
 		}
 		else
 		{
 			//base = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight.fbx");
-			base = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_save.fbx");
-			//base = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_jaku_R_l.fbx");
+			//base = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_wait_mesh.fbx");
+			//base = std::make_unique<Skinned_mesh>("./Data/FBX/Knight/knight_main.fbx");
 		}
 	}
 	if (main == nullptr)
@@ -91,22 +94,24 @@ void Knight::LoadData(std::shared_ptr<Texture> texture)
 		
 		if (texture != nullptr)
 		{
-			main = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx", texture);
+			main = std::make_shared<Model>("./Data/FBX/Knight/knight_face_anim.fbx", texture);
+			//main = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
 		}
 		else
 		{
-			main = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
+			//main = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
+			main = std::make_shared<Model>("./Data/FBX/Knight/knight_face_anim.fbx");
 		}
 	}
 
 	if (wait == nullptr)
 	{
-		wait = std::make_shared<Model>("./Data/FBX/Knight/knight_wait.fbx");
+		//wait = std::make_shared<Model>("./Data/FBX/Knight/knight_wait.fbx");
 	}
 
 	if (jaku_R_f == nullptr)
 	{
-		jaku_R_f = std::make_shared<Model>("./Data/FBX/Knight/knight_save.fbx");
+		jaku_R_f = std::make_shared<Model>("./Data/FBX/Knight/knight_face_anim.fbx");
 	}
 
 	if (anim == nullptr)
@@ -150,8 +155,8 @@ void Knight::LoadData(std::shared_ptr<Texture> texture)
 	}
 	
 
-	motion.MeshSet(base);
-	motion.AnimReset();
+	//motion.MeshSet(base);
+	//motion.AnimReset();
 }
 
 bool Knight::AttackLoad()
@@ -675,8 +680,10 @@ void Knight::Update(float decision, float elapsed_time)
 		ImGui::InputFloat("LegPosY", &hit[scastI(KNIGHTHIT::LEG)].distance.y, 0.1f, 0.1f);
 		ImGui::InputFloat("LegSizeX", &hit[scastI(KNIGHTHIT::LEG)].size.x, 0.1f, 0.1f);
 		ImGui::InputFloat("LegSizeY", &hit[scastI(KNIGHTHIT::LEG)].size.y, 0.1f, 0.1f);
-		//ImGui::SliderFloat("camera.y", &camera.y, -world_max_y, world_max_y);
-		//ImGui::SliderFloat("camera.x", &camera.x, -world_max_x, world_max_x);
+		ImGui::SliderFloat("eye_offset.x", &eye_offset.x, 0.0f, 2048.0f);
+		ImGui::SliderFloat("eye_offset.y", &eye_offset.y, 0.0f, 2048.0f);
+		ImGui::InputFloat("eye_offset.x", &eye_offset.x, 0.1f, 0.1f);
+		ImGui::InputFloat("eye_offset.y", &eye_offset.y, 0.1f, 0.1f);
 		ImGui::Text("player.y:%f", pos.y);
 		ImGui::Text("player.x:%f", pos.x);
 
@@ -1164,6 +1171,17 @@ void Knight::Draw(
 
 	bool inversion = true;//ç∂âEîΩì]ÉtÉâÉO
 
+	DirectX::XMFLOAT4 material_color = { 1.0f,1.0f,1.0f,1.0f };
+
+	if (fream < target_max && fream>0.0f)
+	{
+		material_color = { 0.0f,0.0f,1.0f,1.0f };
+	}
+	if (later < target_max && later>0.0f)
+	{
+		material_color = { 1.0f,0.0f,0.0f,1.0f };
+	}
+
 	//ç∂å¸Ç´
 	if (rightOrleft < 0)
 	{
@@ -1179,6 +1197,21 @@ void Knight::Draw(
 	else
 	{
 		angle.y = DirectX::XMConvertToRadians(0.0f);
+
+		/*motion.DrawContinue(
+			parallel_shader,
+			pos.GetDXFLOAT3(),
+			scale.GetDXFLOAT3(),
+			angle.GetDXFLOAT3(),
+			view, projection, light_direction, light_color, ambient_color, elapsed_time * anim_ccodinate,
+			inversion, material_color
+		);
+
+		anim->UpdateAnimation(elapsed_time * anim_ccodinate);
+		anim->CalculateLocalTransform();
+		anim->CalculateWorldTransform(DirectX::XMFLOAT3(pos.x,pos.y,pos.z), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
+		anim->Draw(parallel_shader, view, projection, light_direction, light_color, ambient_color, material_color);*/
+
 		//angle.y = DirectX::XMConvertToRadians(80.0f);
 		inversion = false;
 		if (invincible)
@@ -1194,17 +1227,6 @@ void Knight::Draw(
 		scale.GetDXFLOAT3(),
 		angle.GetDXFLOAT3(),
 		view, projection, light_direction, light_color, ambient_color, elapsed_time, 0.0f);*/
-
-	DirectX::XMFLOAT4 material_color = { 1.0f,1.0f,1.0f,1.0f };
-
-	if (fream < target_max && fream>0.0f)
-	{
-		material_color = { 0.0f,0.0f,1.0f,1.0f };
-	}
-	if (later < target_max && later>0.0f)
-	{
-		material_color = { 1.0f,0.0f,0.0f,1.0f };
-	}
 
 	if (static_cast<int>(YRCamera.camera_state) == now_player)
 	{
@@ -1251,7 +1273,7 @@ void Knight::Draw(
 	anim->UpdateAnimation(elapsed_time * anim_ccodinate);
 	anim->CalculateLocalTransform();
 	anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
-	anim->Draw(parallel_shader, view, projection, light_direction, light_color, ambient_color, material_color);
+	anim->Draw(parallel_shader, view, projection, light_direction, light_color, ambient_color,eye_offset, material_color);
 
 
 	//if (atk[scastI(KNIGHTATK::HADOU)].hit_ok)

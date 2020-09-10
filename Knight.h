@@ -55,6 +55,8 @@ public:
 	YR_Vector3 FastPos;
 	YR_Vector3 hadou;
 	float hadouspeed;
+
+	DirectX::XMFLOAT2	eye_offset = { 0.0f,0.0f };
 	
 	std::array< HitBox, static_cast<int>(KNIGHTHIT::END)> hit;
 	//std::array<YR_Vector3, scastI(KNIGHTHIT::END)> Hitplus;
