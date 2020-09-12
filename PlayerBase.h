@@ -218,6 +218,7 @@ public:
 	int					combo_count;	//コンボカウント
 	int					now_player;		//どのプレイヤーがこのキャラを操作しているか(1:1P、2:2P)
 	float				anim_ccodinate;	//アニメーション速度を調整する変数
+	int					stop_state;		//ヒットストップ中の処理で使用
 	std::vector<AttackBox> atk;
 
 
@@ -284,6 +285,7 @@ public:
 	virtual void CancelList() = 0;
 	virtual void StateNone() = 0;
 
+	virtual void AttackInput() = 0;
 	virtual void Attack(float decision, float elapsed_time) = 0;
 
 	virtual void WinAnimSet() = 0;

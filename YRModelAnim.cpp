@@ -498,7 +498,7 @@ void ModelAnim::Draw(
 
 void ModelAnim::NodeChange(std::shared_ptr<Model>& resource)
 {
-
+	PlayAnimation(0, true);
 	// ÉmÅ[Éh
 	const std::vector<ModelData::Node>& res_nodes = resource->GetNodes();
 

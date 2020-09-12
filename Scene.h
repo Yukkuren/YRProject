@@ -81,6 +81,8 @@ public:
 	float p1_elapsed_time = 0.0f;
 	float p2_elapsed_time = 0.0f;
 
+	float hit_stop_elapsed;
+
 	//カメラステートがメインの時のカメラ座標
 	YR_Vector3	Scene_eye;
 	YR_Vector3	Scene_focus;
@@ -112,8 +114,8 @@ public:
 
 	MAIN_LOOP		main_loop;	//この変数でゲームメインの遷移を管理する
 
-	std::unique_ptr<geometric_primitive>	geo = nullptr;
-	std::unique_ptr<Skinned_mesh>	skin = nullptr;
+	std::unique_ptr<geometric_primitive>	geo = nullptr;		//板ポリデータ。当たり判定の描画に使う
+	//std::unique_ptr<Skinned_mesh>	skin = nullptr;
 
 	//画像関係
 	std::unique_ptr<Sprite> test = nullptr;
@@ -132,9 +134,9 @@ public:
 	std::array<int, 3>		p2combo;
 
 	//画像
-	std::unique_ptr<Skinned_mesh> box = nullptr;
-	std::shared_ptr<Texture> box_texture = nullptr;
-	MeshMotion motion;
+	//std::unique_ptr<Skinned_mesh> box = nullptr;
+	//std::shared_ptr<Texture> box_texture = nullptr;
+	//MeshMotion motion;
 	//std::shared_ptr<Texture> knight2P_texture = nullptr;
 
 	//シェーダー

@@ -399,8 +399,8 @@ void AttackBox::Draw(YRShader* shader,
 {
 	FRAMEWORK.scenegame.geo->render(
 		shader,
-		pos.GetDXFLOAT3(),
-		DirectX::XMFLOAT3(parameter.size.x,parameter.size.y,5.0f),
+		DirectX::XMFLOAT3(pos.x,pos.y,0.0f),
+		DirectX::XMFLOAT3(parameter.size.x,parameter.size.y,0.0f),
 		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 		view,
 		projection,

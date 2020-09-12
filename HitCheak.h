@@ -7,7 +7,7 @@
 class Hitcheak
 {
 public:
-	static float HitCheak(std::vector<AttackBox>& attack, HitBox* hit, int h_max, int player);
+	static float HitCheak(std::vector<AttackBox>& attack, HitBox* hit, int h_max, int player,YR_Vector3 pos);
 	static void HitCheakAttack(std::vector<AttackBox>& attack1p, std::vector<AttackBox>& attack2p);
 	//static void HitCheak2(AttackBox *attack, int a_max, HitBox *hit, int h_max);
 	static void HitPlayer(HitBox* pl1, float& pos1, HitBox* pl2, float& pos2);

@@ -42,6 +42,7 @@ void Knight::Jaku(float elapsed_time)
 		anim_ccodinate = attack_list[scastI(attack_state)].attack_single[attack_num].parameter[0].timer * 100.0f;
 		attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft);
 		fream = non_target;
+		anim->NodeChange(jaku_R_t);
 		//motion.MeshSet(jaku_r_t);
 		//motion.AnimReset();
 		
@@ -91,7 +92,8 @@ void Knight::Jaku(float elapsed_time)
 		{
 			attack_list[now_at_list].now_attack_num = 0;
 			later = attack_list[now_at_list].later;
-			anim_ccodinate = 1.0f;
+			anim_ccodinate = 1.5f;
+			anim->NodeChange(jaku_R_l);
 			//motion.MeshSet(base);
 			//motion.AnimReset();
 		}
@@ -613,21 +615,22 @@ void Knight::SpecialAttack(float elapsed_time)
 		{
 			focus = pos;
 			eye.x = focus.x;
-			eye.y = focus.y + 2.0f;
-			eye.z = focus.z - 8.0f;
+			eye.y = focus.y - 2.5f;
+			eye.z = focus.z - 10.0f;
+			focus.y += 2.5f;
 		}
 		else if (fream > 1.0f)
 		{
-
 			focus = pos;
 			eye.x = pos.x - Getapply(7.0f);
 			eye.y = focus.y - 2.0f;
 			eye.z = pos.z - 7.0f;
+			ChangeFace(FaceAnim::YARUKI);
 		}
-		else if (fream > 0.5f)
+		else if (fream > 0.2f)
 		{
 			focus = pos;
-			focus.x + 2.0f;
+			focus.x + Getapply(2.0f);
 			focus.y - 2.0f;
 			eye.x = focus.x + Getapply(9.0f);
 			eye.y = focus.y + 6.0f;
@@ -645,8 +648,11 @@ void Knight::SpecialAttack(float elapsed_time)
 
 	if (fream < 0.0f)
 	{
+		int attack_num = attack_list[scastI(attack_state)].now_attack_num;
+		anim_ccodinate = 3.5f;
 		attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft);
 		fream = non_target;
+		anim->NodeChange(special_R_t);
 		YRCamera.RequestCamera(Camera::Request::RELEASE, now_player);
 	}
 
@@ -672,6 +678,8 @@ void Knight::SpecialAttack(float elapsed_time)
 				knock = true;
 			}
 		}
+		pos.x += elapsed_time * Getapply(50.0f);
+		//pos.x += elapsed_time * Getapply(150.0f);
 	}
 
 	if (atk.empty())
@@ -690,6 +698,8 @@ void Knight::SpecialAttack(float elapsed_time)
 		{
 			attack_list[now_at_list].now_attack_num = 0;
 			later = attack_list[now_at_list].later;
+			anim_ccodinate = 0.8f;
+			anim->NodeChange(special_R_l);
 		}
 	}
 

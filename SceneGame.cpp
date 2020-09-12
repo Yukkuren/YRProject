@@ -96,12 +96,13 @@ void SceneGame::Init()
 
 
 
-	motion.MeshSet(box);
-	motion.AnimReset();
+	/*motion.MeshSet(box);
+	motion.AnimReset();*/
 
 	p1_elapsed_time = 1.0f;
 	p2_elapsed_time = 1.0f;
 	camera_move_debug = false;
+	hit_stop_elapsed = 0.0f;
 }
 
 
@@ -119,17 +120,17 @@ void SceneGame::LoadData()
 		geo = std::make_unique<geometric_primitive>();
 	}
 
-	if (skin == nullptr)
-	{
-		//skin = std::make_unique<Skinned_mesh>("./Data/FBX/knight.fbx");
-	}
+	//if (skin == nullptr)
+	//{
+	//	//skin = std::make_unique<Skinned_mesh>("./Data/FBX/knight.fbx");
+	//}
 	/*if (knight2P_texture == nullptr)
 	{
 		knight2P_texture = std::make_shared<Texture>(L"./Data/FBX/Knight/knight_tex_nofaces.png");
 	}*/
 	
 #if USE_IMGUI
-	if (box_texture == nullptr)
+	/*if (box_texture == nullptr)
 	{
 		box_texture = std::make_shared<Texture>(L"./Data/FBX/danbo_fbx/texture/danbo_face_c2.png");
 	}
@@ -137,7 +138,7 @@ void SceneGame::LoadData()
 	if (box == nullptr)
 	{
 		box = std::make_unique<Skinned_mesh>("./Data/FBX/danbo_fbx/danbo_taiki.fbx", box_texture);
-	}
+	}*/
 #endif // USE_IMGUI
 
 	
@@ -489,8 +490,8 @@ void SceneGame::Update(float elapsed_time)
 					player2p->GaugeUp(Hitcheak::add2P);
 
 					//攻撃と当たり判定の判定
-					Hitcheak::add1P = Hitcheak::HitCheak(player1p->atk, player2p->GetHit(), player2p->GetMax(0), 2);
-					Hitcheak::add2P = Hitcheak::HitCheak(player2p->atk, player1p->GetHit(), player1p->GetMax(0), 1);
+					Hitcheak::add1P = Hitcheak::HitCheak(player1p->atk, player2p->GetHit(), player2p->GetMax(0), 2,player1p->pos);
+					Hitcheak::add2P = Hitcheak::HitCheak(player2p->atk, player1p->GetHit(), player1p->GetMax(0), 1,player2p->pos);
 					player1p->GaugeUp(Hitcheak::add1P);
 					player2p->GaugeUp(Hitcheak::add2P);
 
@@ -498,6 +499,7 @@ void SceneGame::Update(float elapsed_time)
 					if (Hitcheak::hit)
 					{
 						Hitcheak::timer -= elapsed_time;
+						hit_stop_elapsed += elapsed_time;
 						if (Hitcheak::timer < 0.0f)
 						{
 							Hitcheak::clash = false;
@@ -507,18 +509,24 @@ void SceneGame::Update(float elapsed_time)
 							player2p->StopEnd();
 							Hitcheak::stop1p = false;
 							Hitcheak::stop2p = false;
+							player1p->stop_state = 0;
+							player2p->stop_state = 0;
 						}
 						if (Hitcheak::timer != 0.0f)
 						{
 							/*PlayerALL::player1p->StopUpdate();
 							PlayerALL::player2p->StopUpdate();*/
-							if (Hitcheak::stop1p)
+							if (hit_stop_elapsed > 0.05f)
 							{
-								player1p->StopUpdate();
-							}
-							if (Hitcheak::stop2p)
-							{
-								player2p->StopUpdate();
+								if (Hitcheak::stop1p)
+								{
+									player1p->StopUpdate();
+								}
+								if (Hitcheak::stop2p)
+								{
+									player2p->StopUpdate();
+								}
+								hit_stop_elapsed = 0.0f;
 							}
 							return;
 						}
@@ -584,16 +592,34 @@ void SceneGame::Update(float elapsed_time)
 
 						//プレイヤー更新
 						//1Pが左
+						float pl1_rightorleft = 0.0f;
+						float pl2_rightorleft = 0.0f;
 						if (player1p->pos.x < player2p->pos.x)
 						{
-							player1p->Update(1.0f, elapsed_time * p1_elapsed_time);
-							player2p->Update(-1.0f, elapsed_time * p2_elapsed_time);
+							pl1_rightorleft = 1.0f;
+							pl2_rightorleft = -1.0f;
 						}
 						//2Pが左
 						else
 						{
-							player1p->Update(-1.0f, elapsed_time * p1_elapsed_time);
-							player2p->Update(1.0f, elapsed_time * p2_elapsed_time);
+							pl1_rightorleft = -1.0f;
+							pl2_rightorleft = 1.0f;
+						}
+
+						switch (YRCamera.camera_state)
+						{
+						case Camera::CAMERA_STATE::MAIN:
+							player1p->Update(pl1_rightorleft, elapsed_time * p1_elapsed_time);
+							player2p->Update(pl2_rightorleft, elapsed_time * p2_elapsed_time);
+							break;
+						case Camera::CAMERA_STATE::PLAYER1P:
+							player1p->Update(pl1_rightorleft, elapsed_time * p1_elapsed_time);
+							break;
+						case Camera::CAMERA_STATE::PLAYER2P:
+							player2p->Update(pl2_rightorleft, elapsed_time * p2_elapsed_time);
+							break;
+						default:
+							break;
 						}
 
 						//プレイヤーの移動距離制限(※要変更)
@@ -809,7 +835,7 @@ void SceneGame::Draw(float elapsed_time)
 	//仮背景
 	test->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 0.5f);
 	
-	geo->render(
+	/*geo->render(
 		geoShader.get(),
 		DirectX::XMFLOAT3(3.0f, 0.0f, 0.0f),
 		DirectX::XMFLOAT3(5.0f, 3.0f, 0.0f),
@@ -817,7 +843,7 @@ void SceneGame::Draw(float elapsed_time)
 		V,
 		P,
 		DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.5f)
-	);
+	);*/
 
 	switch (main_loop)
 	{
@@ -1324,11 +1350,28 @@ void SceneGame::CameraRequest(float elapsed_time)
 		break;
 	case Camera::Request::WEAKEN:
 	{
-		YR_Vector3 eye = YRCamera.GetEye();
-		YR_Vector3 focus = YRCamera.GetFocus();
-		float fov = YRCamera.GetFov() / 0.01745f;
+		DirectX::XMFLOAT3 eye = YRCamera.GetEye();
+		DirectX::XMFLOAT3 focus = YRCamera.GetFocus();
+		float fov = YRCamera.GetFov();
 		float elap = 50.0f;
-			if (eye.x > Scene_eye.x)
+
+		DirectX::XMVECTOR scene_eye_vector = DirectX::XMLoadFloat3(&Scene_eye.GetDXFLOAT3());
+		DirectX::XMVECTOR eye_vector = DirectX::XMLoadFloat3(&eye);
+		DirectX::XMVECTOR scene_focus_vector = DirectX::XMLoadFloat3(&Scene_focus.GetDXFLOAT3());
+		DirectX::XMVECTOR focus_vector = DirectX::XMLoadFloat3(&focus);
+		DirectX::XMVECTOR scene_fov_vector = DirectX::XMLoadFloat(&Scene_fov);
+		DirectX::XMVECTOR fov_vector = DirectX::XMLoadFloat(&fov);
+		
+		DirectX::XMVECTOR eye_larp = DirectX::XMVectorLerp(eye_vector, scene_eye_vector, 0.05f);
+		DirectX::XMVECTOR focus_larp = DirectX::XMVectorLerp(focus_vector, scene_focus_vector, 0.05f);
+		DirectX::XMVECTOR fov_larp = DirectX::XMVectorLerp(fov_vector, scene_fov_vector, 0.9);
+
+		
+		DirectX::XMStoreFloat3(&eye, eye_larp);
+		DirectX::XMStoreFloat3(&focus, focus_larp);
+		DirectX::XMStoreFloat(&fov, fov_larp);
+
+		/*if (eye.x > Scene_eye.x)
 			{
 				eye.x -= elapsed_time*elap;
 			}
@@ -1375,18 +1418,20 @@ void SceneGame::CameraRequest(float elapsed_time)
 			if (focus.z < Scene_focus.z)
 			{
 				focus.z += elapsed_time * elap;
-			}
-			if (fov < Scene_fov)
+			}*/
+		/*if (fov < Scene_fov)
 			{
 				fov += elapsed_time*elap;
 			}
 			if (fov > Scene_fov)
 			{
 				fov -= elapsed_time*elap;
-			}
-			YRCamera.SetEye(eye.GetDXFLOAT3());
-			YRCamera.SetFocus(focus.GetDXFLOAT3());
-			YRCamera.SetFov(fov * 0.01745f);
+			}*/
+		YRCamera.SetEye(eye);
+		YRCamera.SetFocus(focus);
+		YRCamera.SetFov(fov);
+		YRCamera.Active();
+
 	}
 		break;
 	default:

@@ -4,7 +4,7 @@
 #include "YR_VECTOR3.h"
 //#include "Music.h"
 
-float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max, int player)
+float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max, int player, YR_Vector3 pos)
 {
 	if (attack.empty())
 	{
@@ -18,11 +18,15 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 		{
 			for (int hitnum = 0; hitnum < h_max; hitnum++)
 			{
-				if (attack[atknum].parameter.distance.x - attack[atknum].parameter.size.x<hit[hitnum].center.x + hit[hitnum].size.x &&
-					attack[atknum].parameter.distance.x + attack[atknum].parameter.size.x>hit[hitnum].center.x - hit[hitnum].size.x)
+				/*float a = (pos.x + attack[atknum].parameter.distance.x) - attack[atknum].parameter.size.x;
+				float b = hit[hitnum].center.x + hit[hitnum].size.x;
+				float c = (pos.x + attack[atknum].parameter.distance.x) + attack[atknum].parameter.size.x;
+				float d = hit[hitnum].center.x - hit[hitnum].size.x;*/
+				if ((pos.x + attack[atknum].parameter.distance.x) - attack[atknum].parameter.size.x<hit[hitnum].center.x + hit[hitnum].size.x &&
+					(pos.x + attack[atknum].parameter.distance.x) + attack[atknum].parameter.size.x>hit[hitnum].center.x - hit[hitnum].size.x)
 				{
-					if (attack[atknum].parameter.distance.y - attack[atknum].parameter.size.y<hit[hitnum].center.y + hit[hitnum].size.y &&
-						attack[atknum].parameter.distance.y + attack[atknum].parameter.size.y>hit[hitnum].center.y - hit[hitnum].size.y)
+					if ((pos.y + attack[atknum].parameter.distance.y) - attack[atknum].parameter.size.y<hit[hitnum].center.y + hit[hitnum].size.y &&
+						(pos.y + attack[atknum].parameter.distance.y) + attack[atknum].parameter.size.y>hit[hitnum].center.y - hit[hitnum].size.y)
 					{
 						int flag = 0;
 

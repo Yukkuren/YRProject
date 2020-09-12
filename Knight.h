@@ -45,7 +45,12 @@ private:
 
 	//個別モーション用変数
 	std::shared_ptr<Model>			wait = nullptr;
+	std::shared_ptr<Model>			jaku_R_f = nullptr;
+	std::shared_ptr<Model>			jaku_R_t = nullptr;
+	std::shared_ptr<Model>			jaku_R_l = nullptr;
 	std::shared_ptr<Model>			special_R_f = nullptr;
+	std::shared_ptr<Model>			special_R_t = nullptr;
+	std::shared_ptr<Model>			special_R_l = nullptr;
 
 public:
 	bool fast;
@@ -109,7 +114,8 @@ public:
 	bool WinPerformance();
 
 
-	void Attack(float decision, float elapsed_time);//以下の関数を制御する
+	void AttackInput();	//攻撃するボタンが押されたか確認し、押されていればその行動をさせる
+	void Attack(float decision, float elapsed_time);		//以下の関数を制御する
 
 
 	//----------------------------------//
@@ -196,6 +202,8 @@ public:
 		NORMAL = 0,
 		WINK,
 		Damage,
+		YARUKI,
+		KOUHUN,
 	};
 
 	//目の識別用列挙
@@ -204,6 +212,7 @@ public:
 		NORMAL_EYE = 0,
 		WINK1,
 		WINK2,
+		KIRAME,
 		CLOSE,
 		TURI,
 		KAOMOJI,
@@ -215,9 +224,10 @@ public:
 		{ 0.0f,0.0f },
 		{ 0.2f,0.0f },
 		{ 0.4f,0.0f },
+		{ 0.605f,0.0f },
 		{ 0.0f,0.1f },
 		{ 0.2f,0.1f },
-		{ 0.4f,0.1f }
+		{ 0.39f,0.1f }
 	};
 
 	//口の列挙
