@@ -103,6 +103,7 @@ void SceneGame::Init()
 	p2_elapsed_time = 1.0f;
 	camera_move_debug = false;
 	hit_stop_elapsed = 0.0f;
+	game_speed = 0.0f;
 }
 
 
@@ -281,8 +282,11 @@ void SceneGame::StartSet()
 	//イントロ終了後のゲーム画面のセット
 
 	//カメラ初期座標
-	Scene_eye = YR_Vector3(0.0f, 6.0f, -140.0f);
-	Scene_focus = YR_Vector3(0.0f, 6.0f, 0.0f);
+	Start_Scene_eye = YR_Vector3(0.0f, 6.0f, -140.0f);
+	Start_Scene_focus = YR_Vector3(0.0f, 6.0f, 0.0f);
+
+	Scene_eye = Start_Scene_eye;
+	Scene_focus = Start_Scene_focus;
 	Scene_up = YR_Vector3(0.0f, 1.0f, 0.0f);
 	Scene_fov = 10.0f * 0.01745f;
 	Scene_aspect = 1920.0f / 1080.0f;
@@ -296,6 +300,7 @@ void SceneGame::StartSet()
 	YRCamera.SetPerspective(Scene_fov, Scene_aspect, Scene_nearZ, Scene_farZ);
 	//YRCamera.SetPerspective(1080.0f, 1920.0f, 0.0001f, 1000000.0f);
 
+	Limit::First_Camera_set(Start_Scene_eye);
 }
 
 
@@ -320,7 +325,9 @@ void SceneGame::FinSet()
 
 void SceneGame::Update(float elapsed_time)
 {
-	
+	//基本的にそのままの速度を代入する
+	game_speed = elapsed_time;
+
 	if (fedo_start)
 	{
 		//フェードアウト中
@@ -409,8 +416,8 @@ void SceneGame::Update(float elapsed_time)
 			//プレイヤー1のイントロ
 			YRCamera.camera_state = Camera::CAMERA_STATE::PLAYER1P;
 			//パッドの更新
-			player1p->pad->Update(elapsed_time);
-			player2p->pad->Update(elapsed_time);
+			player1p->pad->Update(game_speed);
+			player2p->pad->Update(game_speed);
 
 			//1Pイントロ更新
 			if (player1p->Intro())
@@ -429,8 +436,8 @@ void SceneGame::Update(float elapsed_time)
 			//プレイヤー2のイントロ
 			YRCamera.camera_state = Camera::CAMERA_STATE::PLAYER2P;
 			//パッドの更新
-			player1p->pad->Update(elapsed_time);
-			player2p->pad->Update(elapsed_time);
+			player1p->pad->Update(game_speed);
+			player2p->pad->Update(game_speed);
 
 			//2Pイントロ更新
 			if (player2p->Intro())
@@ -459,8 +466,8 @@ void SceneGame::Update(float elapsed_time)
 				//イントロがすべて終わり、カウントも終えゲームが開始された
 				
 				//パッド更新
-				player1p->pad->Update(elapsed_time);
-				player2p->pad->Update(elapsed_time);
+				player1p->pad->Update(game_speed);
+				player2p->pad->Update(game_speed);
 				if (pause)
 				{
 					//ポーズ中
@@ -472,7 +479,7 @@ void SceneGame::Update(float elapsed_time)
 
 
 					//カメラリクエスト更新
-					CameraRequest(elapsed_time);
+					CameraRequest(game_speed);
 
 					//カメラの挙動をステートごとに処理
 					CameraUpdate();
@@ -498,6 +505,7 @@ void SceneGame::Update(float elapsed_time)
 					//ヒットストップ処理
 					if (Hitcheak::hit)
 					{
+						game_speed = 0.0f;
 						Hitcheak::timer -= elapsed_time;
 						hit_stop_elapsed += elapsed_time;
 						if (Hitcheak::timer < 0.0f)
@@ -516,7 +524,7 @@ void SceneGame::Update(float elapsed_time)
 						{
 							/*PlayerALL::player1p->StopUpdate();
 							PlayerALL::player2p->StopUpdate();*/
-							if (hit_stop_elapsed > 0.05f)
+							if (hit_stop_elapsed > 0.01f)
 							{
 								if (Hitcheak::stop1p)
 								{
@@ -537,7 +545,12 @@ void SceneGame::Update(float elapsed_time)
 					}
 
 					//プレイヤーの位置からカメラの位置を決定する
-					Limit::Set(player1p->pos, player2p->pos);
+					YR_Vector3 camera_screen = Limit::Set(player1p->pos, player2p->pos,Start_Scene_eye);
+					Scene_eye.x = camera_screen.x;
+					Scene_eye.y = camera_screen.y;
+					Scene_eye.z = camera_screen.z;
+					Scene_focus.x = camera_screen.x;
+					Scene_focus.y = camera_screen.y;
 
 					//ホーミングダッシュ用の値を変更する
 					TrackSet();
@@ -545,7 +558,7 @@ void SceneGame::Update(float elapsed_time)
 					if (end)
 					{
 						//勝敗がついた
-						endtimer += elapsed_time;
+						endtimer += game_speed;
 						
 						float now_elapsed = 0.0f;
 
@@ -609,14 +622,14 @@ void SceneGame::Update(float elapsed_time)
 						switch (YRCamera.camera_state)
 						{
 						case Camera::CAMERA_STATE::MAIN:
-							player1p->Update(pl1_rightorleft, elapsed_time * p1_elapsed_time);
-							player2p->Update(pl2_rightorleft, elapsed_time * p2_elapsed_time);
+							player1p->Update(pl1_rightorleft, game_speed * p1_elapsed_time);
+							player2p->Update(pl2_rightorleft, game_speed* p2_elapsed_time);
 							break;
 						case Camera::CAMERA_STATE::PLAYER1P:
-							player1p->Update(pl1_rightorleft, elapsed_time * p1_elapsed_time);
+							player1p->Update(pl1_rightorleft, game_speed * p1_elapsed_time);
 							break;
 						case Camera::CAMERA_STATE::PLAYER2P:
-							player2p->Update(pl2_rightorleft, elapsed_time * p2_elapsed_time);
+							player2p->Update(pl2_rightorleft, game_speed * p2_elapsed_time);
 							break;
 						default:
 							break;
@@ -645,7 +658,7 @@ void SceneGame::Update(float elapsed_time)
 				//カウント中
 				if (start_timer < start_time)
 				{
-					start_timer += elapsed_time;
+					start_timer += game_speed;
 				}
 				else
 				{
@@ -679,8 +692,8 @@ void SceneGame::Update(float elapsed_time)
 		case SceneGame::WIN1P:
 			
 			//パッドの更新
-			player1p->pad->Update(elapsed_time);
-			player2p->pad->Update(elapsed_time);
+			player1p->pad->Update(game_speed);
+			player2p->pad->Update(game_speed);
 
 			if (player1p->WinPerformance())
 			{
@@ -697,8 +710,8 @@ void SceneGame::Update(float elapsed_time)
 		case SceneGame::WIN2P:
 
 			//パッドの更新
-			player1p->pad->Update(elapsed_time);
-			player2p->pad->Update(elapsed_time);
+			player1p->pad->Update(game_speed);
+			player2p->pad->Update(game_speed);
 
 			if (player2p->WinPerformance())
 			{
@@ -721,7 +734,7 @@ void SceneGame::Update(float elapsed_time)
 		//フェードアウトがスタートしてない場合は画面を映す
 		if (fedo_alpha > 0.0f)
 		{
-			fedo_alpha -= (elapsed_time * mix_fedo);
+			fedo_alpha -= (game_speed * mix_fedo);
 		}
 	}
 }
@@ -835,27 +848,27 @@ void SceneGame::Draw(float elapsed_time)
 	//仮背景
 	test->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 0.5f);
 	
-	/*geo->render(
+	geo->render(
 		geoShader.get(),
-		DirectX::XMFLOAT3(3.0f, 0.0f, 0.0f),
-		DirectX::XMFLOAT3(5.0f, 3.0f, 0.0f),
+		DirectX::XMFLOAT3(0.0f, 0.0f, 20.0f),
+		DirectX::XMFLOAT3(3.0f, 3.0f, 0.0f),
 		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 		V,
 		P,
 		DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.5f)
-	);*/
+	);
 
 	switch (main_loop)
 	{
 	case SceneGame::INTRO1P:
 		//1Pのイントロ
 		//プレイヤー描画
-		player1p->Draw(ParallelToonShader.get(),ToonShader.get(),V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player1p->Draw(ParallelToonShader.get(),ToonShader.get(),V, P, light_direction, lightColor, ambient_color, game_speed);
 		break;
 	case SceneGame::INTRO2P:
 		//2Pのイントロ
 		//プレイヤー描画
-		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed);
 		break;
 	case SceneGame::READY:
 	case SceneGame::MAIN:
@@ -987,8 +1000,8 @@ void SceneGame::Draw(float elapsed_time)
 		}
 
 		//プレイヤー描画
-		player1p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time*p1_elapsed_time);
-		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time*p2_elapsed_time);
+		player1p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed*p1_elapsed_time);
+		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed*p2_elapsed_time);
 		
 		/*skin->Render(
 			skinShader.get(), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
@@ -998,8 +1011,8 @@ void SceneGame::Draw(float elapsed_time)
 		);*/
 
 #if USE_IMGUI
-		player1p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time*p1_elapsed_time);
-		player2p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time*p2_elapsed_time);
+		player1p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed *p1_elapsed_time);
+		player2p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed *p2_elapsed_time);
 		
 		/*motion.DrawContinue(
 		skinShader.get(),
@@ -1050,11 +1063,11 @@ void SceneGame::Draw(float elapsed_time)
 		break;
 	case SceneGame::WIN1P:
 		//プレイヤー描画
-		player1p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player1p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed);
 		break;
 	case SceneGame::WIN2P:
 		//プレイヤー描画
-		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, light_direction, lightColor, ambient_color, elapsed_time);
+		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed);
 		break;
 	case SceneGame::GAME_FIN:
 		break;
@@ -1249,6 +1262,7 @@ void SceneGame::Winjudge()
 
 void SceneGame::PauseUpdate()
 {
+	game_speed = 0.0f;
 	//ポーズ中行う処理
 	if (player1p->pad->x_input[scastI(PAD::START)] == 1 || player2p->pad->x_input[scastI(PAD::START)] == 1)
 	{

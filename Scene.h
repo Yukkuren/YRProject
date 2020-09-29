@@ -81,7 +81,9 @@ public:
 	float p1_elapsed_time = 0.0f;
 	float p2_elapsed_time = 0.0f;
 
-	float hit_stop_elapsed;
+	float hit_stop_elapsed;				//ヒットストップ時に使用
+
+	float game_speed;					//ゲーム全体のスピードを変更する変数
 
 	//カメラステートがメインの時のカメラ座標
 	YR_Vector3	Scene_eye;
@@ -91,6 +93,9 @@ public:
 	float		Scene_aspect = 0.0f;	//アスペクト比
 	float		Scene_nearZ = 0.0f;		//ニアクリップ面までの距離
 	float		Scene_farZ = 0.0f;		//ファークリップ面までの距離
+
+	YR_Vector3	Start_Scene_eye;		//ゲーム開始時の初期カメラ座標
+	YR_Vector3	Start_Scene_focus;		//ゲーム開始時の初期カメラ方向
 
 	enum MAIN_LOOP
 	{

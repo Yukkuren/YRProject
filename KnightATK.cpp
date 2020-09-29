@@ -678,8 +678,8 @@ void Knight::SpecialAttack(float elapsed_time)
 				knock = true;
 			}
 		}
-		pos.x += elapsed_time * Getapply(50.0f);
-		//pos.x += elapsed_time * Getapply(150.0f);
+		//pos.x += elapsed_time * Getapply(50.0f);
+		pos.x += elapsed_time * Getapply(150.0f);
 	}
 
 	if (atk.empty())

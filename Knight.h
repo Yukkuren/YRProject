@@ -34,7 +34,7 @@ private:
 	const float dashspeed = 0.1f;		//ダッシュ速度
 	const float backstepS = 0.5f;
 	const float stepspeed = 0.5f;
-	const float jump_max = 0.5f;
+	const float jump_max = 100.0f;
 	const float high_jump_max = 0.5f;
 	const float brake_speed =10000.0f;	//停止時にかかるブレーキ(基本ピタッと止まるので数値は大きめ)
 
@@ -44,7 +44,8 @@ private:
 	std::unique_ptr<ModelAnim>		anim = nullptr;	//モデル描画&アニメーション適用変数
 
 	//個別モーション用変数
-	std::shared_ptr<Model>			wait = nullptr;
+	std::shared_ptr<Model>			wait_R = nullptr;
+	std::shared_ptr<Model>			damage_R_g_u = nullptr;
 	std::shared_ptr<Model>			jaku_R_f = nullptr;
 	std::shared_ptr<Model>			jaku_R_t = nullptr;
 	std::shared_ptr<Model>			jaku_R_l = nullptr;
@@ -95,11 +96,11 @@ public:
 	bool Step();
 	void MoveAnimSet();
 	void Jump();
-	void JumpUpdate();
+	void JumpUpdate(float elapsed_time);
 	void DamageCheck();
-	void KnockUpdate();
+	void KnockUpdate(float elapsed_time);
 	void Guard(float decision);
-	void GuardBack();
+	void GuardBack(float elapsed_time);
 	void Squat();
 	void FallUpdate();
 	void DownUpdate();

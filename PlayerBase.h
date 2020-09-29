@@ -272,11 +272,11 @@ public:
 	virtual void Move(float decision) = 0;
 	virtual bool Step() = 0;
 	virtual void Jump() = 0;
-	virtual void JumpUpdate() = 0;
+	virtual void JumpUpdate(float elapsed_time) = 0;
 	virtual void DamageCheck() = 0;
 	virtual void Guard(float decision) = 0;
 	virtual void Squat() = 0;
-	virtual void GuardBack() = 0;
+	virtual void GuardBack(float elapsed_time) = 0;
 	virtual void FallUpdate() = 0;
 	virtual void DownUpdate() = 0;
 	virtual void PassiveUpdate() = 0;
@@ -284,6 +284,7 @@ public:
 	virtual void GaugeUp(float add) = 0;
 	virtual void CancelList() = 0;
 	virtual void StateNone() = 0;
+	virtual void KnockUpdate(float elapsed_time) = 0;
 
 	virtual void AttackInput() = 0;
 	virtual void Attack(float decision, float elapsed_time) = 0;

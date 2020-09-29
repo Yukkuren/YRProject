@@ -115,9 +115,15 @@ void Knight::LoadData(int color_number)
 	//------------------------------------------//
 	//		アニメーションボーンデータ読み込み		//
 	//------------------------------------------//
-	if (wait == nullptr)
+	if (wait_R == nullptr)
 	{
-		wait = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_wait.fbx");
+		wait_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_wait.fbx");
+	}
+
+	//ダメージモーション
+	if (damage_R_g_u == nullptr)
+	{
+		damage_R_g_u = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_damage_R_g_u.fbx");
 	}
 
 	//弱攻撃
@@ -137,15 +143,15 @@ void Knight::LoadData(int color_number)
 	//超必殺技
 	if (special_R_f == nullptr)
 	{
-		//special_R_f = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_special_R_f.fbx");
+		special_R_f = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_special_R_f.fbx");
 	}
 	if (special_R_t == nullptr)
 	{
-		//special_R_t = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_special_R_t.fbx");
+		special_R_t = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_special_R_t.fbx");
 	}
 	if (special_R_l == nullptr)
 	{
-		//special_R_l = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_special_R_l.fbx");
+		special_R_l = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_special_R_l.fbx");
 	}
 
 
@@ -157,7 +163,7 @@ void Knight::LoadData(int color_number)
 	{
 		anim = std::make_unique<ModelAnim>(main);
 		anim->PlayAnimation(0, true);
-		anim->NodeChange(wait);
+		anim->NodeChange(wait_R);
 	}
 }
 
@@ -182,9 +188,9 @@ bool Knight::AttackLoad()
 			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].distance.x = 6.0f;
 			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].distance.y = 1.0f;
 			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].gaugeout = true;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].HB_timer = 1.0f;
+			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].HB_timer = 0.1f;
 			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].hitback.x = Getapply(1.0f);
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].hitback.y = 1.0f;
+			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].hitback.y = 0.0f;
 			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].knockback = 1.0f;
 			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].size.x = 3.0f;
 			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].size.y = 1.0f;
@@ -241,7 +247,7 @@ void Knight::Update(float decision, float elapsed_time)
 	HadouUpdate(elapsed_time);
 	Thu_HadouUpdate(elapsed_time);
 	Kyo_HadouUpdate(elapsed_time);
-	if (pos.y >= POS_Y)
+	if (pos.y <= POS_Y)
 	{
 		ground = true;
 		speed_Y.Set(0.0f);
@@ -280,7 +286,7 @@ void Knight::Update(float decision, float elapsed_time)
 		break;
 	case ActState::KNOCK:
 		//攻撃を受けてのけぞる
-		KnockUpdate();
+		KnockUpdate(elapsed_time);
 		break;
 	case ActState::ATTACK:
 		//攻撃中
@@ -302,10 +308,10 @@ void Knight::Update(float decision, float elapsed_time)
 		else
 		{
 			//空中時
-			if (pos.y < POS_Y)
+			if (pos.y > POS_Y)
 			{
 				//重力を付与する
-				pos.y += gravity;
+				pos.y -= gravity*elapsed_time;
 			}
 		}
 
@@ -335,7 +341,7 @@ void Knight::Update(float decision, float elapsed_time)
 			//しゃがみやガードなどを先に判定
 			Squat();
 			Guard(decision);
-			GuardBack();
+			GuardBack(elapsed_time);
 			GuardAnimSet();
 			AttackInput();
 
@@ -352,15 +358,15 @@ void Knight::Update(float decision, float elapsed_time)
 		pad->pre_input = false;
 	}
 
-	JumpUpdate();
+	JumpUpdate(elapsed_time);
 
 	pos.x += speed.x * elapsed_time;
-	pos.y -= speed_Y.Update(elapsed_time);
+	pos.y += speed_Y.Update(elapsed_time);
 
 	if (attack_state != AttackState::D_THU && act_state != ActState::DOWN && act_state != ActState::SQUAT && attack_state != AttackState::D_JAKU)
 	{
-		//hit[scastI(KNIGHTHIT::BODY)].size = HitSize[scastI(KNIGHTHIT::BODY)];
-		//hit[scastI(KNIGHTHIT::LEG)].size = HitSize[scastI(KNIGHTHIT::LEG)];
+		hit[scastI(KNIGHTHIT::BODY)].Init(pos, YR_Vector3(0.0f, 0.0f), YR_Vector3(2.0f, 2.9f));
+		hit[scastI(KNIGHTHIT::LEG)].Init(pos, YR_Vector3(0.0f, 0.0f), YR_Vector3(1.4f, 0.8f));
 	}
 #ifdef USE_IMGUI
 	{
@@ -677,7 +683,7 @@ void Knight::AttackInput()
 
 					attack_state = AttackState::TRACK_DASH;
 					moveflag = false;
-					pos.y -= 50.0f;
+					pos.y += 5.0f;
 					speed.x = 0.0f;
 					speed.y = 0.0f;
 					hightrigger = false;
@@ -931,7 +937,7 @@ void Knight::Attack(float decision, float elapsed_time)
 
 							attack_state = AttackState::TRACK_DASH;
 							act_state = ActState::ATTACK;
-							pos.y -= 50.0f;
+							pos.y -= 5.0f;
 							speed.y = 0.0f;
 							speed.x = 0.0f;
 							hightrigger = false;
@@ -1057,7 +1063,7 @@ void Knight::Attack(float decision, float elapsed_time)
 				attack_state = AttackState::NONE;
 				anim_ccodinate = 1.0f;
 				anim->PlayAnimation(0, true);
-				anim->NodeChange(wait);
+				anim->NodeChange(wait_R);
 				ChangeFace(FaceAnim::NORMAL);
 			}
 		}
@@ -2058,19 +2064,19 @@ void Knight::Jump()
 
 }
 
-void Knight::JumpUpdate()
+void Knight::JumpUpdate(float elapsed_time)
 {
 	if (jumpcount < 2 && jumpflag)
 	{
 		if (speed_Y.speedY == 0.0f)
 		{
-			pos.y -= speed.y;
+			pos.y += (speed.y * elapsed_time);
 		}
 		if (!max_jump_flag)
 		{
 			if (hightrigger)
 			{
-				speed.y += 20.0f;
+				speed.y += (20.0f * elapsed_time);
 				if (speed.y > high_jump_max)
 				{
 					max_jump_flag = true;
@@ -2078,8 +2084,9 @@ void Knight::JumpUpdate()
 			}
 			else
 			{
-				speed.y += 10.0f;
-				if (speed.y > jump_max)
+				speed.y += (2000.0f * elapsed_time);
+				//float hei = speed.y * elapsed_time;
+				if ((speed.y*elapsed_time) > (jump_max*elapsed_time))
 				{
 					max_jump_flag = true;
 				}
@@ -2089,10 +2096,10 @@ void Knight::JumpUpdate()
 
 	if (max_jump_flag)
 	{
-		speed.y -= 2.0f;
+		speed.y -= (200.0f * elapsed_time);
 		if (hightrigger)
 		{
-			if (speed.y - gravity < 0)
+			if (speed.y - (gravity*elapsed_time) < 0.0f)
 			{
 				if (!attack)
 				{
@@ -2103,7 +2110,7 @@ void Knight::JumpUpdate()
 			}
 		}
 	}
-	if (pos.y > POS_Y)
+	if (pos.y < POS_Y)
 	{
 		if (max_jump_flag)
 		{
@@ -2160,6 +2167,9 @@ void Knight::DamageCheck()
 			AllAttackClear();
 			act_state = ActState::KNOCK;
 			attack_state = AttackState::NONE;
+			anim->NodeChange(damage_R_g_u);
+			ChangeFace(FaceAnim::Damage);
+			anim_ccodinate = 5.0f;
 		}
 		if (hit[i].steal)
 		{
@@ -2198,7 +2208,7 @@ void Knight::DamageCheck()
 	}
 }
 
-void Knight::KnockUpdate()
+void Knight::KnockUpdate(float elapsed_time)
 {
 	bool pflag = false;
 	for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
@@ -2222,13 +2232,16 @@ void Knight::KnockUpdate()
 			break;
 		}
 	}
-	knocktimer--;
+	knocktimer -= elapsed_time;
 	if (knocktimer < 0)
 	{
 		combo_count = 0;
 		if (act_state != ActState::WAIT)
 		{
 			act_state = ActState::NONE;
+			anim->NodeChange(wait_R);
+			ChangeFace(FaceAnim::NORMAL);
+			anim_ccodinate = 3.0f;
 		}
 		if (!ground)
 		{
@@ -2389,7 +2402,7 @@ void Knight::Guard(float decision)
 
 }
 
-void Knight::GuardBack()
+void Knight::GuardBack(float elapsed_time)
 {
 	if (act_state != ActState::GUARD)
 	{
@@ -2412,10 +2425,10 @@ void Knight::GuardBack()
 	}
 	if (knocktimer > 0)
 	{
-		knocktimer--;
+		knocktimer -= elapsed_time;
 		if (knocktimer == 0)
 		{
-			knocktimer--;
+			knocktimer -= elapsed_time;
 		}
 	}
 	if (knocktimer < 0)
@@ -2896,7 +2909,7 @@ void Knight::GaugeUp(float add)
 
 void Knight::StopUpdate()
 {
-	float shift_pos = 0.5f;
+	float shift_pos = 0.1f;
 	if (stop_pos == YR_Vector3(0.0f, 0.0f))
 	{
 		stop_pos = pos;
@@ -3096,6 +3109,8 @@ void Knight::FaceAnimation(float elapsed_time)
 	switch (face_anim)
 	{
 	case Knight::FaceAnim::NORMAL:
+		eye_offset = face_eye_offset[FaceEye_Num::NORMAL_EYE];
+		mouse_offset = face_mouse_offset[FaceMouse_Num::NORMAL_MOUSE];
 		face_wink_time += elapsed_time;
 		if (face_wink_time > static_cast<float>(now_player) * 3.0f)
 		{

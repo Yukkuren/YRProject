@@ -106,7 +106,7 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 							hit[hitnum].damege = attack[atknum].parameter.damege;
 							hit[hitnum].timer = attack[atknum].parameter.HB_timer;
 							hit[hitnum].hitback = attack[atknum].parameter.hitback;
-							Hitcheak::timer = (attack[atknum].parameter.damege / 4);
+							Hitcheak::timer = ((attack[atknum].parameter.damege*0.1f) / 5);
 							if (Hitcheak::timer > 40)
 							{
 								Hitcheak::timer = 40;
