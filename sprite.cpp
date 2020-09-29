@@ -206,7 +206,8 @@ void Sprite::Init(const wchar_t* wchar)
 	sample.MipLODBias = 0.0f;
 	sample.MaxAnisotropy = 16;
 	sample.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	memcpy(sample.BorderColor, &DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), sizeof(DirectX::XMFLOAT4));
+	DirectX::XMFLOAT4 bColor = { 0.0f, 0.0f, 0.0f, 0.0f };
+	memcpy(sample.BorderColor, &bColor, sizeof(DirectX::XMFLOAT4));
 	sample.MinLOD = 0;
 	sample.MaxLOD = D3D11_FLOAT32_MAX;
 
@@ -255,6 +256,127 @@ void Sprite::Init(const wchar_t* wchar)
 
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 }
+
+Sprite::Sprite()
+{
+	vertex_tex vertics[] = {
+		{ DirectX::XMFLOAT3(0,0,0),DirectX::XMFLOAT3(0,0,0),DirectX::XMFLOAT2(0,0),DirectX::XMFLOAT4(1,1,1,1)},
+		{ DirectX::XMFLOAT3(0,0,0),DirectX::XMFLOAT3(0,0,0),DirectX::XMFLOAT2(0,0),DirectX::XMFLOAT4(1,1,1,1)},
+		{ DirectX::XMFLOAT3(0,0,0),DirectX::XMFLOAT3(0,0,0),DirectX::XMFLOAT2(0,0),DirectX::XMFLOAT4(1,1,1,1)},
+		{ DirectX::XMFLOAT3(0,0,0),DirectX::XMFLOAT3(0,0,0),DirectX::XMFLOAT2(0,0),DirectX::XMFLOAT4(1,1,1,1)},
+	};
+
+	HRESULT hr = S_OK;
+	//ID3DBlob* pVSBlob = NULL;
+
+	D3D11_BUFFER_DESC bd = {};
+	//ZeroMemory(&bd, sizeof(bd));
+	bd.Usage = D3D11_USAGE_DYNAMIC;
+	bd.ByteWidth = sizeof(vertics);
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	//bd.CPUAccessFlags = 0;
+	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	bd.MiscFlags = 0;
+	bd.StructureByteStride = 0;
+	D3D11_SUBRESOURCE_DATA InitData = {};
+	//ZeroMemory(&InitData, sizeof(InitData));
+	InitData.pSysMem = vertics;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	hr = FRAMEWORK.device->CreateBuffer(&bd, &InitData, buffer.GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	/*D3D11_INPUT_ELEMENT_DESC layout[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0 , DXGI_FORMAT_R32G32_FLOAT , 0 , D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+	UINT numElements = ARRAYSIZE(layout);
+
+	TextureALL::create_vertex_file(FRAMEWORK.device.Get(), "./Data/Shader/sprite_vs.cso", vert.GetAddressOf(), layout, numElements, input.GetAddressOf());
+
+	TextureALL::CreatePixel_files(FRAMEWORK.device.Get(), "./Data/Shader/sprite_ps.cso", pixel.GetAddressOf());*/
+
+	D3D11_RASTERIZER_DESC pRaster = {};
+	pRaster.FillMode = D3D11_FILL_SOLID;
+	pRaster.CullMode = D3D11_CULL_NONE;
+	pRaster.FrontCounterClockwise = FALSE;
+	pRaster.DepthBias = 0;
+	pRaster.DepthBiasClamp = 0;
+	pRaster.SlopeScaledDepthBias = 0;
+	pRaster.DepthClipEnable = FALSE;
+	pRaster.ScissorEnable = FALSE;
+	pRaster.MultisampleEnable = FALSE;
+	pRaster.AntialiasedLineEnable = FALSE;
+
+	hr = FRAMEWORK.device->CreateRasterizerState(&pRaster, rastersize.GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+
+
+	D3D11_SAMPLER_DESC sample;
+	//ID3D11SamplerState *samplestate;
+
+	sample.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	sample.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sample.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sample.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sample.MipLODBias = 0.0f;
+	sample.MaxAnisotropy = 16;
+	sample.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	DirectX::XMFLOAT4 bColor = { 0.0f, 0.0f, 0.0f, 0.0f };
+	memcpy(sample.BorderColor, &bColor, sizeof(DirectX::XMFLOAT4));
+	sample.MinLOD = 0;
+	sample.MaxLOD = D3D11_FLOAT32_MAX;
+
+
+	/*FLOAT color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	sample.BorderColor[0] = color[0];
+	sample.BorderColor[1] = color[1];
+	sample.BorderColor[2] = color[2];
+	sample.BorderColor[3] = color[3];*/
+
+
+	hr = FRAMEWORK.device->CreateSamplerState(&sample, sampler.GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	D3D11_DEPTH_STENCIL_DESC depth_desc;
+
+	depth_desc.DepthEnable = FALSE;
+	depth_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depth_desc.DepthFunc = D3D11_COMPARISON_LESS;
+	depth_desc.StencilEnable = FALSE;
+	depth_desc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+	depth_desc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+	depth_desc.FrontFace.StencilFunc = depth_desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depth_desc.FrontFace.StencilDepthFailOp = depth_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilPassOp = depth_desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilFailOp = depth_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+
+	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, depthstate.GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	/*D3D11_BLEND_DESC blend_desc;
+
+	blend_desc.AlphaToCoverageEnable = TRUE;
+	blend_desc.IndependentBlendEnable = FALSE;
+	blend_desc.RenderTarget[0].BlendEnable = FALSE;
+	blend_desc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	blend_desc.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
+	blend_desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blend_desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blend_desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blend_desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blend_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;*/
+
+	//hr = device->CreateBlendState(&blend_desc, &blendstate);
+
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+}
+
 
 Sprite::Sprite( const wchar_t* wchar)
 {
@@ -466,6 +588,203 @@ void Sprite::render(YRShader* shader, float dx,float dy,float dw,float dh,float 
 
 	FRAMEWORK.context->Draw(4, 0);
 
+	shader->Inactivate();
+}
+
+void Sprite::render(
+	YRShader* shader,
+	Texture* tex,
+	float	dx, float	dy,
+	float	dw, float	dh,
+	float	sx, float	sy,
+	float	sw, float	sh,
+	float		angle,
+	float		alpha
+)
+{
+	D3D11_VIEWPORT vp;
+	UINT num = 1;
+
+	FRAMEWORK.context->RSGetViewports(&num, &vp);
+
+	//float vw = static_cast<float>(FRAMEWORK.SCREEN_WIDTH);
+	//float vh = static_cast<float>(FRAMEWORK.SCREEN_HEIGHT);
+	float screen_width = vp.Width;
+	float screen_height = vp.Height;
+
+	//screen
+	//左上座標
+	float x0 = dx;
+	float y0 = dy;
+
+	//右上座標
+	float x1 = dx + dw;
+	float y1 = dy;
+
+	//左下座標
+	float x2 = dx;
+	float y2 = dy + dh;
+
+	//右下座標
+	float x3 = dx + dw;
+	float y3 = dy + dh;
+
+	//screen
+	float mx = dx + dw * 0.5f;
+	float my = dy + dh * 0.5f;
+	x0 -= mx;
+	y0 -= my;
+	x1 -= mx;
+	y1 -= my;
+	x2 -= mx;
+	y2 -= my;
+	x3 -= mx;
+	y3 -= my;
+
+
+	float rx, ry;
+	float cos = cosf(angle * 0.01745f);
+	float sin = sinf(angle * 0.01745f);
+	rx = x0;
+	ry = y0;
+	x0 = cos * rx + -sin * ry;
+	y0 = sin * rx + cos * ry;
+	rx = x1;
+	ry = y1;
+	x1 = cos * rx + -sin * ry;
+	y1 = sin * rx + cos * ry;
+	rx = x2;
+	ry = y2;
+	x2 = cos * rx + -sin * ry;
+	y2 = sin * rx + cos * ry;
+	rx = x3;
+	ry = y3;
+	x3 = cos * rx + -sin * ry;
+	y3 = sin * rx + cos * ry;
+
+	x0 += mx;
+	y0 += my;
+	x1 += mx;
+	y1 += my;
+	x2 += mx;
+	y2 += my;
+	x3 += mx;
+	y3 += my;
+
+
+	//screen
+	x0 = 2.0f * x0 / screen_width - 1.0f;
+	y0 = 1.0f - 2.0f * y0 / screen_height;
+	x1 = 2.0f * x1 / screen_width - 1.0f;
+	y1 = 1.0f - 2.0f * y1 / screen_height;
+	x2 = 2.0f * x2 / screen_width - 1.0f;
+	y2 = 1.0f - 2.0f * y2 / screen_height;
+	x3 = 2.0f * x3 / screen_width - 1.0f;
+	y3 = 1.0f - 2.0f * y3 / screen_height;
+
+
+	HRESULT hr = S_OK;
+	D3D11_MAP maptype = D3D11_MAP_WRITE_DISCARD;
+	D3D11_MAPPED_SUBRESOURCE mapsub;
+
+	hr = FRAMEWORK.context->Map(buffer.Get(), 0, maptype, 0, &mapsub);
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	//頂点データ設定
+	vertex_tex* data = static_cast<vertex_tex*>(mapsub.pData);
+
+	data[0].Pos.x = x0;
+	data[0].Pos.y = y0;
+	data[0].Pos.z = 0.0f;
+
+	data[1].Pos.x = x1;
+	data[1].Pos.y = y1;
+	data[1].Pos.z = 0.0f;
+
+	data[2].Pos.x = x2;
+	data[2].Pos.y = y2;
+	data[2].Pos.z = 0.0f;
+
+	data[3].Pos.x = x3;
+	data[3].Pos.y = y3;
+	data[3].Pos.z = 0.0f;
+	////回転の中心
+	//float workPosX = dx + dw * 0.5f;
+	//float workPosY = dy + dh * 0.5f;
+
+	////回転処理
+	//for (int i = 0; i < 4; i++) {
+
+	//	float workX = data[i].Pos.x - workPosX;
+	//	float workY = data[i].Pos.y - workPosY;
+	//	data[i].Pos.x = workX * cosf(angle) - workY * sinf(angle) + workPosX;
+	//	data[i].Pos.y = workX * sinf(angle) + workY * cosf(angle) + workPosY;
+	//	data[i].Pos.z = 0.0f;
+	//}
+
+
+
+	// 正規化デバイス座標系
+
+	/*for (int i = 0; i < 4; i++) {
+		data[i].Pos.x = 2.0f * data[i].Pos.x / screen_width - 1.0f;
+		data[i].Pos.y = 1.0f - 2.0f * data[i].Pos.y / screen_height;
+		data[i].Pos.z = 0.0f;
+	}*/
+
+
+	//テクスチャ座標設定
+	data[0].Tex.x = static_cast<FLOAT>(sx) / tex->GetWidth();
+	data[0].Tex.y = static_cast<FLOAT>(sy) / tex->GetHeight();
+	data[1].Tex.x = static_cast<FLOAT>(sx + sw) / tex->GetWidth();
+	data[1].Tex.y = static_cast<FLOAT>(sy) / tex->GetHeight();
+	data[2].Tex.x = static_cast<FLOAT>(sx) / tex->GetWidth();
+	data[2].Tex.y = static_cast<FLOAT>(sy + sh) / tex->GetHeight();
+	data[3].Tex.x = static_cast<FLOAT>(sx + sw) / tex->GetWidth();
+	data[3].Tex.y = static_cast<FLOAT>(sy + sh) / tex->GetHeight();
+	FRAMEWORK.context->Unmap(buffer.Get(), 0);
+
+
+	//UV座標
+	/*for (int i = 0; i < 4; i++) {
+		data[i].Tex.x = data[i].Tex.x / tex->GetWidth();
+		data[i].Tex.y = data[i].Tex.y / tex->GetHeight();
+	}*/
+	//頂点カラー
+	data[0].Color = XMFLOAT4(1, 1, 1, alpha);
+	data[1].Color = XMFLOAT4(1, 1, 1, alpha);
+	data[2].Color = XMFLOAT4(1, 1, 1, alpha);
+	data[3].Color = XMFLOAT4(1, 1, 1, alpha);
+	//法線
+	data[0].Normal = XMFLOAT3(0, 0, 1);
+	data[1].Normal = XMFLOAT3(0, 0, 1);
+	data[2].Normal = XMFLOAT3(0, 0, 1);
+	data[3].Normal = XMFLOAT3(0, 0, 1);
+	
+	shader->Acivate();
+	//頂点データ更新
+	//FRAMEWORK.context->UpdateSubresource(buffer.Get(), 0, NULL, data, 0, 0);
+
+	//	頂点バッファの指定
+	UINT stride = sizeof(vertex_tex);
+	UINT offset = 0;
+	FRAMEWORK.context->IASetVertexBuffers(
+		0, 1, buffer.GetAddressOf(), // スロット, 数, バッファ
+		&stride,		// １頂点のサイズ
+		&offset			// 開始位置
+	);
+	FRAMEWORK.context->IASetPrimitiveTopology(
+		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP
+	);
+	FRAMEWORK.context->OMSetDepthStencilState(depthstate.Get(), 1);
+	FRAMEWORK.context->RSSetState(rastersize.Get());
+	//FRAMEWORK.context->PSSetShaderResources(0, 1, this->shader.GetAddressOf());
+	//FRAMEWORK.context->PSSetSamplers(0, 1, sampler.GetAddressOf());
+	//テクスチャの設定
+	if (tex) tex->Set(0);
+
+	FRAMEWORK.context->Draw(4, 0);
+	//シェーダ無効か
 	shader->Inactivate();
 }
 

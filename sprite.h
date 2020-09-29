@@ -5,6 +5,7 @@
 #include "YRShader.h"
 #include<map>
 #include<string>
+#include "Texture.h"
 //#include "framework.h"
 
 //-------------------------------------------------------------
@@ -37,6 +38,7 @@ public:
 	float numY;						//画像縦分割数
 	int	num = 0;
 	float time = 0;
+	//std::shared_ptr<Texture> texture = nullptr;
 public:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader>			vert;
 	Microsoft::WRL::ComPtr<ID3D11PixelShader>			pixel;
@@ -57,6 +59,13 @@ public:
 		DirectX::XMFLOAT2 texcord;
 	};
 
+	struct vertex_tex
+	{
+		DirectX::XMFLOAT3 Pos;
+		DirectX::XMFLOAT3 Normal;
+		DirectX::XMFLOAT2 Tex;
+		DirectX::XMFLOAT4 Color;
+	};
 
 	void render(
 		//UNIT.03
@@ -69,6 +78,18 @@ public:
 		float r,float g,float b,	//Color of sprite's each vertices
 		float a
 	);
+
+	void render(
+		YRShader*	shader,
+		Texture*	 tex,
+		float	dx, float	dy,
+		float	dw, float	dh,
+		float	sx, float	sy,
+		float	sw, float	sh,
+		float		angle,
+		float		alpha
+	);
+
 	//画像を読み込む(画像横サイズ,画像縦サイズ)
 	void LoadGraph(float sw, float sh)
 	{
@@ -281,7 +302,7 @@ public:
 		render(shader, x, y, width, height, sx, sy, sw, sh, 0.0f, color.x, color.y, color.z, color.w);
 	}
 
-
+	Sprite();
 	Sprite(const wchar_t* wchar/*Texture file name*/);
 	Sprite(const wchar_t* wchar, float sw, float sh);
 	//画像分割読み込み(画像横サイズ,画像縦サイズ,画像横分割数,画像縦分割数,分割した画像一枚の横サイズ,縦サイズ)

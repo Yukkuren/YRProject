@@ -10,10 +10,10 @@ Texture::Texture() : ShaderResouceView(nullptr)
 
 }
 
-Texture::Texture(const wchar_t* fbx_filename)
+Texture::Texture(const wchar_t* filename)
 {
 	ShaderResouceView = nullptr;
-	Load(fbx_filename);
+	Load(filename);
 }
 
 Texture::~Texture()
@@ -21,7 +21,7 @@ Texture::~Texture()
 
 }
 
-bool Texture::Load(const wchar_t* fbx_filename)
+bool Texture::Load(const wchar_t* filename)
 {
 	
 	
@@ -30,7 +30,7 @@ bool Texture::Load(const wchar_t* fbx_filename)
 	ID3D11Resource* pResouse;
 
 	//一度読み込んだ画像は記録しておく
-	auto it = texAll::tex.find(fbx_filename);
+	auto it = texAll::tex.find(filename);
 	if (it != texAll::tex.end())
 	{
 		ShaderResouceView = it->second.Get();
@@ -39,9 +39,9 @@ bool Texture::Load(const wchar_t* fbx_filename)
 	}
 	else
 	{
-		hr = DirectX::CreateWICTextureFromFile(FRAMEWORK.device.Get(), fbx_filename, &pResouse, ShaderResouceView.GetAddressOf());
-		std::wstring extension = PathFindExtensionW(fbx_filename);
-		texAll::tex.insert(std::make_pair(fbx_filename, ShaderResouceView));
+		hr = DirectX::CreateWICTextureFromFile(FRAMEWORK.device.Get(), filename, &pResouse, ShaderResouceView.GetAddressOf());
+		std::wstring extension = PathFindExtensionW(filename);
+		texAll::tex.insert(std::make_pair(filename, ShaderResouceView));
 		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 	}
 
@@ -103,6 +103,7 @@ bool Texture::Create(u_int width, u_int height, DXGI_FORMAT format)
 	hr = FRAMEWORK.device->CreateRenderTargetView(texture2d.Get(), &rtvd, RenderTargetView.GetAddressOf());
 	assert(SUCCEEDED(hr));
 
+
 	//シェーダーリソースビュー作成
 	CD3D11_SHADER_RESOURCE_VIEW_DESC srvd;
 	ZeroMemory(&srvd, sizeof(srvd));
@@ -155,7 +156,7 @@ bool Texture::CreateDepth(u_int width, u_int height, DXGI_FORMAT format)
 	srvd.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvd.Texture2D.MostDetailedMip = 0;
 	srvd.Texture2D.MipLevels = 1;
-	hr = FRAMEWORK.device->CreateShaderResourceView(Texture2D.Get(), &srvd, ShaderResouceView.GetAddressOf());
+	hr = FRAMEWORK.device->CreateShaderResourceView(Texture2D.Get(), &srvd, DepthShaderResouceView.GetAddressOf());
 
 	assert(SUCCEEDED(hr));
 

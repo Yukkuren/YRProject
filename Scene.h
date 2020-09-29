@@ -138,6 +138,7 @@ public:
 	std::array<int, 3>		p1combo;
 	std::array<int, 3>		p2combo;
 
+
 	//画像
 	//std::unique_ptr<Skinned_mesh> box = nullptr;
 	//std::shared_ptr<Texture> box_texture = nullptr;
@@ -350,8 +351,26 @@ public:
 	std::unique_ptr<board_primitive>		board = nullptr;
 	std::unique_ptr<AnimBoard>				anim = nullptr;
 
+
+	std::unique_ptr<board_primitive>		bisuko = nullptr;
+	std::unique_ptr<board_primitive>		cube = nullptr;
+	std::unique_ptr<board_primitive>		plane = nullptr;
+
+	std::shared_ptr<Texture> bisuko_normal_texture = nullptr;
+	std::shared_ptr<Texture> bisuko_specular_texture = nullptr;
+	std::shared_ptr<Texture> test_texture = nullptr;
+	std::shared_ptr<Texture> test_normal_texture = nullptr;
+	std::shared_ptr<Texture> scorpion_specular_texture = nullptr;
+	std::shared_ptr<Texture> specular_texture = nullptr;
+
+
+	//Gbuffer用スプライト
+	std::unique_ptr<Sprite>	sprite = nullptr;
+
 	//サンプラー
-	std::shared_ptr<Sampler> sampler = nullptr;
+	std::shared_ptr<Sampler> sampler_wrap = nullptr;
+	std::shared_ptr<Sampler> sampler_clamp = nullptr;
+
 
 	//シェーダー
 	std::unique_ptr<YRShader> skinShader = nullptr;
@@ -359,7 +378,12 @@ public:
 	std::unique_ptr<YRShader> geoShader = nullptr;
 	std::unique_ptr<YRShader> boardShader = nullptr;
 	std::unique_ptr<YRShader> animShader = nullptr;
+<<<<<<< HEAD
 	std::unique_ptr<YRShader> toonShader = nullptr;
+=======
+	std::unique_ptr<YRShader> toGbuffer = nullptr;
+	std::unique_ptr<YRShader> spriteEx = nullptr;
+>>>>>>> Shader
 
 	//テクスチャ
 	std::unique_ptr<Texture> color_texture = nullptr;
@@ -367,8 +391,26 @@ public:
 	std::unique_ptr<Texture> position_texture = nullptr;
 	
 
+	Microsoft::WRL::ComPtr<ID3D11Buffer>	constantBuffer = nullptr;
+
 public:
 	void Init();
 	void Update(float elapsed_time);
 	void Draw(float elapsed_time);
+
+	void RenderTexture(
+		const DirectX::XMMATRIX&	view,
+		const DirectX::XMMATRIX&	projection,
+		const DirectX::XMFLOAT4&	light_direction,
+		const DirectX::XMFLOAT4&	light_color,
+		const DirectX::XMFLOAT4&	ambient_color,
+		float						elapsed_time);
+public:
+	struct CB_Multi_Render_Target
+	{
+		DirectX::XMFLOAT4	light_direction = { 0.0f,0.0f,0.0f,0.0f };
+		DirectX::XMFLOAT4	light_color = { 0.0f,0.0f,0.0f,0.0f };
+		DirectX::XMFLOAT4	ambient_color = { 0.0f,0.0f,0.0f,0.0f };
+		DirectX::XMFLOAT4	eye_pos = { 0.0f,0.0f,0.0f,0.0f };
+	};
 };

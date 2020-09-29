@@ -17,7 +17,7 @@ class Texture
 {
 protected:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>	ShaderResouceView = nullptr;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>		RenderTargetView = nullptr;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>	DepthShaderResouceView = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>		DepthStencilView = nullptr;
 
 	//テクスチャ情報
@@ -25,11 +25,12 @@ protected:
 	
 
 public:
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>		RenderTargetView = nullptr;
 
 	Texture();
-	Texture(const wchar_t* fbx_filename);
+	Texture(const wchar_t* filename);
 	virtual ~Texture();
-	bool Load(const wchar_t* fbx_filename);
+	bool Load(const wchar_t* filename);
 	void Set(UINT slot, BOOL flg = TRUE);
 
 	UINT GetWidth() const { return texture2d_desc.Width; };//画像の全体横サイズを返す
@@ -41,5 +42,7 @@ public:
 
 	ID3D11RenderTargetView* GetRenderTargetView() { return RenderTargetView.Get(); };
 	ID3D11DepthStencilView* GetDepthStencilView() { return DepthStencilView.Get(); };
+	ID3D11ShaderResourceView* GetShaderResource() { return ShaderResouceView.Get(); };
+	ID3D11ShaderResourceView* GetDepthShaderResource() { return DepthShaderResouceView.Get(); };
 
 };

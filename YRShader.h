@@ -59,12 +59,26 @@ private:
 		anim_element_desc.push_back(uv_size);
 		anim_element_desc.push_back(color);
 
+<<<<<<< HEAD
 		//toon
 		toon_element_desc.push_back(pos);
 		toon_element_desc.push_back(normal);
 		toon_element_desc.push_back(tex);
 		toon_element_desc.push_back(wight);
 		toon_element_desc.push_back(bone);
+=======
+		//toGbuf
+		toGbuf_element_desc.push_back(pos);
+		toGbuf_element_desc.push_back(normal);
+		toGbuf_element_desc.push_back(tex);
+		toGbuf_element_desc.push_back(color);
+
+		//spriteEx
+		spriteEx_element_desc.push_back(pos);
+		spriteEx_element_desc.push_back(normal);
+		spriteEx_element_desc.push_back(tex);
+		spriteEx_element_desc.push_back(color);
+>>>>>>> Shader
 	};
 public:
 	enum ShaderType
@@ -75,7 +89,12 @@ public:
 		GEO,
 		BOARD,
 		ANIM,
+<<<<<<< HEAD
 		TOON,
+=======
+		TOGBUF,
+		SPRITE_EX,
+>>>>>>> Shader
 	};
 
 	std::vector<D3D11_INPUT_ELEMENT_DESC> skin_element_desc;
@@ -84,7 +103,14 @@ public:
 	std::vector<D3D11_INPUT_ELEMENT_DESC> geometric_element_desc;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> board_element_desc;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> anim_element_desc;
+<<<<<<< HEAD
 	std::vector<D3D11_INPUT_ELEMENT_DESC> toon_element_desc;
+=======
+	std::vector<D3D11_INPUT_ELEMENT_DESC> toGbuf_element_desc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> spriteEx_element_desc;
+
+
+>>>>>>> Shader
 
 	static INPUT_ELEMENT_DESC &getInstance()
 	{
@@ -120,6 +146,8 @@ private:
 	HRESULT create_gs_from_cso(const char* cso_name, ID3D11GeometryShader** geometry_shader);
 	HRESULT create_ds_from_cso(const char* cso_name, ID3D11DomainShader** domain_shader);
 	HRESULT create_hs_from_cso(const char* cso_name, ID3D11HullShader** hull_shader);
+
+	bool Create_element(const char* VS_cso_file);
 
 public:
 	bool Create(const char* VS_cso_file, const char* PS_cso_file);

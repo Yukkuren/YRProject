@@ -23,7 +23,7 @@ cbuffer CONSTANT_BUFFER : register(b0)
 	float4 material_color;
 }
 
-cbuffer CBPerFrame2 : register(b2)
+cbuffer CBPerFrame3 : register(b3)
 {
 	float Offset_X;		//テクスチャX方向ずれ
 	float Offset_Y;		//テクスチャY方向ずれ

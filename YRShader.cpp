@@ -186,9 +186,7 @@ HRESULT YRShader::create_hs_from_cso(const char* cso_name, ID3D11HullShader** hu
 
 
 
-//Create
-
-bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file)
+bool YRShader::Create_element(const char* VS_cso_file)
 {
 	switch (type)
 	{
@@ -202,7 +200,7 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file)
 			numElements,
 			VertextLayout.GetAddressOf());
 	}
-		break;
+	break;
 	case INPUT_ELEMENT_DESC::STATIC:
 	{
 		UINT numElements = YRINPUT_ELEMENT_DESC.static_element_desc.size();
@@ -213,7 +211,7 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file)
 			numElements,
 			VertextLayout.GetAddressOf());
 	}
-		break;
+	break;
 	case INPUT_ELEMENT_DESC::SPRITE:
 	{
 		UINT numElements = YRINPUT_ELEMENT_DESC.sprite_element_desc.size();
@@ -224,7 +222,7 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file)
 			numElements,
 			VertextLayout.GetAddressOf());
 	}
-		break;
+	break;
 	case INPUT_ELEMENT_DESC::GEO:
 	{
 		UINT numElements = YRINPUT_ELEMENT_DESC.geometric_element_desc.size();
@@ -235,7 +233,7 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file)
 			numElements,
 			VertextLayout.GetAddressOf());
 	}
-		break;
+	break;
 	case INPUT_ELEMENT_DESC::BOARD:
 	{
 		UINT numElements = YRINPUT_ELEMENT_DESC.board_element_desc.size();
@@ -258,6 +256,7 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file)
 			VertextLayout.GetAddressOf());
 	}
 	break;
+<<<<<<< HEAD
 	case INPUT_ELEMENT_DESC::TOON:
 	{
 		UINT numElements = YRINPUT_ELEMENT_DESC.toon_element_desc.size();
@@ -292,56 +291,25 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file, const ch
 	}
 	break;
 	case INPUT_ELEMENT_DESC::STATIC:
+=======
+	case INPUT_ELEMENT_DESC::TOGBUF:
+>>>>>>> Shader
 	{
-		UINT numElements = YRINPUT_ELEMENT_DESC.static_element_desc.size();
+		UINT numElements = YRINPUT_ELEMENT_DESC.toGbuf_element_desc.size();
 		create_vertex(
 			VS_cso_file,
 			VSShader.GetAddressOf(),
-			YRINPUT_ELEMENT_DESC.static_element_desc.data(),
+			YRINPUT_ELEMENT_DESC.toGbuf_element_desc.data(),
 			numElements,
 			VertextLayout.GetAddressOf());
 	}
-	break;
-	case INPUT_ELEMENT_DESC::SPRITE:
+	case INPUT_ELEMENT_DESC::SPRITE_EX:
 	{
-		UINT numElements = YRINPUT_ELEMENT_DESC.sprite_element_desc.size();
+		UINT numElements = YRINPUT_ELEMENT_DESC.spriteEx_element_desc.size();
 		create_vertex(
 			VS_cso_file,
 			VSShader.GetAddressOf(),
-			YRINPUT_ELEMENT_DESC.sprite_element_desc.data(),
-			numElements,
-			VertextLayout.GetAddressOf());
-	}
-	break;
-	case INPUT_ELEMENT_DESC::GEO:
-	{
-		UINT numElements = YRINPUT_ELEMENT_DESC.geometric_element_desc.size();
-		create_vertex(
-			VS_cso_file,
-			VSShader.GetAddressOf(),
-			YRINPUT_ELEMENT_DESC.geometric_element_desc.data(),
-			numElements,
-			VertextLayout.GetAddressOf());
-	}
-	break;
-	case INPUT_ELEMENT_DESC::BOARD:
-	{
-		UINT numElements = YRINPUT_ELEMENT_DESC.board_element_desc.size();
-		create_vertex(
-			VS_cso_file,
-			VSShader.GetAddressOf(),
-			YRINPUT_ELEMENT_DESC.board_element_desc.data(),
-			numElements,
-			VertextLayout.GetAddressOf());
-	}
-	break;
-	case INPUT_ELEMENT_DESC::ANIM:
-	{
-		UINT numElements = YRINPUT_ELEMENT_DESC.anim_element_desc.size();
-		create_vertex(
-			VS_cso_file,
-			VSShader.GetAddressOf(),
-			YRINPUT_ELEMENT_DESC.anim_element_desc.data(),
+			YRINPUT_ELEMENT_DESC.spriteEx_element_desc.data(),
 			numElements,
 			VertextLayout.GetAddressOf());
 	}
@@ -360,6 +328,23 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file, const ch
 	default:
 		break;
 	}
+	return true;
+}
+
+
+
+//Create
+
+bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file)
+{
+	Create_element(VS_cso_file);
+	CreatePixel(PS_cso_file, PSShader.GetAddressOf());
+	return true;
+}
+
+bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file, const char* GS_cso_file)
+{
+	Create_element(VS_cso_file);
 	CreatePixel(PS_cso_file, PSShader.GetAddressOf());
 	create_gs_from_cso(GS_cso_file, GSShader.GetAddressOf());
 	return true;
@@ -367,6 +352,7 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file, const ch
 
 bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file, const char* DS_cso_file, const char* HS_cso_file)
 {
+<<<<<<< HEAD
 	switch (type)
 	{
 	case INPUT_ELEMENT_DESC::SKIN:
@@ -449,6 +435,9 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file, const ch
 	default:
 		break;
 	}
+=======
+	Create_element(VS_cso_file);
+>>>>>>> Shader
 	CreatePixel(PS_cso_file, PSShader.GetAddressOf());
 	create_ds_from_cso(DS_cso_file, DSShader.GetAddressOf());
 	create_hs_from_cso(HS_cso_file, HSShader.GetAddressOf());
@@ -457,6 +446,7 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file, const ch
 
 bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file, const char* GS_cso_file, const char* DS_cso_file, const char* HS_cso_file)
 {
+<<<<<<< HEAD
 	switch (type)
 	{
 	case INPUT_ELEMENT_DESC::SKIN:
@@ -539,6 +529,9 @@ bool YRShader::Create(const char* VS_cso_file, const char* PS_cso_file, const ch
 	default:
 		break;
 	}
+=======
+	Create_element(VS_cso_file);
+>>>>>>> Shader
 	CreatePixel(PS_cso_file, PSShader.GetAddressOf());
 	create_gs_from_cso(GS_cso_file, GSShader.GetAddressOf());
 	create_ds_from_cso(DS_cso_file, DSShader.GetAddressOf());
