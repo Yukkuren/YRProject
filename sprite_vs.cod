@@ -20,27 +20,8 @@
 // COLOR                    0   xyzw        1     NONE   float   xyzw
 // TEXCOORD                 0   xy          2     NONE   float   xy  
 //
-//
-// Runtime generated constant mappings:
-//
-// Target Reg                               Constant Description
-// ---------- --------------------------------------------------
-// c0                              Vertex Shader position offset
-//
-//
-// Level9 shader bytecode:
-//
-    vs_2_x
-    dcl_texcoord v0
-    dcl_texcoord1 v1
-    dcl_texcoord2 v2
-    mad oPos.xy, v0.w, c0, v0
-    mov oPos.zw, v0
-    mov oT0, v1
-    mov oT1.xy, v2
-
-// approximately 4 instruction slots used
-vs_4_0
+vs_5_0
+dcl_globalFlags refactoringAllowed
 dcl_input v0.xyzw
 dcl_input v1.xyzw
 dcl_input v2.xy

@@ -378,12 +378,9 @@ public:
 	std::unique_ptr<YRShader> geoShader = nullptr;
 	std::unique_ptr<YRShader> boardShader = nullptr;
 	std::unique_ptr<YRShader> animShader = nullptr;
-<<<<<<< HEAD
 	std::unique_ptr<YRShader> toonShader = nullptr;
-=======
 	std::unique_ptr<YRShader> toGbuffer = nullptr;
 	std::unique_ptr<YRShader> spriteEx = nullptr;
->>>>>>> Shader
 
 	//テクスチャ
 	std::unique_ptr<Texture> color_texture = nullptr;

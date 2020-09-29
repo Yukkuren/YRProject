@@ -249,12 +249,9 @@
     <None Include="ParallelToon.hlsli" />
     <None Include="Skinned_mesh.hlsli" />
     <None Include="sprite.hlsli" />
-<<<<<<< HEAD
     <None Include="ToonShader.hlsli" />
-=======
     <None Include="SpriteEx.hlsli" />
     <None Include="toGbuffer.hlsli" />
->>>>>>> Shader
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="AnimShader_gs.hlsl">

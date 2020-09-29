@@ -1,93 +1,118 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <FxCompile Include="board_ps.hlsl">
-      <Filter>Shader\boardShader</Filter>
-    </FxCompile>
-    <FxCompile Include="board_vs.hlsl">
-      <Filter>Shader\boardShader</Filter>
-    </FxCompile>
-    <FxCompile Include="geometric_primitive_ps.hlsl">
-      <Filter>Shader\geometricShader</Filter>
-    </FxCompile>
-    <FxCompile Include="geometric_primitive_vs.hlsl">
-      <Filter>Shader\geometricShader</Filter>
-    </FxCompile>
-    <FxCompile Include="Skinned_PS.hlsl">
-      <Filter>Shader\SkinnedMeshShader</Filter>
-    </FxCompile>
-    <FxCompile Include="Skinned_VS.hlsl">
-      <Filter>Shader\SkinnedMeshShader</Filter>
-    </FxCompile>
-    <FxCompile Include="Mesh_Static_PS.hlsl">
-      <Filter>Shader\StaticMeshShader</Filter>
-    </FxCompile>
-    <FxCompile Include="Mesh_Static_VS.hlsl">
-      <Filter>Shader\StaticMeshShader</Filter>
-    </FxCompile>
-    <FxCompile Include="sprite_ps.hlsl">
-      <Filter>Shader\SpriteShader</Filter>
-    </FxCompile>
-    <FxCompile Include="sprite_vs.hlsl">
-      <Filter>Shader\SpriteShader</Filter>
-    </FxCompile>
-    <FxCompile Include="AnimShader_vs.hlsl">
-      <Filter>Shader\AnimShader</Filter>
+    <FxCompile Include="AnimShader_gs.hlsl">
+      <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="AnimShader_ps.hlsl">
-      <Filter>Shader\AnimShader</Filter>
+      <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="AnimShader_gs.hlsl">
-      <Filter>Shader\AnimShader</Filter>
+    <FxCompile Include="AnimShader_vs.hlsl">
+      <Filter>Shader</Filter>
     </FxCompile>
-<<<<<<< HEAD
-    <FxCompile Include="ToonShader_ps.hlsl">
-      <Filter>Shader\ToonShader</Filter>
+    <FxCompile Include="board_ps.hlsl">
+      <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="ToonShader_vs.hlsl">
-      <Filter>Shader\ToonShader</Filter>
-    </FxCompile>
-    <FxCompile Include="ToonShader_gs.hlsl">
-      <Filter>Shader\ToonShader</Filter>
-    </FxCompile>
-    <FxCompile Include="ParallelToon_gs.hlsl">
-      <Filter>Shader\Parallel</Filter>
-    </FxCompile>
-    <FxCompile Include="ParallelToon_vs.hlsl">
-      <Filter>Shader\Parallel</Filter>
-    </FxCompile>
-    <FxCompile Include="ParallelToon_ps.hlsl">
-      <Filter>Shader\Parallel</Filter>
-    </FxCompile>
-    <FxCompile Include="Font_vs.hlsl">
-      <Filter>Shader\Font</Filter>
+    <FxCompile Include="board_vs.hlsl">
+      <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="Font_ps.hlsl">
-      <Filter>Shader\Font</Filter>
-=======
-    <FxCompile Include="toGbuffer_vs.hlsl">
-      <Filter>Shader\toGbuffer</Filter>
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Font_vs.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="geometric_primitive_ps.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="geometric_primitive_vs.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Mesh_Static_PS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Mesh_Static_VS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="ParallelToon_gs.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="ParallelToon_ps.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="ParallelToon_vs.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Skinned_PS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Skinned_VS.hlsl">
+      <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="toGbuffer_ps.hlsl">
-      <Filter>Shader\toGbuffer</Filter>
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="toGbuffer_vs.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="ToonShader_gs.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="ToonShader_ps.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="ToonShader_vs.hlsl">
+      <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="SpriteEx_vs.hlsl">
-      <Filter>Shader\SpriteEx</Filter>
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="sprite_ps.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="sprite_vs.hlsl">
+      <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="SpriteEx_ps.hlsl">
-      <Filter>Shader\SpriteEx</Filter>
->>>>>>> Shader
+      <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="YR_VECTOR3.cpp">
-      <Filter>assistant\cpp</Filter>
+    <ClCompile Include="1PGamePad.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="YRShader.cpp">
-      <Filter>assistant\cpp</Filter>
+    <ClCompile Include="2Pgamepad.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="World.cpp">
-      <Filter>assistant\cpp</Filter>
+    <ClCompile Include="AnimBoard.cpp">
+      <Filter>Souce</Filter>
+    </ClCompile>
+    <ClCompile Include="AttackBox.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Board_primitive.cpp">
+      <Filter>Souce</Filter>
+    </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>Souce</Filter>
+    </ClCompile>
+    <ClCompile Include="CoList.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>Souce</Filter>
+    </ClCompile>
+    <ClCompile Include="framework.cpp">
+      <Filter>Souce</Filter>
+    </ClCompile>
+    <ClCompile Include="Geometric_primitive.cpp">
+      <Filter>Souce</Filter>
+    </ClCompile>
+    <ClCompile Include="HitBox.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="HitCheak.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="imgui\imgui.cpp">
       <Filter>ImGui</Filter>
@@ -107,6 +132,21 @@
     <ClCompile Include="imgui\imgui_widgets.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="Knight.cpp">
+      <Filter>Chara</Filter>
+    </ClCompile>
+    <ClCompile Include="KnightATK.cpp">
+      <Filter>Chara</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Souce</Filter>
+    </ClCompile>
+    <ClCompile Include="MainCamera.cpp">
+      <Filter>Header</Filter>
+    </ClCompile>
+    <ClCompile Include="Sampler.cpp">
+      <Filter>Souce</Filter>
+    </ClCompile>
     <ClCompile Include="SceneClear.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
@@ -122,100 +162,82 @@
     <ClCompile Include="SceneSelect.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="SceneTitle.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="camera.cpp">
-      <Filter>Cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="framework.cpp">
-      <Filter>Cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="Geometric_primitive.cpp">
-      <Filter>Cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="MainCamera.cpp">
-      <Filter>Cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="Skinned_mesh.cpp">
-      <Filter>Cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="sprite.cpp">
-      <Filter>Cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="static_mesh.cpp">
-      <Filter>Cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="YRMotion.cpp">
-      <Filter>Cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="Knight.cpp">
-      <Filter>Game\Chara\Knight</Filter>
-    </ClCompile>
-    <ClCompile Include="KnightATK.cpp">
-      <Filter>Game\Chara\Knight</Filter>
-    </ClCompile>
-    <ClCompile Include="1PGamePad.cpp">
-      <Filter>Game\asisst</Filter>
-    </ClCompile>
-    <ClCompile Include="2Pgamepad.cpp">
-      <Filter>Game\asisst</Filter>
-    </ClCompile>
-    <ClCompile Include="AttackBox.cpp">
-      <Filter>Game\asisst</Filter>
-    </ClCompile>
-    <ClCompile Include="CoList.cpp">
-      <Filter>Game\asisst</Filter>
-    </ClCompile>
-    <ClCompile Include="HitBox.cpp">
-      <Filter>Game\asisst</Filter>
-    </ClCompile>
-    <ClCompile Include="HitCheak.cpp">
-      <Filter>Game\asisst</Filter>
-    </ClCompile>
     <ClCompile Include="SceneTest.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Board_primitive.cpp">
-      <Filter>Cpp</Filter>
+    <ClCompile Include="SceneTitle.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Sampler.cpp">
-      <Filter>Cpp</Filter>
+    <ClCompile Include="Skinned_mesh.cpp">
+      <Filter>Souce</Filter>
     </ClCompile>
-    <ClCompile Include="AnimBoard.cpp">
-      <Filter>Cpp</Filter>
+    <ClCompile Include="sprite.cpp">
+      <Filter>Souce</Filter>
     </ClCompile>
-    <ClCompile Include="Font.cpp">
-      <Filter>Cpp</Filter>
+    <ClCompile Include="static_mesh.cpp">
+      <Filter>Souce</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Souce</Filter>
+    </ClCompile>
+    <ClCompile Include="World.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="YR_VECTOR3.cpp">
+      <Filter>Souce</Filter>
     </ClCompile>
     <ClCompile Include="YRModel.cpp">
-      <Filter>Cpp</Filter>
+      <Filter>Souce</Filter>
     </ClCompile>
     <ClCompile Include="YRModelAnim.cpp">
-      <Filter>Cpp</Filter>
+      <Filter>Souce</Filter>
+    </ClCompile>
+    <ClCompile Include="YRMotion.cpp">
+      <Filter>Souce</Filter>
+    </ClCompile>
+    <ClCompile Include="YRShader.cpp">
+      <Filter>Souce</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="YR_VECTOR3.h">
-      <Filter>assistant\Header</Filter>
+    <ClInclude Include="AnimBoard.h">
+      <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="YRShader.h">
-      <Filter>assistant\Header</Filter>
+    <ClInclude Include="AttackBox.h">
+      <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="World.h">
-      <Filter>assistant\Header</Filter>
+    <ClInclude Include="Board_primitive.h">
+      <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="brend.h">
-      <Filter>assistant\Header</Filter>
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="CoList.h">
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="collision.h">
-      <Filter>assistant\Header</Filter>
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Font.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometric_primitive.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="high_resolution_timer.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="HitBox.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="HitCheak.h">
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imconfig.h">
       <Filter>ImGui</Filter>
@@ -241,35 +263,23 @@
     <ClInclude Include="imgui\imstb_truetype.h">
       <Filter>ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Key.h">
-      <Filter>assistant\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerBase.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="YRGamePad.h">
-      <Filter>assistant\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="YRMouse.h">
-      <Filter>assistant\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="camera.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="framework.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Geometric_primitive.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="high_resolution_timer.h">
-      <Filter>Header</Filter>
+    <ClInclude Include="Knight.h">
+      <Filter>Chara</Filter>
     </ClInclude>
     <ClInclude Include="misc.h">
       <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerBase.h">
+      <Filter>Chara</Filter>
+    </ClInclude>
+    <ClInclude Include="Sampler.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Skinned_mesh.h">
       <Filter>Header</Filter>
@@ -283,34 +293,13 @@
     <ClInclude Include="Texture.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Knight.h">
-      <Filter>Game\Chara\Knight</Filter>
-    </ClInclude>
-    <ClInclude Include="AttackBox.h">
-      <Filter>Game\asisst</Filter>
-    </ClInclude>
-    <ClInclude Include="CoList.h">
-      <Filter>Game\asisst</Filter>
-    </ClInclude>
-    <ClInclude Include="HitBox.h">
-      <Filter>Game\asisst</Filter>
-    </ClInclude>
-    <ClInclude Include="HitCheak.h">
-      <Filter>Game\asisst</Filter>
-    </ClInclude>
     <ClInclude Include="Tracking.h">
-      <Filter>Game\asisst</Filter>
+      <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="Board_primitive.h">
-      <Filter>Header</Filter>
+    <ClInclude Include="World.h">
+      <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="Sampler.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimBoard.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Font.h">
+    <ClInclude Include="YR_VECTOR3.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="YRModel.h">
@@ -319,115 +308,72 @@
     <ClInclude Include="YRModelAnim.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="YRMouse.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="YRShader.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="YRGamePad.h">
+      <Filter>Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="board.hlsli">
-      <Filter>Shader\boardShader</Filter>
-    </None>
-    <None Include="geometric_primitive.hlsli">
-      <Filter>Shader\geometricShader</Filter>
-    </None>
-    <None Include="Skinned_mesh.hlsli">
-      <Filter>Shader\SkinnedMeshShader</Filter>
-    </None>
-    <None Include="Mesh_Static.hlsli">
-      <Filter>Shader\StaticMeshShader</Filter>
-    </None>
-    <None Include="sprite.hlsli">
-      <Filter>Shader\SpriteShader</Filter>
-    </None>
     <None Include="AnimShader.hlsli">
-      <Filter>Shader\AnimShader</Filter>
+      <Filter>Shader</Filter>
     </None>
-<<<<<<< HEAD
-    <None Include="ToonShader.hlsli">
-      <Filter>Shader\ToonShader</Filter>
-    </None>
-    <None Include="ParallelToon.hlsli">
-      <Filter>Shader\Parallel</Filter>
+    <None Include="board.hlsli">
+      <Filter>Shader</Filter>
     </None>
     <None Include="Font.hlsli">
-      <Filter>Shader\Font</Filter>
-=======
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="geometric_primitive.hlsli">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Mesh_Static.hlsli">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="ParallelToon.hlsli">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Skinned_mesh.hlsli">
+      <Filter>Shader</Filter>
+    </None>
     <None Include="toGbuffer.hlsli">
-      <Filter>Shader\toGbuffer</Filter>
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="ToonShader.hlsli">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="sprite.hlsli">
+      <Filter>Shader</Filter>
     </None>
     <None Include="SpriteEx.hlsli">
-      <Filter>Shader\SpriteEx</Filter>
->>>>>>> Shader
+      <Filter>Shader</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shader">
-      <UniqueIdentifier>{92013a05-15a1-4a99-95dd-2b10312921a6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\boardShader">
-      <UniqueIdentifier>{612bd44b-187c-435f-a328-038b12ab382d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\geometricShader">
-      <UniqueIdentifier>{cd7931df-4f6f-466a-b5c0-780fa9f85d8c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\SkinnedMeshShader">
-      <UniqueIdentifier>{580d921e-fc2f-4043-83aa-5ffd2246308f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\StaticMeshShader">
-      <UniqueIdentifier>{9f83a4ce-69c8-4f8f-8dc9-f6e1ce72a933}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\SpriteShader">
-      <UniqueIdentifier>{9b20143b-777d-409e-9b8c-6c40f791166c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="assistant">
-      <UniqueIdentifier>{77761be0-9b39-4872-81ed-0f386924ebc1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="assistant\Header">
-      <UniqueIdentifier>{99ed322e-617e-4a39-b2fa-e1eb95086644}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="assistant\cpp">
-      <UniqueIdentifier>{aaea791b-09d3-47cb-93d7-34ac360db4ce}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ImGui">
-      <UniqueIdentifier>{8814b8dd-24f3-466b-8ff9-277018073bf3}</UniqueIdentifier>
+      <UniqueIdentifier>{314308c0-0142-49cc-8bf2-32880260609e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scene">
-      <UniqueIdentifier>{55f277ac-01a2-4dbc-a5e7-fed054815e9d}</UniqueIdentifier>
+      <UniqueIdentifier>{6658abc3-8a81-4c07-8ef7-a53c0d6ba7a2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Game">
-      <UniqueIdentifier>{1046f34c-1c0f-4217-8907-338972572cd6}</UniqueIdentifier>
+      <UniqueIdentifier>{37220598-b1e0-44f1-9005-a64df9a135b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chara">
+      <UniqueIdentifier>{9320cb26-f18e-4925-a183-7bbf06adf297}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Souce">
+      <UniqueIdentifier>{880d0374-9d63-4063-8f23-7dae3cfb010f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header">
-      <UniqueIdentifier>{11387211-ab34-43e7-9027-6c8e81745efa}</UniqueIdentifier>
+      <UniqueIdentifier>{d9701e33-e12e-4d27-b7c0-4e1cd6313efb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Cpp">
-      <UniqueIdentifier>{81965f79-c92f-4114-9403-afd3aac8250f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Chara">
-      <UniqueIdentifier>{b27c9e2b-f3a3-42a9-ae96-910bca15efbb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Chara\Knight">
-      <UniqueIdentifier>{ef327175-91ee-4390-8c05-1f8dda2e9aa9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\asisst">
-      <UniqueIdentifier>{f7ed333f-2781-4345-8feb-625d58abd14f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\AnimShader">
-      <UniqueIdentifier>{ecbdc193-3721-4da3-9c1e-b2fdf60a4770}</UniqueIdentifier>
-    </Filter>
-<<<<<<< HEAD
-    <Filter Include="Shader\ToonShader">
-      <UniqueIdentifier>{07fd2593-2f9b-47c1-94e5-7f5b4e5cb6a7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\Parallel">
-      <UniqueIdentifier>{fac956a6-d3f0-46ce-9b2a-b86e0b05874a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\Font">
-      <UniqueIdentifier>{aafb3922-42c1-45b0-84a9-d5b83a172012}</UniqueIdentifier>
-=======
-    <Filter Include="Shader\toGbuffer">
-      <UniqueIdentifier>{d444db1c-be48-4b8f-a679-6fb9d80c529c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\SpriteEx">
-      <UniqueIdentifier>{795631a5-74a7-4d27-9aed-3024b818cdd5}</UniqueIdentifier>
->>>>>>> Shader
+    <Filter Include="ImGui">
+      <UniqueIdentifier>{975cfb69-e398-4642-8c67-0a8dad034548}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

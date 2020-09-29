@@ -33,12 +33,11 @@ void SceneTest::Init()
 		animShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::ANIM);
 		animShader->Create("./Data/Shader/AnimShader_vs.cso", "./Data/Shader/AnimShader_ps.cso", "./Data/Shader/AnimShader_gs.cso");
 	}
-<<<<<<< HEAD
 	if (toonShader == nullptr)
 	{
 		toonShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::TOON);
 		toonShader->Create("./Data/Shader/ToonShader_vs.cso", "./Data/Shader/ToonShader_ps.cso", "./Data/Shader/ToonShader_gs.cso");
-=======
+	}
 	if (toGbuffer == nullptr)
 	{
 		toGbuffer = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::TOGBUF);
@@ -48,7 +47,6 @@ void SceneTest::Init()
 	{
 		spriteEx = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE_EX);
 		spriteEx->Create("./Data/Shader/SpriteEx_vs.cso", "./Data/Shader/SpriteEx_ps.cso");
->>>>>>> Shader
 	}
 
 	//ƒJƒƒ‰‰ŠúÝ’è
@@ -189,13 +187,14 @@ void SceneTest::Draw(float elapsed_time)
 	static float off_y = 0.0f;
 #if USE_IMGUI
 	//ImGui
-	if(1){
+	/*if(1)*/{
 		DirectX::XMFLOAT3	eye = YRCamera.GetEye();
 		DirectX::XMFLOAT3	focus = YRCamera.GetFocus();
 		float				fov = YRCamera.GetFov();
 		fov /= 0.01745f;
 		//ImGui::Text("anim : %f", motion.anim_timer);
 		ImGui::Text("SceneTest");
+		timer += elapsed_time;
 		ImGui::Text("time : %f", timer);
 		//ImGui::InputFloat("scroll", &scall, 0.01f, 100.0f);
 		//ImGui::SliderFloat("rollX", &roll.x, 0.0f, 30.00f);
@@ -325,13 +324,8 @@ void SceneTest::Draw(float elapsed_time)
 	//‰¼”wŒi
 	//test->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 0.5f);
 
-<<<<<<< HEAD
-	motion.DrawContinue(
-		toonShader.get(),
-=======
 	/*motion.DrawContinue(
 		skinShader.get(),
->>>>>>> Shader
 		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 		DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
 		box_angle,
