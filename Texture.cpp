@@ -64,14 +64,14 @@ void Texture::Set(UINT slot, BOOL flg)
 		ID3D11SamplerState* ss[1] = { NULL };
 		FRAMEWORK.context->PSSetShaderResources(slot, 1, rtv);
 		FRAMEWORK.context->PSSetSamplers(slot, 1, ss);
-		FRAMEWORK.context->DSSetShaderResources(slot, 1, rtv);
-		FRAMEWORK.context->DSSetSamplers(slot, 1, ss);
+		//FRAMEWORK.context->VSSetShaderResources(slot, 1, rtv);
+		//FRAMEWORK.context->VSSetSamplers(slot, 1, ss);
 		return;
 	}
 	if (ShaderResouceView)
 	{
 		FRAMEWORK.context->PSSetShaderResources(slot, 1, ShaderResouceView.GetAddressOf());
-		FRAMEWORK.context->DSSetShaderResources(slot, 1, ShaderResouceView.GetAddressOf());
+		//FRAMEWORK.context->VSSetShaderResources(slot, 1, ShaderResouceView.GetAddressOf());
 	}
 }
 

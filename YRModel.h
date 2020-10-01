@@ -10,6 +10,13 @@
 
 struct ModelData
 {
+	~ModelData()
+	{
+		nodes.clear();
+		meshes.clear();
+		materials.clear();
+		animations.clear();
+	}
 public:
 	struct Node
 	{
@@ -46,6 +53,14 @@ public:
 
 		std::vector<int>					node_indices;
 		std::vector<DirectX::XMFLOAT4X4>	inverse_transforms;
+
+		~Mesh(){
+			vertices.clear();
+			indices.clear();
+			subsets.clear();
+			node_indices.clear();
+			inverse_transforms.clear();
+		}
 	};
 
 	struct Material
@@ -65,11 +80,19 @@ public:
 	{
 		float						seconds;
 		std::vector<NodeKeyData>	node_keys;
+
+		~Keyframe() {
+			node_keys.clear();
+		}
 	};
 	struct Animation
 	{
 		float						seconds_length;
 		std::vector<Keyframe>		keyframes;
+
+		~Animation() {
+			keyframes.clear();
+		}
 	};
 
 	std::vector<Node>		nodes;
@@ -89,7 +112,13 @@ class Model
 public:
 	Model(const char* filename);
 	Model(const char* filename, std::shared_ptr<Texture> tex_main, std::shared_ptr<Texture> tex_face);
-	~Model() {}
+	~Model() {
+		color_texture_main.reset();
+		color_texture_face.reset();
+		m_data.reset();
+		m_materials.clear();
+		m_meshes.clear();
+	}
 
 private:
 	// モデルデータを構築
@@ -148,6 +177,12 @@ public:
 		int										node_index;
 		std::vector<int>						node_indices;
 		std::vector<DirectX::XMFLOAT4X4*>		inverse_transforms;
+
+		~Mesh() {
+			subsets.clear();
+			node_indices.clear();
+			inverse_transforms.clear();
+		}
 	};
 
 	const std::vector<Mesh>& GetMeshes() const { return m_meshes; }

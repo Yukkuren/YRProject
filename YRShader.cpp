@@ -267,7 +267,41 @@ bool YRShader::Create_element(const char* VS_cso_file)
 			VertextLayout.GetAddressOf());
 	}
 	break;
+	case INPUT_ELEMENT_DESC::TOGBUF:
+	{
+		UINT numElements = YRINPUT_ELEMENT_DESC.toGbuf_element_desc.size();
+		create_vertex(
+			VS_cso_file,
+			VSShader.GetAddressOf(),
+			YRINPUT_ELEMENT_DESC.toGbuf_element_desc.data(),
+			numElements,
+			VertextLayout.GetAddressOf());
+	}
+	break;
+	case INPUT_ELEMENT_DESC::SPRITE_EX:
+	{
+		UINT numElements = YRINPUT_ELEMENT_DESC.spriteEx_element_desc.size();
+		create_vertex(
+			VS_cso_file,
+			VSShader.GetAddressOf(),
+			YRINPUT_ELEMENT_DESC.spriteEx_element_desc.data(),
+			numElements,
+			VertextLayout.GetAddressOf());
+	}
+	break;
+	case INPUT_ELEMENT_DESC::FLAT:
+	{
+		UINT numElements = YRINPUT_ELEMENT_DESC.flat_element_desc.size();
+		create_vertex(
+			VS_cso_file,
+			VSShader.GetAddressOf(),
+			YRINPUT_ELEMENT_DESC.flat_element_desc.data(),
+			numElements,
+			VertextLayout.GetAddressOf());
+	}
+	break;
 	default:
+		assert(0);
 		break;
 	}
 	return true;

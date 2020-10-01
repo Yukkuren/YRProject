@@ -65,8 +65,8 @@ private:
 		toon_element_desc.push_back(tex);
 		toon_element_desc.push_back(wight);
 		toon_element_desc.push_back(bone);
+		
 		//toGbuf
-
 		toGbuf_element_desc.push_back(pos);
 		toGbuf_element_desc.push_back(normal);
 		toGbuf_element_desc.push_back(tex);
@@ -77,6 +77,13 @@ private:
 		spriteEx_element_desc.push_back(normal);
 		spriteEx_element_desc.push_back(tex);
 		spriteEx_element_desc.push_back(color);
+
+		//flat
+		flat_element_desc.push_back(pos);
+		flat_element_desc.push_back(normal);
+		flat_element_desc.push_back(tex);
+		flat_element_desc.push_back(wight);
+		flat_element_desc.push_back(bone);
 	};
 public:
 	enum ShaderType
@@ -90,6 +97,7 @@ public:
 		TOON,
 		TOGBUF,
 		SPRITE_EX,
+		FLAT,
 	};
 
 	std::vector<D3D11_INPUT_ELEMENT_DESC> skin_element_desc;
@@ -101,6 +109,7 @@ public:
 	std::vector<D3D11_INPUT_ELEMENT_DESC> toon_element_desc;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> toGbuf_element_desc;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> spriteEx_element_desc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> flat_element_desc;
 
 	static INPUT_ELEMENT_DESC &getInstance()
 	{

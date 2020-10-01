@@ -1,5 +1,6 @@
 #include "YRModelAnim.h"
 #include "misc.h"
+#include "framework.h"
 
 ModelAnim::ModelAnim(std::shared_ptr<Model>& resource)
 {
@@ -15,7 +16,7 @@ ModelAnim::ModelAnim(std::shared_ptr<Model>& resource)
 		auto&& src = res_nodes.at(node_index);
 		auto&& dst = m_nodes.at(node_index);
 
-		dst.name = src.name.c_str();
+		dst.name = src.name;
 		dst.parent = src.parent_index >= 0 ? &m_nodes.at(src.parent_index) : nullptr;
 		dst.scale = src.scale;
 		dst.rotate = src.rotate;

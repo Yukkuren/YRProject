@@ -5,12 +5,13 @@
 #include "camera.h"
 #include "framework.h"
 #include <algorithm>
+//#define _CRTDBG_MAP_ALLOC						// mallocによるメモリリーク検出でCPPファイル名と行数出力指定
+//#define DBG_NEW new( _NORMAL_BLOCK , __FILE__ , __LINE__)	// new によるメモリリーク検出でCPPファイル名と行数出力指定
+//#include <stdio.h>
+//#include <crtdbg.h>
 
 
-Knight::~Knight()
-{
-
-}
+Knight::~Knight() = default;
 
 void Knight::Init(YR_Vector3 InitPos)
 {
@@ -108,10 +109,9 @@ void Knight::LoadData(int color_number)
 		else
 		{
 			//main = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
-			main = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
+			main   = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
 		}
 	}
-
 	//------------------------------------------//
 	//		アニメーションボーンデータ読み込み		//
 	//------------------------------------------//
@@ -155,7 +155,6 @@ void Knight::LoadData(int color_number)
 	}
 
 
-
 	//------------------------------------------//
 	//			アニメーション設定				//
 	//------------------------------------------//
@@ -165,6 +164,31 @@ void Knight::LoadData(int color_number)
 		anim->PlayAnimation(0, true);
 		anim->NodeChange(wait_R);
 	}
+}
+
+void Knight::Uninit()
+{
+	//モデル系を全て解放する
+	main.reset();
+	main = nullptr;
+	anim.reset();
+	anim = nullptr;
+	wait_R.reset();
+	wait_R = nullptr;
+	jaku_R_f.reset();
+	jaku_R_f = nullptr;
+	jaku_R_t.reset();
+	jaku_R_t = nullptr;
+	jaku_R_l.reset();
+	jaku_R_l = nullptr;
+	special_R_f.reset();
+	special_R_f = nullptr;
+	special_R_t.reset();
+	special_R_t = nullptr;
+	special_R_l.reset();
+	special_R_l = nullptr;
+	damage_R_g_u.reset();
+	damage_R_g_u = nullptr;
 }
 
 bool Knight::AttackLoad()
@@ -235,10 +259,7 @@ bool Knight::AttackWrite()
 	return true;
 }
 
-void Knight::Uninit()
-{
-	
-}
+
 void Knight::Update(float decision, float elapsed_time)
 {
 	finish = false;

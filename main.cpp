@@ -2,6 +2,10 @@
 #include <memory>
 #include <assert.h>
 #include <tchar.h>
+#define _CRTDBG_MAP_ALLOC						// mallocによるメモリリーク検出でCPPファイル名と行数出力指定
+#define DBG_NEW new( _NORMAL_BLOCK , __FILE__ , __LINE__)	// new によるメモリリーク検出でCPPファイル名と行数出力指定
+#include <stdio.h>
+#include <crtdbg.h>
 
 #include "framework.h"
 
@@ -25,6 +29,11 @@ INT WINAPI wWinMain(HINSTANCE instance, HINSTANCE prev_instance, LPWSTR cmd_line
 {
 #if defined(DEBUG) | defined(_DEBUG)
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	//_CrtDumpMemoryLeaks();
+	//_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
+	//_crtBreakAlloc = 277571;
+#else
+#define DBG_NEW new
 #endif
 
 	HRESULT hr = Windows::Foundation::Initialize(RO_INIT_MULTITHREADED);

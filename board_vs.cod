@@ -52,7 +52,7 @@
 // COLOR                    0   xyzw        2     NONE   float   xyzw
 //
 vs_5_0
-dcl_globalFlags refactoringAllowed
+dcl_globalFlags refactoringAllowed | skipOptimization
 dcl_constantbuffer CB0[9], immediateIndexed
 dcl_constantbuffer CB3[1], immediateIndexed
 dcl_input v0.xyz
@@ -60,15 +60,6 @@ dcl_input v2.xy
 dcl_output_siv o0.xyzw, position
 dcl_output o1.xy
 dcl_output o2.xyzw
-<<<<<<< HEAD
-dcl_temps 1
-mul r0.xyzw, v0.yyyy, cb0[1].xyzw
-mad r0.xyzw, v0.xxxx, cb0[0].xyzw, r0.xyzw
-mad r0.xyzw, v0.zzzz, cb0[2].xyzw, r0.xyzw
-add o0.xyzw, r0.xyzw, cb0[3].xyzw
-add o1.xy, v2.xyxx, cb2[0].xyxx
-mov o2.xyzw, cb0[8].xyzw
-=======
 dcl_temps 3
 //
 // Initial variable locations:
@@ -111,6 +102,5 @@ mov o2.xyz, r1.xyzx
 mov o2.w, r1.w
 mov o1.x, r2.x
 mov o1.y, r2.y
->>>>>>> Shader
 ret 
-// Approximately 7 instruction slots used
+// Approximately 19 instruction slots used

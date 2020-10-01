@@ -14,8 +14,6 @@ VS_OUT main(VS_INPUT input)
 {
 	VS_OUT vout = (VS_OUT)(0);
 
-
-	//UNIT.21
 	float3 p = { 0,0,0 };
 	float3 n = { 0,0,0 };
 

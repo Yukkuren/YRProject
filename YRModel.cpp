@@ -4,6 +4,10 @@
 #include "framework.h"
 #include <codecvt>
 #include <array>
+//#define _CRTDBG_MAP_ALLOC						// mallocによるメモリリーク検出でCPPファイル名と行数出力指定
+//#define DBG_NEW new( _NORMAL_BLOCK , __FILE__ , __LINE__)	// new によるメモリリーク検出でCPPファイル名と行数出力指定
+//#include <stdio.h>
+//#include <crtdbg.h>
 
 using convert_t = std::codecvt_utf8<wchar_t>;
 std::wstring_convert<convert_t, wchar_t> strconverterModel;
@@ -21,12 +25,12 @@ std::wstring to_wstringModel(std::string str)
 Model::Model(const char* filename)
 {
 	//m_data = std::move(data);
-
 	m_data = std::make_unique<ModelData>();
 
 	color_texture_main = nullptr;
 	color_texture_face = nullptr;
 
+	//_CrtDumpMemoryLeaks();
 	Load(filename);
 
 	// マテリアル
@@ -37,7 +41,6 @@ Model::Model(const char* filename)
 		auto&& dst = m_materials.at(material_index);
 
 		dst.color = src.color;
-
 		// テクスチャ読み込み
 		if (!src.texture_filename.empty())
 		{
@@ -427,13 +430,11 @@ bool Model::Load(const char* filename)
 	}
 	else
 	{
-		//ECC_LOG("FbxImporter::Initialize() : Failed!!\n");
 		assert("FbxImporter::Initialize() : Failed!!");
 	}
 
 	// マネージャ解放
 	fbx_manager->Destroy();		// 関連するすべてのオブジェクトが解放される
-
 	return result;
 }
 
@@ -447,6 +448,8 @@ bool Model::BuildModel(const char* dirname, FbxScene* fbx_scene)
 	BuildMaterials(dirname, fbx_scene);
 	BuildAnimations(fbx_scene);
 
+	fbx_root_node->Destroy();
+
 	return true;
 }
 
@@ -455,6 +458,7 @@ void Model::BuildNodes(FbxNode* fbx_node, int parent_node_index)
 {
 	FbxNodeAttribute* fbx_node_attribute = fbx_node->GetNodeAttribute();
 	FbxNodeAttribute::EType fbx_node_attribute_type = FbxNodeAttribute::EType::eUnknown;
+
 
 	if (fbx_node_attribute != nullptr)
 	{
@@ -886,6 +890,7 @@ void Model::BuildAnimations(FbxScene* fbx_scene)
 			}
 			seconds += sampling_time;
 		}
+		fbx_nodes.clear();
 	}
 
 	// 後始末

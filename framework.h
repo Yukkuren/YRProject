@@ -176,6 +176,8 @@ public:
 		chain->Release();
 		view->Release();
 		depth->Release();*/
+		scene->UnInit();
+		
 		YRBlend.Uninit();
 #if USE_IMGUI
 		ImGui_ImplDX11_Shutdown();

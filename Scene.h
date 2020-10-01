@@ -13,10 +13,12 @@
 #include "PlayerBase.h"
 #include "sprite.h"
 #include "YRShader.h"
+#include "YRModelAnim.h"
 #include "Geometric_primitive.h"
 #include "Board_primitive.h"
 #include "Sampler.h"
 #include "AnimBoard.h"
+
 
 constexpr float start_time = 0.0f;
 
@@ -39,6 +41,7 @@ public:
 	virtual void Init() {};
 	virtual void Update(float elapsed_time) {};
 	virtual void Draw(float elapsed_time) {};
+	virtual void UnInit() {};
 };
 
 //プレイヤー制御構造体
@@ -256,6 +259,7 @@ public:
 	void Update(float elapsed_time);
 	void Draw(float elapsed_time);
 	void ScoreImageSet();
+	void UnInit() {};
 };
 
 class SceneOver : public SceneBase
@@ -265,6 +269,7 @@ public:
 	void Init();
 	void Update(float elapsed_time);
 	void Draw(float elapsed_time);
+	void UnInit() {};
 };
 
 class SceneLoad : public SceneBase
@@ -342,10 +347,11 @@ public:
 	float	timer = 0.0f;
 
 	std::unique_ptr<Sprite> test = nullptr;
-	std::unique_ptr<Skinned_mesh> box = nullptr;
+	std::shared_ptr<Model> knight = nullptr;
+	std::shared_ptr<Model> wait_R = nullptr;
 	std::shared_ptr<Texture> box_texture = nullptr;
 	std::shared_ptr<Texture> board_texture = nullptr;
-	MeshMotion motion;
+	std::unique_ptr<ModelAnim> motion = nullptr;
 
 	std::unique_ptr<geometric_primitive>	geo = nullptr;
 	std::unique_ptr<board_primitive>		board = nullptr;
@@ -381,6 +387,7 @@ public:
 	std::unique_ptr<YRShader> toonShader = nullptr;
 	std::unique_ptr<YRShader> toGbuffer = nullptr;
 	std::unique_ptr<YRShader> spriteEx = nullptr;
+	std::unique_ptr<YRShader> flatShader = nullptr;
 
 	//テクスチャ
 	std::unique_ptr<Texture> color_texture = nullptr;
@@ -390,10 +397,16 @@ public:
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer>	constantBuffer = nullptr;
 
+	DirectX::XMFLOAT3 knight_angle = { DirectX::XMConvertToRadians(-90.0f),0.0f,0.0f };
+	DirectX::XMFLOAT3 knight_pos = { 0.0f,0.0f,20.0f };
+
 public:
 	void Init();
 	void Update(float elapsed_time);
 	void Draw(float elapsed_time);
+	void UnInit() {
+		knight.reset();
+	};
 
 	void RenderTexture(
 		const DirectX::XMMATRIX&	view,

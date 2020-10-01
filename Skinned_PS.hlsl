@@ -75,8 +75,10 @@ float3 HemiSphereLight(float3 N, float3 SkyColor, float3 GroundColor)
 
 
 
-float4 main(VS_OUT pin) : SV_TARGET
+PSOutput main(VS_OUT pin) : SV_TARGET
 {
+	PSOutput Out = (PSOutput)0;
+
 	//SP4
 	float4 color = diffuse_map.Sample(diffuse_map_sampler_state,pin.texcoord);
 	float3 N = normalize(pin.normal).xyz;
@@ -105,5 +107,13 @@ float4 main(VS_OUT pin) : SV_TARGET
 
 	//フォグ計算
 	//color.rgb = Fog(color.rgb, EyePos.xyz, pin.wPos, fogColor, fogNear, fogFar);
-	return color;
+	
+	float3 NN = normalize(pin.wNormal);	//ワールド法線
+	float3 P = pin.wPos;				//ワールド座標
+
+	Out.Color = color;
+	Out.wNormal = float4(NN, 1.0f);
+	Out.wPosition = float4(P, 1.0f);
+
+	return Out;
 }

@@ -3,17 +3,21 @@
 #include <memory>
 #include <d3d11.h>
 #include "YRModel.h"
-#include "framework.h"
+//#include "framework.h"
 
 class ModelAnim
 {
 public:
 	ModelAnim(std::shared_ptr<Model>& resource);
-	~ModelAnim() {}
+	~ModelAnim() {
+		m_model_resource.reset();
+		model_resource_anim.reset();
+		m_nodes.clear();
+	}
 
 	struct Node
 	{
-		const char* name;
+		std::string name;
 		Node* parent;
 		DirectX::XMFLOAT3	scale;
 		DirectX::XMFLOAT4	rotate;

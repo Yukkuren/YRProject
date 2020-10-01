@@ -2,79 +2,91 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <FxCompile Include="AnimShader_gs.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\AnimShader</Filter>
     </FxCompile>
     <FxCompile Include="AnimShader_ps.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\AnimShader</Filter>
     </FxCompile>
     <FxCompile Include="AnimShader_vs.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\AnimShader</Filter>
     </FxCompile>
     <FxCompile Include="board_ps.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\boardShader</Filter>
     </FxCompile>
     <FxCompile Include="board_vs.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\boardShader</Filter>
     </FxCompile>
     <FxCompile Include="Font_ps.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\FontShader</Filter>
     </FxCompile>
     <FxCompile Include="Font_vs.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\FontShader</Filter>
     </FxCompile>
     <FxCompile Include="geometric_primitive_ps.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\geometric_primitiveShader</Filter>
     </FxCompile>
     <FxCompile Include="geometric_primitive_vs.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\geometric_primitiveShader</Filter>
     </FxCompile>
     <FxCompile Include="Mesh_Static_PS.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\Mesh_StaticShader</Filter>
     </FxCompile>
     <FxCompile Include="Mesh_Static_VS.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\Mesh_StaticShader</Filter>
     </FxCompile>
     <FxCompile Include="ParallelToon_gs.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\ParallelToonShader</Filter>
     </FxCompile>
     <FxCompile Include="ParallelToon_ps.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\ParallelToonShader</Filter>
     </FxCompile>
     <FxCompile Include="ParallelToon_vs.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\ParallelToonShader</Filter>
     </FxCompile>
     <FxCompile Include="Skinned_PS.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\SkinnedMeshShader</Filter>
     </FxCompile>
     <FxCompile Include="Skinned_VS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="toGbuffer_ps.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="toGbuffer_vs.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="ToonShader_gs.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="ToonShader_ps.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="ToonShader_vs.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="SpriteEx_vs.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\SkinnedMeshShader</Filter>
     </FxCompile>
     <FxCompile Include="sprite_ps.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\spriteShader</Filter>
     </FxCompile>
     <FxCompile Include="sprite_vs.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\spriteShader</Filter>
     </FxCompile>
     <FxCompile Include="SpriteEx_ps.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\SpriteExShader</Filter>
+    </FxCompile>
+    <FxCompile Include="SpriteEx_vs.hlsl">
+      <Filter>Shader\SpriteExShader</Filter>
+    </FxCompile>
+    <FxCompile Include="toGbuffer_ps.hlsl">
+      <Filter>Shader\toGbufferShader</Filter>
+    </FxCompile>
+    <FxCompile Include="toGbuffer_vs.hlsl">
+      <Filter>Shader\toGbufferShader</Filter>
+    </FxCompile>
+    <FxCompile Include="ToonShader_gs.hlsl">
+      <Filter>Shader\ToonShader</Filter>
+    </FxCompile>
+    <FxCompile Include="ToonShader_ps.hlsl">
+      <Filter>Shader\ToonShader</Filter>
+    </FxCompile>
+    <FxCompile Include="ToonShader_vs.hlsl">
+      <Filter>Shader\ToonShader</Filter>
+    </FxCompile>
+    <FxCompile Include="flatShader_vs.hlsl">
+      <Filter>Shader\flatShader</Filter>
+    </FxCompile>
+    <FxCompile Include="flatShader_ps.hlsl">
+      <Filter>Shader\flatShader</Filter>
+    </FxCompile>
+    <FxCompile Include="flatShader_gs.hlsl">
+      <Filter>Shader\flatShader</Filter>
+    </FxCompile>
+    <FxCompile Include="GauseShader_ps.hlsl">
+      <Filter>Shader\GauseShader</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -141,9 +153,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Souce</Filter>
     </ClCompile>
-    <ClCompile Include="MainCamera.cpp">
-      <Filter>Header</Filter>
-    </ClCompile>
     <ClCompile Include="Sampler.cpp">
       <Filter>Souce</Filter>
     </ClCompile>
@@ -196,6 +205,9 @@
       <Filter>Souce</Filter>
     </ClCompile>
     <ClCompile Include="YRShader.cpp">
+      <Filter>Souce</Filter>
+    </ClCompile>
+    <ClCompile Include="MainCamera.cpp">
       <Filter>Souce</Filter>
     </ClCompile>
   </ItemGroup>
@@ -317,40 +329,49 @@
     <ClInclude Include="YRGamePad.h">
       <Filter>Game</Filter>
     </ClInclude>
+    <ClInclude Include="Blur.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="AnimShader.hlsli">
-      <Filter>Shader</Filter>
+      <Filter>Shader\AnimShader</Filter>
     </None>
     <None Include="board.hlsli">
-      <Filter>Shader</Filter>
+      <Filter>Shader\boardShader</Filter>
     </None>
     <None Include="Font.hlsli">
-      <Filter>Shader</Filter>
+      <Filter>Shader\FontShader</Filter>
     </None>
     <None Include="geometric_primitive.hlsli">
-      <Filter>Shader</Filter>
+      <Filter>Shader\geometric_primitiveShader</Filter>
     </None>
     <None Include="Mesh_Static.hlsli">
-      <Filter>Shader</Filter>
+      <Filter>Shader\Mesh_StaticShader</Filter>
     </None>
     <None Include="ParallelToon.hlsli">
-      <Filter>Shader</Filter>
+      <Filter>Shader\ParallelToonShader</Filter>
     </None>
     <None Include="Skinned_mesh.hlsli">
-      <Filter>Shader</Filter>
-    </None>
-    <None Include="toGbuffer.hlsli">
-      <Filter>Shader</Filter>
-    </None>
-    <None Include="ToonShader.hlsli">
-      <Filter>Shader</Filter>
+      <Filter>Shader\SkinnedMeshShader</Filter>
     </None>
     <None Include="sprite.hlsli">
-      <Filter>Shader</Filter>
+      <Filter>Shader\spriteShader</Filter>
     </None>
     <None Include="SpriteEx.hlsli">
-      <Filter>Shader</Filter>
+      <Filter>Shader\SpriteExShader</Filter>
+    </None>
+    <None Include="toGbuffer.hlsli">
+      <Filter>Shader\toGbufferShader</Filter>
+    </None>
+    <None Include="ToonShader.hlsli">
+      <Filter>Shader\ToonShader</Filter>
+    </None>
+    <None Include="flatShader.hlsli">
+      <Filter>Shader\flatShader</Filter>
+    </None>
+    <None Include="GauseShader.hlsli">
+      <Filter>Shader\GauseShader</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -374,6 +395,45 @@
     </Filter>
     <Filter Include="ImGui">
       <UniqueIdentifier>{975cfb69-e398-4642-8c67-0a8dad034548}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\AnimShader">
+      <UniqueIdentifier>{ebb3d952-4787-4df8-b821-fe93850f3667}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\boardShader">
+      <UniqueIdentifier>{bc7796cb-c848-4d6e-99d7-dd919cd8b5b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\FontShader">
+      <UniqueIdentifier>{44cb720b-08df-4302-a696-d55a10f5be8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\geometric_primitiveShader">
+      <UniqueIdentifier>{d59ec803-7552-4163-8f49-5532989c470c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Mesh_StaticShader">
+      <UniqueIdentifier>{cb0c02d5-b70f-4789-b963-6051e91fdae4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\ParallelToonShader">
+      <UniqueIdentifier>{0fc2a422-3f5d-484a-9e46-f6137324dee2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\SkinnedMeshShader">
+      <UniqueIdentifier>{3c968741-3a03-4aa4-9d39-3c15b33ddf4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\spriteShader">
+      <UniqueIdentifier>{ecdd447b-a303-403d-b6c8-7c138afa3a83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\SpriteExShader">
+      <UniqueIdentifier>{196806d6-845b-4540-b273-d5346e898740}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\toGbufferShader">
+      <UniqueIdentifier>{7845d37f-d659-41e2-a69e-615e37e1bf7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\ToonShader">
+      <UniqueIdentifier>{80ae53fa-9530-4b22-85f7-eeda2e7b1d4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\flatShader">
+      <UniqueIdentifier>{b75bf0b8-9771-421e-a180-2774ad475833}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\GauseShader">
+      <UniqueIdentifier>{70df752f-f732-42b1-9ad7-dd4c0b79988a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -42,13 +42,13 @@ void SceneLoad::LoadData()
 	if (load_img == nullptr)
 	{
 		load_img = std::make_unique<Sprite>(
-			L"./Data/Image/UI/GameScene/load_image.png",
-			480.0f,
-			384.0f,
-			5,
+			L"./Data/Image/UI/GameLoad/load_image.png",
+			300.0f,
+			400.0f,
+			3,
 			4,
-			96.0f,
-			96.0f);
+			100.0f,
+			100.0f);
 	}
 
 	load_state = 2;

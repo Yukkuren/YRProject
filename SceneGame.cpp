@@ -231,7 +231,11 @@ void SceneGame::UnInit()
 {
 	//プレイヤーのUninit関数を回す
 	player1p->Uninit();
+	player1p.reset();
+	player1p = nullptr;
 	player2p->Uninit();
+	player2p.reset();
+	player2p = nullptr;
 	//SceneGameの画像などを解放する
 	test.reset();
 	geo.reset();
@@ -848,6 +852,7 @@ void SceneGame::Draw(float elapsed_time)
 	//仮背景
 	test->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 0.5f);
 	
+	//テスト描画(赤ポリ)
 	geo->render(
 		geoShader.get(),
 		DirectX::XMFLOAT3(0.0f, 0.0f, 20.0f),
@@ -1283,8 +1288,8 @@ void SceneGame::PauseUpdate()
 void SceneGame::TrackSet()
 {
 	//ホーミングダッシュ用の値を変更する
-	player1p->tracking.rival_Pos = player2p->pos;
-	player2p->tracking.rival_Pos = player1p->pos;
+	//player1p->tracking.rival_Pos = player2p->pos;
+	//player2p->tracking.rival_Pos = player1p->pos;
 	//player1p->rival_state = player2p->state;
 	//player2p->rival_state = player1p->state;
 }

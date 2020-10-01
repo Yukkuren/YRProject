@@ -48,12 +48,17 @@ void SceneTest::Init()
 		spriteEx = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE_EX);
 		spriteEx->Create("./Data/Shader/SpriteEx_vs.cso", "./Data/Shader/SpriteEx_ps.cso");
 	}
+	if (flatShader == nullptr)
+	{
+		flatShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::FLAT);
+		flatShader->Create("./Data/Shader/flatShader_vs.cso", "./Data/Shader/flatShader_ps.cso", "./Data/Shader/flatShader_gs.cso");
+	}
 
 	//カメラ初期設定
 	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -25));			//視点
 	YRCamera.SetFocus(DirectX::XMFLOAT3(0.0f, 5.0f, 0.0f));			//注視点
 	YRCamera.SetUp(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));				//上方向
-	YRCamera.SetPerspective(30 * 0.01745f, 1920.0f / 1080.0f, 0.0001f, 1000000);
+	YRCamera.SetPerspective(30 * 0.01745f, 1920.0f / 1080.0f, 1.4f, 1000.0f);
 
 	if (box_texture == nullptr)
 	{
@@ -64,10 +69,14 @@ void SceneTest::Init()
 		board_texture = std::make_shared<Texture>(L"./Data/Image/UI/GameScene/effect.png");
 	}
 
-	if (box == nullptr)
+	if (knight == nullptr)
 	{
 		//box = std::make_unique<Skinned_mesh>("./Data/FBX/Knight.fbx");
-		box = std::make_unique<Skinned_mesh>("./Data/FBX/danbo_fbx/danbo_taiki.fbx");
+		knight = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
+	}
+	if (wait_R == nullptr)
+	{
+		wait_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_wait.fbx");
 	}
 	if (geo == nullptr)
 	{
@@ -82,8 +91,14 @@ void SceneTest::Init()
 		anim = std::make_unique<AnimBoard>(board_texture, 6,XMFLOAT2(64.0f,64.0f),XMINT2(3,2),XMFLOAT2(192.0f,128.0f));
 	}
 
-	motion.MeshSet(box);
-	motion.AnimReset();
+	//motion.MeshSet(box);
+	//motion.AnimReset();
+	if (motion == nullptr)
+	{
+		motion = std::make_unique<ModelAnim>(knight);
+		motion->PlayAnimation(0, true);
+		motion->NodeChange(wait_R);
+	}
 
 	//画像のロード
 	if (test == nullptr)
@@ -181,7 +196,6 @@ void SceneTest::Draw(float elapsed_time)
 	static DirectX::XMFLOAT4 ambient_color(0.3f, 0.3f, 0.3f, 0.5f);
 	static float anim_count = 0.0f;
 	//static DirectX::XMFLOAT3 box_angle = { DirectX::XMConvertToRadians(-90.0f),0.0f,0.0f };
-	static DirectX::XMFLOAT3 box_angle = { 0.0f,0.0f,0.0f };
 
 	static float off_x = 0.0f;
 	static float off_y = 0.0f;
@@ -230,10 +244,7 @@ void SceneTest::Draw(float elapsed_time)
 
 		YRCamera.SetEye(eye);
 		YRCamera.SetFocus(focus);
-		YRCamera.SetPerspective(fov * 0.01745f, 1920.0f / 1080.0f, 0.0001f, 1000000.0f);
-		ImGui::InputFloat("box_angle.x", &box_angle.x, 0.01f, 0.01f);
-		ImGui::InputFloat("box_angle.y", &box_angle.y, 0.01f, 0.01f);
-		ImGui::InputFloat("box_angle.z", &box_angle.z, 0.01f, 0.01f);
+		YRCamera.SetPerspective(fov * 0.01745f, 1920.0f / 1080.0f, 1.4f, 1000.0f);
 
 		ImGui::InputFloat("offset.x", &off_x, 0.01f, 0.01f);
 		ImGui::InputFloat("offset.y", &off_y, 0.01f, 0.01f);
@@ -251,21 +262,6 @@ void SceneTest::Draw(float elapsed_time)
 	//材質カラー
 	DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(1, 1, 1, 1);
 
-
-	//定数バッファの設定
-	CB_Multi_Render_Target cb;
-	cb.light_direction = light_direction;
-	cb.light_color = lightColor;
-	cb.ambient_color = ambient_color;
-	cb.eye_pos.x = YRCamera.GetEye().x;
-	cb.eye_pos.y = YRCamera.GetEye().y;
-	cb.eye_pos.z = YRCamera.GetEye().z;
-	cb.eye_pos.w = 1.0f;
-
-	//定数バッファ更新
-	FRAMEWORK.context->UpdateSubresource(constantBuffer.Get(), 0, NULL, &cb, 0, 0);
-	FRAMEWORK.context->VSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
-	FRAMEWORK.context->PSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
 
 	//ビュー更新
 	YRCamera.Active();
@@ -303,12 +299,30 @@ void SceneTest::Draw(float elapsed_time)
 	//デプスステンシルステート設定
 	FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[FRAMEWORK.DS_TRUE].Get(), 1);
 
+	//定数バッファの設定
+	CB_Multi_Render_Target cb;
+	cb.light_direction = light_direction;
+	cb.light_color = lightColor;
+	cb.ambient_color = ambient_color;
+	cb.eye_pos.x = YRCamera.GetEye().x;
+	cb.eye_pos.y = YRCamera.GetEye().y;
+	cb.eye_pos.z = YRCamera.GetEye().z;
+	cb.eye_pos.w = 1.0f;
+
+	//定数バッファ更新
+	FRAMEWORK.context->UpdateSubresource(constantBuffer.Get(), 0, NULL, &cb, 0, 0);
+	FRAMEWORK.context->VSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
+	FRAMEWORK.context->PSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
+
+
+	sampler_clamp->Set(0);
+
 	//Gbuffer描画
 	sprite->render(
 		spriteEx.get(),
 		color_texture.get(),
 		0.0f, 0.0f, 640.0f, 360.0f,
-		0.0f, 0.0f, 1920.0f, 1080.0f,0.0f,1.0f);
+		0.0f, 0.0f, 1280.0f, 720.0f,0.0f,1.0f);
 	sprite->render(
 		spriteEx.get(),
 		normal_texture.get(),
@@ -318,54 +332,18 @@ void SceneTest::Draw(float elapsed_time)
 		spriteEx.get(),
 		position_texture.get(),
 		0.0f, 360.0f, 640.0f, 360.0f,
-		0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
+		0.0f, 0.0f, 1280.0f, 720.0f, 0.0f, 1.0f);
 
 
-	//仮背景
-	//test->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 0.5f);
-
-	/*motion.DrawContinue(
-		skinShader.get(),
-		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+	motion->UpdateAnimation(elapsed_time);
+	motion->CalculateLocalTransform();
+	motion->CalculateWorldTransform(knight_pos,
 		DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
-		box_angle,
-		V, P, light_direction, lightColor, ambient_color, elapsed_time
-	);*/
-
-	//geo->render(
-	//	geoShader.get(),
-	//	DirectX::XMFLOAT3(5.0f, 5.0f, 0.0f),
-	//	DirectX::XMFLOAT3(1.0f, 1.0f, 0.0f),
-	//	DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-	//	V,
-	//	P,
-	//	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)
-	//);
-
-	//sampler_wrap->Set(0);
-
-	//board->render(
-	//	boardShader.get(),
-	//	DirectX::XMFLOAT3(-5.0f, 3.0f, 0.0f),
-	//	DirectX::XMFLOAT3(3.0f, 3.0f, 0.0f),
-	//	box_angle,
-	//	V,
-	//	P,
-	//	off_x,
-	//	off_y,
-	//	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)
-	//);
-
-	////sampler->Set(0);
-	//anim->Render(
-	//	animShader.get(),
-	//	DirectX::XMFLOAT3(5.0f, 3.0f, 0.0f),
-	//	DirectX::XMFLOAT2(1.0f, 1.0f),
-	//	box_angle,
-	//	0.1f,
-	//	V, P,
-	//	elapsed_time
-	//);
+		knight_angle);
+	motion->Draw(
+		flatShader.get(),
+		V, P, light_direction, lightColor, ambient_color
+	);
 }
 
 
@@ -377,6 +355,17 @@ void SceneTest::RenderTexture(
 	const DirectX::XMFLOAT4&	ambient_color,
 	float						elapsed_time)
 {
+#ifdef USE_IMGUI
+	{
+		ImGui::InputFloat("knight_pos.x", &knight_pos.x, 0.01f, 0.01f);
+		ImGui::InputFloat("knight_pos.y", &knight_pos.y, 0.01f, 0.01f);
+		ImGui::InputFloat("knight_pos.z", &knight_pos.z, 0.01f, 0.01f);
+		ImGui::InputFloat("knight_angle.x", &knight_angle.x, 0.01f, 0.01f);
+		ImGui::InputFloat("knight_angle.y", &knight_angle.y, 0.01f, 0.01f);
+		ImGui::InputFloat("knight_angle.z", &knight_angle.z, 0.01f, 0.01f);
+	}
+#endif // USE_IMGUI
+
 	ID3D11RenderTargetView* rtv[3] = {
 		color_texture->GetRenderTargetView(),
 		normal_texture->GetRenderTargetView(),
@@ -427,7 +416,7 @@ void SceneTest::RenderTexture(
 	sampler_clamp->Set(0);
 
 	//描画
-	static  XMFLOAT3 aY;
+	/*static  XMFLOAT3 aY;
 	aY.x = 0.0f;
 	aY.y += elapsed_time;
 	aY.z = 0.0f;
@@ -448,7 +437,17 @@ void SceneTest::RenderTexture(
 		XMFLOAT3(-XM_PI / 2.0f, 0.0f, 0.0f),
 		view,
 		projection
-	);
+	);*/
+
+	/*motion->UpdateAnimation(elapsed_time);
+	motion->CalculateLocalTransform();
+	motion->CalculateWorldTransform(knight_pos,
+		DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
+		knight_angle);
+	motion->Draw(
+		skinShader.get(),
+		view, projection, light_direction, light_color, ambient_color
+	);*/
 
 	rtv[0] = FRAMEWORK.view.Get();
 	rtv[1] = NULL;
