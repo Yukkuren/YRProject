@@ -11,9 +11,6 @@
 // ColorBuffer1                      texture  float4          2d             t1      1 
 // ColorBuffer2                      texture  float4          2d             t2      1 
 // ColorBuffer3                      texture  float4          2d             t3      1 
-// ColorBuffer4                      texture  float4          2d             t4      1 
-// ColorBuffer5                      texture  float4          2d             t5      1 
-// ColorBuffer6                      texture  float4          2d             t6      1 
 //
 //
 //
@@ -38,9 +35,6 @@ dcl_resource_texture2d (float,float,float,float) t0
 dcl_resource_texture2d (float,float,float,float) t1
 dcl_resource_texture2d (float,float,float,float) t2
 dcl_resource_texture2d (float,float,float,float) t3
-dcl_resource_texture2d (float,float,float,float) t4
-dcl_resource_texture2d (float,float,float,float) t5
-dcl_resource_texture2d (float,float,float,float) t6
 dcl_input_ps linear v1.xy
 dcl_output o0.xyzw
 dcl_temps 3
@@ -129,63 +123,6 @@ mov r1.xyz, r1.xyzx  // r1.x <- <FetchColor return value>.x; r1.y <- <FetchColor
 #line 16
 add r0.xyz, r0.xyzx, r1.xyzx
 
-#line 17
-nop 
-nop 
-mov r1.xy, v1.xyxx
-
-#line 5
-itof r2.xyz, l(0, 0, 0, 0)  // r2.x <- output.x; r2.y <- output.y; r2.z <- output.z
-
-#line 6
-itof r0.w, l(0)
-sample_l_indexable(texture2d)(float,float,float,float) r1.xyz, r1.xyxx, t4.xyzw, s0, r0.w
-add r1.xyz, r1.xyzx, r2.xyzx  // r1.x <- output.x; r1.y <- output.y; r1.z <- output.z
-
-#line 7
-mov r1.xyz, r1.xyzx  // r1.x <- <FetchColor return value>.x; r1.y <- <FetchColor return value>.y; r1.z <- <FetchColor return value>.z
-
-#line 17
-add r0.xyz, r0.xyzx, r1.xyzx
-
-#line 18
-nop 
-nop 
-mov r1.xy, v1.xyxx
-
-#line 5
-itof r2.xyz, l(0, 0, 0, 0)  // r2.x <- output.x; r2.y <- output.y; r2.z <- output.z
-
-#line 6
-itof r0.w, l(0)
-sample_l_indexable(texture2d)(float,float,float,float) r1.xyz, r1.xyxx, t5.xyzw, s0, r0.w
-add r1.xyz, r1.xyzx, r2.xyzx  // r1.x <- output.x; r1.y <- output.y; r1.z <- output.z
-
-#line 7
-mov r1.xyz, r1.xyzx  // r1.x <- <FetchColor return value>.x; r1.y <- <FetchColor return value>.y; r1.z <- <FetchColor return value>.z
-
-#line 18
-add r0.xyz, r0.xyzx, r1.xyzx
-
-#line 19
-nop 
-nop 
-mov r1.xy, v1.xyxx
-
-#line 5
-itof r2.xyz, l(0, 0, 0, 0)  // r2.x <- output.x; r2.y <- output.y; r2.z <- output.z
-
-#line 6
-itof r0.w, l(0)
-sample_l_indexable(texture2d)(float,float,float,float) r1.xyz, r1.xyxx, t6.xyzw, s0, r0.w
-add r1.xyz, r1.xyzx, r2.xyzx  // r1.x <- output.x; r1.y <- output.y; r1.z <- output.z
-
-#line 7
-mov r1.xyz, r1.xyzx  // r1.x <- <FetchColor return value>.x; r1.y <- <FetchColor return value>.y; r1.z <- <FetchColor return value>.z
-
-#line 19
-add r0.xyz, r0.xyzx, r1.xyzx
-
 #line 21
 mov r0.w, l(1.000000)  // r0.w <- result.w
 
@@ -193,4 +130,4 @@ mov r0.w, l(1.000000)  // r0.w <- result.w
 mov o0.xyz, r0.xyzx
 mov o0.w, r0.w
 ret 
-// Approximately 68 instruction slots used
+// Approximately 41 instruction slots used

@@ -560,7 +560,7 @@ void SceneTest::RenderBlur(
 	{
 		//初回のみ現在の描画を利用する
 		//テクスチャをセット
-		FRAMEWORK.framebuffer.SetRenderTexture(blur_texture[0]->GetRenderTargetView());
+		FRAMEWORK.framebuffer.SetRenderTexture(blur_texture[0]->GetRenderTargetView(),true);
 		ID3D11DepthStencilView* dsv = color_texture->GetDepthStencilView();
 
 		//画面をクリア
@@ -568,22 +568,24 @@ void SceneTest::RenderBlur(
 		FRAMEWORK.context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 		//レンダーターゲットビューの設定
-		FRAMEWORK.framebuffer.Activate(1920.0f, 1080.0f, dsv);
+		FRAMEWORK.framebuffer.GetDefaultRTV();
+		FRAMEWORK.SetViewPort(1920.0f, 1080.0f);
+		FRAMEWORK.framebuffer.Activate(dsv);
 
 		//定数バッファの設定
-		CB_Multi_Render_Target cb;
+		/*CB_Multi_Render_Target cb;
 		cb.light_direction = light_direction;
 		cb.light_color = light_color;
 		cb.ambient_color = ambient_color;
 		cb.eye_pos.x = YRCamera.GetEye().x;
 		cb.eye_pos.y = YRCamera.GetEye().y;
 		cb.eye_pos.z = YRCamera.GetEye().z;
-		cb.eye_pos.w = 1.0f;
+		cb.eye_pos.w = 1.0f;*/
 
 		//定数バッファ更新
-		FRAMEWORK.context->UpdateSubresource(constantBuffer.Get(), 0, NULL, &cb, 0, 0);
-		FRAMEWORK.context->VSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
-		FRAMEWORK.context->PSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
+		//FRAMEWORK.context->UpdateSubresource(constantBuffer.Get(), 0, NULL, &cb, 0, 0);
+		//FRAMEWORK.context->VSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
+		//FRAMEWORK.context->PSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
 
 		//ブレンドステート設定
 		FRAMEWORK.BlendSet(Blend::ALPHA);
@@ -605,46 +607,46 @@ void SceneTest::RenderBlur(
 			0.0f, 0.0f, 1920.0f, 1080.0f,
 			0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
 
-		FRAMEWORK.framebuffer.Deactivate();
-		FRAMEWORK.framebuffer.ResetRenderTexture();
+		//FRAMEWORK.framebuffer.Deactivate();
+		//FRAMEWORK.framebuffer.ResetRenderTexture();
 
 		//特定の回数分描画し、テクスチャに書き込む
 		for (int i = 1; i < blur_texture.size(); i++)
 		{
 			//テクスチャをセット
-			FRAMEWORK.framebuffer.SetRenderTexture(blur_texture[i]->GetRenderTargetView());
+			FRAMEWORK.framebuffer.SetRenderTexture(blur_texture[i]->GetRenderTargetView(),true);
 			//ID3D11DepthStencilView* dsv = color_texture->GetDepthStencilView();
 
 			//画面をクリア
 			FRAMEWORK.framebuffer.Clear();
-			FRAMEWORK.context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+			//FRAMEWORK.context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 			//レンダーターゲットビューの設定
-			FRAMEWORK.framebuffer.Activate(1920.0f, 1080.0f, dsv);
+			FRAMEWORK.framebuffer.Activate(dsv);
 
 			//定数バッファの設定
-			cb.light_direction = light_direction;
+			/*cb.light_direction = light_direction;
 			cb.light_color = light_color;
 			cb.ambient_color = ambient_color;
 			cb.eye_pos.x = YRCamera.GetEye().x;
 			cb.eye_pos.y = YRCamera.GetEye().y;
 			cb.eye_pos.z = YRCamera.GetEye().z;
-			cb.eye_pos.w = 1.0f;
+			cb.eye_pos.w = 1.0f;*/
 
 			//定数バッファ更新
-			FRAMEWORK.context->UpdateSubresource(constantBuffer.Get(), 0, NULL, &cb, 0, 0);
+			/*FRAMEWORK.context->UpdateSubresource(constantBuffer.Get(), 0, NULL, &cb, 0, 0);
 			FRAMEWORK.context->VSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
-			FRAMEWORK.context->PSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
+			FRAMEWORK.context->PSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());*/
 
 			//ブレンドステート設定
-			FRAMEWORK.BlendSet(Blend::ALPHA);
+			//FRAMEWORK.BlendSet(Blend::ALPHA);
 			//ラスタライザー設定
-			FRAMEWORK.context->RSSetState(FRAMEWORK.rasterizer_state[framework::RS_CULL_BACK].Get());
+			//FRAMEWORK.context->RSSetState(FRAMEWORK.rasterizer_state[framework::RS_CULL_BACK].Get());
 			//デプスステンシルステート設定
-			FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[framework::DS_TRUE].Get(), 1);
+			//FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[framework::DS_TRUE].Get(), 1);
 
 			//サンプラー設定
-			sampler_clamp->Set(0);
+			//sampler_clamp->Set(0);
 
 
 			if (i % 2)
@@ -666,31 +668,31 @@ void SceneTest::RenderBlur(
 				0.0f, 0.0f, 1920.0f, 1080.0f,
 				0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
 
-			FRAMEWORK.framebuffer.Deactivate();
-			FRAMEWORK.framebuffer.ResetRenderTexture();
+			//FRAMEWORK.framebuffer.Deactivate();
+			//FRAMEWORK.framebuffer.ResetRenderTexture();
 		}
 
 	//全てのテクスチャを合成したマルチガウスのテクスチャを作成する
 
 		//テクスチャをセット
-		FRAMEWORK.framebuffer.SetRenderTexture(multi_blur_texture->GetRenderTargetView());
+		FRAMEWORK.framebuffer.SetRenderTexture(multi_blur_texture->GetRenderTargetView(),true);
 		//ID3D11DepthStencilView* dsv = color_texture->GetDepthStencilView();
 
 		//画面をクリア
 		FRAMEWORK.framebuffer.Clear();
-		FRAMEWORK.context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		//FRAMEWORK.context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 		//レンダーターゲットビューの設定
-		FRAMEWORK.framebuffer.Activate(1920.0f, 1080.0f, dsv);
+		FRAMEWORK.framebuffer.Activate(dsv);
 		//ブレンドステート設定
-		FRAMEWORK.BlendSet(Blend::ALPHA);
+		//FRAMEWORK.BlendSet(Blend::ALPHA);
 		//ラスタライザー設定
-		FRAMEWORK.context->RSSetState(FRAMEWORK.rasterizer_state[framework::RS_CULL_BACK].Get());
+		//FRAMEWORK.context->RSSetState(FRAMEWORK.rasterizer_state[framework::RS_CULL_BACK].Get());
 		//デプスステンシルステート設定
-		FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[framework::DS_TRUE].Get(), 1);
+		//FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[framework::DS_TRUE].Get(), 1);
 
 		//サンプラー設定
-		sampler_clamp->Set(0);
+		//sampler_clamp->Set(0);
 
 		// シェーダリソースビューを設定.
 		ID3D11ShaderResourceView* pSRV[] = {
@@ -698,15 +700,16 @@ void SceneTest::RenderBlur(
 			blur_texture[1]->GetShaderResource(),
 			blur_texture[3]->GetShaderResource(),
 			blur_texture[5]->GetShaderResource(),
-			blur_texture[7]->GetShaderResource(),
+			/*blur_texture[7]->GetShaderResource(),
 			blur_texture[9]->GetShaderResource(),
-			blur_texture[11]->GetShaderResource(),
+			blur_texture[11]->GetShaderResource(),*/
 		};
 
 		sprite->render(
 			multi_gaussShader.get(),
 			luminance_texture.get(),
 			pSRV,
+			4,
 			0.0f, 0.0f, 1920.0f, 1080.0f,
 			0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
 		FRAMEWORK.framebuffer.Deactivate();
@@ -725,6 +728,9 @@ void SceneTest::RenderBlur(
 
 		////デプスステンシルステート設定
 		//FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[FRAMEWORK.DS_TRUE].Get(), 1);
+		
+		//レンダーターゲットの回復
+		FRAMEWORK.context.Get()->OMSetRenderTargets(1, FRAMEWORK.view.GetAddressOf(), FRAMEWORK.depth.Get());
 
 		//ブレンドステート設定
 		FRAMEWORK.BlendSet(Blend::ADD);

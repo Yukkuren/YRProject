@@ -13,6 +13,7 @@ public:
 	framebuffer& operator=(framebuffer&) = delete;
 
 	std::vector<Microsoft::WRL::ComPtr<ID3D11RenderTargetView>> render_target_view;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> render_target_view_solo;
 	//Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depth_stencil_view;
 
 	//Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> render_target_shader_resource_view;
@@ -20,10 +21,13 @@ public:
 
 	//D3D11_VIEWPORT viewport;
 
-	void SetRenderTexture(ID3D11RenderTargetView* rtv);
+	void SetRenderTexture(ID3D11RenderTargetView* rtv, bool solo_rtv = false);
 	void ResetRenderTexture();
 	void Clear(float r = 0, float g = 0, float b = 0, float a = 1);
 	void Activate(int width, int height, ID3D11DepthStencilView* pDepthStencilView);
+	void Activate(ID3D11DepthStencilView* pDepthStencilView);
+	void GetDefaultRTV();
+	void SetViewPort(int width, int height);
 	void Deactivate();
 
 

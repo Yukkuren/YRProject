@@ -93,6 +93,7 @@ public:
 		YRShader* shader,
 		Texture* tex,
 		ID3D11ShaderResourceView*const* srv,
+		int		srv_size,
 		float	dx, float	dy,
 		float	dw, float	dh,
 		float	sx, float	sy,

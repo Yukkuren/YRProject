@@ -398,7 +398,7 @@ public:
 	std::unique_ptr<Texture> position_texture = nullptr;
 	std::unique_ptr<Texture> luminance_texture = nullptr;
 	std::unique_ptr<Texture> multi_blur_texture = nullptr;
-	std::array<std::unique_ptr<Texture>,12> blur_texture = { nullptr };
+	std::array<std::unique_ptr<Texture>,6> blur_texture = { nullptr };
 
 	Collision circle;
 

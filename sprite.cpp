@@ -795,6 +795,7 @@ void Sprite::render(
 	YRShader* shader,
 	Texture* tex,
 	ID3D11ShaderResourceView* const* srv,
+	int		srv_size,
 	float	dx, float	dy,
 	float	dw, float	dh,
 	float	sx, float	sy,
@@ -951,7 +952,7 @@ void Sprite::render(
 	FRAMEWORK.context->RSSetState(rastersize.Get());
 	//FRAMEWORK.context->PSSetShaderResources(0, 1, this->shader.GetAddressOf());
 	//FRAMEWORK.context->PSSetSamplers(0, 1, sampler.GetAddressOf());
-	FRAMEWORK.context->PSSetShaderResources(0, 7, srv);
+	FRAMEWORK.context->PSSetShaderResources(0, srv_size, srv);
 	//FRAMEWORK.context->PSSetSamplers(0, 1, &sampler.GetAddressOf());
 
 	FRAMEWORK.context->Draw(4, 0);

@@ -14,9 +14,9 @@ float4 main(const VSOutput input) : SV_TARGET0
 	result += FetchColor(ColorBuffer1, input.TexCoord);
 	result += FetchColor(ColorBuffer2, input.TexCoord);
 	result += FetchColor(ColorBuffer3, input.TexCoord);
-	result += FetchColor(ColorBuffer4, input.TexCoord);
+	/*result += FetchColor(ColorBuffer4, input.TexCoord);
 	result += FetchColor(ColorBuffer5, input.TexCoord);
-	result += FetchColor(ColorBuffer6, input.TexCoord);
+	result += FetchColor(ColorBuffer6, input.TexCoord);*/
 
 	result.w = 1.0f;
 	return result;
