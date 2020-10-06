@@ -18,6 +18,7 @@
 #include "Board_primitive.h"
 #include "Sampler.h"
 #include "AnimBoard.h"
+#include "collision.h"
 
 
 constexpr float start_time = 0.0f;
@@ -388,12 +389,18 @@ public:
 	std::unique_ptr<YRShader> toGbuffer = nullptr;
 	std::unique_ptr<YRShader> spriteEx = nullptr;
 	std::unique_ptr<YRShader> flatShader = nullptr;
+	std::unique_ptr<YRShader> gaussShader = nullptr;
+	std::unique_ptr<YRShader> multi_gaussShader = nullptr;
 
 	//テクスチャ
 	std::unique_ptr<Texture> color_texture = nullptr;
 	std::unique_ptr<Texture> normal_texture = nullptr;
 	std::unique_ptr<Texture> position_texture = nullptr;
-	
+	std::unique_ptr<Texture> luminance_texture = nullptr;
+	std::unique_ptr<Texture> multi_blur_texture = nullptr;
+	std::array<std::unique_ptr<Texture>,12> blur_texture = { nullptr };
+
+	Collision circle;
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer>	constantBuffer = nullptr;
 
@@ -415,6 +422,15 @@ public:
 		const DirectX::XMFLOAT4&	light_color,
 		const DirectX::XMFLOAT4&	ambient_color,
 		float						elapsed_time);
+
+	void RenderBlur(
+		const DirectX::XMMATRIX& view,
+		const DirectX::XMMATRIX& projection,
+		const DirectX::XMFLOAT4& light_direction,
+		const DirectX::XMFLOAT4& light_color,
+		const DirectX::XMFLOAT4& ambient_color,
+		float						elapsed_time);
+
 public:
 	struct CB_Multi_Render_Target
 	{

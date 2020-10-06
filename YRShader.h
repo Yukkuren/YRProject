@@ -84,6 +84,18 @@ private:
 		flat_element_desc.push_back(tex);
 		flat_element_desc.push_back(wight);
 		flat_element_desc.push_back(bone);
+
+		//gauss
+		gauss_element_desc.push_back(pos);
+		gauss_element_desc.push_back(normal);
+		gauss_element_desc.push_back(tex);
+		gauss_element_desc.push_back(color);
+
+		//multigauss
+		multi_gauss_element_desc.push_back(pos);
+		multi_gauss_element_desc.push_back(normal);
+		multi_gauss_element_desc.push_back(tex);
+		multi_gauss_element_desc.push_back(color);
 	};
 public:
 	enum ShaderType
@@ -98,6 +110,8 @@ public:
 		TOGBUF,
 		SPRITE_EX,
 		FLAT,
+		GAUSS,
+		MULTI_GAUSS,
 	};
 
 	std::vector<D3D11_INPUT_ELEMENT_DESC> skin_element_desc;
@@ -110,6 +124,8 @@ public:
 	std::vector<D3D11_INPUT_ELEMENT_DESC> toGbuf_element_desc;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> spriteEx_element_desc;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> flat_element_desc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> gauss_element_desc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> multi_gauss_element_desc;
 
 	static INPUT_ELEMENT_DESC &getInstance()
 	{

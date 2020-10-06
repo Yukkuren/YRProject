@@ -85,8 +85,17 @@
     <FxCompile Include="flatShader_gs.hlsl">
       <Filter>Shader\flatShader</Filter>
     </FxCompile>
-    <FxCompile Include="GauseShader_ps.hlsl">
+    <FxCompile Include="GaussShader_ps.hlsl">
       <Filter>Shader\GauseShader</Filter>
+    </FxCompile>
+    <FxCompile Include="GaussShader_vs.hlsl">
+      <Filter>Shader\GauseShader</Filter>
+    </FxCompile>
+    <FxCompile Include="MultiGaussShader_vs.hlsl">
+      <Filter>Shader\MultiGaussShader</Filter>
+    </FxCompile>
+    <FxCompile Include="MultiGaussShader_ps.hlsl">
+      <Filter>Shader\MultiGaussShader</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -208,6 +217,12 @@
       <Filter>Souce</Filter>
     </ClCompile>
     <ClCompile Include="MainCamera.cpp">
+      <Filter>Souce</Filter>
+    </ClCompile>
+    <ClCompile Include="Blur.cpp">
+      <Filter>Souce</Filter>
+    </ClCompile>
+    <ClCompile Include="framebuffer.cpp">
       <Filter>Souce</Filter>
     </ClCompile>
   </ItemGroup>
@@ -332,6 +347,9 @@
     <ClInclude Include="Blur.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="framebuffer.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="AnimShader.hlsli">
@@ -370,8 +388,11 @@
     <None Include="flatShader.hlsli">
       <Filter>Shader\flatShader</Filter>
     </None>
-    <None Include="GauseShader.hlsli">
+    <None Include="GaussShader.hlsli">
       <Filter>Shader\GauseShader</Filter>
+    </None>
+    <None Include="MultiGaussShader.hlsli">
+      <Filter>Shader\MultiGaussShader</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -434,6 +455,9 @@
     </Filter>
     <Filter Include="Shader\GauseShader">
       <UniqueIdentifier>{70df752f-f732-42b1-9ad7-dd4c0b79988a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\MultiGaussShader">
+      <UniqueIdentifier>{2534bc36-6b53-450a-b5a4-b677caf126cc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -114,6 +114,7 @@ PSOutput main(VS_OUT pin) : SV_TARGET
 	Out.Color = color;
 	Out.wNormal = float4(NN, 1.0f);
 	Out.wPosition = float4(P, 1.0f);
+	Out.Luminance = color * lumi_factor;
 
 	return Out;
 }

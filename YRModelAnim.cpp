@@ -449,7 +449,6 @@ void ModelAnim::Draw(
 			DirectX::XMStoreFloat4x4(&p, projection);
 			cb.projection = p;
 			cb.at = YRCamera.GetAt();
-			cb.dummy = 0.0f;
 			cb.dummy00 = 0.0f;
 			cb.dummy01 = 0.0f;
 
@@ -458,6 +457,7 @@ void ModelAnim::Draw(
 			case Model::Material_Attribute::EYE:
 				cb.Offset_X = off_set_eye.x;
 				cb.Offset_Y = off_set_eye.y;
+				cb.lumi_factor = 0.0f;
 				if (m_model_resource->color_texture_face)
 				{
 					m_model_resource->color_texture_face->Set(0);
@@ -466,14 +466,23 @@ void ModelAnim::Draw(
 			case Model::Material_Attribute::MOUSE:
 				cb.Offset_X = off_set_mouse.x;
 				cb.Offset_Y = off_set_mouse.y;
+				cb.lumi_factor = 0.0f;
 				if (m_model_resource->color_texture_face)
 				{
 					m_model_resource->color_texture_face->Set(0);
 				}
 				break;
+			case Model::Material_Attribute::SWORD:
+				cb.lumi_factor = 1.0f;
+				if (m_model_resource->color_texture_main)
+				{
+					m_model_resource->color_texture_main->Set(0);
+				}
+				break;
 			default:
 				cb.Offset_X = 0.0f;
 				cb.Offset_Y = 0.0f;
+				cb.lumi_factor = 0.0f;
 				if (m_model_resource->color_texture_main)
 				{
 					m_model_resource->color_texture_main->Set(0);

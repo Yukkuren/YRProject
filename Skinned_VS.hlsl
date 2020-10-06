@@ -57,7 +57,8 @@ VS_OUT main(VS_INPUT input)
 	//vout.normal = influence;
 	//material_color = influence;
 
-	vout.texcoord = input.texcoord;
+	vout.texcoord.x = input.texcoord.x + Offset_X;
+	vout.texcoord.y = input.texcoord.y + Offset_Y;
 	vout.color = material_color;
 	//vout.color.rgb *= D + ambient_color.rgb;
 

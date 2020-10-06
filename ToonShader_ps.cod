@@ -18,7 +18,7 @@
 //   row_major float4x4 view;           // Offset: 8400 Size:    64 [unused]
 //   row_major float4x4 projection;     // Offset: 8464 Size:    64 [unused]
 //   float3 at;                         // Offset: 8528 Size:    12 [unused]
-//   float dummy;                       // Offset: 8540 Size:     4 [unused]
+//   float lumi_factor;                 // Offset: 8540 Size:     4 [unused]
 //   float Offset_X;                    // Offset: 8544 Size:     4 [unused]
 //   float Offset_Y;                    // Offset: 8548 Size:     4 [unused]
 //   float dummy00;                     // Offset: 8552 Size:     4 [unused]

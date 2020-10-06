@@ -96,7 +96,7 @@ private:
 		DirectX::XMFLOAT4X4		view;						//トゥーンシェーダー用view行列
 		DirectX::XMFLOAT4X4		projection;					//トゥーンシェーダー用projection行列
 		DirectX::XMFLOAT3		at;							//eyeからfocusに向かう正規化ベクトル
-		float					dummy;
+		float					lumi_factor;				//輝度調整用(0.0f~1.0f)
 		float					Offset_X;					//テクスチャの位置調整X
 		float					Offset_Y;					//テクスチャの位置調整Y
 		float					dummy00;

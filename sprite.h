@@ -68,7 +68,6 @@ public:
 	};
 
 	void render(
-		//UNIT.03
 		YRShader	*shader,
 		float dx, float dy,				//Coordinate of sprite's left-top corner in screen space
 		float dw, float dh,				//Size of sprite in screen space
@@ -82,6 +81,18 @@ public:
 	void render(
 		YRShader*	shader,
 		Texture*	 tex,
+		float	dx, float	dy,
+		float	dw, float	dh,
+		float	sx, float	sy,
+		float	sw, float	sh,
+		float		angle,
+		float		alpha
+	);
+
+	void render(
+		YRShader* shader,
+		Texture* tex,
+		ID3D11ShaderResourceView*const* srv,
 		float	dx, float	dy,
 		float	dw, float	dh,
 		float	sx, float	sy,

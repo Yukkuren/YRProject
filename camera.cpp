@@ -2,6 +2,7 @@
 #include "YRMouse.h"
 #include "collision.h"
 #include "YR_VECTOR3.h"
+#include "framework.h"
 
 void Camera::Active()
 {

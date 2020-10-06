@@ -1,15 +1,29 @@
 #pragma once
 #include <DirectXMath.h>
+#include <array>
+#include "YR_VECTOR3.h"
 
-class GaussBlurParam
+//------------------------------------------------
+//		単一ガウスぼかしブルーム用パラメーター
+//------------------------------------------------
+
+
+
+class GaussParamManager
 {
 private:
-	int					SampleCount;
-	int					Dummy[3];
-	DirectX::XMFLOAT4	Offset[16];
+	float GaussianDistribution(const YR_Vector3& pos, float rho);
 public:
-	float GaussianDistribution(const DirectX::XMFLOAT2& pos, float rho);
-	void CalcBlurParam(int width, int height, DirectX::XMFLOAT2 dir, float deviation);
+	struct GaussBlurParam
+	{
+		int					SampleCount;
+		int					Dummy[3];
+		DirectX::XMFLOAT4	Offset[16];
+	};
+	GaussBlurParam param;
+
+	//YR_Vector3はxyの値のみ使用する
+	void CalcBlurParam(float width, float height, YR_Vector3 dir, float deviation);
 };
 
 

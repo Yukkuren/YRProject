@@ -300,6 +300,28 @@ bool YRShader::Create_element(const char* VS_cso_file)
 			VertextLayout.GetAddressOf());
 	}
 	break;
+	case INPUT_ELEMENT_DESC::GAUSS:
+	{
+		UINT numElements = YRINPUT_ELEMENT_DESC.gauss_element_desc.size();
+		create_vertex(
+			VS_cso_file,
+			VSShader.GetAddressOf(),
+			YRINPUT_ELEMENT_DESC.gauss_element_desc.data(),
+			numElements,
+			VertextLayout.GetAddressOf());
+	}
+	break;
+	case INPUT_ELEMENT_DESC::MULTI_GAUSS:
+	{
+		UINT numElements = YRINPUT_ELEMENT_DESC.multi_gauss_element_desc.size();
+		create_vertex(
+			VS_cso_file,
+			VSShader.GetAddressOf(),
+			YRINPUT_ELEMENT_DESC.multi_gauss_element_desc.data(),
+			numElements,
+			VertextLayout.GetAddressOf());
+	}
+	break;
 	default:
 		assert(0);
 		break;

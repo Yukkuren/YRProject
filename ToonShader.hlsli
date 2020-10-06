@@ -49,7 +49,7 @@ cbuffer CONSTANT_BUFFER : register(b0)
 	row_major float4x4 view;		//ビュー行列
 	row_major float4x4 projection;	//透視投影行列
 	float3 at;						//カメラ座標からカメラの注視点へ向かう単位ベクトル
-	float dummy;
+	float lumi_factor;				//輝度調整(0.0f~1.0f)
 	float Offset_X;					//テクスチャX方向ずれ
 	float Offset_Y;					//テクスチャY方向ずれ
 	float dummy00;

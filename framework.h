@@ -22,6 +22,7 @@
 #include"YRMouse.h"
 #include"Key.h"
 #include"Font.h"
+#include"framebuffer.h"
 
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam);
@@ -62,6 +63,9 @@ public:
 	Microsoft::WRL::ComPtr<IDXGISwapChain>			chain;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	view;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	depth;
+
+	framebuffer										framebuffer;
+
 	//Microsoft::WRL::ComPtr<geometric_primitive>		cube;
 	//std::unique_ptr<Skinned_mesh>					skin[10];
 	//std::unique_ptr<Skinned_mesh>					skin;

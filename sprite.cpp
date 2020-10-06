@@ -786,6 +786,183 @@ void Sprite::render(
 	FRAMEWORK.context->Draw(4, 0);
 	//シェーダ無効か
 	shader->Inactivate();
+
+	if (tex) tex->Set(0, FALSE);
+}
+
+
+void Sprite::render(
+	YRShader* shader,
+	Texture* tex,
+	ID3D11ShaderResourceView* const* srv,
+	float	dx, float	dy,
+	float	dw, float	dh,
+	float	sx, float	sy,
+	float	sw, float	sh,
+	float		angle,
+	float		alpha
+)
+{
+	D3D11_VIEWPORT vp;
+	UINT num = 1;
+
+	FRAMEWORK.context->RSGetViewports(&num, &vp);
+
+	//float vw = static_cast<float>(FRAMEWORK.SCREEN_WIDTH);
+	//float vh = static_cast<float>(FRAMEWORK.SCREEN_HEIGHT);
+	float screen_width = vp.Width;
+	float screen_height = vp.Height;
+
+	//screen
+	//左上座標
+	float x0 = dx;
+	float y0 = dy;
+
+	//右上座標
+	float x1 = dx + dw;
+	float y1 = dy;
+
+	//左下座標
+	float x2 = dx;
+	float y2 = dy + dh;
+
+	//右下座標
+	float x3 = dx + dw;
+	float y3 = dy + dh;
+
+	//screen
+	float mx = dx + dw * 0.5f;
+	float my = dy + dh * 0.5f;
+	x0 -= mx;
+	y0 -= my;
+	x1 -= mx;
+	y1 -= my;
+	x2 -= mx;
+	y2 -= my;
+	x3 -= mx;
+	y3 -= my;
+
+
+	float rx, ry;
+	float cos = cosf(angle * 0.01745f);
+	float sin = sinf(angle * 0.01745f);
+	rx = x0;
+	ry = y0;
+	x0 = cos * rx + -sin * ry;
+	y0 = sin * rx + cos * ry;
+	rx = x1;
+	ry = y1;
+	x1 = cos * rx + -sin * ry;
+	y1 = sin * rx + cos * ry;
+	rx = x2;
+	ry = y2;
+	x2 = cos * rx + -sin * ry;
+	y2 = sin * rx + cos * ry;
+	rx = x3;
+	ry = y3;
+	x3 = cos * rx + -sin * ry;
+	y3 = sin * rx + cos * ry;
+
+	x0 += mx;
+	y0 += my;
+	x1 += mx;
+	y1 += my;
+	x2 += mx;
+	y2 += my;
+	x3 += mx;
+	y3 += my;
+
+
+	//screen
+	x0 = 2.0f * x0 / screen_width - 1.0f;
+	y0 = 1.0f - 2.0f * y0 / screen_height;
+	x1 = 2.0f * x1 / screen_width - 1.0f;
+	y1 = 1.0f - 2.0f * y1 / screen_height;
+	x2 = 2.0f * x2 / screen_width - 1.0f;
+	y2 = 1.0f - 2.0f * y2 / screen_height;
+	x3 = 2.0f * x3 / screen_width - 1.0f;
+	y3 = 1.0f - 2.0f * y3 / screen_height;
+
+
+	HRESULT hr = S_OK;
+	D3D11_MAP maptype = D3D11_MAP_WRITE_DISCARD;
+	D3D11_MAPPED_SUBRESOURCE mapsub;
+
+	hr = FRAMEWORK.context->Map(buffer.Get(), 0, maptype, 0, &mapsub);
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	//頂点データ設定
+	vertex_tex* data = static_cast<vertex_tex*>(mapsub.pData);
+
+	data[0].Pos.x = x0;
+	data[0].Pos.y = y0;
+	data[0].Pos.z = 0.0f;
+
+	data[1].Pos.x = x1;
+	data[1].Pos.y = y1;
+	data[1].Pos.z = 0.0f;
+
+	data[2].Pos.x = x2;
+	data[2].Pos.y = y2;
+	data[2].Pos.z = 0.0f;
+
+	data[3].Pos.x = x3;
+	data[3].Pos.y = y3;
+	data[3].Pos.z = 0.0f;
+
+	//テクスチャ座標設定
+	data[0].Tex.x = static_cast<FLOAT>(sx) / tex->GetWidth();
+	data[0].Tex.y = static_cast<FLOAT>(sy) / tex->GetHeight();
+	data[1].Tex.x = static_cast<FLOAT>(sx + sw) / tex->GetWidth();
+	data[1].Tex.y = static_cast<FLOAT>(sy) / tex->GetHeight();
+	data[2].Tex.x = static_cast<FLOAT>(sx) / tex->GetWidth();
+	data[2].Tex.y = static_cast<FLOAT>(sy + sh) / tex->GetHeight();
+	data[3].Tex.x = static_cast<FLOAT>(sx + sw) / tex->GetWidth();
+	data[3].Tex.y = static_cast<FLOAT>(sy + sh) / tex->GetHeight();
+	FRAMEWORK.context->Unmap(buffer.Get(), 0);
+
+	//頂点カラー
+	data[0].Color = XMFLOAT4(1, 1, 1, alpha);
+	data[1].Color = XMFLOAT4(1, 1, 1, alpha);
+	data[2].Color = XMFLOAT4(1, 1, 1, alpha);
+	data[3].Color = XMFLOAT4(1, 1, 1, alpha);
+	//法線
+	data[0].Normal = XMFLOAT3(0, 0, 1);
+	data[1].Normal = XMFLOAT3(0, 0, 1);
+	data[2].Normal = XMFLOAT3(0, 0, 1);
+	data[3].Normal = XMFLOAT3(0, 0, 1);
+
+	shader->Acivate();
+	//頂点データ更新
+	//FRAMEWORK.context->UpdateSubresource(buffer.Get(), 0, NULL, data, 0, 0);
+
+	//	頂点バッファの指定
+	UINT stride = sizeof(vertex_tex);
+	UINT offset = 0;
+	FRAMEWORK.context->IASetVertexBuffers(
+		0, 1, buffer.GetAddressOf(), // スロット, 数, バッファ
+		&stride,		// １頂点のサイズ
+		&offset			// 開始位置
+	);
+	FRAMEWORK.context->IASetPrimitiveTopology(
+		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP
+	);
+	FRAMEWORK.context->OMSetDepthStencilState(depthstate.Get(), 1);
+	FRAMEWORK.context->RSSetState(rastersize.Get());
+	//FRAMEWORK.context->PSSetShaderResources(0, 1, this->shader.GetAddressOf());
+	//FRAMEWORK.context->PSSetSamplers(0, 1, sampler.GetAddressOf());
+	FRAMEWORK.context->PSSetShaderResources(0, 7, srv);
+	//FRAMEWORK.context->PSSetSamplers(0, 1, &sampler.GetAddressOf());
+
+	FRAMEWORK.context->Draw(4, 0);
+
+	// シェーダリソースをクリア.
+	ID3D11ShaderResourceView* nullTarget[] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
+	FRAMEWORK.context->PSSetShaderResources(0, 7, nullTarget);
+	//シェーダ無効化
+	shader->Inactivate();
+
+	//if (tex) tex->Set(0, FALSE);
 }
 
 
