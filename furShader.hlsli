@@ -5,6 +5,9 @@
 //--------------------------------------------
 Texture2D DiffuseTexture : register(t0);
 SamplerState DecalSampler : register(s0);
+Texture2D FurTexture : register(t1);
+SamplerState FurSampler : register(s1);
+
 
 //--------------------------------------------
 //	グローバル変数
@@ -27,7 +30,13 @@ cbuffer CBPerFrame : register(b2)
 	float4	LightDir;		//ライトの方向
 	float4  AmbientColor;	//環境光
 	float4	EyePos;			//カメラ位置
+	float	Density;			//毛の密度
+	float	Distance;		//毛の長さ
+	float	dummy1;
+	float	dummy2;
 };
+static const uint LAYER = 16;			//ファーの長さ
+
 //--------------------------------------------
 //	データーフォーマット
 //--------------------------------------------
@@ -44,6 +53,7 @@ struct VSInput
 struct GSInput
 {
 	float4 Position : SV_POSITION;
+	float3 Normal   : NORMAL;
 	float2 Tex : TEXCOORD;
 	float4 Color : COLOR;
 	float3 wPos: TEXCOORD2;
@@ -56,6 +66,7 @@ struct PSInput
 	float4 Color : COLOR;
 	float3 wNormal: TEXCOORD1;
 	float3 wPos : TEXCOORD2;
+	float3 Normal   : NORMAL;
 };
 
 struct PSOutput

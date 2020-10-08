@@ -97,6 +97,15 @@
     <FxCompile Include="MultiGaussShader_ps.hlsl">
       <Filter>Shader\MultiGaussShader</Filter>
     </FxCompile>
+    <FxCompile Include="furShader_vs.hlsl">
+      <Filter>Shader\furShader</Filter>
+    </FxCompile>
+    <FxCompile Include="furShader_ps.hlsl">
+      <Filter>Shader\furShader</Filter>
+    </FxCompile>
+    <FxCompile Include="furShader_gs.hlsl">
+      <Filter>Shader\furShader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="1PGamePad.cpp">
@@ -394,6 +403,9 @@
     <None Include="MultiGaussShader.hlsli">
       <Filter>Shader\MultiGaussShader</Filter>
     </None>
+    <None Include="furShader.hlsli">
+      <Filter>Shader\furShader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shader">
@@ -458,6 +470,9 @@
     </Filter>
     <Filter Include="Shader\MultiGaussShader">
       <UniqueIdentifier>{2534bc36-6b53-450a-b5a4-b677caf126cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\furShader">
+      <UniqueIdentifier>{fb88459f-daa2-4ced-ae22-a3d5c78db467}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

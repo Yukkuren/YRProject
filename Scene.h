@@ -422,6 +422,7 @@ public:
 	std::unique_ptr<YRShader> flatShader = nullptr;
 	std::unique_ptr<YRShader> gaussShader = nullptr;
 	std::unique_ptr<YRShader> multi_gaussShader = nullptr;
+	std::unique_ptr<YRShader> furShader = nullptr;
 
 	//テクスチャ
 	std::unique_ptr<Texture> color_texture = nullptr;
@@ -430,6 +431,7 @@ public:
 	std::unique_ptr<Texture> luminance_texture = nullptr;
 	std::unique_ptr<Texture> multi_blur_texture = nullptr;
 	std::array<std::unique_ptr<Texture>,10> blur_texture = { nullptr };
+	std::unique_ptr<Texture> fur = nullptr;
 
 	Collision circle;
 
@@ -470,5 +472,9 @@ public:
 		DirectX::XMFLOAT4	light_color = { 0.0f,0.0f,0.0f,0.0f };
 		DirectX::XMFLOAT4	ambient_color = { 0.0f,0.0f,0.0f,0.0f };
 		DirectX::XMFLOAT4	eye_pos = { 0.0f,0.0f,0.0f,0.0f };
+		float Density = 0.0f;		//毛の密度
+		float Distance = 0.0f;		//毛の長さ
+		float dummy1 = 0.0f;
+		float dummy2 = 0.0f;
 	};
 };

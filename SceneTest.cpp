@@ -70,6 +70,11 @@ void SceneTest::Init()
 		multi_gaussShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::MULTI_GAUSS);
 		multi_gaussShader->Create("./Data/Shader/MultiGaussShader_vs.cso", "./Data/Shader/MultiGaussShader_ps.cso");
 	}
+	if (furShader == nullptr)
+	{
+		furShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::FUR);
+		furShader->Create("./Data/Shader/furShader_vs.cso", "./Data/Shader/furShader_ps.cso", "./Data/Shader/furShader_gs.cso");
+	}
 
 	//カメラ初期設定
 	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -25));			//視点
@@ -121,6 +126,10 @@ void SceneTest::Init()
 	if (test == nullptr)
 	{
 		test = std::make_unique<Sprite>(L"./Data/Image/BG/stage1.png", 3840.0f, 2160.0f);
+	}
+	if (fur == nullptr)
+	{
+		fur = std::make_unique<Texture>(L"./Data/Assets/Slime/fur.png");
 	}
 
 	//テクスチャロード
@@ -419,6 +428,9 @@ void SceneTest::RenderTexture(
 	const DirectX::XMFLOAT4&	ambient_color,
 	float						elapsed_time)
 {
+	static float Distance = 1.0f;
+	static float Density = 1.0f;
+
 #ifdef USE_IMGUI
 	{
 		ImGui::InputFloat("knight_pos.x", &knight_pos.x, 0.01f, 0.01f);
@@ -427,6 +439,8 @@ void SceneTest::RenderTexture(
 		ImGui::InputFloat("knight_angle.x", &knight_angle.x, 0.01f, 0.01f);
 		ImGui::InputFloat("knight_angle.y", &knight_angle.y, 0.01f, 0.01f);
 		ImGui::InputFloat("knight_angle.z", &knight_angle.z, 0.01f, 0.01f);
+		ImGui::InputFloat(u8"毛の長さ", &Distance, 0.01f, 0.01f);
+		ImGui::InputFloat(u8"毛の密度", &Density, 0.01f, 0.01f);
 	}
 #endif // USE_IMGUI
 
@@ -481,11 +495,14 @@ void SceneTest::RenderTexture(
 	cb.eye_pos.y = YRCamera.GetEye().y;
 	cb.eye_pos.z = YRCamera.GetEye().z;
 	cb.eye_pos.w = 1.0f;
+	cb.Density = Density;
+	cb.Distance = Distance;
 
 	//定数バッファ更新
 	FRAMEWORK.context->UpdateSubresource(constantBuffer.Get(), 0, NULL, &cb, 0, 0);
 	FRAMEWORK.context->VSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
 	FRAMEWORK.context->PSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
+	FRAMEWORK.context->GSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
 
 	//ブレンドステート設定
 	FRAMEWORK.BlendSet(Blend::ALPHA);
@@ -522,6 +539,10 @@ void SceneTest::RenderTexture(
 	);*/
 
 	test->DrawExtendGraph(spriteShader.get(), 0.0f, 0.0f, FRAMEWORK.SCREEN_WIDTH, FRAMEWORK.SCREEN_HEIGHT, DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f));
+	
+	FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[framework::DS_WRITE_FALSE].Get(), 1);
+	sampler_wrap->Set(1);
+	fur->Set(1);
 
 	motion->UpdateAnimation(elapsed_time);
 	motion->CalculateLocalTransform();
@@ -529,11 +550,11 @@ void SceneTest::RenderTexture(
 		DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
 		knight_angle);
 	motion->Draw(
-		toonShader.get(),
+		furShader.get(),
 		view, projection, light_direction, light_color, ambient_color
 	);
 
-	circle.DrawCircle(spriteShader.get(), 400.0f, 900.0f);
+	//circle.DrawCircle(spriteShader.get(), 400.0f, 900.0f);
 
 	/*for (int i = 1; i < testrtv.size(); i++)
 	{

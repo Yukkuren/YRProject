@@ -11,14 +11,6 @@ InputListor::InputListor(int n)
 
 void GamePad1::Init()
 {
-	/*GetJoypadXInputState(DX_INPUT_PAD1, &input);
-	if (GetJoypadXInputState(DX_INPUT_PAD1, &input) != -1)
-	{
-	}
-	else
-	{
-		#define LEFTTRIGGER		(Key[KEY_INPUT_A])
-	}*/
 	for (auto& it : input_history)
 	{
 		it = -1;
@@ -51,12 +43,103 @@ void GamePad1::Update(float elapsed_time)
 #pragma region hei
 
 #pragma endregion
-	//else
+	//X_Input取得
+	if (XInputGetState(0, &input) == ERROR_SUCCESS)
 	{
-		/*for (int i = 0; i<static_cast<int>(PAD::PAD_END); i++)
+		for (int i = 0; i < scastI(PAD::BUTTOM_END); i++)
 		{
-			x_input[i] = 0;
-		}*/
+			if (input.Gamepad.wButtons & X_INPUT_BOTTUN[i])
+			{
+				x_input[i]++;
+			}
+			else
+			{
+				x_input[i] = 0;
+			}
+		}
+
+		//左トリガー
+		if (input.Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+		{
+			x_input[scastI(PAD::L_TRIGGER)]++;
+		}
+		else
+		{
+			x_input[scastI(PAD::L_TRIGGER)] = 0;
+		}
+
+		//右トリガー
+		if (input.Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+		{
+			x_input[scastI(PAD::R_TRIGGER)]++;
+		}
+		else
+		{
+			x_input[scastI(PAD::R_TRIGGER)] = 0;
+		}
+
+
+		//左スティック右倒し
+		if (input.Gamepad.sThumbLX < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
+		{
+			if (dash_trigger)
+			{
+				x_input[static_cast<int>(PAD::L_DASH)]++;
+			}
+			else
+			{
+				x_input[static_cast<int>(PAD::L_DASH)] = 0;
+			}
+			x_input[static_cast<int>(PAD::STICK_L)]++;
+		}
+		else
+		{
+			x_input[static_cast<int>(PAD::STICK_L)] = 0;
+			x_input[static_cast<int>(PAD::L_DASH)] = 0;
+		}
+		if (x_input[static_cast<int>(PAD::STICK_L)] == 1)
+		{
+			if (!que.empty())
+			{
+				if (que.back().kind == scastI(PAD::STICK_L) && que.back().timer > 0)
+				{
+					dash_trigger = true;
+				}
+			}
+		}
+
+		//左スティック右倒し
+		if (input.Gamepad.sThumbLX > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
+		{
+			if (dash_trigger)
+			{
+				x_input[static_cast<int>(PAD::R_DASH)]++;
+			}
+			else
+			{
+				x_input[static_cast<int>(PAD::R_DASH)] = 0;
+			}
+			x_input[static_cast<int>(PAD::STICK_R)]++;
+		}
+		else
+		{
+			x_input[static_cast<int>(PAD::STICK_R)] = 0;
+			x_input[static_cast<int>(PAD::R_DASH)] = 0;
+		}
+		if (x_input[static_cast<int>(PAD::STICK_R)] == 1)
+		{
+			if (!que.empty())
+			{
+				if (que.back().kind == scastI(PAD::STICK_R) && que.back().timer > 0)
+				{
+					dash_trigger = true;
+				}
+			}
+		}
+	}
+	else
+	{
+		
 
 		if (pKeyState.hflg > 0)
 		{

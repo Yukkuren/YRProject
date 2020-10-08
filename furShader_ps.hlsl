@@ -1,4 +1,4 @@
-#include "flatShader.hlsli"
+#include "furShader.hlsli"
 
 //--------------------------------------------
 // 拡散反射関数（ランバートシェーディング） 
@@ -42,6 +42,7 @@ PSOutput main(PSInput input) : SV_TARGET
 	PSOutput Out = (PSOutput)0;
 
 	float4 color = DiffuseTexture.Sample(DecalSampler, input.Tex);
+	//float4 color = FurTexture.Sample(DecalSampler, input.Tex);
 	float3 N = normalize(input.wNormal);
 	float3 E = normalize(EyePos.xyz - input.wPos);
 	float3 L = normalize(-light_direction.rgb);
@@ -62,6 +63,7 @@ PSOutput main(PSInput input) : SV_TARGET
 	float3 S = BlinnPhongSpecular(N, -L, C, E, Ks, Shinness);
 
 	Out.Color = color * input.Color * float4(A + D + S, 1.0f);
+	//Out.Color = float4(1.0f, 1.0f, 1.0f, 1.0f);
 	Out.Luminance = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	return Out;

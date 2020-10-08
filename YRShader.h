@@ -96,6 +96,13 @@ private:
 		multi_gauss_element_desc.push_back(normal);
 		multi_gauss_element_desc.push_back(tex);
 		multi_gauss_element_desc.push_back(color);
+
+		//fur
+		fur_element_desc.push_back(pos);
+		fur_element_desc.push_back(normal);
+		fur_element_desc.push_back(tex);
+		fur_element_desc.push_back(wight);
+		fur_element_desc.push_back(bone);
 	};
 public:
 	enum ShaderType
@@ -112,6 +119,7 @@ public:
 		FLAT,
 		GAUSS,
 		MULTI_GAUSS,
+		FUR,
 	};
 
 	std::vector<D3D11_INPUT_ELEMENT_DESC> skin_element_desc;
@@ -126,6 +134,7 @@ public:
 	std::vector<D3D11_INPUT_ELEMENT_DESC> flat_element_desc;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> gauss_element_desc;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> multi_gauss_element_desc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> fur_element_desc;
 
 	static INPUT_ELEMENT_DESC &getInstance()
 	{

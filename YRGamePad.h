@@ -6,7 +6,10 @@
 #include<array>
 #include <list>
 #include"CoList.h"
+#include <Windows.h>
+#include <Xinput.h>
 
+#pragma comment(lib,"xinput.lib")
 
 class InputListor
 {
@@ -14,6 +17,24 @@ public:
 	InputListor(int n);
 	int kind;
 	float timer = 0.0f;
+};
+
+constexpr std::array<unsigned int, 14>	X_INPUT_BOTTUN =
+{
+	XINPUT_GAMEPAD_DPAD_UP,
+	XINPUT_GAMEPAD_DPAD_DOWN,
+	XINPUT_GAMEPAD_DPAD_LEFT,
+	XINPUT_GAMEPAD_DPAD_RIGHT,
+	XINPUT_GAMEPAD_START,
+	XINPUT_GAMEPAD_BACK,
+	XINPUT_GAMEPAD_LEFT_THUMB,
+	XINPUT_GAMEPAD_RIGHT_THUMB,
+	XINPUT_GAMEPAD_LEFT_SHOULDER,
+	XINPUT_GAMEPAD_RIGHT_SHOULDER,
+	XINPUT_GAMEPAD_A,
+	XINPUT_GAMEPAD_B,
+	XINPUT_GAMEPAD_X,
+	XINPUT_GAMEPAD_Y,
 };
 
 enum class PAD :int
@@ -28,8 +49,6 @@ enum class PAD :int
 	R_ON,
 	LB,
 	RB,
-	NONE1,
-	NONE2,
 	A,
 	B,
 	X,
@@ -61,7 +80,7 @@ protected:
 
 	}*/
 	//Å´å„Ç≈protectedÇ…à⁄Ç∑
-	//XINPUT_STATE input;
+	XINPUT_STATE input;
 	int Xbuf;
 	int Ybuf;
 	const char trigger_put = 50;
