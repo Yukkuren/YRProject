@@ -474,6 +474,8 @@ void ModelAnim::Draw(
 				break;
 			case Model::Material_Attribute::SWORD:
 				cb.lumi_factor = 1.0f;
+				cb.Offset_X = 0.0f;
+				cb.Offset_Y = 0.0f;
 				if (m_model_resource->color_texture_main)
 				{
 					m_model_resource->color_texture_main->Set(0);

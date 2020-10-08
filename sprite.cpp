@@ -784,7 +784,7 @@ void Sprite::render(
 	if (tex) tex->Set(0);
 
 	FRAMEWORK.context->Draw(4, 0);
-	//シェーダ無効か
+	//シェーダ無効化
 	shader->Inactivate();
 
 	if (tex) tex->Set(0, FALSE);

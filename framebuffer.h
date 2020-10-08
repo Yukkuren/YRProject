@@ -23,12 +23,13 @@ public:
 
 	void SetRenderTexture(ID3D11RenderTargetView* rtv, bool solo_rtv = false);
 	void ResetRenderTexture();
-	void Clear(float r = 0, float g = 0, float b = 0, float a = 1);
+	void Clear(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
 	void Activate(int width, int height, ID3D11DepthStencilView* pDepthStencilView);
 	void Activate(ID3D11DepthStencilView* pDepthStencilView);
 	void GetDefaultRTV();
 	void SetViewPort(int width, int height);
 	void Deactivate();
+	void SetDefaultRTV();
 
 
 private:

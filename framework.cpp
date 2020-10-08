@@ -292,7 +292,11 @@ bool framework::initialize()
 	}
 
 	UINT createDeviceFlags = 0;
+
+#ifdef _DEBUG
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif // _DEBUG
+
 
 	D3D_DRIVER_TYPE driverTypes[] =
 	{
@@ -819,7 +823,7 @@ void framework::SetViewPort(float width, float height)
 	context.Get()->RSSetViewports(1, &vp);
 }
 
-bool framework::CreateConstantBUffer(ID3D11Buffer** pCB, u_int size)
+bool framework::CreateConstantBuffer(ID3D11Buffer** pCB, u_int size)
 {
 	D3D11_BUFFER_DESC buffer_desc{};
 	ZeroMemory(&buffer_desc, sizeof(D3D11_BUFFER_DESC));

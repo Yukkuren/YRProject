@@ -28,10 +28,13 @@
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 //#define SPRITE_MAX	(1024)
+#ifdef  _DEBUG
+#endif // 
 
 #define		USE_IMGUI	(1)
 #define		FEDO_MIX( x )		( x * 3.0f)
 //#define		ToRadian( x )		( x * ( PI / 180.0f ) )
+
 
 enum SCENE_TABLE
 {
@@ -118,32 +121,6 @@ public:
 
 	void SetScene(SCENE_TABLE next)
 	{
-		//switch (next)
-		//{
-		//case SCENE_TITLE:
-		//	Nscene = scene_tbl[SCENE_TABLE::SCENE_TITLE];
-		//	break;
-		//case SCENE_SELECT:
-		//	Nscene = scene_tbl[SCENE_TABLE::SCENE_SELECT];
-		//	break;
-		//case SCENE_LOAD:
-		//	Nscene = scene_tbl[SCENE_TABLE::SCENE_LOAD];
-		//	break;
-		//case SCENE_GAME:
-		//	Nscene = scene_tbl[SCENE_TABLE::SCENE_GAME];
-		//	break;
-		//case SCENE_CLEAR:
-		//	Nscene = scene_tbl[SCENE_TABLE::SCENE_CLEAR];
-		//	break;
-		//case SCENE_OVER:
-		//	Nscene = scene_tbl[SCENE_TABLE::SCENE_OVER];
-		//	break;
-		//case SCENE_END:
-		//	//scene = scene_tbl[SCENE_TABLE::SCENE_TITLE];
-		//	break;
-		//default:
-		//	break;
-		//}
 		if (next < SCENE_END)
 		{
 			Nscene = scene_tbl[next];
@@ -159,7 +136,7 @@ public:
 
 	void SetViewPort(float width,float height);
 
-	bool CreateConstantBUffer(ID3D11Buffer** pCB, u_int size);
+	bool CreateConstantBuffer(ID3D11Buffer** pCB, u_int size);
 
 	static framework& getInstance(HWND hwnd = nullptr)
 	{

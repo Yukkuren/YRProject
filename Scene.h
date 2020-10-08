@@ -143,11 +143,19 @@ public:
 	std::array<int, 3>		p2combo;
 
 
-	//画像
-	//std::unique_ptr<Skinned_mesh> box = nullptr;
-	//std::shared_ptr<Texture> box_texture = nullptr;
-	//MeshMotion motion;
-	//std::shared_ptr<Texture> knight2P_texture = nullptr;
+	//画面描画用テクスチャ
+	std::unique_ptr<Texture> color_texture = nullptr;
+	//std::unique_ptr<Texture> normal_texture = nullptr;
+	//std::unique_ptr<Texture> position_texture = nullptr;
+	std::unique_ptr<Texture> luminance_texture = nullptr;
+	std::unique_ptr<Texture> multi_blur_texture = nullptr;
+	std::array<std::unique_ptr<Texture>, 10> blur_texture = { nullptr };
+
+	//Gbuffer用スプライト
+	std::unique_ptr<Sprite>	sprite = nullptr;
+
+	//サンプラー
+	std::shared_ptr<Sampler> sampler_clamp = nullptr;
 
 	//シェーダー
 	std::unique_ptr<YRShader> skinShader = nullptr;
@@ -155,14 +163,18 @@ public:
 	std::unique_ptr<YRShader> geoShader = nullptr;
 	std::unique_ptr<YRShader> ParallelToonShader = nullptr;
 	std::unique_ptr<YRShader> ToonShader = nullptr;
+	std::unique_ptr<YRShader> gaussShader = nullptr;
+	std::unique_ptr<YRShader> multi_gaussShader = nullptr;
+	std::unique_ptr<YRShader> spriteEx = nullptr;
 
+	Microsoft::WRL::ComPtr<ID3D11Buffer>	constantBuffer = nullptr;
 
 	//プレイヤー管理系
 	PlayerALL						PL;
-	std::unique_ptr<Player>			player1p	= nullptr;
-	std::unique_ptr<Player>			player2p	= nullptr;
-	std::unique_ptr<GamepadBase>	pad1		= nullptr;
-	std::unique_ptr<GamepadBase>	pad2		= nullptr;
+	std::unique_ptr<Player>			player1p = nullptr;
+	std::unique_ptr<Player>			player2p = nullptr;
+	std::unique_ptr<GamepadBase>	pad1 = nullptr;
+	std::unique_ptr<GamepadBase>	pad2 = nullptr;
 
 	//ゲームループ制御変数
 	bool			pause = false;						//ポーズ中
@@ -202,6 +214,23 @@ public:
 	void	FinSet();			//ゲーム終了後のゲーム画面のセット(カメラ)
 	void	CameraUpdate();		//カメラのステートがMAINにある場合のカメラ処理を行う
 	void	CameraRequest(float elapsed_time);	//カメラのリクエストを確認し、リクエストがあれば処理を行う
+
+	void SetRenderTexture();
+
+	void NullSetRenderTexture();
+
+
+	void RenderTexture();
+
+	void RenderBlur();
+
+	/*struct CB_Multi_Render_Target
+	{
+		DirectX::XMFLOAT4	light_direction = { 0.0f,0.0f,0.0f,0.0f };
+		DirectX::XMFLOAT4	light_color = { 0.0f,0.0f,0.0f,0.0f };
+		DirectX::XMFLOAT4	ambient_color = { 0.0f,0.0f,0.0f,0.0f };
+		DirectX::XMFLOAT4	eye_pos = { 0.0f,0.0f,0.0f,0.0f };
+	};*/
 };
 
 
@@ -241,10 +270,11 @@ public:
 	std::unique_ptr<Sprite>	ken_icon = nullptr;
 	std::unique_ptr<Sprite>	select_img = nullptr;
 
+	void LoadData();
+
 	void Init();
 	void Update(float elapsed_time);
 	void Draw(float elapsed_time);
-	void LoadData();
 	void UnInit();
 
 	bool FedoOut(float elapsed_time);
@@ -319,7 +349,7 @@ public:
 	bool				p2Enter = false;
 	float				timer = 0.0f;
 	bool				end = false;
-	
+
 	int					select_p1 = 0;
 	int					select_p2 = 0;
 
@@ -386,6 +416,7 @@ public:
 	std::unique_ptr<YRShader> boardShader = nullptr;
 	std::unique_ptr<YRShader> animShader = nullptr;
 	std::unique_ptr<YRShader> toonShader = nullptr;
+	std::unique_ptr<YRShader> paralleltoonShader = nullptr;
 	std::unique_ptr<YRShader> toGbuffer = nullptr;
 	std::unique_ptr<YRShader> spriteEx = nullptr;
 	std::unique_ptr<YRShader> flatShader = nullptr;
@@ -398,11 +429,12 @@ public:
 	std::unique_ptr<Texture> position_texture = nullptr;
 	std::unique_ptr<Texture> luminance_texture = nullptr;
 	std::unique_ptr<Texture> multi_blur_texture = nullptr;
-	std::array<std::unique_ptr<Texture>,6> blur_texture = { nullptr };
+	std::array<std::unique_ptr<Texture>,10> blur_texture = { nullptr };
 
 	Collision circle;
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer>	constantBuffer = nullptr;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>	constantBuffer_Gauss = nullptr;
 
 	DirectX::XMFLOAT3 knight_angle = { DirectX::XMConvertToRadians(-90.0f),0.0f,0.0f };
 	DirectX::XMFLOAT3 knight_pos = { 0.0f,0.0f,20.0f };

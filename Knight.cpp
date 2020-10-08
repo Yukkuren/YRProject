@@ -389,7 +389,7 @@ void Knight::Update(float decision, float elapsed_time)
 		hit[scastI(KNIGHTHIT::BODY)].Init(pos, YR_Vector3(0.0f, 0.0f), YR_Vector3(2.0f, 2.9f));
 		hit[scastI(KNIGHTHIT::LEG)].Init(pos, YR_Vector3(0.0f, 0.0f), YR_Vector3(1.4f, 0.8f));
 	}
-#ifdef USE_IMGUI
+#if USE_IMGUI
 	{
 		std::string now_play = std::to_string(now_player);
 		now_play += std::string(":RyuHitBox");
@@ -1233,11 +1233,11 @@ void Knight::Draw(
 
 	if (fream < target_max && fream>0.0f)
 	{
-		material_color = { 0.0f,0.0f,1.0f,1.0f };
+		//material_color = { 0.0f,0.0f,1.0f,1.0f };
 	}
 	if (later < target_max && later>0.0f)
 	{
-		material_color = { 1.0f,0.0f,0.0f,1.0f };
+		//material_color = { 1.0f,0.0f,0.0f,1.0f };
 	}
 
 	//ç∂å¸Ç´

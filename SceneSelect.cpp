@@ -84,9 +84,7 @@ void SceneSelect::Update(float elapsed_time)
 {
 	//ロード終了
 	if (load_fin)
-	{
-#if USE_IMGUI
-		if (pKeyState.nflg == 1)
+	{if (pKeyState.nflg == 1)
 		{
 			select_p1 = scastI(PLSELECT::KNIGHT);
 			select_p2 = scastI(PLSELECT::KNIGHT);
@@ -95,6 +93,8 @@ void SceneSelect::Update(float elapsed_time)
 			UnInit();
 			return;
 		}
+#if USE_IMGUI
+		
 #endif // USE_IMGUI
 
 		//timerはフローしないようにリセットする

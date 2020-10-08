@@ -35,7 +35,6 @@ struct PSOutput
 	float4 wNormal : SV_TARGET1;
 	float4 wPosition : SV_TARGET2;
 	float4 Luminance : SV_TARGET3;
-	//float4 specular : SV_TARGET3;
 };
 
 cbuffer CONSTANT_BUFFER : register(b0)
@@ -52,7 +51,7 @@ cbuffer CONSTANT_BUFFER : register(b0)
 	row_major float4x4 view;		//ビュー行列
 	row_major float4x4 projection;	//透視投影行列
 	float3 at;						//カメラ座標からカメラの注視点へ向かう単位ベクトル
-	float lumi_factor;			//輝度調整(0.0f~1.0f)
+	float lumi_factor;				//輝度調整(0.0f~1.0f)
 	float Offset_X;					//テクスチャX方向ずれ
 	float Offset_Y;					//テクスチャY方向ずれ
 	float dummy00;

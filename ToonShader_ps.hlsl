@@ -33,10 +33,13 @@ float3 ToonSpecular(
 }
 
 
-float4 main(PSInput input) : SV_TARGET
+PSOutput main(PSInput input) : SV_TARGET
 {
+	PSOutput Out = (PSOutput)0;
+
 	float4 color = DiffuseTexture.Sample(DecalSampler, input.Tex);
 	float3 N = normalize(input.wNormal);
+	float3 P = input.wPos;
 	float3 E = normalize(EyePos.xyz - input.wPos);
 	float3 L = normalize(-light_direction.rgb);
 	// 環境光
@@ -51,12 +54,26 @@ float4 main(PSInput input) : SV_TARGET
 	float3 Ks = float3(1, 1, 1);
 	float3 S = ToonSpecular(N, L, C, E, Ks, 5);
 
+	
+
 	//アウトライン
 	 if (input.Color.a < 0)
 	 {
-		 return float4(input.Color.rgb, 1);
+		Out.Color = float4(input.Color.rgb, 1);
+		//Out.wNormal = float4(N, 1.0f);
+		//Out.wPosition = float4(P, 1.0f);
+		float4 lumi = float4(lumi_factor, lumi_factor, lumi_factor,1.0f);
+		Out.Luminance = lumi;
+		return Out;
 	 }
 
 	color.rgb *= input.Color.rgb * float3(A + D* material_color.rgb + S);
-	return color;
+
+	Out.Color = color;
+	//Out.wNormal = float4(N, 1.0f);
+	//Out.wPosition = float4(P, 1.0f);
+	float4 lumi = float4(lumi_factor, lumi_factor, lumi_factor, 1.0f);
+	Out.Luminance = lumi;
+
+	return Out;
 }

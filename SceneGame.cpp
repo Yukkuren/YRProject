@@ -6,6 +6,7 @@
 #include "framework.h"
 #include "HitCheak.h"
 #include "World.h"
+#include "Blur.h"
 
 //キャラクターインクルード
 #include "Knight.h"
@@ -56,33 +57,6 @@ void SceneGame::Init()
 	mix_fedo			= 3.0f;
 	main_loop = MAIN_LOOP::INTRO1P;	//最初は1Pのイントロから開始
 
-	//シェーダー作成
-	if (spriteShader == nullptr)
-	{
-		spriteShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE);
-		spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
-	}
-	if (skinShader == nullptr)
-	{
-		skinShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SKIN);
-		skinShader->Create("./Data/Shader/Skinned_VS.cso", "./Data/Shader/Skinned_PS.cso");
-	}
-	if (geoShader == nullptr)
-	{
-		geoShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::GEO);
-		geoShader->Create("./Data/Shader/geometric_primitive_vs.cso", "./Data/Shader/geometric_primitive_ps.cso");
-	}
-	if (ParallelToonShader == nullptr)
-	{
-		ParallelToonShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::TOON);
-		ParallelToonShader->Create("./Data/Shader/ParallelToon_vs.cso", "./Data/Shader/ParallelToon_ps.cso", "./Data/Shader/ParallelToon_gs.cso");
-	}
-	if (ToonShader == nullptr)
-	{
-		ToonShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::TOON);
-		ToonShader->Create("./Data/Shader/ToonShader_vs.cso", "./Data/Shader/ToonShader_ps.cso", "./Data/Shader/ToonShader_gs.cso");
-	}
-
 	//カメラ初期設定
 	StartSet();
 	YRCamera.camera_state = Camera::CAMERA_STATE::MAIN;
@@ -121,28 +95,99 @@ void SceneGame::LoadData()
 		geo = std::make_unique<geometric_primitive>();
 	}
 
-	//if (skin == nullptr)
-	//{
-	//	//skin = std::make_unique<Skinned_mesh>("./Data/FBX/knight.fbx");
-	//}
-	/*if (knight2P_texture == nullptr)
+	//シェーダー作成
+	if (spriteShader == nullptr)
 	{
-		knight2P_texture = std::make_shared<Texture>(L"./Data/FBX/Knight/knight_tex_nofaces.png");
-	}*/
-	
-#if USE_IMGUI
-	/*if (box_texture == nullptr)
+		spriteShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE);
+		spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
+	}
+	if (skinShader == nullptr)
 	{
-		box_texture = std::make_shared<Texture>(L"./Data/FBX/danbo_fbx/texture/danbo_face_c2.png");
+		skinShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SKIN);
+		skinShader->Create("./Data/Shader/Skinned_VS.cso", "./Data/Shader/Skinned_PS.cso");
+	}
+	if (geoShader == nullptr)
+	{
+		geoShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::GEO);
+		geoShader->Create("./Data/Shader/geometric_primitive_vs.cso", "./Data/Shader/geometric_primitive_ps.cso");
+	}
+	if (ParallelToonShader == nullptr)
+	{
+		ParallelToonShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::TOON);
+		ParallelToonShader->Create("./Data/Shader/ParallelToon_vs.cso", "./Data/Shader/ParallelToon_ps.cso", "./Data/Shader/ParallelToon_gs.cso");
+	}
+	if (ToonShader == nullptr)
+	{
+		ToonShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::TOON);
+		ToonShader->Create("./Data/Shader/ToonShader_vs.cso", "./Data/Shader/ToonShader_ps.cso", "./Data/Shader/ToonShader_gs.cso");
 	}
 
-	if (box == nullptr)
-	{
-		box = std::make_unique<Skinned_mesh>("./Data/FBX/danbo_fbx/danbo_taiki.fbx", box_texture);
-	}*/
-#endif // USE_IMGUI
-
+	//コンスタントバッファ作成
+	FRAMEWORK.CreateConstantBuffer(constantBuffer.GetAddressOf(), sizeof(GaussParamManager::GaussBlurParam));
 	
+	//テクスチャロード
+	if (color_texture == nullptr)
+	{
+		color_texture = std::make_unique<Texture>();
+		color_texture->Create(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM);
+		color_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
+	}
+	/*if (normal_texture == nullptr)
+	{
+		normal_texture = std::make_unique<Texture>();
+		normal_texture->Create(1920, 1080, DXGI_FORMAT_R16G16B16A16_FLOAT);
+		normal_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
+	}
+	if (position_texture == nullptr)
+	{
+		position_texture = std::make_unique<Texture>();
+		position_texture->Create(1920, 1080, DXGI_FORMAT_R16G16B16A16_FLOAT);
+		position_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
+	}*/
+	if (luminance_texture == nullptr)
+	{
+		luminance_texture = std::make_unique<Texture>();
+		luminance_texture->Create(1920, 1080, DXGI_FORMAT_R16G16B16A16_FLOAT);
+		luminance_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
+	}
+	float riv = 1.0f;
+	if (blur_texture[0] == nullptr)
+	{
+		for (int i = 0; i < blur_texture.size(); i++)
+		{
+			if (i % 2 == 0)
+			{
+				riv = i;
+			}
+			if (i == 0)
+			{
+				riv = 1.0f;
+			}
+
+			blur_texture[i] = std::make_unique<Texture>();
+			blur_texture[i]->Create(960.0f/riv, 540.0f/riv, DXGI_FORMAT_R16G16B16A16_FLOAT);
+			blur_texture[i]->CreateDepth(960.0f / riv, 540.0f/riv, DXGI_FORMAT_R24G8_TYPELESS);
+		}
+	}
+	if (multi_blur_texture == nullptr)
+	{
+		multi_blur_texture = std::make_unique<Texture>();
+		multi_blur_texture->Create(1920, 1080, DXGI_FORMAT_R16G16B16A16_FLOAT);
+		multi_blur_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
+	}
+
+	//Gbuffer用スプライト
+	if (sprite == nullptr)
+	{
+		sprite = std::make_unique<Sprite>();
+	}
+
+	//サンプラー生成
+	if (sampler_clamp == nullptr)
+	{
+		sampler_clamp = std::make_shared<Sampler>(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_CLAMP);
+	}
+
 
 	//画像のロード
 	if (test == nullptr)
@@ -192,6 +237,21 @@ void SceneGame::LoadData()
 	if (effect_img == nullptr)
 	{
 		effect_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/effect.png", 192.0f, 128.0f, 3, 2, 64.0f, 64.0f);
+	}
+	if (gaussShader == nullptr)
+	{
+		gaussShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::GAUSS);
+		gaussShader->Create("./Data/Shader/GaussShader_vs.cso", "./Data/Shader/GaussShader_ps.cso");
+	}
+	if (multi_gaussShader == nullptr)
+	{
+		multi_gaussShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::MULTI_GAUSS);
+		multi_gaussShader->Create("./Data/Shader/MultiGaussShader_vs.cso", "./Data/Shader/MultiGaussShader_ps.cso");
+	}
+	if (spriteEx == nullptr)
+	{
+		spriteEx = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE_EX);
+		spriteEx->Create("./Data/Shader/SpriteEx_vs.cso", "./Data/Shader/SpriteEx_ps.cso");
 	}
 	
 
@@ -757,6 +817,8 @@ void SceneGame::Draw(float elapsed_time)
 	static DirectX::XMFLOAT4 ambient_color(0.3f, 0.3f, 0.3f, 0.5f);
 	static float anim_count = 0.0f;
 	static DirectX::XMFLOAT3 box_angle = { DirectX::XMConvertToRadians(-90.0f),0.0f,0.0f };
+	//FRAMEWORK.context.Get()->OMSetRenderTargets(1, FRAMEWORK.view.GetAddressOf(), FRAMEWORK.depth.Get());
+	SetRenderTexture();
 #if USE_IMGUI
 	//ImGui
 	{
@@ -847,7 +909,6 @@ void SceneGame::Draw(float elapsed_time)
 
 	//材質カラー
 	DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(1, 1, 1, 1);
-
 	
 	//仮背景
 	test->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 0.5f);
@@ -1080,7 +1141,11 @@ void SceneGame::Draw(float elapsed_time)
 		break;
 	}
 
-	
+	NullSetRenderTexture();
+	RenderTexture();
+	RenderBlur();
+	FRAMEWORK.framebuffer.Deactivate();
+	//FRAMEWORK.framebuffer.SetDefaultRTV();
 
 	//フェード用画像描画
 	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fedo_alpha));
@@ -1390,62 +1455,6 @@ void SceneGame::CameraRequest(float elapsed_time)
 		DirectX::XMStoreFloat3(&focus, focus_larp);
 		DirectX::XMStoreFloat(&fov, fov_larp);
 
-		/*if (eye.x > Scene_eye.x)
-			{
-				eye.x -= elapsed_time*elap;
-			}
-			if (eye.x < Scene_eye.x)
-			{
-				eye.x += elapsed_time * elap;
-			}
-			if (eye.y > Scene_eye.y)
-			{
-				eye.y -= elapsed_time * elap;
-			}
-			if (eye.y < Scene_eye.y)
-			{
-				eye.y += elapsed_time * elap;
-			}
-			if (eye.z > Scene_eye.z)
-			{
-				eye.z -= elapsed_time*elap;
-			}
-			if (eye.z < Scene_eye.z)
-			{
-				eye.z += elapsed_time * elap;
-			}
-			if (focus.x > Scene_focus.x)
-			{
-				focus.x -= elapsed_time * elap;
-			}
-			if (focus.x < Scene_focus.x)
-			{
-				focus.x += elapsed_time * elap;
-			}
-			if (focus.y > Scene_focus.y)
-			{
-				focus.y -= elapsed_time * elap;
-			}
-			if (focus.y < Scene_focus.y)
-			{
-				focus.y += elapsed_time * elap;
-			}
-			if (focus.z > Scene_focus.z)
-			{
-				focus.z -= elapsed_time * elap;
-			}
-			if (focus.z < Scene_focus.z)
-			{
-				focus.z += elapsed_time * elap;
-			}*/
-		/*if (fov < Scene_fov)
-			{
-				fov += elapsed_time*elap;
-			}
-			if (fov > Scene_fov)
-			{
-				fov -= elapsed_time*elap;
-			}*/
 		YRCamera.SetEye(eye);
 		YRCamera.SetFocus(focus);
 		YRCamera.SetFov(fov);
@@ -1487,4 +1496,264 @@ void SceneGame::ComboImageSet()
 	}
 }
 //
-//----------------------------------------------------------------------------------------------
+//-------------------------------------
+
+
+void SceneGame::SetRenderTexture()
+{
+	FRAMEWORK.framebuffer.SetRenderTexture(color_texture->GetRenderTargetView());
+	//FRAMEWORK.framebuffer.SetRenderTexture(normal_texture->GetRenderTargetView());
+	//FRAMEWORK.framebuffer.SetRenderTexture(position_texture->GetRenderTargetView());
+	FRAMEWORK.framebuffer.SetRenderTexture(luminance_texture->GetRenderTargetView());
+
+	ID3D11DepthStencilView* dsv = color_texture->GetDepthStencilView();
+	
+	//画面クリア
+	FRAMEWORK.framebuffer.Clear();
+	FRAMEWORK.context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	//ビュー更新
+	YRCamera.Active();
+
+	//ビューポート設定
+	//レンダーターゲットビューの設定
+	FRAMEWORK.framebuffer.GetDefaultRTV();
+	FRAMEWORK.framebuffer.Activate(1920.0f, 1080.0f, dsv);
+
+	//ブレンドステート設定
+	FRAMEWORK.BlendSet(Blend::ALPHA);
+	//ラスタライザー設定
+	FRAMEWORK.context->RSSetState(FRAMEWORK.rasterizer_state[framework::RS_CULL_BACK].Get());
+	//デプスステンシルステート設定
+	FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[framework::DS_TRUE].Get(), 1);
+
+	//サンプラー設定
+	sampler_clamp->Set(0);
+}
+
+
+void SceneGame::NullSetRenderTexture()
+{
+	//レンダーターゲットの回復
+	//FRAMEWORK.context.Get()->OMSetRenderTargets(testrtv.size(), testrtv.data(), FRAMEWORK.depth.Get());
+	FRAMEWORK.framebuffer.ResetRenderTexture();
+	FRAMEWORK.framebuffer.SetDefaultRTV();
+}
+
+
+void SceneGame::RenderTexture()
+{
+	//Gbuffer描画
+	sprite->render(
+		spriteEx.get(),
+		color_texture.get(),
+		0.0f, 0.0f, 1920.0f, 1080.0f,
+		0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
+
+#if USE_IMGUI
+	if (ImGui::TreeNode(u8"カラーテクスチャ"))
+	{
+		ImGui::Image((void*)(color_texture->GetShaderResource()), ImVec2(360, 360));
+		ImGui::Image((void*)(luminance_texture->GetShaderResource()), ImVec2(360, 360));
+		ImGui::TreePop();
+	}
+#endif // USE_IMGUI
+
+}
+
+
+void SceneGame::RenderBlur()
+{
+	static bool blur = true;
+	static float off_x = 1.0f;
+	static float off_y = 1.0f;
+	static float deviation = 0.5f;
+#if USE_IMGUI
+	//ImGui
+	{
+		if (ImGui::TreeNode(u8"ブルーム"))
+		{
+			ImGui::Checkbox(u8"ブルーム", &blur);
+			ImGui::InputFloat("offset.x", &off_x, 0.01f, 0.01f);
+			ImGui::InputFloat("offset.y", &off_y, 0.01f, 0.01f);
+			ImGui::InputFloat("diviation.y", &deviation, 0.01f, 0.01f);
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode(u8"ブルームテクスチャ"))
+		{
+			for (int i = 0; i < blur_texture.size(); i++)
+			{
+				ImGui::Image((void*)(blur_texture[i]->GetShaderResource()), ImVec2(360, 360));
+			}
+			ImGui::TreePop();
+		}
+	}
+#endif
+
+
+	GaussParamManager gauss;
+	float w = (float)FRAMEWORK.SCREEN_WIDTH;
+	float h = (float)FRAMEWORK.SCREEN_HEIGHT;
+
+	if (blur)
+	{
+		//初回のみ現在の描画を利用する
+		//テクスチャをセット
+		FRAMEWORK.framebuffer.SetRenderTexture(blur_texture[0]->GetRenderTargetView(), true);
+		ID3D11DepthStencilView* dsv = blur_texture[0]->GetDepthStencilView();
+
+		//画面をクリア
+		FRAMEWORK.framebuffer.Clear();
+		FRAMEWORK.context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+		//レンダーターゲットビューの設定
+		FRAMEWORK.framebuffer.GetDefaultRTV();
+		//FRAMEWORK.SetViewPort(1920.0f, 1080.0f);
+		FRAMEWORK.framebuffer.Activate(1920.0f, 1080.0f,dsv);
+
+		//ブレンドステート設定
+		FRAMEWORK.BlendSet(Blend::ALPHA);
+		//ラスタライザー設定
+		//FRAMEWORK.context->RSSetState(FRAMEWORK.rasterizer_state[framework::RS_CULL_BACK].Get());
+		//デプスステンシルステート設定
+		//FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[framework::DS_TRUE].Get(), 1);
+
+		//サンプラー設定
+		sampler_clamp->Set(0);
+
+		gauss.CalcBlurParam(w, h, YR_Vector3(off_x, 0.0f), deviation);
+		FRAMEWORK.context->UpdateSubresource(constantBuffer.Get(), 0, NULL, &gauss.param, 0, 0);
+		FRAMEWORK.context->PSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
+
+		sprite->render(
+			gaussShader.get(),
+			luminance_texture.get(),
+			0.0f, 0.0f, 1920.0f*0.5f, 1080.0f*0.5f,
+			0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
+
+		//FRAMEWORK.framebuffer.Deactivate();
+		//FRAMEWORK.framebuffer.ResetRenderTexture();
+		float riv2 = 1.0f;
+		float riv = 1.0f;
+		//特定の回数分描画し、テクスチャに書き込む
+		for (int i = 1; i < blur_texture.size(); i++)
+		{
+			//テクスチャをセット
+			FRAMEWORK.framebuffer.SetRenderTexture(blur_texture[i]->GetRenderTargetView(), true);
+			//ID3D11DepthStencilView* dsv = color_texture->GetDepthStencilView();
+
+
+
+			//画面をクリア
+			FRAMEWORK.framebuffer.Clear();
+			//FRAMEWORK.context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+			if (i % 2)
+			{
+				riv = static_cast<float>(i) - 1.0f;
+				if (i == 1)
+				{
+					riv = 1.0f;
+				}
+				gauss.CalcBlurParam(w * 0.5f / riv2, h * 0.5f / riv2, YR_Vector3(0.0f, off_y), deviation);
+				FRAMEWORK.context->UpdateSubresource(constantBuffer.Get(), 0, NULL, &gauss.param, 0, 0);
+				FRAMEWORK.context->PSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
+			}
+			else
+			{
+				riv2 = static_cast<float>(i);
+				gauss.CalcBlurParam(w * 0.5f / riv2, h * 0.5f / riv2, YR_Vector3(off_x, 0.0f), deviation);
+				FRAMEWORK.context->UpdateSubresource(constantBuffer.Get(), 0, NULL, &gauss.param, 0, 0);
+				FRAMEWORK.context->PSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
+			}
+			
+
+
+			//レンダーターゲットビューの設定
+			FRAMEWORK.framebuffer.Activate(dsv);
+
+			sprite->render(
+				gaussShader.get(),
+				blur_texture[i - 1].get(),
+				0.0f, 0.0f, 1920.0f * 0.5f / riv2, 1080.0f * 0.5f / riv2,
+				0.0f, 0.0f, 1920.0f*0.5f/riv, 1080.0f*0.5f/riv, 0.0f, 1.0f);
+
+			//FRAMEWORK.framebuffer.Deactivate();
+			//FRAMEWORK.framebuffer.ResetRenderTexture();
+		}
+
+		//全てのテクスチャを合成したマルチガウスのテクスチャを作成する
+
+		//テクスチャをセット
+		FRAMEWORK.framebuffer.SetRenderTexture(multi_blur_texture->GetRenderTargetView(), true);
+		//ID3D11DepthStencilView* dsv = color_texture->GetDepthStencilView();
+
+		//画面をクリア
+		FRAMEWORK.framebuffer.Clear();
+		//FRAMEWORK.context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+		//レンダーターゲットビューの設定
+		FRAMEWORK.framebuffer.Activate(dsv);
+		//ブレンドステート設定
+		//FRAMEWORK.BlendSet(Blend::ALPHA);
+		//ラスタライザー設定
+		//FRAMEWORK.context->RSSetState(FRAMEWORK.rasterizer_state[framework::RS_CULL_BACK].Get());
+		//デプスステンシルステート設定
+		//FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[framework::DS_TRUE].Get(), 1);
+
+		//サンプラー設定
+		//sampler_clamp->Set(0);
+		FRAMEWORK.framebuffer.SetDefaultRTV();
+
+		//ブレンドステート設定
+		FRAMEWORK.BlendSet(Blend::ADD);
+
+		// シェーダリソースビューを設定.
+		ID3D11ShaderResourceView* pSRV[] = {
+			luminance_texture->GetShaderResource(),
+			blur_texture[1]->GetShaderResource(),
+			blur_texture[3]->GetShaderResource(),
+			blur_texture[5]->GetShaderResource(),
+			blur_texture[7]->GetShaderResource(),
+			blur_texture[9]->GetShaderResource(),
+			//blur_texture[11]->GetShaderResource(),
+		};
+
+		sprite->render(
+			multi_gaussShader.get(),
+			luminance_texture.get(),
+			pSRV,
+			6,
+			0.0f, 0.0f, 1920.0f, 1080.0f,
+			0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
+		FRAMEWORK.framebuffer.Deactivate();
+		FRAMEWORK.framebuffer.ResetRenderTexture();
+
+		//ブルーム画像の描画
+
+			//画面のクリア
+			//FRAMEWORK.Clear(0x8080FFFF);
+
+			////ビューポート設定
+			//FRAMEWORK.SetViewPort(FRAMEWORK.SCREEN_WIDTH, FRAMEWORK.SCREEN_HEIGHT);
+
+			////ラスタライザー設定
+			//FRAMEWORK.context->RSGetState(FRAMEWORK.rasterizer_state[FRAMEWORK.RS_CULL_BACK].GetAddressOf());
+
+			////デプスステンシルステート設定
+			//FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[FRAMEWORK.DS_TRUE].Get(), 1);
+
+		//レンダーターゲットの回復
+		//FRAMEWORK.context.Get()->OMSetRenderTargets(1, FRAMEWORK.view.GetAddressOf(), FRAMEWORK.depth.Get());
+		//FRAMEWORK.framebuffer.SetDefaultRTV();
+
+		//ブレンドステート設定
+		//FRAMEWORK.BlendSet(Blend::ADD);
+
+		/*sprite->render(
+			spriteEx.get(),
+			multi_blur_texture.get(),
+			0.0f, 0.0f, 1920.0f, 1080.0f,
+			0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);*/
+	}
+}
