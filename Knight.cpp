@@ -75,6 +75,7 @@ void Knight::Init(YR_Vector3 InitPos)
 	face_anim = FaceAnim::NORMAL;
 	face_wink_time = 0.0f;
 	wink_state = Wink_State::FIRST;
+	jump_can_timer = 0.0f;
 }
 
 
@@ -1893,7 +1894,7 @@ void Knight::Jump()
 		{
 			speed_Y.Set(0.0f);
 			pad->que.back().timer = 0;
-			jumpcount--;
+			jumpcount = 0;
 			speed.y = 60.0f;
 			hightrigger = true;
 			max_jump_flag = false;
@@ -1902,53 +1903,33 @@ void Knight::Jump()
 
 			act_state = ActState::JUMP;
 			jumpflag = true;
-		}
-		if (pad->x_input[scastI(PAD::HIGH_UP_R)] == 1)
-		{
-			speed_Y.Set(0.0f);
-			pad->que.back().timer = 0;
-			jumpcount--;
-			hightrigger = true;
-			speed.y = 60.0f;
-			if (speed.x < dashspeed)
+
+			if (pad->x_input[scastI(PAD::STICK_R)] > 0)
 			{
-				speed.x = dashspeed;
+				if (speed.x < dashspeed)
+				{
+					speed.x = dashspeed;
+				}
+				return;
 			}
-			max_jump_flag = false;
-			moveflag = false;
-			//描画をセット
-
-			act_state = ActState::JUMP;
-			jumpflag = true;
-		}
-
-		if (pad->x_input[scastI(PAD::HIGH_UP_L)] == 1)
-		{
-			speed_Y.Set(0.0f);
-			pad->que.back().timer = 0;
-			jumpcount--;
-			hightrigger = true;
-			speed.y = 60.0f;
-			if (speed.x > -dashspeed)
+			if (pad->x_input[scastI(PAD::STICK_L)] > 0)
 			{
-				speed.x = -dashspeed;
-			}
-			max_jump_flag = false;
-			moveflag = false;
-			//描画をセット
+				if (speed.x > -dashspeed)
+				{
+					speed.x = -dashspeed;
 
-			act_state = ActState::JUMP;
-			jumpflag = true;
+				}
+				return;
+			}
+			speed.x = 0.0f;
+
 		}
+
 
 		if (pad->x_input[scastI(PAD::STICK_U)] == 1)
 		{
 			later = -1;
 			attack = FALSE;
-			/*for (int i = 0; i < scastI(KNIGHTATK::END); i++)
-			{
-				atk[i].Init();
-			}*/
 			speed_Y.Set(0.0f);
 			pad->que.back().timer = 0;
 			jumpcount--;
@@ -1960,124 +1941,66 @@ void Knight::Jump()
 
 			act_state = ActState::JUMP;
 			jumpflag = true;
-		}
-		if (pad->x_input[scastI(PAD::STICK_RUp)] == 1)
-		{
-			later = -1;
-			attack = FALSE;
-			/*for (int i = 0; i < scastI(KNIGHTATK::END); i++)
+			jump_can_timer = jump_max_time;
+
+			if (pad->x_input[scastI(PAD::STICK_R)] > 0)
 			{
-				atk[i].Init();
-			}*/
-			speed_Y.Set(0.0f);
-			pad->que.back().timer = 0;
-			jumpcount--;
-			hightrigger = false;
-			speed.y = 40.0f;
-			if (speed.x < walkspeed)
-			{
-				speed.x = walkspeed;
+				if (speed.x < walkspeed)
+				{
+					speed.x = walkspeed;
+				}
+				return;
 			}
-			max_jump_flag = false;
-			moveflag = false;
-			//描画をセット
-
-			act_state = ActState::JUMP;
-			jumpflag = true;
-		}
-		if (pad->x_input[scastI(PAD::STICK_LUp)] == 1)
-		{
-			later = -1;
-			attack = FALSE;
-			/*for (int i = 0; i < scastI(KNIGHTATK::END); i++)
+			if (pad->x_input[scastI(PAD::STICK_L)] > 0)
 			{
-				atk[i].Init();
-			}*/
-			speed_Y.Set(0.0f);
-			pad->que.back().timer = 0;
-			jumpcount--;
-			hightrigger = false;
-			speed.y = 40.0f;
-			if (speed.x > -walkspeed)
-			{
-				speed.x = -walkspeed;
+				if (speed.x > -walkspeed)
+				{
+					speed.x = -walkspeed;
+					
+				}
+				return;
 			}
-			max_jump_flag = false;
-			moveflag = false;
-			//描画をセット
-
-			act_state = ActState::JUMP;
-			jumpflag = true;
+			speed.x = 0.0f;
 		}
 	}
 	else
 	{
-		if (jumpcount > 0)
+		if (jumpcount > 0&&jump_can_timer<=0.0f)
 		{
 			if (pad->x_input[scastI(PAD::STICK_U)] == 1)
 			{
 				later = -1;
 				attack = FALSE;
-				/*for (int i = 0; i < scastI(KNIGHTATK::END); i++)
-				{
-					atk[i].Init();
-				}*/
-				speed_Y.Set(0.0f);
-				pad->que.back().timer = 0;
-				jumpcount = 0;
-				speed.y = 40.0f;
-				moveflag = false;
-				max_jump_flag = false;
-				act_state = ActState::JUMP;
-				//描画をセット
-
-				jumpflag = true;
-			}
-			if (pad->x_input[scastI(PAD::STICK_RUp)] == 1)
-			{
-				later = -1;
-				attack = FALSE;
-				/*for (int i = 0; i < scastI(KNIGHTATK::END); i++)
-				{
-					atk[i].Init();
-				}*/
 				speed_Y.Set(0.0f);
 				pad->que.back().timer = 0;
 				jumpcount--;
+				hightrigger = false;
 				speed.y = 40.0f;
-				if (speed.x < walkspeed)
-				{
-					speed.x = walkspeed;
-				}
 				max_jump_flag = false;
 				moveflag = false;
 				//描画をセット
 
 				act_state = ActState::JUMP;
 				jumpflag = true;
-			}
-			if (pad->x_input[scastI(PAD::STICK_LUp)] == 1)
-			{
-				later = -1;
-				attack = FALSE;
-				/*for (int i = 0; i < scastI(KNIGHTATK::END); i++)
-				{
-					atk[i].Init();
-				}*/
-				speed_Y.Set(0.0f);
-				pad->que.back().timer = 0;
-				jumpcount--;
-				speed.y = 40.0f;
-				if (speed.x > -walkspeed)
-				{
-					speed.x = -walkspeed;
-				}
-				max_jump_flag = false;
-				moveflag = false;
-				//描画をセット
+				jump_can_timer = jump_max_time;
 
-				act_state = ActState::JUMP;
-				jumpflag = true;
+				if (pad->x_input[scastI(PAD::STICK_R)] > 0)
+				{
+					if (speed.x < walkspeed)
+					{
+						speed.x = walkspeed;
+					}
+					return;
+				}
+				if (pad->x_input[scastI(PAD::STICK_L)] > 0)
+				{
+					if (speed.x > -walkspeed)
+					{
+						speed.x = -walkspeed;
+					}
+					return;
+				}
+				speed.x = 0.0f;
 			}
 		}
 	}
@@ -2089,6 +2012,10 @@ void Knight::JumpUpdate(float elapsed_time)
 {
 	if (jumpcount < 2 && jumpflag)
 	{
+		if (jump_can_timer > 0.0f)
+		{
+			jump_can_timer -= elapsed_time;
+		}
 		if (speed_Y.speedY == 0.0f)
 		{
 			pos.y += (speed.y * elapsed_time);
@@ -2097,8 +2024,8 @@ void Knight::JumpUpdate(float elapsed_time)
 		{
 			if (hightrigger)
 			{
-				speed.y += (20.0f * elapsed_time);
-				if (speed.y > high_jump_max)
+				speed.y += (2000.0f * elapsed_time);
+				if ((speed.y * elapsed_time) > (high_jump_max * elapsed_time))
 				{
 					max_jump_flag = true;
 				}

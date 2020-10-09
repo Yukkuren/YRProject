@@ -7,7 +7,7 @@ int CommandList::CommandCheack(int last, int* hist, float distans)
 	trigger = false;
 	state = NOCOMMAND;
 	numI = 0;
-	if (command_timer > TIMER_LIMIT || command_timer == 0)
+	if (command_timer > TIMER_LIMIT || command_timer < 0.0f)
 	{
 		return NOCOMMAND;
 	}

@@ -4,7 +4,7 @@
 #include<array>
 //#include"Common.h"
 
-#define TIMER_LIMIT		(30)
+#define TIMER_LIMIT		(0.5)
 #define		scastI				static_cast<int>
 
 class CommandList
@@ -17,7 +17,7 @@ private:
 	int numI;
 public:
 	bool trigger = false;
-	int command_timer = 0;
+	float command_timer = 0;
 
 	int CommandCheack(int last, int* hist, float distans);
 	void Reset();

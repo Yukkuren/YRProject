@@ -112,7 +112,7 @@ enum class AttackState : int
 	JAKU_LHURF,		//後弱必殺
 	THU_LHURF,		//後中必殺
 	KYO_LHURF,		//後強必殺
-	SPECIAL_ATTACK,	//前超必殺
+	SPECIAL_ATTACK,	//前超必殺m
 	DESIRE_SPECIAL,	//後超必殺
 	DESIRE_METEOR,	//即死技
 	EXTENDATK,		//無敵攻撃
@@ -189,12 +189,15 @@ public:
 
 class Player
 {
+protected:
+	const float jump_max_time = 0.05f;	//ジャンプしたらjump_can_timerに入れる値
 public:
 	//ゲーム内処理用変数
 	float				hp = 0;
-	int					jumpcount;
+	int					jumpcount;		//ジャンプの回数保持
 	bool				jumpflag;		//ジャンプしている
 	bool				max_jump_flag;	//ジャンプの最大値を超えた
+	float				jump_can_timer;	//ジャンプ可能になるまでの時間を測定する(0.0以下になればジャンプ可能)
 	bool				ground;			//TRUEなら地面についている
 	bool				drawset;		//特定の画像を描画したときにtrueにして通常の画像を描画しない
 	bool				attack;			//TRUEなら攻撃中

@@ -45,9 +45,9 @@
 // NORMAL                   0   xyzw        1     NONE   float   xyzw
 // TEXCOORD                 0   xy          2     NONE   float   xy  
 // COLOR                    0   xyzw        3     NONE   float   xyz 
-// TEXCOORD                 1   xyz         4     NONE   float   xyz 
+// TEXCOORD                 1   xyz         4     NONE   float       
 // TEXCOORD                 2   xyz         5     NONE   float   xyz 
-// TEXCOORD                 4   xyz         6     NONE   float   xyz 
+// TEXCOORD                 4   xyz         6     NONE   float       
 //
 //
 // Output signature:
@@ -56,8 +56,6 @@
 // -------------------- ----- ------ -------- -------- ------- ------
 // SV_TARGET                0   xyzw        0   TARGET   float   xyzw
 // SV_TARGET                1   xyzw        1   TARGET   float   xyzw
-// SV_TARGET                2   xyzw        2   TARGET   float   xyzw
-// SV_TARGET                3   xyzw        3   TARGET   float   xyzw
 //
 ps_5_0
 dcl_globalFlags refactoringAllowed | skipOptimization
@@ -67,13 +65,9 @@ dcl_resource_texture2d (float,float,float,float) t0
 dcl_input_ps linear v1.xyzw
 dcl_input_ps linear v2.xy
 dcl_input_ps linear v3.xyz
-dcl_input_ps linear v4.xyz
 dcl_input_ps linear v5.xyz
-dcl_input_ps linear v6.xyz
 dcl_output o0.xyzw
 dcl_output o1.xyzw
-dcl_output o2.xyzw
-dcl_output o3.xyzw
 dcl_temps 8
 //
 // Initial variable locations:
@@ -84,9 +78,7 @@ dcl_temps 8
 //   v4.x <- pin.wNormal.x; v4.y <- pin.wNormal.y; v4.z <- pin.wNormal.z; 
 //   v5.x <- pin.wEyeDir.x; v5.y <- pin.wEyeDir.y; v5.z <- pin.wEyeDir.z; 
 //   v6.x <- pin.wPos.x; v6.y <- pin.wPos.y; v6.z <- pin.wPos.z; 
-//   o3.x <- <main return value>.Luminance.x; o3.y <- <main return value>.Luminance.y; o3.z <- <main return value>.Luminance.z; o3.w <- <main return value>.Luminance.w; 
-//   o2.x <- <main return value>.wPosition.x; o2.y <- <main return value>.wPosition.y; o2.z <- <main return value>.wPosition.z; o2.w <- <main return value>.wPosition.w; 
-//   o1.x <- <main return value>.wNormal.x; o1.y <- <main return value>.wNormal.y; o1.z <- <main return value>.wNormal.z; o1.w <- <main return value>.wNormal.w; 
+//   o1.x <- <main return value>.Luminance.x; o1.y <- <main return value>.Luminance.y; o1.z <- <main return value>.Luminance.z; o1.w <- <main return value>.Luminance.w; 
 //   o0.x <- <main return value>.Color.x; o0.y <- <main return value>.Color.y; o0.z <- <main return value>.Color.z; o0.w <- <main return value>.Color.w
 //
 #line 83 "E:\ゲーム制作\YRProject\Skinned_PS.hlsl"
@@ -205,33 +197,15 @@ add r1.xyz, r1.xyzx, r2.xyzx
 mul r1.xyz, r1.xyzx, v3.xyzx
 mul r0.xyz, r0.xyzx, r1.xyzx
 
-#line 111
-dp3 r1.x, v4.xyzx, v4.xyzx
-rsq r1.x, r1.x
-mul r1.xyz, r1.xxxx, v4.xyzx  // r1.x <- NN.x; r1.y <- NN.y; r1.z <- NN.z
-
-#line 112
-mov r2.xyz, v6.xyzx  // r2.x <- P.x; r2.y <- P.y; r2.z <- P.z
-
 #line 114
 mov r0.xyz, r0.xyzx  // r0.x <- Out.Color.x; r0.y <- Out.Color.y; r0.z <- Out.Color.z
 mov r0.w, r0.w  // r0.w <- Out.Color.w
 
-#line 115
-mov r1.xyz, r1.xyzx  // r1.x <- Out.wNormal.x; r1.y <- Out.wNormal.y; r1.z <- Out.wNormal.z
-mov r1.w, l(1.000000)  // r1.w <- Out.wNormal.w
-
-#line 116
-mov r2.xyz, r2.xyzx  // r2.x <- Out.wPosition.x; r2.y <- Out.wPosition.y; r2.z <- Out.wPosition.z
-mov r2.w, l(1.000000)  // r2.w <- Out.wPosition.w
-
 #line 117
-mul r3.xyzw, r0.xyzw, cb0[533].wwww  // r3.x <- Out.Luminance.x; r3.y <- Out.Luminance.y; r3.z <- Out.Luminance.z; r3.w <- Out.Luminance.w
+mul r1.xyzw, r0.xyzw, cb0[533].wwww  // r1.x <- Out.Luminance.x; r1.y <- Out.Luminance.y; r1.z <- Out.Luminance.z; r1.w <- Out.Luminance.w
 
 #line 119
 mov o0.xyzw, r0.xyzw
 mov o1.xyzw, r1.xyzw
-mov o2.xyzw, r2.xyzw
-mov o3.xyzw, r3.xyzw
 ret 
-// Approximately 80 instruction slots used
+// Approximately 70 instruction slots used

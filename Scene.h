@@ -383,6 +383,7 @@ public:
 	std::shared_ptr<Texture> box_texture = nullptr;
 	std::shared_ptr<Texture> board_texture = nullptr;
 	std::unique_ptr<ModelAnim> motion = nullptr;
+	std::unique_ptr<Skinned_mesh> sky = nullptr;
 
 	std::unique_ptr<geometric_primitive>	geo = nullptr;
 	std::unique_ptr<board_primitive>		board = nullptr;

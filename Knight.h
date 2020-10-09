@@ -31,11 +31,11 @@ class Knight : public Player
 {
 private:
 	const float walkspeed = 10.1f;		//歩く速度(代入)
-	const float dashspeed = 0.1f;		//ダッシュ速度
+	const float dashspeed = 30.1f;		//ダッシュ速度
 	const float backstepS = 0.5f;
 	const float stepspeed = 0.5f;
-	const float jump_max = 100.0f;
-	const float high_jump_max = 0.5f;
+	const float jump_max = 100.0f;		//ジャンプの最大速度(超えると減速し始め落ちる)
+	const float high_jump_max = 120.0f;	//ハイジャンプの最大速度(超えると減速し始め落ちる)
 	const float brake_speed =10000.0f;	//停止時にかかるブレーキ(基本ピタッと止まるので数値は大きめ)
 
 	float		production_time = 0.0f;	//カメラ演出に使う変数

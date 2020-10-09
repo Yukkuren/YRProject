@@ -113,6 +113,11 @@ void SceneTest::Init()
 		anim = std::make_unique<AnimBoard>(board_texture, 6,XMFLOAT2(64.0f,64.0f),XMINT2(3,2),XMFLOAT2(192.0f,128.0f));
 	}
 
+	if (sky == nullptr)
+	{
+		sky = std::make_unique<Skinned_mesh>("./Data/FBX/SKY/SkyBlock.fbx");
+	}
+
 	//motion.MeshSet(box);
 	//motion.AnimReset();
 	if (motion == nullptr)
@@ -430,6 +435,8 @@ void SceneTest::RenderTexture(
 {
 	static float Distance = 1.0f;
 	static float Density = 1.0f;
+	//static DirectX::XMFLOAT3 sky_scale = { 10.0f,10.0f,10.0f };
+	static float sky_scale[3] = { 10.0f };
 
 #ifdef USE_IMGUI
 	{
@@ -441,6 +448,7 @@ void SceneTest::RenderTexture(
 		ImGui::InputFloat("knight_angle.z", &knight_angle.z, 0.01f, 0.01f);
 		ImGui::InputFloat(u8"–Ñ‚Ì’·‚³", &Distance, 0.01f, 0.01f);
 		ImGui::InputFloat(u8"–Ñ‚Ì–§“x", &Density, 0.01f, 0.01f);
+		ImGui::InputFloat3(u8"‹ó", sky_scale, 10);
 	}
 #endif // USE_IMGUI
 
@@ -538,11 +546,25 @@ void SceneTest::RenderTexture(
 		projection
 	);*/
 
-	test->DrawExtendGraph(spriteShader.get(), 0.0f, 0.0f, FRAMEWORK.SCREEN_WIDTH, FRAMEWORK.SCREEN_HEIGHT, DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f));
+	//test->DrawExtendGraph(spriteShader.get(), 0.0f, 0.0f, FRAMEWORK.SCREEN_WIDTH, FRAMEWORK.SCREEN_HEIGHT, DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f));
 	
 	FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[framework::DS_WRITE_FALSE].Get(), 1);
 	sampler_wrap->Set(1);
 	fur->Set(1);
+
+
+	sky->Render(skinShader.get(),
+		knight_pos,
+		DirectX::XMFLOAT3(sky_scale[0], sky_scale[1], sky_scale[2]),
+		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+		view,
+		projection,
+		light_direction,
+		light_color,
+		ambient_color,
+		elapsed_time,
+		0.0f
+	);
 
 	motion->UpdateAnimation(elapsed_time);
 	motion->CalculateLocalTransform();
@@ -550,7 +572,7 @@ void SceneTest::RenderTexture(
 		DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
 		knight_angle);
 	motion->Draw(
-		furShader.get(),
+		flatShader.get(),
 		view, projection, light_direction, light_color, ambient_color
 	);
 

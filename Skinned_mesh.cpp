@@ -325,70 +325,70 @@ bool Skinned_mesh::Load(const char *fbx_filename, u_int sampling_rate)
 	traverse(scene->GetRootNode());
 
 	//FbxMesh *fbx_mesh = fetched_meshes.at(0)->GetMesh();  // Currently only one mesh. 
-	int skelton_size = fetched_skeleton.size();
-	const char* name = fetched_skeleton.at(1)->GetName();
+	//int skelton_size = fetched_skeleton.size();
+	//const char* name = fetched_skeleton.at(1)->GetName();
 
-	int fetched_size = fetched_meshes.size();
+	//int fetched_size = fetched_meshes.size();
 
 	meshes.resize(fetched_meshes.size());
 
-	for (size_t i = 0; i < fetched_skeleton.size(); i++)
-	{
-		FbxMesh* fbx_mesh = fetched_skeleton.at(i)->GetMesh();
-		fetched_skeleton.at(i);
+	//for (size_t i = 0; i < fetched_skeleton.size(); i++)
+	//{
+	//	FbxMesh* fbx_mesh = fetched_skeleton.at(i)->GetMesh();
+	//	fetched_skeleton.at(i);
 
-		//FbxSkeleton* ske = fetched_skeleton.at(i)->GetSkeleton();
-		FbxNodeAttribute *at=
-		fetched_skeleton.at(i)->GetNodeAttribute();
+	//	//FbxSkeleton* ske = fetched_skeleton.at(i)->GetSkeleton();
+	//	FbxNodeAttribute *at=
+	//	fetched_skeleton.at(i)->GetNodeAttribute();
 
-		FbxArray<FbxString*> array_of_animation_stack_names;
-		at->GetScene()->FillAnimStackNameArray(array_of_animation_stack_names);
+	//	FbxArray<FbxString*> array_of_animation_stack_names;
+	//	at->GetScene()->FillAnimStackNameArray(array_of_animation_stack_names);
 
-		// Get the number of animations.
-		if (array_of_animation_stack_names.Size() == 0)
-		{
-			continue;
-		}
-		int number_of_animations = array_of_animation_stack_names.Size();
-		FbxString* animation_stack_name = array_of_animation_stack_names.GetAt(0);
-		FbxAnimStack* current_animation_stack = at->GetScene()->FindMember<FbxAnimStack>(animation_stack_name->Buffer());
-		at->GetScene()->SetCurrentAnimationStack(current_animation_stack);
-		FbxTakeInfo* take_info = at->GetScene()->GetTakeInfo(animation_stack_name->Buffer());
-		FbxTime start_time = take_info->mLocalTimeSpan.GetStart();
-		FbxTime current_time = start_time;
+	//	// Get the number of animations.
+	//	if (array_of_animation_stack_names.Size() == 0)
+	//	{
+	//		continue;
+	//	}
+	//	int number_of_animations = array_of_animation_stack_names.Size();
+	//	FbxString* animation_stack_name = array_of_animation_stack_names.GetAt(0);
+	//	FbxAnimStack* current_animation_stack = at->GetScene()->FindMember<FbxAnimStack>(animation_stack_name->Buffer());
+	//	at->GetScene()->SetCurrentAnimationStack(current_animation_stack);
+	//	FbxTakeInfo* take_info = at->GetScene()->GetTakeInfo(animation_stack_name->Buffer());
+	//	FbxTime start_time = take_info->mLocalTimeSpan.GetStart();
+	//	FbxTime current_time = start_time;
 
-		//Skinned_mesh::bone& bone = skeletal.at(index_of_cluster);
+	//	//Skinned_mesh::bone& bone = skeletal.at(index_of_cluster);
 
-		//FbxCluster* cluster = skin->GetCluster(index_of_cluster);
-		//FbxAMatrix reference_global_init_position;
-		//cluster->GetTransformMatrix(reference_global_init_position);
+	//	//FbxCluster* cluster = skin->GetCluster(index_of_cluster);
+	//	//FbxAMatrix reference_global_init_position;
+	//	//cluster->GetTransformMatrix(reference_global_init_position);
 
-		//// this matrix trnasforms coordinates of the initial pose from bone space to global space
-		//FbxAMatrix cluster_global_init_position;
-		//cluster->GetTransformLinkMatrix(cluster_global_init_position);
+	//	//// this matrix trnasforms coordinates of the initial pose from bone space to global space
+	//	//FbxAMatrix cluster_global_init_position;
+	//	//cluster->GetTransformLinkMatrix(cluster_global_init_position);
 
-		//// this matrix trnasforms coordinates of the current pose from bone space to global space
-		//FbxAMatrix cluster_global_current_position;
-		//cluster_global_current_position = cluster->GetLink()->EvaluateGlobalTransform(time);
+	//	//// this matrix trnasforms coordinates of the current pose from bone space to global space
+	//	//FbxAMatrix cluster_global_current_position;
+	//	//cluster_global_current_position = cluster->GetLink()->EvaluateGlobalTransform(time);
 
-		//FbxAMatrix reference_global_current_position;
-		//reference_global_current_position = at->GetNode()->EvaluateGlobalTransform(current_time);
+	//	//FbxAMatrix reference_global_current_position;
+	//	//reference_global_current_position = at->GetNode()->EvaluateGlobalTransform(current_time);
 
-		//FbxAMatrix transform = reference_global_current_position.Inverse() * cluster_global_current_position
-		//	* cluster_global_init_position.Inverse() * reference_global_init_position;
+	//	//FbxAMatrix transform = reference_global_current_position.Inverse() * cluster_global_current_position
+	//	//	* cluster_global_init_position.Inverse() * reference_global_init_position;
 
-		//// convert FbxAMatrix(transform) to XMDLOAT4X4(bone.transform) 
+	//	//// convert FbxAMatrix(transform) to XMDLOAT4X4(bone.transform) 
 
-		//for (int row = 0; row < 4; ++row)
-		//{
-		//	for (int col = 0; col < 4; ++col)
-		//	{
-		//		bone.transform.m[row][col] = static_cast<float>(transform.Get(row, col));
-		//	}
-		//}
+	//	//for (int row = 0; row < 4; ++row)
+	//	//{
+	//	//	for (int col = 0; col < 4; ++col)
+	//	//	{
+	//	//		bone.transform.m[row][col] = static_cast<float>(transform.Get(row, col));
+	//	//	}
+	//	//}
 
-		int hoge = 0;
-	}
+	//	int hoge = 0;
+	//}
 
 	for (size_t i = 0; i < fetched_meshes.size(); i++)
 	{
