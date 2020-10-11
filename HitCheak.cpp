@@ -18,15 +18,20 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 		{
 			for (int hitnum = 0; hitnum < h_max; hitnum++)
 			{
-				/*float a = (pos.x + attack[atknum].parameter.distance.x) - attack[atknum].parameter.size.x;
+				float a = (pos.x + attack[atknum].parameter.distance.x) - attack[atknum].parameter.size.x;
 				float b = hit[hitnum].center.x + hit[hitnum].size.x;
 				float c = (pos.x + attack[atknum].parameter.distance.x) + attack[atknum].parameter.size.x;
-				float d = hit[hitnum].center.x - hit[hitnum].size.x;*/
-				if ((pos.x + attack[atknum].parameter.distance.x) - attack[atknum].parameter.size.x<hit[hitnum].center.x + hit[hitnum].size.x &&
-					(pos.x + attack[atknum].parameter.distance.x) + attack[atknum].parameter.size.x>hit[hitnum].center.x - hit[hitnum].size.x)
+				float d = hit[hitnum].center.x - hit[hitnum].size.x;
+				float e = (pos.y + attack[atknum].parameter.distance.y) - attack[atknum].parameter.size.y;
+				float f = hit[hitnum].center.y + hit[hitnum].size.y;
+				float g = (pos.y + attack[atknum].parameter.distance.y) + attack[atknum].parameter.size.y;
+				float h = hit[hitnum].center.y - hit[hitnum].size.y;
+
+				if (attack[atknum].pos.x - attack[atknum].parameter.size.x<hit[hitnum].center.x + hit[hitnum].size.x &&
+					attack[atknum].pos.x + attack[atknum].parameter.size.x>hit[hitnum].center.x - hit[hitnum].size.x)
 				{
-					if ((pos.y + attack[atknum].parameter.distance.y) - attack[atknum].parameter.size.y<hit[hitnum].center.y + hit[hitnum].size.y &&
-						(pos.y + attack[atknum].parameter.distance.y) + attack[atknum].parameter.size.y>hit[hitnum].center.y - hit[hitnum].size.y)
+					if (attack[atknum].pos.y - attack[atknum].parameter.size.y<hit[hitnum].center.y + hit[hitnum].size.y &&
+						attack[atknum].pos.y + attack[atknum].parameter.size.y>hit[hitnum].center.y - hit[hitnum].size.y)
 					{
 						int flag = 0;
 

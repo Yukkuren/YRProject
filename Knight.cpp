@@ -251,6 +251,15 @@ bool Knight::AttackLoad()
 			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].type = AttackBox::MIDDLE;
 		}
 	}
+
+	AttackState a = AttackState::NONE;
+	for (int i = 0; i < attack_list.size(); i++)
+	{
+		a = static_cast<AttackState>(i);
+		attack_list[i].attack_name = a;
+	}
+
+
 	return true;
 }
 
@@ -390,36 +399,7 @@ void Knight::Update(float decision, float elapsed_time)
 		hit[scastI(KNIGHTHIT::BODY)].Init(pos, YR_Vector3(0.0f, 0.0f), YR_Vector3(2.0f, 2.9f));
 		hit[scastI(KNIGHTHIT::LEG)].Init(pos, YR_Vector3(0.0f, 0.0f), YR_Vector3(1.4f, 0.8f));
 	}
-#if USE_IMGUI
-	{
-		std::string now_play = std::to_string(now_player);
-		now_play += std::string(":RyuHitBox");
-		ImGui::Begin(now_play.c_str());
-		ImGui::InputFloat("BodyPosX", &hit[scastI(KNIGHTHIT::BODY)].distance.x, 0.1f, 0.1f);
-		ImGui::InputFloat("BodyPosY", &hit[scastI(KNIGHTHIT::BODY)].distance.y, 0.1f, 0.1f);
-		ImGui::InputFloat("BodySizeX", &hit[scastI(KNIGHTHIT::BODY)].size.x, 0.1f, 0.1f);
-		ImGui::InputFloat("BodySizeY", &hit[scastI(KNIGHTHIT::BODY)].size.y, 0.1f, 0.1f);
 
-		ImGui::InputFloat("LegPosX", &hit[scastI(KNIGHTHIT::LEG)].distance.x, 0.1f, 0.1f);
-		ImGui::InputFloat("LegPosY", &hit[scastI(KNIGHTHIT::LEG)].distance.y, 0.1f, 0.1f);
-		ImGui::InputFloat("LegSizeX", &hit[scastI(KNIGHTHIT::LEG)].size.x, 0.1f, 0.1f);
-		ImGui::InputFloat("LegSizeY", &hit[scastI(KNIGHTHIT::LEG)].size.y, 0.1f, 0.1f);
-		/*ImGui::SliderFloat("eye_offset.x", &eye_offset.x, 0.0f, 2048.0f);
-		ImGui::SliderFloat("eye_offset.y", &eye_offset.y, 0.0f, 2048.0f);*/
-		ImGui::InputFloat("eye_offset.x", &eye_offset.x, 0.01f, 0.01f);
-		ImGui::InputFloat("eye_offset.y", &eye_offset.y, 0.01f, 0.01f);
-		ImGui::InputFloat("mouse_offset.x", &mouse_offset.x, 0.01f, 0.01f);
-		ImGui::InputFloat("mouse_offset.y", &mouse_offset.y, 0.01f, 0.01f);
-		ImGui::Text("player.y:%f", pos.y);
-		ImGui::Text("player.x:%f", pos.x);
-
-		//ImGui::ColorEdit3("clear color", (float*)&ImColor(114, 144, 154));
-		//if (ImGui::Button("Test Window")) show_test_window ^= 1;
-		//if (ImGui::Button("Another Window")) show_another_window ^= 1;
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		ImGui::End();
-	}
-#endif // USE_IMGUI
 	hit[scastI(KNIGHTHIT::BODY)].Update(pos,elapsed_time);
 	hit[scastI(KNIGHTHIT::LEG)].Update(pos, elapsed_time);
 
@@ -1433,6 +1413,157 @@ void Knight::DrawDEBUG(
 			}
 		}
 	}
+
+	////AttackStateの順に生成する
+	////attack_list.resize(scastI(AttackState::ATTACK_END));
+
+	//attack_list[scastI(AttackState::NONE)].attack_name = AttackState::NONE;
+	//attack_list[scastI(AttackState::JAKU)].attack_name = AttackState::JAKU;
+	//attack_list[scastI(AttackState::JAKU)].attack_max = 1;
+	//attack_list[scastI(AttackState::JAKU)].later = 0.2f;
+	//attack_list[scastI(AttackState::JAKU)].attack_single.resize(attack_list[scastI(AttackState::JAKU)].attack_max);
+	//for (int i = 0; i < attack_list[scastI(AttackState::JAKU)].attack_max; i++)
+	//{
+	//	attack_list[scastI(AttackState::JAKU)].attack_single[i].fream = 0.1f;
+	//	attack_list[scastI(AttackState::JAKU)].attack_single[i].quantity = 1;
+	//	attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter.resize(attack_list[scastI(AttackState::JAKU)].attack_single[i].quantity);
+	//	for (int v = 0; v < attack_list[scastI(AttackState::JAKU)].attack_single[i].quantity; v++)
+	//	{
+	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].damege = 5;
+	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].distance.x = 6.0f;
+	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].distance.y = 1.0f;
+	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].gaugeout = true;
+	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].HB_timer = 0.1f;
+	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].hitback.x = Getapply(1.0f);
+	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].hitback.y = 0.0f;
+	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].knockback = 1.0f;
+	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].size.x = 3.0f;
+	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].size.y = 1.0f;
+	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].stealtimer = 0.0f;
+	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].timer = 0.15f;
+	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].type = AttackBox::MIDDLE;
+	//	}
+	//}
+
+	//攻撃リスト作成用処理
+#if USE_IMGUI
+	{
+		std::string now_play = std::to_string(now_player);
+		now_play += std::string(":RyuHitBox");
+		ImGui::Begin(now_play.c_str());
+
+		if (ImGui::TreeNode(u8"プレイヤー当たり判定調整"))
+		{
+			ImGui::InputFloat("BodyPosX", &hit[scastI(KNIGHTHIT::BODY)].distance.x, 0.1f, 0.1f);
+			ImGui::InputFloat("BodyPosY", &hit[scastI(KNIGHTHIT::BODY)].distance.y, 0.1f, 0.1f);
+			ImGui::InputFloat("BodySizeX", &hit[scastI(KNIGHTHIT::BODY)].size.x, 0.1f, 0.1f);
+			ImGui::InputFloat("BodySizeY", &hit[scastI(KNIGHTHIT::BODY)].size.y, 0.1f, 0.1f);
+
+			ImGui::InputFloat("LegPosX", &hit[scastI(KNIGHTHIT::LEG)].distance.x, 0.1f, 0.1f);
+			ImGui::InputFloat("LegPosY", &hit[scastI(KNIGHTHIT::LEG)].distance.y, 0.1f, 0.1f);
+			ImGui::InputFloat("LegSizeX", &hit[scastI(KNIGHTHIT::LEG)].size.x, 0.1f, 0.1f);
+			ImGui::InputFloat("LegSizeY", &hit[scastI(KNIGHTHIT::LEG)].size.y, 0.1f, 0.1f);
+			/*ImGui::SliderFloat("eye_offset.x", &eye_offset.x, 0.0f, 2048.0f);
+			ImGui::SliderFloat("eye_offset.y", &eye_offset.y, 0.0f, 2048.0f);*/
+			ImGui::TreePop();
+		}
+		ImGui::InputFloat("eye_offset.x", &eye_offset.x, 0.01f, 0.01f);
+		ImGui::InputFloat("eye_offset.y", &eye_offset.y, 0.01f, 0.01f);
+		ImGui::InputFloat("mouse_offset.x", &mouse_offset.x, 0.01f, 0.01f);
+		ImGui::InputFloat("mouse_offset.y", &mouse_offset.y, 0.01f, 0.01f);
+		ImGui::Text("player.y:%f", pos.y);
+		ImGui::Text("player.x:%f", pos.x);
+
+
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+		for (int list = 0; list < attack_list.size(); list++)
+		{
+			std::string now_name = std::string("Attack");
+			now_name += std::to_string(scastI(attack_list[list].attack_name));
+			if (ImGui::TreeNode(now_name.c_str()))
+			{
+				ImGui::InputFloat(u8"後スキ", &attack_list[list].later, 0.01f, 0.1f);
+				ImGui::InputInt(u8"攻撃回数", &attack_list[list].attack_max, 1, 10);
+				attack_list[list].attack_single.resize(attack_list[list].attack_max);
+				//攻撃回数ごとのパラメータ表示
+				ImGui::Text(u8"攻撃回数ごとのパラメータ");
+				if (!attack_list[list].attack_single.empty())
+				{
+					for (int sin = 0; sin < attack_list[list].attack_single.size(); sin++)
+					{
+						std::string now_sin = std::string("ATK_Single:")+std::to_string(sin);
+						if (ImGui::TreeNode(now_sin.c_str()))
+						{
+							ImGui::InputFloat(u8"発生フレーム", &attack_list[list].attack_single[sin].fream, 0.01f, 0.1f);
+							ImGui::InputInt(u8"当たり判定の数", &attack_list[list].attack_single[sin].quantity, 1, 10);
+							attack_list[list].attack_single[sin].parameter.resize(attack_list[list].attack_single[sin].quantity);
+							if (!attack_list[list].attack_single[sin].parameter.empty())
+							{
+								for (int para = 0; para < attack_list[list].attack_single[sin].parameter.size(); para++)
+								{
+									//攻撃判定内部パラメーター表示
+									std::string now_para = "判定";
+									now_para += std::to_string(para);
+									if (ImGui::TreeNode(now_para.c_str()))
+									{
+										ImGui::InputFloat(u8"プレイヤーとの距離X", &attack_list[list].attack_single[sin].parameter[para].distance.x, 0.01f, 0.1f);
+										ImGui::InputFloat(u8"プレイヤーとの距離Y", &attack_list[list].attack_single[sin].parameter[para].distance.y, 0.01f, 0.1f);
+										ImGui::InputFloat(u8"サイズX", &attack_list[list].attack_single[sin].parameter[para].distance.x, 0.01f, 0.1f);
+										ImGui::InputFloat(u8"サイズY", &attack_list[list].attack_single[sin].parameter[para].distance.y, 0.01f, 0.1f);
+										ImGui::InputFloat(u8"持続フレーム", &attack_list[list].attack_single[sin].parameter[para].timer, 0.01f, 0.1f);
+										ImGui::InputFloat(u8"ダメージ", &attack_list[list].attack_single[sin].parameter[para].damege, 0.01f, 0.1f);
+										ImGui::InputFloat(u8"のけぞり時間", &attack_list[list].attack_single[sin].parameter[para].HB_timer, 0.01f, 0.1f);
+										ImGui::InputFloat(u8"吹っ飛びX", &attack_list[list].attack_single[sin].parameter[para].hitback.x, 0.01f, 0.1f);
+										ImGui::InputFloat(u8"吹っ飛びY", &attack_list[list].attack_single[sin].parameter[para].hitback.y, 0.01f, 0.1f);
+										ImGui::InputInt(u8"攻撃タイプ", &attack_list[list].attack_single[sin].parameter[para].type, 1, 10);
+										ImGui::Text("1:上段。2:中段。3:下段。4:つかみ");
+										ImGui::InputFloat(u8"ノックバック(Xのみ)", &attack_list[list].attack_single[sin].parameter[para].knockback, 0.01f, 0.1f);
+										ImGui::Checkbox(u8"ゲージを獲得しない", &attack_list[list].attack_single[sin].parameter[para].gaugeout);
+										ImGui::InputFloat(u8"つかみ抜けされる時間", &attack_list[list].attack_single[sin].parameter[para].stealtimer, 0.01f, 0.1f);
+										ImGui::TreePop();
+									}
+								}
+							}
+
+							ImGui::TreePop();
+						}
+					}
+				}
+
+				ImGui::TreePop();
+			}
+		}
+
+		if (ImGui::TreeNode(u8"当たり判定"))
+		{
+			if (!atk.empty())
+			{
+				for (int i = 0; i < atk.size(); i++)
+				{
+					ImGui::InputFloat(".x", &atk[i].pos.x, 0.01f, 0.01f);
+					ImGui::InputFloat(".x", &atk[i].pos.y, 0.01f, 0.01f);
+				}
+			}
+			ImGui::TreePop();
+		}
+		ImGui::End();
+	}
+	{
+		std::string now = std::to_string(now_player);
+		now += std::string("KnightAtkList");
+		ImGui::Begin(now.c_str());
+
+		ImGui::Text(u8"0:攻撃無し\n1:弱\n2:中\n3:強(対空&下強)\n4:下弱");
+		ImGui::Text(u8"5:下中\n6:上強\n7:空弱攻撃\n8:空中攻撃");
+		ImGui::Text(u8"9:空強攻撃\n10:空上強攻撃(打ち上げ攻撃)");
+		ImGui::Text(u8"11:つかみ\n12:投げ\n13:ホーミングダッシュ");
+		ImGui::Text(u8"14:前弱必殺\n15:前中必殺\n16:前強必殺\n17:後弱必殺\n18:後中必殺");
+		ImGui::Text(u8"19:後強必殺\n20:前超必殺\n21:後超必殺\n22:即死技\n23:無敵攻撃");
+		ImGui::End();
+	}
+
+#endif // USE_IMGUI
 }
 
 

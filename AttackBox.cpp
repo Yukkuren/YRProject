@@ -12,7 +12,8 @@ void AttackBox::Init(AttackParameter& param, float rightOrleft)
 	knock_start = false;
 	plus = false;
 	this->rightOrleft = rightOrleft;
-
+	speed = YR_Vector3(0.0f, 0.0f, 0.0f);
+	this->plus_speed = YR_Vector3(0.0f, 0.0f, 0.0f);
 	parameter = param;
 	if (parameter.damege != 0.0f)
 	{
@@ -29,6 +30,7 @@ void AttackBox::Init(AttackParameter& param, float rightOrleft, YR_Vector3 plus_
 	plus = true;
 	this->plus_speed = plus_speed;
 	this->rightOrleft = rightOrleft;
+	speed = YR_Vector3(0.0f, 0.0f, 0.0f);
 
 	parameter = param;
 	if (parameter.damege != 0.0f)
@@ -40,7 +42,8 @@ void AttackBox::Init(AttackParameter& param, float rightOrleft, YR_Vector3 plus_
 
 void AttackBox::Update(YR_Vector3 pl_pos, float elapsed_time)
 {
-	pos = pl_pos + (parameter.distance*rightOrleft) + speed;	//座標更新
+	pos.x = pl_pos.x + ((parameter.distance.x + speed.x) * rightOrleft);	//X座標更新
+	pos.y = pl_pos.y + ((parameter.distance.y + speed.y));	//Y座標更新
 
 	if (plus)
 	{

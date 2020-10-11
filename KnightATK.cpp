@@ -61,7 +61,7 @@ void Knight::Jaku(float elapsed_time)
 			}
 			if (a.knock_start)
 			{
-				pos.x -= a.parameter.knockback;
+				pos.x -= a.parameter.knockback*rightOrleft;
 				a.parameter.knockback = 0.0f;
 				if (!ground)
 				{
