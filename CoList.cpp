@@ -2,14 +2,14 @@
 #include	"YRGamePad.h"
 
 
-int CommandList::CommandCheack(int last, int* hist, float distans)
+Command CommandList::CommandCheack(int last, int* hist, float distans)
 {
 	trigger = false;
-	state = NOCOMMAND;
+	state = Command::NOCOMMAND;
 	numI = 0;
 	if (command_timer > TIMER_LIMIT || command_timer < 0.0f)
 	{
-		return NOCOMMAND;
+		return Command::NOCOMMAND;
 	}
 
 	command_timer = 0;
@@ -27,19 +27,19 @@ int CommandList::CommandCheack(int last, int* hist, float distans)
 			{
 				if (histry[i] == scastI(PAD::STICK_R))
 				{
-					state = RHURF;
+					state = Command::RHURF;
 					numI = i;
 					break;
 				}
 				else if (histry[i] == scastI(PAD::STICK_L))
 				{
-					state = LHURF;
+					state = Command::LHURF;
 					numI = i;
 					break;
 				}
 				else
 				{
-					return NOCOMMAND;
+					return Command::NOCOMMAND;
 				}
 			}
 		}
@@ -47,43 +47,43 @@ int CommandList::CommandCheack(int last, int* hist, float distans)
 
 	if (numI < 2)
 	{
-		return NOCOMMAND;
+		return Command::NOCOMMAND;
 	}
 
 	switch (state)
 	{
-	case RHURF:
+	case Command::RHURF:
 		if (histry[numI - 1] == scastI(PAD::STICK_RDown))
 		{
 			if (histry[numI - 2] == scastI(PAD::STICK_D))
 			{
 				if (distans > 0)
 				{
-					return RHURF;
+					return Command::RHURF;
 				}
 				if (distans < 0)
 				{
-					return LHURF;
+					return Command::LHURF;
 				}
 			}
 		}
 		else
 		{
-			return NOCOMMAND;
+			return Command::NOCOMMAND;
 		}
 		break;
-	case LHURF:
+	case Command::LHURF:
 		if (histry[numI - 1] == scastI(PAD::STICK_LDown))
 		{
 			if (histry[numI - 2] == scastI(PAD::STICK_D))
 			{
 				if (distans < 0)
 				{
-					return RHURF;
+					return Command::RHURF;
 				}
 				if (distans > 0)
 				{
-					return LHURF;
+					return Command::LHURF;
 				}
 			}
 		}
@@ -92,7 +92,7 @@ int CommandList::CommandCheack(int last, int* hist, float distans)
 		break;
 	}
 
-	return NOCOMMAND;
+	return Command::NOCOMMAND;
 }
 
 void CommandList::Reset()

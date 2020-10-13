@@ -4,6 +4,8 @@
 #include "YR_VECTOR3.h"
 //#include "Music.h"
 
+const float guard_gauge_get = 3.0f;
+
 float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max, int player, YR_Vector3 pos)
 {
 	if (attack.empty())
@@ -34,6 +36,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 						attack[atknum].pos.y + attack[atknum].parameter.size.y>hit[hitnum].center.y - hit[hitnum].size.y)
 					{
 						int flag = 0;
+						//0:ƒK[ƒh¬Œ÷
+						//1:”í’e
+						//2:–³“G‚Å‰ñ”ğ
+						//3:’Í‚Ü‚ê‚½
 
 						switch (attack[atknum].parameter.type)
 						{
@@ -99,11 +105,11 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 
 						if (flag == 1)
 						{
-
+							//”í’e‚µ‚½
 							float add = 0.0f;
 							if (!attack[atknum].parameter.gaugeout)
 							{
-								add = attack[atknum].parameter.damege;
+								add = attack[atknum].parameter.gauge_get;
 							}
 							hit[hitnum].hit = true;
 							attack[atknum].hit_ok = false;
@@ -111,10 +117,21 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 							hit[hitnum].damege = attack[atknum].parameter.damege;
 							hit[hitnum].timer = attack[atknum].parameter.HB_timer;
 							hit[hitnum].hitback = attack[atknum].parameter.hitback;
-							Hitcheak::timer = ((attack[atknum].parameter.damege*0.1f) / 5);
-							if (Hitcheak::timer > 40)
+							//Hitcheak::timer = ((attack[atknum].parameter.damege*0.1f) / hitstop_adjust);
+							switch (attack[atknum].parameter.HS_timer)
 							{
-								Hitcheak::timer = 40;
+							case HitStopTime::SHORT:
+								Hitcheak::timer = 0.05f;
+								break;
+							case HitStopTime::NORMAL:
+								Hitcheak::timer = 0.15f;
+								break;
+							case HitStopTime::LONG:
+								Hitcheak::timer = 0.25f;
+								break;
+							default:
+								Hitcheak::timer = 0.05f;
+								break;
 							}
 							if (player == 1)
 							{
@@ -167,10 +184,11 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 						}
 						if (flag == 0)
 						{
+							//ƒK[ƒh‚ª¬Œ÷‚µ‚½
 							float add = 0.0f;
 							if (!attack[atknum].parameter.gaugeout)
 							{
-								add = attack[atknum].parameter.damege / 3.0f;
+								add = attack[atknum].parameter.gauge_get / guard_gauge_get;
 							}
 							hit[hitnum].guard_ok = true;
 							attack[atknum].hit_ok = false;
@@ -190,11 +208,13 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 						}
 						if (flag == 2)
 						{
+							//–³“G‚Å‰ñ”ğ‚µ‚½
 							return 0.0f;
 						}
 
 						if (flag == 3)
 						{
+							//’Í‚Ü‚ê‚½
 							hit[hitnum].steal = true;
 							hit[hitnum].steal_timer = 20;
 							return 0.0f;

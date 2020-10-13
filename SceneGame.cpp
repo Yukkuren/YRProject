@@ -531,7 +531,7 @@ void SceneGame::Update(float elapsed_time)
 				
 				//パッド更新
 				player1p->pad->Update(game_speed);
-				player2p->pad->Update(game_speed);
+				//player2p->pad->Update(game_speed);
 				if (pause)
 				{
 					//ポーズ中

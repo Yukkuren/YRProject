@@ -7,6 +7,13 @@
 // **攻撃パラメーター構造体**
 //・攻撃のパラメーターを当たり判定ごとに保存する構造体
 //--------------------------------------------------
+enum class HitStopTime : int
+{
+	SHORT,
+	NORMAL,
+	LONG,
+};
+
 struct AttackParameter
 {
 public:
@@ -20,6 +27,8 @@ public:
 	float		knockback;	//ノックバック(Xベクトルのみ)
 	bool		gaugeout;	//falseならゲージ獲得攻撃
 	float		stealtimer; //掴みぬけされる時間
+	HitStopTime	HS_timer;	//ヒットストップ時間(3パターン)
+	float		gauge_get;	//ゲージの獲得量
 };
 
 
@@ -67,7 +76,7 @@ public:
 
 	enum
 	{
-		UP,
+		UP=0,
 		MIDDLE,
 		DOWN,
 		STEAL,

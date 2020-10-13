@@ -27,6 +27,88 @@ enum class KNIGHTATK :int
 	ATKEND
 };
 
+//個別モーションデータ格納構造体
+struct Model_MotionData
+{
+	std::shared_ptr<Model>			wait_R = nullptr;
+	std::shared_ptr<Model>			damage_R_g_u = nullptr;
+	std::shared_ptr<Model>			jaku_R_f = nullptr;
+	std::shared_ptr<Model>			jaku_R_t = nullptr;
+	std::shared_ptr<Model>			jaku_R_l = nullptr;
+	std::shared_ptr<Model>			thu_R_f = nullptr;
+	std::shared_ptr<Model>			thu_R_t = nullptr;
+	std::shared_ptr<Model>			thu_R_l = nullptr;
+	std::shared_ptr<Model>			kyo_R_f = nullptr;
+	std::shared_ptr<Model>			kyo_R_t = nullptr;
+	std::shared_ptr<Model>			kyo_R_l = nullptr;
+	std::shared_ptr<Model>			d_jaku_R_f = nullptr;
+	std::shared_ptr<Model>			d_jaku_R_t = nullptr;
+	std::shared_ptr<Model>			d_jaku_R_l = nullptr;
+	std::shared_ptr<Model>			d_thu_R_f = nullptr;
+	std::shared_ptr<Model>			d_thu_R_t = nullptr;
+	std::shared_ptr<Model>			d_thu_R_l = nullptr;
+	std::shared_ptr<Model>			u_kyo_R_f = nullptr;
+	std::shared_ptr<Model>			u_kyo_R_t = nullptr;
+	std::shared_ptr<Model>			u_kyo_R_l = nullptr;
+	std::shared_ptr<Model>			a_jaku_R_f = nullptr;
+	std::shared_ptr<Model>			a_jaku_R_t = nullptr;
+	std::shared_ptr<Model>			a_jaku_R_l = nullptr;
+	std::shared_ptr<Model>			a_thu_R_f = nullptr;
+	std::shared_ptr<Model>			a_thu_R_t = nullptr;
+	std::shared_ptr<Model>			a_thu_R_l = nullptr;
+	std::shared_ptr<Model>			a_kyo_R_f = nullptr;
+	std::shared_ptr<Model>			a_kyo_R_t = nullptr;
+	std::shared_ptr<Model>			a_kyo_R_l = nullptr;
+	std::shared_ptr<Model>			a_ukyo_R_f = nullptr;
+	std::shared_ptr<Model>			a_ukyo_R_t = nullptr;
+	std::shared_ptr<Model>			a_ukyo_R_l = nullptr;
+	std::shared_ptr<Model>			steal_R_f = nullptr;
+	std::shared_ptr<Model>			steal_R_t = nullptr;
+	std::shared_ptr<Model>			steal_R_l = nullptr;
+	std::shared_ptr<Model>			slow_R_f = nullptr;
+	std::shared_ptr<Model>			slow_R_t = nullptr;
+	std::shared_ptr<Model>			slow_R_l = nullptr;
+	std::shared_ptr<Model>			track_R_f = nullptr;
+	std::shared_ptr<Model>			track_R_t = nullptr;
+	std::shared_ptr<Model>			track_R_l = nullptr;
+	std::shared_ptr<Model>			jaku_rh_R_f = nullptr;
+	std::shared_ptr<Model>			jaku_rh_R_t = nullptr;
+	std::shared_ptr<Model>			jaku_rh_R_l = nullptr;
+	std::shared_ptr<Model>			thu_rh_R_f = nullptr;
+	std::shared_ptr<Model>			thu_rh_R_t = nullptr;
+	std::shared_ptr<Model>			thu_rh_R_l = nullptr;
+	std::shared_ptr<Model>			kyo_rh_R_f = nullptr;
+	std::shared_ptr<Model>			kyo_rh_R_t = nullptr;
+	std::shared_ptr<Model>			kyo_rh_R_l = nullptr;
+	std::shared_ptr<Model>			jaku_lh_R_f = nullptr;
+	std::shared_ptr<Model>			jaku_lh_R_t = nullptr;
+	std::shared_ptr<Model>			jaku_lh_R_l = nullptr;
+	std::shared_ptr<Model>			thu_lh_R_f = nullptr;
+	std::shared_ptr<Model>			thu_lh_R_t = nullptr;
+	std::shared_ptr<Model>			thu_lh_R_l = nullptr;
+	std::shared_ptr<Model>			kyo_lh_R_f = nullptr;
+	std::shared_ptr<Model>			kyo_lh_R_t = nullptr;
+	std::shared_ptr<Model>			kyo_lh_R_l = nullptr;
+	std::shared_ptr<Model>			special_R_f = nullptr;
+	std::shared_ptr<Model>			special_R_t = nullptr;
+	std::shared_ptr<Model>			special_R_l = nullptr;
+	std::shared_ptr<Model>			disire_s_R_f = nullptr;
+	std::shared_ptr<Model>			disire_s_R_t = nullptr;
+	std::shared_ptr<Model>			disire_s_R_l = nullptr;
+	std::shared_ptr<Model>			disire_m_R_f = nullptr;
+	std::shared_ptr<Model>			disire_m_R_t = nullptr;
+	std::shared_ptr<Model>			disire_m_R_l = nullptr;
+	std::shared_ptr<Model>			extend_R_f = nullptr;
+	std::shared_ptr<Model>			extend_R_t = nullptr;
+	std::shared_ptr<Model>			extend_R_l = nullptr;
+
+public:
+	std::vector <std::shared_ptr<Model>> model_R;
+};
+
+
+
+//ナイトクラス(キャラ本体)
 class Knight : public Player
 {
 private:
@@ -44,14 +126,7 @@ private:
 	std::unique_ptr<ModelAnim>		anim = nullptr;	//モデル描画&アニメーション適用変数
 
 	//個別モーション用変数
-	std::shared_ptr<Model>			wait_R = nullptr;
-	std::shared_ptr<Model>			damage_R_g_u = nullptr;
-	std::shared_ptr<Model>			jaku_R_f = nullptr;
-	std::shared_ptr<Model>			jaku_R_t = nullptr;
-	std::shared_ptr<Model>			jaku_R_l = nullptr;
-	std::shared_ptr<Model>			special_R_f = nullptr;
-	std::shared_ptr<Model>			special_R_t = nullptr;
-	std::shared_ptr<Model>			special_R_l = nullptr;
+	Model_MotionData				model_motion;
 
 public:
 	bool fast;
@@ -108,6 +183,7 @@ public:
 	void WakeUp();
 	void GaugeUp(float add);
 	void CancelList();
+	void AttackDetailsSet();
 
 	void GuardAnimSet();
 	void WaitAnimSet();
@@ -169,6 +245,8 @@ public:
 
 	bool AttackLoad();			//生成時攻撃パラメーターを読み込む
 	bool AttackWrite();			//デバック時パラメーターを書き出す
+	bool AttackClean();			//デバッグ時パラメーターを全て初期化する
+	bool DEBUGAttackLoad();		//デバッグ時パラメーターを生成する
 
 	bool AttackEndCheck();		//攻撃当たり判定が全て終了しているか確認する
 	void EndAttackErase();		//終了した攻撃当たり判定を全て消去する。

@@ -10,6 +10,79 @@
 //#include <stdio.h>
 //#include <crtdbg.h>
 
+#if USE_IMGUI
+
+std::array<std::string, scastI(AttackState::ATTACK_END)> attack_name_list =
+{
+	u8"攻撃無し",
+	u8"弱",
+	u8"中",
+	u8"強(対空&下強)",
+	u8"下弱",
+	u8"下中",
+	u8"上強",
+	u8"空弱攻撃",
+	u8"空中攻撃",
+	u8"空強攻撃",
+	u8"空上強攻撃(打ち上げ攻撃)",
+	u8"つかみ",
+	u8"投げ",
+	u8"ホーミングダッシュ",
+	u8"前弱必殺",
+	u8"前中必殺",
+	u8"前強必殺",
+	u8"後弱必殺",
+	u8"後中必殺",
+	u8"後強必殺",
+	u8"前超必殺",
+	u8"後超必殺",
+	u8"即死技",
+	u8"無敵攻撃"
+};
+
+std::array<std::string, scastI(PAD::PAD_END)> pad_name_list =
+{
+	u8"UP",
+	u8"DOWN",
+	u8"LEFT",
+	u8"RIGHT",
+	u8"START",
+	u8"SELECT",
+	u8"L3",
+	u8"R3",
+	u8"LBボタン",
+	u8"RBボタン",
+	u8"Aボタン",
+	u8"Bボタン",
+	u8"Xボタン",
+	u8"Yボタン",
+	u8"BUTTOM_END",
+	u8"L_TRIGGER",
+	u8"R_TRIGGER",
+	u8"STICK_R",
+	u8"STICK_L",
+	u8"STICK_U",
+	u8"STICK_D",
+	u8"STICK_RDown",
+	u8"STICK_LDown",
+	u8"STICK_RUp",
+	u8"STICK_LUp",
+	u8"HIGH_UP",
+	u8"HIGH_UP_R",
+	u8"HIGH_UP_L",
+	u8"R_DASH",
+	u8"L_DASH",
+};
+
+
+std::array < std::string, scastI(Command::END) > command_name_list =
+{
+	u8"コマンド無し",
+	u8"右半回し",
+	u8"左半回し"
+};
+#endif // USE_IMGUI
+
 
 Knight::~Knight() = default;
 
@@ -81,7 +154,14 @@ void Knight::Init(YR_Vector3 InitPos)
 
 void Knight::LoadData(int color_number)
 {
-	AttackLoad();
+#if USE_IMGUI
+	DEBUGAttackLoad();
+	AttackClean();
+	DEBUGAttackLoad();
+#endif // 0
+	//AttackLoad();
+
+	
 
 	switch (color_number)
 	{
@@ -116,43 +196,70 @@ void Knight::LoadData(int color_number)
 	//------------------------------------------//
 	//		アニメーションボーンデータ読み込み		//
 	//------------------------------------------//
-	if (wait_R == nullptr)
+	if (model_motion.wait_R == nullptr)
 	{
-		wait_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_wait.fbx");
+		model_motion.wait_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_wait.fbx");
 	}
 
 	//ダメージモーション
-	if (damage_R_g_u == nullptr)
+	if (model_motion.damage_R_g_u == nullptr)
 	{
-		damage_R_g_u = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_damage_R_g_u.fbx");
+		model_motion.damage_R_g_u = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_damage_R_g_u.fbx");
 	}
 
 	//弱攻撃
-	if (jaku_R_f == nullptr)
+	if (model_motion.jaku_R_f == nullptr)
 	{
-		jaku_R_f = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_jaku_R_f.fbx");
+		model_motion.jaku_R_f = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_jaku_R_f.fbx");
 	}
-	if (jaku_R_t == nullptr)
+	if (model_motion.jaku_R_t == nullptr)
 	{
-		jaku_R_t = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_jaku_R_t.fbx");
+		model_motion.jaku_R_t = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_jaku_R_t.fbx");
 	}
-	if (jaku_R_l == nullptr)
+	if (model_motion.jaku_R_l == nullptr)
 	{
-		jaku_R_l = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_jaku_R_l.fbx");
+		model_motion.jaku_R_l = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_jaku_R_l.fbx");
 	}
 
 	//超必殺技
-	if (special_R_f == nullptr)
+	if (model_motion.special_R_f == nullptr)
 	{
-		special_R_f = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_special_R_f.fbx");
+		model_motion.special_R_f = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_special_R_f.fbx");
 	}
-	if (special_R_t == nullptr)
+	if (model_motion.special_R_t == nullptr)
 	{
-		special_R_t = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_special_R_t.fbx");
+		model_motion.special_R_t = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_special_R_t.fbx");
 	}
-	if (special_R_l == nullptr)
+	if (model_motion.special_R_l == nullptr)
 	{
-		special_R_l = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_special_R_l.fbx");
+		model_motion.special_R_l = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_special_R_l.fbx");
+	}
+
+	{
+		model_motion.model_R.push_back(model_motion.wait_R);
+		model_motion.model_R.push_back(model_motion.jaku_R_f);
+		model_motion.model_R.push_back(model_motion.thu_R_f);
+		model_motion.model_R.push_back(model_motion.kyo_R_f);
+		model_motion.model_R.push_back(model_motion.d_jaku_R_f);
+		model_motion.model_R.push_back(model_motion.d_thu_R_f);
+		model_motion.model_R.push_back(model_motion.u_kyo_R_f);
+		model_motion.model_R.push_back(model_motion.a_jaku_R_f);
+		model_motion.model_R.push_back(model_motion.a_thu_R_f);
+		model_motion.model_R.push_back(model_motion.a_kyo_R_f);
+		model_motion.model_R.push_back(model_motion.a_ukyo_R_f);
+		model_motion.model_R.push_back(model_motion.steal_R_f);
+		model_motion.model_R.push_back(model_motion.slow_R_f);
+		model_motion.model_R.push_back(model_motion.track_R_f);
+		model_motion.model_R.push_back(model_motion.jaku_rh_R_f);
+		model_motion.model_R.push_back(model_motion.thu_rh_R_f);
+		model_motion.model_R.push_back(model_motion.kyo_rh_R_f);
+		model_motion.model_R.push_back(model_motion.jaku_lh_R_f);
+		model_motion.model_R.push_back(model_motion.thu_lh_R_f);
+		model_motion.model_R.push_back(model_motion.kyo_lh_R_f);
+		model_motion.model_R.push_back(model_motion.special_R_f);
+		model_motion.model_R.push_back(model_motion.disire_s_R_f);
+		model_motion.model_R.push_back(model_motion.disire_m_R_f);
+		model_motion.model_R.push_back(model_motion.extend_R_f);
 	}
 
 
@@ -163,7 +270,7 @@ void Knight::LoadData(int color_number)
 	{
 		anim = std::make_unique<ModelAnim>(main);
 		anim->PlayAnimation(0, true);
-		anim->NodeChange(wait_R);
+		anim->NodeChange(model_motion.wait_R);
 	}
 }
 
@@ -174,101 +281,23 @@ void Knight::Uninit()
 	main = nullptr;
 	anim.reset();
 	anim = nullptr;
-	wait_R.reset();
-	wait_R = nullptr;
-	jaku_R_f.reset();
-	jaku_R_f = nullptr;
-	jaku_R_t.reset();
-	jaku_R_t = nullptr;
-	jaku_R_l.reset();
-	jaku_R_l = nullptr;
-	special_R_f.reset();
-	special_R_f = nullptr;
-	special_R_t.reset();
-	special_R_t = nullptr;
-	special_R_l.reset();
-	special_R_l = nullptr;
-	damage_R_g_u.reset();
-	damage_R_g_u = nullptr;
+	model_motion.wait_R.reset();
+	model_motion.wait_R = nullptr;
+	model_motion.jaku_R_f.reset();
+	model_motion.jaku_R_f = nullptr;
+	model_motion.jaku_R_t.reset();
+	model_motion.jaku_R_t = nullptr;
+	model_motion.jaku_R_l.reset();
+	model_motion.jaku_R_l = nullptr;
+	model_motion.special_R_f.reset();
+	model_motion.special_R_f = nullptr;
+	model_motion.special_R_t.reset();
+	model_motion.special_R_t = nullptr;
+	model_motion.special_R_l.reset();
+	model_motion.special_R_l = nullptr;
+	model_motion.damage_R_g_u.reset();
+	model_motion.damage_R_g_u = nullptr;
 }
-
-bool Knight::AttackLoad()
-{
-	//AttackStateの順に生成する
-	attack_list.resize(scastI(AttackState::ATTACK_END));
-
-	attack_list[scastI(AttackState::NONE)].attack_name = AttackState::NONE;
-	attack_list[scastI(AttackState::JAKU)].attack_name = AttackState::JAKU;
-	attack_list[scastI(AttackState::JAKU)].attack_max = 1;
-	attack_list[scastI(AttackState::JAKU)].later = 0.2f;
-	attack_list[scastI(AttackState::JAKU)].attack_single.resize(attack_list[scastI(AttackState::JAKU)].attack_max);
-	for (int i = 0; i < attack_list[scastI(AttackState::JAKU)].attack_max; i++)
-	{
-		attack_list[scastI(AttackState::JAKU)].attack_single[i].fream = 0.1f;
-		attack_list[scastI(AttackState::JAKU)].attack_single[i].quantity = 1;
-		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter.resize(attack_list[scastI(AttackState::JAKU)].attack_single[i].quantity);
-		for (int v = 0; v < attack_list[scastI(AttackState::JAKU)].attack_single[i].quantity; v++)
-		{
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].damege = 5;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].distance.x = 6.0f;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].distance.y = 1.0f;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].gaugeout = true;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].HB_timer = 0.1f;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].hitback.x = Getapply(1.0f);
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].hitback.y = 0.0f;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].knockback = 1.0f;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].size.x = 3.0f;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].size.y = 1.0f;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].stealtimer = 0.0f;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].timer = 0.15f;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].type = AttackBox::MIDDLE;
-		}
-	}
-	//attack_list.push_back(AttackList());
-	attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_name = AttackState::SPECIAL_ATTACK;
-	attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_max = 1;
-	attack_list[scastI(AttackState::SPECIAL_ATTACK)].later = 1.5f;
-	attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single.resize(attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_max);
-	for (int i = 0; i < attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_max; i++)
-	{
-		attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].fream = 2.0f;
-		attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].quantity = 1;
-		attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter.resize(attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].quantity);
-		for (int v = 0; v < attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].quantity; v++)
-		{
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].damege = 30;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].distance.x = 1.0f;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].distance.y = 2.0f;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].gaugeout = false;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].HB_timer = 1.0f;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].hitback.x = Getapply(1.0f);
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].hitback.y = 1.0f;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].knockback = 1.0f;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].size.x = 5.0f;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].size.y = 5.0f;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].stealtimer = 0.0f;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].timer = 0.3f;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].type = AttackBox::MIDDLE;
-		}
-	}
-
-	AttackState a = AttackState::NONE;
-	for (int i = 0; i < attack_list.size(); i++)
-	{
-		a = static_cast<AttackState>(i);
-		attack_list[i].attack_name = a;
-	}
-
-
-	return true;
-}
-
-bool Knight::AttackWrite()
-{
-	//AttackStateの順に保存する
-	return true;
-}
-
 
 void Knight::Update(float decision, float elapsed_time)
 {
@@ -410,8 +439,8 @@ void Knight::Update(float decision, float elapsed_time)
 
 void Knight::AttackInput()
 {
-	//しゃがみ、ガードのどちらでもない時
-	if (act_state != ActState::SQUAT && act_state != ActState::GUARD)
+	//ガードでない時
+	if (act_state != ActState::GUARD)
 	{
 		Step();
 		if (step)
@@ -420,6 +449,8 @@ void Knight::AttackInput()
 		}
 		else
 		{
+
+			//地面についている場合のみ
 			if (ground)
 			{
 				if (!moveflag)
@@ -430,316 +461,359 @@ void Knight::AttackInput()
 				{
 					Move(rightOrleft);
 				}
-
-				//-------------------------------------------------------------------
-				// *概要*
-				//・先にコマンドの判定を取り、成立している場合対応した攻撃をstateに入力する
-				//・コマンドは二種類のみ
-				//--------------------------------------------------------------------
-
-
-				//弱攻撃
-				if (pad->x_input[scastI(PAD::X)] == 1)
-				{
-					pad->que.back().timer = 0;
-					attack = TRUE;
-					moveflag = false;
-					act_state = ActState::ATTACK;
-					//コマンド判定
-					int command = pad->com_list.CommandCheack(scastI(PAD::X), pad->input_history.data(), rightOrleft);
-					if (command == CommandList::RHURF)
-					{
-						//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-						//描画をセット
-						attack_state = AttackState::JAKU_RHURF;
-						//pos.x += Getapply(50.0f);
-						specialfream = 0;
-					}
-					else if (command == CommandList::LHURF)
-					{
-						//描画をセット
-
-						attack_state = AttackState::JAKU_LHURF;
-						specialfream = 0;
-					}
-					else
-					{
-						//描画をセット
-
-						attack_state = AttackState::JAKU;
-						fream = attack_list[scastI(attack_state)].attack_single[0].fream;
-						//motion.MeshSet(jaku_r_f);
-						//motion.AnimReset();
-						anim_ccodinate = attack_list[scastI(attack_state)].attack_single[0].fream * 100.0f;
-						anim->NodeChange(jaku_R_f);
-						//attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft);
-					}
-				}
-
-				//下段中攻撃
-				if (pad->x_input[scastI(PAD::Y)] == 1)
-				{
-					pad->que.back().timer = 0;
-					//attack = TRUE;
-					//moveflag = false;
-					//act_state = ActState::ATTACK;
-					//コマンド判定
-					int command = pad->com_list.CommandCheack(scastI(PAD::Y), pad->input_history.data(), rightOrleft);
-					if (command == CommandList::RHURF)
-					{
-						//描画をセット
-
-						attack_state = AttackState::THU_RHURF;
-						specialfream = 0;
-					}
-					else if (command == CommandList::LHURF)
-					{
-						//描画をセット
-
-						attack_state = AttackState::THU_LHURF;
-						specialfream = 0;
-					}
-					else
-					{
-						//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-						//描画をセット
-
-						//attack_state = AttackState::D_THU;
-						//pos.x += Getapply(50.0f);
-						ChangeFace(FaceAnim::Damage);
-					}
-				}
-
-				//上段強攻撃
-				if (pad->x_input[scastI(PAD::B)] == 1)
-				{
-					pad->que.back().timer = 0;
-					attack = TRUE;
-					moveflag = false;
-					act_state = ActState::ATTACK;
-					//コマンド判定
-					int command = pad->com_list.CommandCheack(scastI(PAD::B), pad->input_history.data(), rightOrleft);
-					if (command == CommandList::LHURF)
-					{
-						if (power > 0)
-						{
-							//描画をセット
-
-							FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-							attack_state = AttackState::KYO_LHURF;
-							//エフェクトセット
-
-							pos.x = tracking.rival_Pos.x - Getapply(100.0f);
-							pos.y = tracking.rival_Pos.y - 100.0f;
-							power--;
-						}
-						else
-						{
-							//描画をセット
-
-							attack_state = AttackState::THU_LHURF;
-							specialfream = 0;
-						}
-					}
-					else if (command == CommandList::RHURF)
-					{
-						if (power > 0)
-						{
-							//エフェクトセット
-							//描画をセット
-
-							attack_state = AttackState::KYO_RHURF;
-							specialfream = 0;
-							power--;
-						}
-						else
-						{
-							//描画をセット
-
-							attack_state = AttackState::THU_RHURF;
-							specialfream = 0;
-						}
-					}
-					else
-					{
-						//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-						//描画をセット
-
-						//attack_state = AttackState::U_KYO;
-						//pos.x += Getapply(50.0f);
-						pad->que.back().timer = 0;
-						attack = TRUE;
-						later = non_target;
-						moveflag = false;
-						act_state = ActState::ATTACK;
-						if (ground)
-						{
-							//描画をセット
-						}
-						else
-						{
-							//描画をセット
-						}
-						attack_state = AttackState::SPECIAL_ATTACK;
-						fream = attack_list[scastI(attack_state)].attack_single[0].fream;
-						YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
-						production_time = 0.0f;
-						anim->PlayAnimation(0, true);
-						anim->NodeChange(special_R_f);
-						anim_ccodinate = 1.0f;
-						ChangeFace(FaceAnim::KOUHUN);
-					}
-				}
-
-				//投げ
-				if (pad->x_input[scastI(PAD::A)] == 1)
-				{
-					pad->que.back().timer = 0;
-					attack = TRUE;
-					moveflag = false;
-					act_state = ActState::ATTACK;
-					//描画をセット
-
-					attack_state = AttackState::STEAL;
-				}
-
-
-
-
 			}
-			else
+
+			//-------------------------------------------------------------------
+			// *概要*
+			//・コマンドは二種類のみ
+			//--------------------------------------------------------------------
+				//攻撃のリストの入力判定を全て確認する(0は攻撃無しの為、1から確認していく)
+			for (int list = 1; list < attack_list.size(); list++)
 			{
-				//空中弱
-				if (pad->x_input[scastI(PAD::X)] == 1)
+				int button = scastI(attack_list[list].linkage_button);
+				Command now_com = attack_list[list].linkage_command;
+				if (pad->x_input[button] == 1)
 				{
 					pad->que.back().timer = 0;
-					attack = TRUE;
-					moveflag = false;
-					act_state = ActState::ATTACK;
-					//描画をセット
-
-					attack_state = AttackState::JAKU;
-
-					//pad->com_list.Reset();
-				}
-
-				//空中中
-				if (pad->x_input[static_cast<int>(PAD::Y)] == 1)
-				{
-					pad->que.back().timer = 0;
-					FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-					attack = TRUE;
-					moveflag = false;
-					act_state = ActState::ATTACK;
-					//描画をセット
-
-					attack_state = AttackState::THU;
-					pos.x += Getapply(50.0f);
-					specialfream = 0;
-				}
-
-				//空中強
-				if (pad->x_input[static_cast<int>(PAD::B)] == 1)
-				{
-					pad->que.back().timer = 0;
-					FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-					attack = TRUE;
-					moveflag = false;
-					act_state = ActState::ATTACK;
-					//描画をセット
-
-					attack_state = AttackState::U_KYO;
-					pos.x += Getapply(50.0f);
-					specialfream = 0;
-					return;
+					//コマンド判定
+					Command command = pad->com_list.CommandCheack(button, pad->input_history.data(), rightOrleft);
+					if (now_com == command)
+					{
+						//指定したコマンドが同じで空中、地上の条件も同じだった場合
+						if (ground == attack_list[list].ground_on)
+						{
+							if (attack_list[list].squat_on)
+							{
+								//攻撃リストにしゃがみ判定が設定されていた場合、現在のステートがしゃがみか確認する
+								if (act_state != ActState::SQUAT)
+								{
+									continue;
+								}
+							}
+							//攻撃を決定する
+							attack = TRUE;
+							moveflag = false;
+							act_state = ActState::ATTACK;
+							attack_state = static_cast<AttackState>(list);
+							fream = attack_list[scastI(attack_state)].attack_single[0].fream;
+							anim_ccodinate = ac_attack[scastI(attack_state)].fream;
+							later = non_target;
+							production_time = 0.0f;
+							//描画をセット
+							anim->NodeChange(model_motion.model_R[scastI(attack_state)]);
+							//攻撃ごとに個別の設定を行う
+							AttackDetailsSet();
+							break;
+						}
+					}
 				}
 			}
 
-			//無敵攻撃
-			if (pad->x_input[scastI(PAD::L_TRIGGER)] == 1)
+			if (!attack)
 			{
-				pad->que.back().timer = 0;
-				attack = TRUE;
-				moveflag = false;
-				speed.x = Getapply(5.0f);
-				speed_Y.Set(70.0f);
-				act_state = ActState::ATTACK;
-				//描画をセット
-
-				attack_state = AttackState::EXTENDATK;
+				Jump();
 			}
 
-
-
-
-			//ホーミングダッシュ
-			if (pad->x_input[scastI(PAD::R_TRIGGER)] == 1)
-			{
-				if (trackgauge > 0)
-				{
-					pad->que.back().timer = 0;
-					attack = true;
-					tracking.Init();
-					act_state = ActState::ATTACK;
-					//描画をセット
-
-					attack_state = AttackState::TRACK_DASH;
-					moveflag = false;
-					pos.y += 5.0f;
-					speed.x = 0.0f;
-					speed.y = 0.0f;
-					hightrigger = false;
-					jumpflag = false;
-					max_jump_flag = false;
-					speed_Y.Set(0.0f);
-					trackgauge--;
-				}
-			}
-
-			Jump();
 		}
 		NoneChange();
+
+			//	//弱攻撃
+			//	if (pad->x_input[scastI(PAD::X)] == 1)
+			//	{
+			//		pad->que.back().timer = 0;
+			//		attack = TRUE;
+			//		moveflag = false;
+			//		act_state = ActState::ATTACK;
+			//		//コマンド判定
+			//		Command command = pad->com_list.CommandCheack(scastI(PAD::X), pad->input_history.data(), rightOrleft);
+			//		if (command == Command::RHURF)
+			//		{
+			//			//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
+			//			//描画をセット
+			//			attack_state = AttackState::JAKU_RHURF;
+			//			//pos.x += Getapply(50.0f);
+			//			specialfream = 0;
+			//		}
+			//		else if (command == Command::LHURF)
+			//		{
+			//			//描画をセット
+
+			//			attack_state = AttackState::JAKU_LHURF;
+			//			specialfream = 0;
+			//		}
+			//		else
+			//		{
+			//			//描画をセット
+
+			//			//attack_state = AttackState::JAKU;
+			//			//fream = attack_list[scastI(attack_state)].attack_single[0].fream;
+			//			//motion.MeshSet(jaku_r_f);
+			//			//motion.AnimReset();
+			//			//anim_ccodinate = ac_attack[scastI(attack_state)].fream;
+			//			//anim->NodeChange(model_motion.jaku_R_f);
+			//			//attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft);
+			//		}
+			//	}
+
+			//	//下段中攻撃
+			//	if (pad->x_input[scastI(PAD::Y)] == 1)
+			//	{
+			//		pad->que.back().timer = 0;
+			//		//attack = TRUE;
+			//		//moveflag = false;
+			//		//act_state = ActState::ATTACK;
+			//		//コマンド判定
+			//		Command command = pad->com_list.CommandCheack(scastI(PAD::Y), pad->input_history.data(), rightOrleft);
+			//		if (command == Command::RHURF)
+			//		{
+			//			//描画をセット
+
+			//			attack_state = AttackState::THU_RHURF;
+			//			specialfream = 0;
+			//		}
+			//		else if (command == Command::LHURF)
+			//		{
+			//			//描画をセット
+
+			//			attack_state = AttackState::THU_LHURF;
+			//			specialfream = 0;
+			//		}
+			//		else
+			//		{
+			//			//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
+			//			//描画をセット
+
+			//			//attack_state = AttackState::D_THU;
+			//			//pos.x += Getapply(50.0f);
+			//			ChangeFace(FaceAnim::Damage);
+			//		}
+			//	}
+
+			//	//上段強攻撃
+			//	if (pad->x_input[scastI(PAD::B)] == 1)
+			//	{
+			//		pad->que.back().timer = 0;
+			//		attack = TRUE;
+			//		moveflag = false;
+			//		act_state = ActState::ATTACK;
+			//		//コマンド判定
+			//		Command command = pad->com_list.CommandCheack(scastI(PAD::B), pad->input_history.data(), rightOrleft);
+			//		if (command == Command::LHURF)
+			//		{
+			//			if (power > 0)
+			//			{
+			//				//描画をセット
+
+			//				FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
+			//				attack_state = AttackState::KYO_LHURF;
+			//				//エフェクトセット
+
+			//				pos.x = tracking.rival_Pos.x - Getapply(100.0f);
+			//				pos.y = tracking.rival_Pos.y - 100.0f;
+			//				power--;
+			//			}
+			//			else
+			//			{
+			//				//描画をセット
+
+			//				attack_state = AttackState::THU_LHURF;
+			//				specialfream = 0;
+			//			}
+			//		}
+			//		else if (command == Command::RHURF)
+			//		{
+			//			if (power > 0)
+			//			{
+			//				//エフェクトセット
+			//				//描画をセット
+
+			//				attack_state = AttackState::KYO_RHURF;
+			//				specialfream = 0;
+			//				power--;
+			//			}
+			//			else
+			//			{
+			//				//描画をセット
+
+			//				attack_state = AttackState::THU_RHURF;
+			//				specialfream = 0;
+			//			}
+			//		}
+			//		else
+			//		{
+			//			//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
+			//			//描画をセット
+
+			//			//attack_state = AttackState::U_KYO;
+			//			//pos.x += Getapply(50.0f);
+			//			//pad->que.back().timer = 0;
+			//			//attack = TRUE;
+			//			//later = non_target;
+			//			//moveflag = false;
+			//			//act_state = ActState::ATTACK;
+			//			if (ground)
+			//			{
+			//				//描画をセット
+			//			}
+			//			else
+			//			{
+			//				//描画をセット
+			//			}
+			//			//attack_state = AttackState::SPECIAL_ATTACK;
+			//			//fream = attack_list[scastI(attack_state)].attack_single[0].fream;
+			//			//YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
+			//			//production_time = 0.0f;
+			//			//anim->PlayAnimation(0, true);
+			//			//anim->NodeChange(model_motion.special_R_f);
+			//			//anim_ccodinate = ac_attack[scastI(attack_state)].fream;
+			//			//ChangeFace(FaceAnim::KOUHUN);
+			//		}
+			//	}
+
+			//	//投げ
+			//	if (pad->x_input[scastI(PAD::A)] == 1)
+			//	{
+			//		pad->que.back().timer = 0;
+			//		attack = TRUE;
+			//		moveflag = false;
+			//		act_state = ActState::ATTACK;
+			//		//描画をセット
+
+			//		attack_state = AttackState::STEAL;
+			//	}
+
+
+
+
+			//}
+			//else
+			//{
+			//	//空中弱
+			//	if (pad->x_input[scastI(PAD::X)] == 1)
+			//	{
+			//		pad->que.back().timer = 0;
+			//		attack = TRUE;
+			//		moveflag = false;
+			//		act_state = ActState::ATTACK;
+			//		//描画をセット
+
+			//		attack_state = AttackState::JAKU;
+
+			//		//pad->com_list.Reset();
+			//	}
+
+			//	//空中中
+			//	if (pad->x_input[static_cast<int>(PAD::Y)] == 1)
+			//	{
+			//		pad->que.back().timer = 0;
+			//		FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
+			//		attack = TRUE;
+			//		moveflag = false;
+			//		act_state = ActState::ATTACK;
+			//		//描画をセット
+
+			//		attack_state = AttackState::THU;
+			//		pos.x += Getapply(50.0f);
+			//		specialfream = 0;
+			//	}
+
+			//	//空中強
+			//	if (pad->x_input[static_cast<int>(PAD::B)] == 1)
+			//	{
+			//		pad->que.back().timer = 0;
+			//		FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
+			//		attack = TRUE;
+			//		moveflag = false;
+			//		act_state = ActState::ATTACK;
+			//		//描画をセット
+
+			//		attack_state = AttackState::U_KYO;
+			//		pos.x += Getapply(50.0f);
+			//		specialfream = 0;
+			//		return;
+			//	}
+			//}
+
+			////無敵攻撃
+			//if (pad->x_input[scastI(PAD::L_TRIGGER)] == 1)
+			//{
+			//	pad->que.back().timer = 0;
+			//	attack = TRUE;
+			//	moveflag = false;
+			//	speed.x = Getapply(5.0f);
+			//	speed_Y.Set(70.0f);
+			//	act_state = ActState::ATTACK;
+			//	//描画をセット
+
+			//	attack_state = AttackState::EXTENDATK;
+			//}
+
+
+
+
+			////ホーミングダッシュ
+			//if (pad->x_input[scastI(PAD::R_TRIGGER)] == 1)
+			//{
+			//	if (trackgauge > 0)
+			//	{
+			//		pad->que.back().timer = 0;
+			//		attack = true;
+			//		tracking.Init();
+			//		act_state = ActState::ATTACK;
+			//		//描画をセット
+
+			//		attack_state = AttackState::TRACK_DASH;
+			//		moveflag = false;
+			//		pos.y += 5.0f;
+			//		speed.x = 0.0f;
+			//		speed.y = 0.0f;
+			//		hightrigger = false;
+			//		jumpflag = false;
+			//		max_jump_flag = false;
+			//		speed_Y.Set(0.0f);
+			//		trackgauge--;
+			//	}
 	}
 	//しゃがみ攻撃
-	if (act_state == ActState::SQUAT)
-	{
-		if (pad->x_input[scastI(PAD::X)] == 1)
-		{
-			pad->que.back().timer = 0;
-			attack = TRUE;
-			moveflag = false;
-			act_state = ActState::ATTACK;
-			//描画をセット
+	//if (act_state == ActState::SQUAT)
+	//{
+	//	if (pad->x_input[scastI(PAD::X)] == 1)
+	//	{
+	//		pad->que.back().timer = 0;
+	//		attack = TRUE;
+	//		moveflag = false;
+	//		act_state = ActState::ATTACK;
+	//		//描画をセット
 
-			attack_state = AttackState::D_JAKU;
-			//pad->com_list.Reset();
-		}
-		if (pad->x_input[scastI(PAD::Y)] == 1)
-		{
-			pad->que.back().timer = 0;
-			attack = TRUE;
-			moveflag = false;
-			act_state = ActState::ATTACK;
-			//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-			//描画をセット
+	//		attack_state = AttackState::D_JAKU;
+	//		//pad->com_list.Reset();
+	//	}
+	//	if (pad->x_input[scastI(PAD::Y)] == 1)
+	//	{
+	//		pad->que.back().timer = 0;
+	//		attack = TRUE;
+	//		moveflag = false;
+	//		act_state = ActState::ATTACK;
+	//		//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
+	//		//描画をセット
 
-			attack_state = AttackState::D_THU;
-			pos.x += Getapply(50.0f);
-		}
-		if (pad->x_input[static_cast<int>(PAD::B)] == 1)
-		{
-			pad->que.back().timer = 0;
-			//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-			attack = TRUE;
-			moveflag = false;
-			act_state = ActState::ATTACK;
-			//描画をセット
+	//		attack_state = AttackState::D_THU;
+	//		pos.x += Getapply(50.0f);
+	//	}
+	//	if (pad->x_input[static_cast<int>(PAD::B)] == 1)
+	//	{
+	//		pad->que.back().timer = 0;
+	//		//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
+	//		attack = TRUE;
+	//		moveflag = false;
+	//		act_state = ActState::ATTACK;
+	//		//描画をセット
 
-			attack_state = AttackState::KYO;
-			pos.x += Getapply(50.0f);
-			specialfream = 0;
-		}
-	}
+	//		attack_state = AttackState::KYO;
+	//		pos.x += Getapply(50.0f);
+	//		specialfream = 0;
+	//	}
+	//}
 }
 
 
@@ -1065,7 +1139,7 @@ void Knight::Attack(float decision, float elapsed_time)
 				attack_state = AttackState::NONE;
 				anim_ccodinate = 1.0f;
 				anim->PlayAnimation(0, true);
-				anim->NodeChange(wait_R);
+				anim->NodeChange(model_motion.wait_R);
 				ChangeFace(FaceAnim::NORMAL);
 			}
 		}
@@ -1114,8 +1188,8 @@ void Knight::CancelList()
 	//214・Xコマンド
 	if (pad->x_input[scastI(PAD::X)] == 1)
 	{
-		int command = pad->com_list.CommandCheack(scastI(PAD::X), pad->input_history.data(), rightOrleft);
-		if (command == CommandList::LHURF)
+		Command command = pad->com_list.CommandCheack(scastI(PAD::X), pad->input_history.data(), rightOrleft);
+		if (command == Command::LHURF)
 		{
 			later = non_target;
 			attack = TRUE;
@@ -1132,8 +1206,8 @@ void Knight::CancelList()
 	//ゲージ技
 	if (pad->x_input[scastI(PAD::B)] == 1)
 	{
-		int command = pad->com_list.CommandCheack(scastI(PAD::B), pad->input_history.data(), rightOrleft);
-		if (command == CommandList::LHURF)
+		Command command = pad->com_list.CommandCheack(scastI(PAD::B), pad->input_history.data(), rightOrleft);
+		if (command == Command::LHURF)
 		{
 			//214・Bコマンド
 			if (power > 0)
@@ -1153,7 +1227,7 @@ void Knight::CancelList()
 				power--;
 			}
 		}
-		else if (command == CommandList::RHURF)
+		else if (command == Command::RHURF)
 		{
 			//236・Bコマンド
 			later = -1;
@@ -1414,40 +1488,10 @@ void Knight::DrawDEBUG(
 		}
 	}
 
-	////AttackStateの順に生成する
-	////attack_list.resize(scastI(AttackState::ATTACK_END));
-
-	//attack_list[scastI(AttackState::NONE)].attack_name = AttackState::NONE;
-	//attack_list[scastI(AttackState::JAKU)].attack_name = AttackState::JAKU;
-	//attack_list[scastI(AttackState::JAKU)].attack_max = 1;
-	//attack_list[scastI(AttackState::JAKU)].later = 0.2f;
-	//attack_list[scastI(AttackState::JAKU)].attack_single.resize(attack_list[scastI(AttackState::JAKU)].attack_max);
-	//for (int i = 0; i < attack_list[scastI(AttackState::JAKU)].attack_max; i++)
-	//{
-	//	attack_list[scastI(AttackState::JAKU)].attack_single[i].fream = 0.1f;
-	//	attack_list[scastI(AttackState::JAKU)].attack_single[i].quantity = 1;
-	//	attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter.resize(attack_list[scastI(AttackState::JAKU)].attack_single[i].quantity);
-	//	for (int v = 0; v < attack_list[scastI(AttackState::JAKU)].attack_single[i].quantity; v++)
-	//	{
-	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].damege = 5;
-	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].distance.x = 6.0f;
-	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].distance.y = 1.0f;
-	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].gaugeout = true;
-	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].HB_timer = 0.1f;
-	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].hitback.x = Getapply(1.0f);
-	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].hitback.y = 0.0f;
-	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].knockback = 1.0f;
-	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].size.x = 3.0f;
-	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].size.y = 1.0f;
-	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].stealtimer = 0.0f;
-	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].timer = 0.15f;
-	//		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].type = AttackBox::MIDDLE;
-	//	}
-	//}
-
 	//攻撃リスト作成用処理
 #if USE_IMGUI
 	{
+
 		std::string now_play = std::to_string(now_player);
 		now_play += std::string(":RyuHitBox");
 		ImGui::Begin(now_play.c_str());
@@ -1477,14 +1521,115 @@ void Knight::DrawDEBUG(
 
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
+		
+		//ここから攻撃判定調整
+		static float save_timer = 0.0f;
+		static float init_timer = 0.0f;
+		static float load_timer = 0.0f;
+		if (ImGui::Button(u8"セーブ"))
+		{
+			ImGui::OpenPopup("Save");
+		}ImGui::SameLine();
+		if (ImGui::BeginPopup("Save"))
+		{
+			ImGui::Text(u8"セーブしますか？");
+			if (ImGui::Button(u8"はい"))
+			{
+				if (AttackWrite())
+				{
+					save_timer = 2.0f;
+					ImGui::CloseCurrentPopup();
+				}
+			}
+			if (ImGui::Button(u8"いいえ"))
+			{
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::EndPopup();
+		}
+
+		if (ImGui::Button(u8"ロード"))
+		{
+			ImGui::OpenPopup("Load");
+		}ImGui::SameLine();
+		if (ImGui::BeginPopup("Load"))
+		{
+			ImGui::Text(u8"ロードしますか？");
+			if (ImGui::Button(u8"はい"))
+			{
+				if (AttackLoad())
+				{
+					load_timer = 2.0f;
+					ImGui::CloseCurrentPopup();
+				}
+			}
+			if (ImGui::Button(u8"いいえ"))
+			{
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::EndPopup();
+		}
+
+		if (ImGui::Button(u8"パラメーター初期化"))
+		{
+			ImGui::OpenPopup("New");
+		}
+		if (ImGui::BeginPopup("New"))
+		{
+			ImGui::Text(u8"本当に初期化しますか？");
+			if (ImGui::Button(u8"はい"))
+			{
+				if (AttackClean())
+				{
+					init_timer = 2.0f;
+					ImGui::CloseCurrentPopup();
+				}
+			}
+			if (ImGui::Button(u8"いいえ"))
+			{
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::EndPopup();
+		}
+
+		if (save_timer > 0.0f)
+		{
+			ImGui::Text(u8"セーブしました");
+			save_timer -= elapsed_time;
+		}
+		if (load_timer > 0.0f)
+		{
+			ImGui::Text(u8"ロードしました");
+			load_timer -= elapsed_time;
+		}
+		if (init_timer > 0.0f)
+		{
+			ImGui::Text(u8"初期化しました");
+			init_timer -= elapsed_time;
+		}
+
+
+		//攻撃判定を全て出す
 		for (int list = 0; list < attack_list.size(); list++)
 		{
-			std::string now_name = std::string("Attack");
-			now_name += std::to_string(scastI(attack_list[list].attack_name));
-			if (ImGui::TreeNode(now_name.c_str()))
+			if (ImGui::TreeNode(attack_name_list[scastI(attack_list[list].attack_name)].c_str()))
 			{
 				ImGui::InputFloat(u8"後スキ", &attack_list[list].later, 0.01f, 0.1f);
 				ImGui::InputInt(u8"攻撃回数", &attack_list[list].attack_max, 1, 10);
+				ImGui::InputFloat(u8"モーション速度:発生", &ac_attack[list].fream, 0.01f, 0.1f);
+				ImGui::InputFloat(u8"モーション速度:持続", &ac_attack[list].timer, 0.01f, 0.1f);
+				ImGui::InputFloat(u8"モーション速度:後スキ", &ac_attack[list].later, 0.01f, 0.1f);
+				int pad = scastI(attack_list[list].linkage_button);
+				ImGui::InputInt(u8"ボタン", &pad, 1, 10);
+				attack_list[list].linkage_button = static_cast<PAD>(pad);
+				ImGui::Text(pad_name_list[pad].c_str());
+				int com = scastI(attack_list[list].linkage_command);
+				ImGui::InputInt(u8"コマンド", &com, 1, 10);
+				attack_list[list].linkage_command = static_cast<Command>(com);
+				ImGui::Text(command_name_list[com].c_str());
+				ImGui::Checkbox(u8"地上技", &attack_list[list].ground_on);
+				ImGui::Checkbox(u8"しゃがみ攻撃", &attack_list[list].squat_on);
+
 				attack_list[list].attack_single.resize(attack_list[list].attack_max);
 				//攻撃回数ごとのパラメータ表示
 				ImGui::Text(u8"攻撃回数ごとのパラメータ");
@@ -1503,24 +1648,30 @@ void Knight::DrawDEBUG(
 								for (int para = 0; para < attack_list[list].attack_single[sin].parameter.size(); para++)
 								{
 									//攻撃判定内部パラメーター表示
-									std::string now_para = "判定";
+									std::string now_para = u8"判定";
 									now_para += std::to_string(para);
 									if (ImGui::TreeNode(now_para.c_str()))
 									{
 										ImGui::InputFloat(u8"プレイヤーとの距離X", &attack_list[list].attack_single[sin].parameter[para].distance.x, 0.01f, 0.1f);
 										ImGui::InputFloat(u8"プレイヤーとの距離Y", &attack_list[list].attack_single[sin].parameter[para].distance.y, 0.01f, 0.1f);
-										ImGui::InputFloat(u8"サイズX", &attack_list[list].attack_single[sin].parameter[para].distance.x, 0.01f, 0.1f);
-										ImGui::InputFloat(u8"サイズY", &attack_list[list].attack_single[sin].parameter[para].distance.y, 0.01f, 0.1f);
+										ImGui::InputFloat(u8"サイズX", &attack_list[list].attack_single[sin].parameter[para].size.x, 0.01f, 0.1f);
+										ImGui::InputFloat(u8"サイズY", &attack_list[list].attack_single[sin].parameter[para].size.y, 0.01f, 0.1f);
 										ImGui::InputFloat(u8"持続フレーム", &attack_list[list].attack_single[sin].parameter[para].timer, 0.01f, 0.1f);
 										ImGui::InputFloat(u8"ダメージ", &attack_list[list].attack_single[sin].parameter[para].damege, 0.01f, 0.1f);
 										ImGui::InputFloat(u8"のけぞり時間", &attack_list[list].attack_single[sin].parameter[para].HB_timer, 0.01f, 0.1f);
 										ImGui::InputFloat(u8"吹っ飛びX", &attack_list[list].attack_single[sin].parameter[para].hitback.x, 0.01f, 0.1f);
 										ImGui::InputFloat(u8"吹っ飛びY", &attack_list[list].attack_single[sin].parameter[para].hitback.y, 0.01f, 0.1f);
 										ImGui::InputInt(u8"攻撃タイプ", &attack_list[list].attack_single[sin].parameter[para].type, 1, 10);
-										ImGui::Text("1:上段。2:中段。3:下段。4:つかみ");
+										ImGui::Text(u8"0:上段。1:中段。2:下段。3:つかみ");
 										ImGui::InputFloat(u8"ノックバック(Xのみ)", &attack_list[list].attack_single[sin].parameter[para].knockback, 0.01f, 0.1f);
 										ImGui::Checkbox(u8"ゲージを獲得しない", &attack_list[list].attack_single[sin].parameter[para].gaugeout);
 										ImGui::InputFloat(u8"つかみ抜けされる時間", &attack_list[list].attack_single[sin].parameter[para].stealtimer, 0.01f, 0.1f);
+										int hit_stop_time = scastI(attack_list[list].attack_single[sin].parameter[para].HS_timer);
+										ImGui::InputInt(u8"ヒットストップ時間", &hit_stop_time, 1.0f, 10.0f);
+										ImGui::Text(u8"0:短い。1:普通。2:長い。3以降:短い");
+										attack_list[list].attack_single[sin].parameter[para].HS_timer = static_cast<HitStopTime>(hit_stop_time);
+										if(!attack_list[list].attack_single[sin].parameter[para].gaugeout)
+											{ ImGui::InputFloat(u8"ゲージ獲得量", &attack_list[list].attack_single[sin].parameter[para].gauge_get, 0.01f, 0.1f); }
 										ImGui::TreePop();
 									}
 								}
@@ -1549,7 +1700,7 @@ void Knight::DrawDEBUG(
 		}
 		ImGui::End();
 	}
-	{
+	/*{
 		std::string now = std::to_string(now_player);
 		now += std::string("KnightAtkList");
 		ImGui::Begin(now.c_str());
@@ -1561,7 +1712,7 @@ void Knight::DrawDEBUG(
 		ImGui::Text(u8"14:前弱必殺\n15:前中必殺\n16:前強必殺\n17:後弱必殺\n18:後中必殺");
 		ImGui::Text(u8"19:後強必殺\n20:前超必殺\n21:後超必殺\n22:即死技\n23:無敵攻撃");
 		ImGui::End();
-	}
+	}*/
 
 #endif // USE_IMGUI
 }
@@ -2246,7 +2397,7 @@ void Knight::DamageCheck()
 			AllAttackClear();
 			act_state = ActState::KNOCK;
 			attack_state = AttackState::NONE;
-			anim->NodeChange(damage_R_g_u);
+			anim->NodeChange(model_motion.damage_R_g_u);
 			ChangeFace(FaceAnim::Damage);
 			anim_ccodinate = 5.0f;
 		}
@@ -2318,7 +2469,7 @@ void Knight::KnockUpdate(float elapsed_time)
 		if (act_state != ActState::WAIT)
 		{
 			act_state = ActState::NONE;
-			anim->NodeChange(wait_R);
+			anim->NodeChange(model_motion.wait_R);
 			ChangeFace(FaceAnim::NORMAL);
 			anim_ccodinate = 3.0f;
 		}
@@ -3263,4 +3414,67 @@ void Knight::ChangeFace(FaceAnim anim)
 	face_anim = anim;
 	face_wink_time = 0.0f;
 	wink_state = Wink_State::FIRST;
+}
+
+void Knight::AttackDetailsSet()
+{
+	//攻撃ごとに初回だけ通す処理を記述する
+	switch (attack_state)
+	{
+	case AttackState::NONE:
+		break;
+	case AttackState::JAKU:
+		ChangeFace(FaceAnim::YARUKI);
+		break;
+	case AttackState::THU:
+		break;
+	case AttackState::KYO:
+		break;
+	case AttackState::D_JAKU:
+		break;
+	case AttackState::D_THU:
+		break;
+	case AttackState::U_KYO:
+		break;
+	case AttackState::A_JAKU:
+		break;
+	case AttackState::A_THU:
+		break;
+	case AttackState::A_KYO:
+		break;
+	case AttackState::A_UKYO:
+		break;
+	case AttackState::STEAL:
+		break;
+	case AttackState::SLOW:
+		break;
+	case AttackState::TRACK_DASH:
+		break;
+	case AttackState::JAKU_RHURF:
+		break;
+	case AttackState::THU_RHURF:
+		break;
+	case AttackState::KYO_RHURF:
+		break;
+	case AttackState::JAKU_LHURF:
+		break;
+	case AttackState::THU_LHURF:
+		break;
+	case AttackState::KYO_LHURF:
+		break;
+	case AttackState::SPECIAL_ATTACK:
+		YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
+		ChangeFace(FaceAnim::KOUHUN);
+		break;
+	case AttackState::DESIRE_SPECIAL:
+		break;
+	case AttackState::DESIRE_METEOR:
+		break;
+	case AttackState::EXTENDATK:
+		break;
+	case AttackState::ATTACK_END:
+		break;
+	default:
+		break;
+	}
 }

@@ -161,8 +161,13 @@ public:
 	std::vector<AttackSingle>		attack_single;	//攻撃内容保存
 	float							later;			//後隙フレーム
 	int								now_attack_num;	//現在実行している攻撃番号は何番かを示す(attack_maxまで回ったらlaterをプレイヤーに)
+	PAD								linkage_button;	//どのボタンで攻撃を発生させるか
+	Command							linkage_command;//どのコマンドで攻撃を発生させるか
+	bool							ground_on;		//攻撃は空中、地上どちらで発生させるか(trueで地上発生)
+	bool							squat_on;		//しゃがみ攻撃がどうか(trueでしゃがみ攻撃)
 public:
-	AttackList() : now_attack_num(0), attack_name(AttackState::NONE), later(0.0f), attack_max(0) {};
+	AttackList() : now_attack_num(0), attack_name(AttackState::NONE), later(0.0f),
+		attack_max(0), linkage_button(PAD::BUTTOM_END), linkage_command(Command::NOCOMMAND), ground_on(true), squat_on(false) {};
 	//攻撃当たり判定を生成する
 	void SetAttack(std::vector<AttackBox> *atk, float rightOrleft)
 	{
@@ -184,6 +189,20 @@ public:
 		}
 		now_attack_num++;
 	}
+};
+
+
+
+//---------------------------------------------------------------
+// **アニメーション調整値保存構造体**
+//・発生、持続、後隙それぞれのアニメーション速度調整値を保存する構造体
+//---------------------------------------------------------------
+struct Animation_Coordinate
+{
+public:
+	float							fream;			//発生
+	float							timer;			//持続
+	float							later;			//後隙
 };
 
 
@@ -222,7 +241,9 @@ public:
 	int					now_player;		//どのプレイヤーがこのキャラを操作しているか(1:1P、2:2P)
 	float				anim_ccodinate;	//アニメーション速度を調整する変数
 	int					stop_state;		//ヒットストップ中の処理で使用
-	std::vector<AttackBox> atk;
+	std::vector<AttackBox> atk;			//当たり判定
+	
+	std::array<Animation_Coordinate, scastI(AttackState::ATTACK_END)>	ac_attack;	//攻撃ごとのアニメーション調整値
 
 
 	std::vector<AttackList>		attack_list;	//攻撃のリスト。生成時に読み込み、保存する(攻撃発生時にパラメーターを送る)

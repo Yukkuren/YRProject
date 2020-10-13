@@ -179,6 +179,7 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="Knight.cpp" />
     <ClCompile Include="KnightATK.cpp" />
+    <ClCompile Include="KnightIO.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="framework.cpp" />
     <ClCompile Include="MainCamera.cpp" />

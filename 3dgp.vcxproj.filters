@@ -162,12 +162,6 @@
     <ClCompile Include="imgui\imgui_widgets.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Knight.cpp">
-      <Filter>Chara</Filter>
-    </ClCompile>
-    <ClCompile Include="KnightATK.cpp">
-      <Filter>Chara</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Souce</Filter>
     </ClCompile>
@@ -233,6 +227,15 @@
     </ClCompile>
     <ClCompile Include="framebuffer.cpp">
       <Filter>Souce</Filter>
+    </ClCompile>
+    <ClCompile Include="Knight.cpp">
+      <Filter>Chara\Knight</Filter>
+    </ClCompile>
+    <ClCompile Include="KnightATK.cpp">
+      <Filter>Chara\Knight</Filter>
+    </ClCompile>
+    <ClCompile Include="KnightIO.cpp">
+      <Filter>Chara\Knight</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -302,9 +305,6 @@
     <ClInclude Include="Key.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="Knight.h">
-      <Filter>Chara</Filter>
-    </ClInclude>
     <ClInclude Include="misc.h">
       <Filter>Header</Filter>
     </ClInclude>
@@ -358,6 +358,9 @@
     </ClInclude>
     <ClInclude Include="framebuffer.h">
       <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Knight.h">
+      <Filter>Chara\Knight</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -473,6 +476,9 @@
     </Filter>
     <Filter Include="Shader\furShader">
       <UniqueIdentifier>{fb88459f-daa2-4ced-ae22-a3d5c78db467}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chara\Knight">
+      <UniqueIdentifier>{8715d91a-395a-4d38-88ee-399fbe88c70c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
