@@ -504,6 +504,8 @@ void ModelAnim::Draw(
 			FRAMEWORK.context->PSSetSamplers(0, 1, m_sampler_state.GetAddressOf());
 			FRAMEWORK.context->DrawIndexed(subset.index_count, subset.start_index, 0);
 		}
+
+		shader->Inactivate();
 	}
 }
 

@@ -36,8 +36,8 @@ public:
 
 	//fedo_alphaの値を0.0f~1.0fに動かしてフェードさせる
 	//fedo_startはフェードアウトするかどうかのフラグ。falseの場合はfedo_alhaを下げ続ける
-	float	fedo_alpha;
-	bool	fedo_start;
+	float	fado_alpha;
+	bool	fado_start;
 
 	virtual void Init() {};
 	virtual void Update(float elapsed_time) {};
@@ -184,7 +184,8 @@ public:
 	bool			end = false;						//勝敗がついた
 	bool			fin = false;						//全て終わった
 	float			endtimer = 0.0f;					//勝敗がついてから勝利画面に移行するまでに使用
-	float			mix_fedo = 0.0f;					//フェードインの速度変更用
+	float			mix_fado = 0.0f;					//フェードインの速度変更用
+	bool			blur_on = false;					//ブルームをかけるフラグ
 
 public:
 
@@ -193,7 +194,7 @@ public:
 	void				Draw(float elapsed_time);
 	void				UnInit();
 	void				LoadData();
-	bool				FedoOut(float elapsed_time);
+	bool				FadoOut(float elapsed_time);
 
 	void				PadSet(int select1);
 	void				PadSet(int select1, int select2);
@@ -367,7 +368,7 @@ public:
 	void				Draw(float elapsed_time);
 	void				UnInit();
 	void				LoadData();
-	bool				FedoOut(float elapsed_time);
+	bool				FadoOut(float elapsed_time);
 
 	YR_Vector3			PosSet(int select);
 };

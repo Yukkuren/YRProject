@@ -564,7 +564,7 @@ void SceneTest::RenderTexture(
 		ambient_color,
 		elapsed_time,
 		0.0f
-	);
+	);	
 
 	motion->UpdateAnimation(elapsed_time);
 	motion->CalculateLocalTransform();
@@ -572,7 +572,7 @@ void SceneTest::RenderTexture(
 		DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
 		knight_angle);
 	motion->Draw(
-		flatShader.get(),
+		furShader.get(),
 		view, projection, light_direction, light_color, ambient_color
 	);
 

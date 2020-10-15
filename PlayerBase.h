@@ -290,6 +290,8 @@ public:
 		const DirectX::XMFLOAT4& ambient_color,
 		float						elapsed_time) = 0;
 
+	virtual void TextDraw()=0;
+
 public:
 	//çsìÆånä÷êî
 	
@@ -329,7 +331,10 @@ public:
 	virtual void TrackDash(float decision, float elapsed_time) = 0;
 
 	virtual bool Intro(float elapsed_time) = 0;
+	virtual void IntroDEBUG() = 0;
 	virtual bool WinPerformance() = 0;
+
+	virtual void ReadySet() = 0;
 
 	virtual bool AttackLoad() = 0;
 	virtual bool AttackWrite() = 0;

@@ -254,6 +254,8 @@ public:
 	void AllAttackClear();		//全ての攻撃当たり判定を消去する
 	void AttackUpdate(float elapsed_time);		//攻撃判定が存在する時のみ更新
 
+	void ReadySet();			//イントロ後、ゲーム開始までの設定を行う
+
 	//イントロ用列挙
 	enum class INTRO_KNIGHT : int
 	{
@@ -264,6 +266,7 @@ public:
 		PULL,		//少し引く
 		PUSH,		//少し寄る
 		PULL_2,		//少し引く
+		PUSH_2,		//少し寄る
 		FIN_SET,	//セット
 		FIN,		//斜め後ろから見る
 		FINISH,
@@ -271,6 +274,11 @@ public:
 	INTRO_KNIGHT	intro_state;
 
 	float			intro_timer;		//イントロで使用する
+
+	YR_Vector3 eye_plus;				//カメラの座標にプラスする値
+	YR_Vector3 focus_plus;				//カメラの注視点にプラスする値
+
+	void IntroDEBUG();
 
 	//勝利演出用列挙
 	enum class WIN_PERFORMANCE_KNIGHT : int
@@ -308,6 +316,7 @@ public:
 	enum class FaceAnim : int
 	{
 		NORMAL = 0,
+		NORMAL_LIP_SYNC,
 		WINK,
 		Damage,
 		YARUKI,
@@ -315,7 +324,7 @@ public:
 	};
 
 	//目の識別用列挙
-	enum FaceEye_Num : int
+	enum class FaceEye_Num : int
 	{
 		NORMAL_EYE = 0,
 		WINK1,
@@ -327,7 +336,7 @@ public:
 		EYE_MAX,
 	};
 
-	DirectX::XMFLOAT2	face_eye_offset[FaceEye_Num::EYE_MAX] =
+	DirectX::XMFLOAT2	face_eye_offset[scastI(FaceEye_Num::EYE_MAX)] =
 	{
 		{ 0.0f,0.0f },
 		{ 0.2f,0.0f },
@@ -339,7 +348,7 @@ public:
 	};
 
 	//口の列挙
-	enum FaceMouse_Num : int
+	enum class FaceMouth_Num : int
 	{
 		NORMAL_MOUSE = 0,
 		TOZI,
@@ -348,10 +357,18 @@ public:
 		OOGUTI,
 		OTYOBO,
 		POKAN,
-		MOUSE_MAX,
+		MOUTH_MAX,
+	}; FaceMouth_Num face_mouth_num = FaceMouth_Num::NORMAL_MOUSE;
+
+	static constexpr std::array<FaceMouth_Num,4> lip_sync_can =
+	{
+		FaceMouth_Num::NORMAL_MOUSE,
+		FaceMouth_Num::TOZI,
+		FaceMouth_Num::OOGUTI,
+		FaceMouth_Num::KURI,
 	};
 
-	DirectX::XMFLOAT2	face_mouse_offset[FaceMouse_Num::MOUSE_MAX] =
+	DirectX::XMFLOAT2	face_mouth_offset[scastI(FaceMouth_Num::MOUTH_MAX)] =
 	{
 		{ 0.0f,0.0f },
 		{ 0.2f,0.0f },
@@ -363,10 +380,12 @@ public:
 	};
 
 	FaceAnim face_anim = FaceAnim::NORMAL;
-	float face_wink_time;
+	float face_wink_time = 0.0f;				//ウインク処理用変数
+	float wink_interval = 3.0f;					//ウインクの間隔
+	float lip_sync_time = 0.0f;					//口パク処理用変数
 
 	//まばたき用列挙
-	enum Wink_State : int
+	enum class Wink_State : int
 	{
 		FIRST = 0,
 		SECOND,
@@ -374,17 +393,31 @@ public:
 		FOURTH,
 		FIVE,
 		SIX,
-	};
+	};Wink_State wink_state = Wink_State::FIRST;
 
-	Wink_State wink_state = Wink_State::FIRST;
 
 	DirectX::XMFLOAT2	eye_offset = { 0.0f,0.0f };
-	DirectX::XMFLOAT2	mouse_offset = { 0.0f,0.0f };
+	DirectX::XMFLOAT2	mouth_offset = { 0.0f,0.0f };
 
-	void FaceAnimation(float elapsed_time);
-	void FaceWink(float elapsed_time);
+	void FaceAnimation(float elapsed_time);				//表情のアニメーション処理
+	void FaceWink(float elapsed_time);					//ウインクの処理
+	void FaceLipSync(float elapsed_time);				//口パクの処理
 
-	void ChangeFace(FaceAnim anim);
+	void ChangeFace(FaceAnim anim);						//表情を変える関数(enumで定義)
+
+	std::wstring RandTextSelect();						//ランダムであらかじめ設定されたテキストを選択して返す
+
+	std::wstring lip_text;								//表示するテキスト
+	bool		text_on = false;						//trueならテキストを表示する
+
+	void TextDraw();									//テキストを描画する
+	enum class TextList : int
+	{
+		NORMAL,
+		WARLIKE,
+		CRIOSITY,
+		TEXT_END,
+	};
 };
 
 #endif // !_KNIGHT_H_

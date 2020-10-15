@@ -42,8 +42,8 @@ void SceneGame::Init()
 {
 	//ゲームループ管理系初期化
 	timer				= 0.0f;
-	fedo_alpha			= 1.0f;
-	fedo_start			= false;
+	fado_alpha			= 1.0f;
+	fado_start			= false;
 	pause				= false;
 	start				= false;
 	Hitcheak::timer = 0.0f;
@@ -54,7 +54,7 @@ void SceneGame::Init()
 	start_timer			= 0.0f;
 	end					= false;
 	endtimer			= 0.0f;
-	mix_fedo			= 3.0f;
+	mix_fado			= 1.5f;
 	main_loop = MAIN_LOOP::INTRO1P;	//最初は1Pのイントロから開始
 
 	//カメラ初期設定
@@ -78,6 +78,7 @@ void SceneGame::Init()
 	camera_move_debug = false;
 	hit_stop_elapsed = 0.0f;
 	game_speed = 0.0f;
+	blur_on = false;
 }
 
 
@@ -278,6 +279,10 @@ void SceneGame::LoadData()
 	player1p->pad->Init();
 	player2p->pad->Init();
 
+	//プレイヤーの向きを指定しておく
+	player1p->rightOrleft = 1;
+	player2p->rightOrleft = -1;
+
 	//ロード終了
 	FRAMEWORK.sceneload.load_state = 7;
 }
@@ -392,36 +397,44 @@ void SceneGame::Update(float elapsed_time)
 	//基本的にそのままの速度を代入する
 	game_speed = elapsed_time;
 
-	if (fedo_start)
+	if (fado_start)
 	{
 		//フェードアウト中
 		switch (main_loop)
 		{
 			//イントロを飛ばす場合はゲームメインへ
 		case SceneGame::INTRO1P:
+			fado_alpha += (elapsed_time * mix_fado);
+			if (fado_alpha > 1.0f)
+			{
+				main_loop = MAIN_LOOP::INTRO2P;
+				fado_start = false;
+			}
+			break;
 		case SceneGame::INTRO2P:
-			fedo_alpha += (elapsed_time * 5.0f);
-			if (fedo_alpha > 1.0f)
+			fado_alpha += (elapsed_time * mix_fado);
+			if (fado_alpha > 1.0f)
 			{
 				main_loop = MAIN_LOOP::READY;
 				YRCamera.camera_state = Camera::CAMERA_STATE::MAIN;
-				//ここでメイン画面設定関数を呼ぶ
 				StartSet();
-				fedo_start = false;
+				player1p->ReadySet();
+				player2p->ReadySet();
+				fado_start = false;
 			}
 			break;
 		case SceneGame::READY:
 			break;
 		case SceneGame::MAIN:
-			if (FedoOut(elapsed_time))
+			if (FadoOut(elapsed_time))
 			{
 				UnInit();
 				FRAMEWORK.SetScene(SCENE_TABLE::SCENE_SELECT);
 			}
 			break;
 		case SceneGame::FINISH:
-			fedo_alpha += (elapsed_time * 5.0f);
-			if (fedo_alpha > 1.0f)
+			fado_alpha += (elapsed_time * 5.0f);
+			if (fado_alpha > 1.0f)
 			{
 				switch (judge)
 				{
@@ -442,22 +455,22 @@ void SceneGame::Update(float elapsed_time)
 				default:
 					break;
 				}
-				mix_fedo = 5.0f;
-				fedo_start = false;
+				mix_fado = 5.0f;
+				fado_start = false;
 			}
 			break;
 		case SceneGame::WIN1P:
 		case SceneGame::WIN2P:
-			if (FedoOut(elapsed_time))
+			if (FadoOut(elapsed_time))
 			{
-				fedo_start = false;
+				fado_start = false;
 				main_loop = SceneGame::GAME_FIN;
 				//ここでゲーム終了後の画面設定をする
 				FinSet();
 			}
 			break;
 		case SceneGame::GAME_FIN:
-			if (FedoOut(elapsed_time))
+			if (FadoOut(elapsed_time))
 			{
 				UnInit();
 				FRAMEWORK.SetScene(SCENE_TABLE::SCENE_SELECT);
@@ -482,18 +495,28 @@ void SceneGame::Update(float elapsed_time)
 			//パッドの更新
 			player1p->pad->Update(game_speed);
 			player2p->pad->Update(game_speed);
+			//if (player1p->pad->x_input[scastI(PAD::START)] == 1 || player2p->pad->x_input[scastI(PAD::START)] == 1)
+			//{
+			//	//ポーズボタンが押された
+			//	pause = !pause;
+			//}
 
 			//1Pイントロ更新
-			if (player1p->Intro(elapsed_time))
+			/*if (pause)
 			{
-				main_loop = MAIN_LOOP::INTRO2P;
+				game_speed = 0.0f;
+			}*/
+			if (player1p->Intro(game_speed))
+			{
+				main_loop = MAIN_LOOP::INTRO1P;
+				fado_start = true;
 			}
 
 			//途中ボタンが押されたときはスキップ
 			if (player1p->pad->x_input[scastI(PAD::X)] == 1 ||
 				player2p->pad->x_input[scastI(PAD::X)] == 1)
 			{
-				fedo_start = true;
+				fado_start = true;
 			}
 			break;
 		case SceneGame::INTRO2P:
@@ -506,20 +529,22 @@ void SceneGame::Update(float elapsed_time)
 			//2Pイントロ更新
 			if (player2p->Intro(elapsed_time))
 			{
-				fedo_start = true;
+				fado_start = true;
+				main_loop = MAIN_LOOP::INTRO2P;
 			}
 
 			//途中ボタンが押されたらスキップ
 			if (player1p->pad->x_input[scastI(PAD::X)] == 1 ||
 				player2p->pad->x_input[scastI(PAD::X)] == 1)
 			{
-				fedo_start = true;
+				fado_start = true;
+				main_loop = MAIN_LOOP::INTRO2P;
 			}
 			break;
 		case SceneGame::READY:
 			//イントロ終了後のフェードイン
-			mix_fedo = 3.0f;
-			if (fedo_alpha < 0.1f)
+			mix_fado = 3.0f;
+			if (fado_alpha < 0.1f)
 			{
 				main_loop = MAIN_LOOP::MAIN;
 			}
@@ -640,7 +665,7 @@ void SceneGame::Update(float elapsed_time)
 						if (endtimer > 7.0f)
 						{
 							main_loop = MAIN_LOOP::FINISH;
-							fedo_start = true;
+							fado_start = true;
 						}
 
 						//プレイヤー更新(KO時のｳﾜｧ...ｳﾜｧ...ｳﾜｧ...ってスローになるやつ)
@@ -664,7 +689,7 @@ void SceneGame::Update(float elapsed_time)
 						if (player1p->pad->x_input[scastI(PAD::START)] == 1 || player2p->pad->x_input[scastI(PAD::START)] == 1)
 						{
 							//ポーズボタンが押された
-							pause = TRUE;
+							pause = true;
 						}
 
 						//プレイヤー更新
@@ -733,7 +758,7 @@ void SceneGame::Update(float elapsed_time)
 			break;
 		case SceneGame::FINISH:
 			//フェードインしたら勝敗に合わせてステートを変える
-			if (fedo_alpha < 0.1f)
+			if (fado_alpha < 0.1f)
 			{
 				switch (judge)
 				{
@@ -761,14 +786,14 @@ void SceneGame::Update(float elapsed_time)
 
 			if (player1p->WinPerformance())
 			{
-				fedo_start = true;
+				fado_start = true;
 			}
 
 			//途中ボタンが押されたらスキップ
 			if (player1p->pad->x_input[scastI(PAD::X)] == 1 ||
 				player2p->pad->x_input[scastI(PAD::X)] == 1)
 			{
-				fedo_start = true;
+				fado_start = true;
 			}
 			break;
 		case SceneGame::WIN2P:
@@ -779,14 +804,14 @@ void SceneGame::Update(float elapsed_time)
 
 			if (player2p->WinPerformance())
 			{
-				fedo_start = true;
+				fado_start = true;
 			}
 
 			//途中ボタンが押されたらスキップ
 			if (player1p->pad->x_input[scastI(PAD::X)] == 1 ||
 				player2p->pad->x_input[scastI(PAD::X)] == 1)
 			{
-				fedo_start = true;
+				fado_start = true;
 			}
 			break;
 		case SceneGame::GAME_FIN:
@@ -796,9 +821,9 @@ void SceneGame::Update(float elapsed_time)
 			break;
 		}
 		//フェードアウトがスタートしてない場合は画面を映す
-		if (fedo_alpha > 0.0f)
+		if (fado_alpha > 0.0f)
 		{
-			fedo_alpha -= (game_speed * mix_fedo);
+			fado_alpha -= (game_speed * mix_fado);
 		}
 	}
 }
@@ -936,6 +961,7 @@ void SceneGame::Draw(float elapsed_time)
 		//1Pのイントロ
 		//プレイヤー描画
 		player1p->Draw(ParallelToonShader.get(),ToonShader.get(),V, P, light_direction, lightColor, ambient_color, game_speed);
+		player1p->IntroDEBUG();
 		break;
 	case SceneGame::INTRO2P:
 		//2Pのイントロ
@@ -1147,22 +1173,24 @@ void SceneGame::Draw(float elapsed_time)
 		break;
 	}
 
+	//フェード用画像描画
+	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
+
 	NullSetRenderTexture();
 	RenderTexture();
 	RenderBlur();
 	FRAMEWORK.framebuffer.Deactivate();
 	//FRAMEWORK.framebuffer.SetDefaultRTV();
+	//player1p->TextDraw();
+	//player2p->TextDraw();
 
-	//フェード用画像描画
-	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fedo_alpha));
-	
 }
 
-bool SceneGame::FedoOut(float elapsed_time)
+bool SceneGame::FadoOut(float elapsed_time)
 {
-	fedo_alpha += FEDO_MIX(elapsed_time);
+	fado_alpha += mix_fado*(elapsed_time);
 
-	if (fedo_alpha > 1.0f)
+	if (fado_alpha > 1.0f)
 	{
 		return true;
 	}
@@ -1348,7 +1376,7 @@ void SceneGame::PauseUpdate()
 	if (player1p->pad->x_input[scastI(PAD::LB)] == 1 ||player2p->pad->x_input[scastI(PAD::LB)] == 1)
 	{
 		//セレクト画面に戻る
-		fedo_start = true;
+		fado_start = true;
 		//FRAMEWORK.SetScene(SCENE_SELECT);
 	}
 }
@@ -1369,7 +1397,7 @@ void SceneGame::TrackSet()
 void SceneGame::FinUpdate()
 {
 	//ゲーム終了後の処理
-	fedo_start = true;
+	fado_start = true;
 }
 
 
@@ -1570,7 +1598,6 @@ void SceneGame::RenderTexture()
 
 void SceneGame::RenderBlur()
 {
-	static bool blur = true;
 	static float off_x = 1.0f;
 	static float off_y = 1.0f;
 	static float deviation = 0.5f;
@@ -1579,7 +1606,7 @@ void SceneGame::RenderBlur()
 	{
 		if (ImGui::TreeNode(u8"ブルーム"))
 		{
-			ImGui::Checkbox(u8"ブルーム", &blur);
+			ImGui::Checkbox(u8"ブルーム", &blur_on);
 			ImGui::InputFloat("offset.x", &off_x, 0.01f, 0.01f);
 			ImGui::InputFloat("offset.y", &off_y, 0.01f, 0.01f);
 			ImGui::InputFloat("diviation.y", &deviation, 0.01f, 0.01f);
@@ -1601,7 +1628,7 @@ void SceneGame::RenderBlur()
 	float w = (float)FRAMEWORK.SCREEN_WIDTH;
 	float h = (float)FRAMEWORK.SCREEN_HEIGHT;
 
-	if (blur)
+	if (blur_on)
 	{
 		//初回のみ現在の描画を利用する
 		//テクスチャをセット

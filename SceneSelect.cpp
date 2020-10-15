@@ -20,8 +20,8 @@ void SceneSelect::Init()
 	Rato = 3.0f;
 	FRAMEWORK.scenegame.pad1->Init();
 	FRAMEWORK.scenegame.pad2->Init();
-	fedo_start = false;
-	fedo_alpha = 1.0f;
+	fado_start = false;
+	fado_alpha = 1.0f;
 
 	//将来的に消す
 	select_p1 = scastI(PLSELECT::KNIGHT);
@@ -194,11 +194,11 @@ void SceneSelect::Update(float elapsed_time)
 		if (end)
 		{
 			//フェードアウトをスタートさせる
-			fedo_start = true;
+			fado_start = true;
 		}
-		if (fedo_start)
+		if (fado_start)
 		{
-			if (FedoOut(elapsed_time))
+			if (FadoOut(elapsed_time))
 			{
 				//フェードアウトが終わったらロード画面へ
 				FRAMEWORK.SetScene(SCENE_LOAD);
@@ -210,9 +210,9 @@ void SceneSelect::Update(float elapsed_time)
 		else
 		{
 			//フェードアウトがスタートしてない場合は画面を映す
-			if (fedo_alpha > 0.0f)
+			if (fado_alpha > 0.0f)
 			{
-				fedo_alpha -= FEDO_MIX(elapsed_time);
+				fado_alpha -= FEDO_MIX(elapsed_time);
 			}
 		}
 
@@ -347,7 +347,7 @@ void SceneSelect::Draw(float elapsedTime)
 		}
 	}
 	//フェード用画像
-	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fedo_alpha));
+	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
 }
 
 YR_Vector3 SceneSelect::PosSet(int select)
@@ -364,11 +364,11 @@ YR_Vector3 SceneSelect::PosSet(int select)
 	return YR_Vector3(0.0f, 0.0f);
 }
 
-bool SceneSelect::FedoOut(float elapsed_time)
+bool SceneSelect::FadoOut(float elapsed_time)
 {
-	fedo_alpha += FEDO_MIX(elapsed_time);
+	fado_alpha += FEDO_MIX(elapsed_time);
 
-	if (fedo_alpha > 1.0f)
+	if (fado_alpha > 1.0f)
 	{
 		return true;
 	}

@@ -24,8 +24,8 @@ void SceneLoad::Init()
 	timer = 0;
 	load_fin = false;
 	load_state = 0;
-	fedo_alpha = 1.0f;
-	fedo_start = false;
+	fado_alpha = 1.0f;
+	fado_start = false;
 	Game_load_fin = false;
 
 	//シェーダー作成
@@ -73,11 +73,11 @@ void SceneLoad::Update(float elapsedTime)
 	//「ロード画面で表示する画像等」がロードできた
 	if (load_fin)
 	{
-		if (!fedo_start)
+		if (!fado_start)
 		{
-			if (fedo_alpha > 0.0f)
+			if (fado_alpha > 0.0f)
 			{
-				fedo_alpha -= FEDO_MIX(elapsedTime);
+				fado_alpha -= FEDO_MIX(elapsedTime);
 			}
 		}
 	}
@@ -88,9 +88,9 @@ void SceneLoad::Update(float elapsedTime)
 		//ロード画面を挟むため
 		if (timer > 1.0f)
 		{
-			fedo_start = true;
+			fado_start = true;
 		}
-		if (fedo_start)
+		if (fado_start)
 		{
 			if (FedoOut(elapsedTime))
 			{
@@ -182,7 +182,7 @@ void SceneLoad::Draw(float elapsedTime)
 	}
 
 	//フェード用画像描画
-	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fedo_alpha));
+	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
 
 #if USE_IMGUI
 	//ImGui
@@ -196,9 +196,9 @@ void SceneLoad::Draw(float elapsedTime)
 
 bool SceneLoad::FedoOut(float elapsed_time)
 {
-	fedo_alpha += FEDO_MIX(elapsed_time);
+	fado_alpha += FEDO_MIX(elapsed_time);
 
-	if (fedo_alpha > 1.0f)
+	if (fado_alpha > 1.0f)
 	{
 		return true;
 	}

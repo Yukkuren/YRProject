@@ -78,8 +78,8 @@ std::array<std::string, scastI(PAD::PAD_END)> pad_name_list =
 std::array < std::string, scastI(Command::END) > command_name_list =
 {
 	u8"コマンド無し",
-	u8"右半回し",
-	u8"左半回し"
+	u8"236コマンド",
+	u8"214コマンド"
 };
 #endif // USE_IMGUI
 
@@ -143,15 +143,23 @@ void Knight::Init(YR_Vector3 InitPos)
 	hadou = { pos.x + Getapply(100),pos.y };
 
 	eye_offset = { 0.0f,0.0f };
-	mouse_offset = { 0.0f,0.0f };
+	mouth_offset = { 0.0f,0.0f };
 
 	face_anim = FaceAnim::NORMAL;
 	face_wink_time = 0.0f;
 	wink_state = Wink_State::FIRST;
 	jump_can_timer = 0.0f;
+	lip_sync_time = 0.0f;
 
 	camera_state_knight = CAMERA_STATE_KNIGHT::FIRST;
 	intro_timer = 0.0f;
+
+	eye_plus = YR_Vector3(0.0f, 0.0f, -10.0f);
+	focus_plus = YR_Vector3(0.0f, 0.0f, 0.0f);
+	face_mouth_num = FaceMouth_Num::NORMAL_MOUSE;
+	ChangeFace(FaceAnim::NORMAL_LIP_SYNC);
+
+	text_on = false;
 }
 
 
@@ -1356,21 +1364,21 @@ void Knight::Draw(
 		anim->UpdateAnimation(elapsed_time * anim_ccodinate);
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
-		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, mouse_offset, material_color);
+		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], material_color);
 	}
 	if (YRCamera.camera_state == Camera::CAMERA_STATE::MAIN)
 	{
 		anim->UpdateAnimation(elapsed_time * anim_ccodinate);
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
-		anim->Draw(parallel_shader, view, projection, light_direction, light_color, ambient_color, eye_offset, mouse_offset, material_color);
+		anim->Draw(parallel_shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], material_color);
 	}
 	if (YRCamera.GetRequest() == Camera::Request::WEAKEN)
 	{
 		anim->UpdateAnimation(elapsed_time * anim_ccodinate);
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
-		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, mouse_offset, material_color);
+		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], material_color);
 	}
 
 	/*motion.DrawContinue(
@@ -1397,7 +1405,7 @@ void Knight::Draw(
 	//	//でかい波動拳の描画。これは大きさ違うから仕方ない
 	//}
 
-
+	TextDraw();
 
 //デバッグ状態なら
 #if USE_IMGUI
@@ -1523,8 +1531,8 @@ void Knight::DrawDEBUG(
 		}
 		ImGui::InputFloat("eye_offset.x", &eye_offset.x, 0.01f, 0.01f);
 		ImGui::InputFloat("eye_offset.y", &eye_offset.y, 0.01f, 0.01f);
-		ImGui::InputFloat("mouse_offset.x", &mouse_offset.x, 0.01f, 0.01f);
-		ImGui::InputFloat("mouse_offset.y", &mouse_offset.y, 0.01f, 0.01f);
+		ImGui::InputFloat("mouse_offset.x", &mouth_offset.x, 0.01f, 0.01f);
+		ImGui::InputFloat("mouse_offset.y", &mouth_offset.y, 0.01f, 0.01f);
 		ImGui::Text("player.y:%f", pos.y);
 		ImGui::Text("player.x:%f", pos.x);
 
@@ -3233,41 +3241,120 @@ bool Knight::WinPerformance()
 	return false;
 }
 
-bool Knight::Intro()
+bool Knight::Intro(float elapsed_time)
 {
 	//イントロの行動をする
 	//カメラもこちらで動かす
 	YR_Vector3	focus;
 	YR_Vector3	eye;
+
+	/*focus = YR_Vector3(pos.x + Getapply(focus_plus.x), pos.y + focus_plus.y, pos.z + focus_plus.z);
+	eye = YR_Vector3(pos.x + Getapply(eye_plus.x), pos.y + eye_plus.y, pos.z + eye_plus.z);*/
+	/*focus = YR_Vector3(pos.x + focus_plus.x, pos.y + focus_plus.y, pos.z + focus_plus.z);
+	eye = YR_Vector3(pos.x + eye_plus.x, pos.y + eye_plus.y, pos.z + eye_plus.z);
+	YRCamera.SetEye(eye.GetDXFLOAT3());
+	YRCamera.SetFocus(focus.GetDXFLOAT3());*/
 	switch (intro_state)
 	{
 	case Knight::INTRO_KNIGHT::SET:
 		//原点を設定(初期化)
-		focus = YR_Vector3(pos.x, pos.y, pos.z);
-		eye = YR_Vector3(pos.x - Getapply(12.0f), pos.y - 2.0f, pos.z - 7.0f);
+		eye = YR_Vector3(pos.x - Getapply(52.0f), pos.y + 1.8f, pos.z + 70.0f);
+		focus = YR_Vector3(pos.x, pos.y + 1.8f, pos.z + 1.8f);
 		YRCamera.SetEye(eye.GetDXFLOAT3());
 		YRCamera.SetFocus(focus.GetDXFLOAT3());
 		intro_state = INTRO_KNIGHT::WAIT;
+		lip_text = RandTextSelect();
 		break;
 	case Knight::INTRO_KNIGHT::WAIT:
 		//指定した位置までカメラを動かしていく(更新)
-		focus = YR_Vector3(pos.x, pos.y, pos.z);
-		eye = YR_Vector3(pos.x - Getapply(7.0f), pos.y - 2.0f, pos.z - 7.0f);
-		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 0.05f);
+		eye = YR_Vector3(pos.x - Getapply(52.0f), pos.y +1.8f, pos.z + 50.0f);
+		focus = YR_Vector3(pos.x, pos.y + 1.8f, pos.z + 1.8f);
+		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 5.0f*elapsed_time);
+		if (intro_timer > 1.0f)
+		{
+			intro_state = INTRO_KNIGHT::ZOOM_SET;
+		}
 		break;
 	case Knight::INTRO_KNIGHT::ZOOM_SET:
+		//原点を設定(初期化)
+		eye = YR_Vector3(pos.x - Getapply(25.0f), pos.y + 5.0f, pos.z - 45.0f);
+		focus = YR_Vector3(pos.x, pos.y + 5.0f, pos.z);
+		YRCamera.SetEye(eye.GetDXFLOAT3());
+		YRCamera.SetFocus(focus.GetDXFLOAT3());
+		intro_state = INTRO_KNIGHT::ZOOM;
+		ChangeFace(FaceAnim::NORMAL_LIP_SYNC);
 		break;
 	case Knight::INTRO_KNIGHT::ZOOM:
+		//指定した位置までカメラを動かしていく(更新)
+		eye = YR_Vector3(pos.x, pos.y + 5.0f, pos.z - 50.0f);
+		focus = YR_Vector3(pos.x, pos.y + 5.0f, pos.z);
+		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 0.5f*elapsed_time);
+		text_on = true;
+
+		if (intro_timer > 3.0f)
+		{
+			intro_state = INTRO_KNIGHT::PULL;
+			ChangeFace(FaceAnim::YARUKI);
+			text_on = false;
+		}
 		break;
 	case Knight::INTRO_KNIGHT::PULL:
+		//指定した位置までカメラを動かしていく(更新)
+		eye = YR_Vector3(pos.x, pos.y + 2.5f, pos.z - 70.0f);
+		focus = YR_Vector3(pos.x, pos.y + 2.5f, pos.z);
+		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 5.0f * elapsed_time);
+		if (intro_timer > 4.0f)
+		{
+			intro_state = INTRO_KNIGHT::PUSH;
+		}
 		break;
 	case Knight::INTRO_KNIGHT::PUSH:
+		//指定した位置までカメラを動かしていく(更新)
+		eye = YR_Vector3(pos.x, pos.y + 2.5f, pos.z - 41.0f);
+		focus = YR_Vector3(pos.x, pos.y + 2.5f, pos.z);
+		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 5.0f * elapsed_time);
+		if (intro_timer > 4.5f)
+		{
+			intro_state = INTRO_KNIGHT::PULL_2;
+		}
 		break;
 	case Knight::INTRO_KNIGHT::PULL_2:
+		//指定した位置までカメラを動かしていく(更新)
+		eye = YR_Vector3(pos.x, pos.y + 30.0f, pos.z - 85.0f);
+		focus = YR_Vector3(pos.x, pos.y + 2.5f, pos.z);
+		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 5.0f * elapsed_time);
+		if (intro_timer > 4.9f)
+		{
+			intro_state = INTRO_KNIGHT::PUSH_2;
+		}
+		break;
+	case Knight::INTRO_KNIGHT::PUSH_2:
+		//指定した位置までカメラを動かしていく(更新)
+		eye = YR_Vector3(pos.x+Getapply(27.0f), pos.y + 5.4f, pos.z - 38.0f);
+		focus = YR_Vector3(pos.x, pos.y + 2.5f, pos.z);
+		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 5.0f * elapsed_time);
+		if (intro_timer > 5.3f)
+		{
+			intro_state = INTRO_KNIGHT::FIN_SET;
+		}
 		break;
 	case Knight::INTRO_KNIGHT::FIN_SET:
+		//原点を設定(初期化)
+		eye = YR_Vector3(pos.x - Getapply(30.0f), pos.y - 16.0f, pos.z - 23.0f);
+		focus = YR_Vector3(pos.x , pos.y, pos.z - 5.4f);
+		YRCamera.SetEye(eye.GetDXFLOAT3());
+		YRCamera.SetFocus(focus.GetDXFLOAT3());
+		intro_state = INTRO_KNIGHT::FIN;
 		break;
 	case Knight::INTRO_KNIGHT::FIN:
+		//指定した位置までカメラを動かしていく(更新)
+		eye = YR_Vector3(pos.x - Getapply(48.0f), pos.y - 16.0f, pos.z - 23.0f);
+		focus = YR_Vector3(pos.x - Getapply(5.0f), pos.y, pos.z - 5.4f);
+		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 8.0f * elapsed_time);
+		if (intro_timer > 6.0f)
+		{
+			intro_state = INTRO_KNIGHT::FINISH;
+		}
 		break;
 	case Knight::INTRO_KNIGHT::FINISH:
 		return true;
@@ -3275,8 +3362,57 @@ bool Knight::Intro()
 	default:
 		break;
 	}
+	intro_timer += elapsed_time;
+	FaceAnimation(elapsed_time);
+	/*if (intro_timer > 6.0f)
+	{
+		return true;
+	}*/
 
 	return false;
+}
+
+
+//イントロ後、ゲーム開始までの設定を行う
+void Knight::ReadySet()
+{
+	anim->NodeChange(model_motion.wait_R);
+	ChangeFace(FaceAnim::NORMAL);
+	FaceAnimation(0.0f);
+}
+
+
+//カメラ調整用デバッグ関数
+void Knight::IntroDEBUG()
+{
+#if USE_IMGUI
+	ImGui::Begin(u8"イントロカメラ");
+	int state_in = scastI(intro_state);
+	ImGui::InputInt(u8"ステート", &state_in, 1, 10);
+	if (ImGui::TreeNode("Input"))
+	{
+		ImGui::InputFloat("eye.X", &eye_plus.x, 0.1f, 1.0f);
+		ImGui::InputFloat("eye.Y", &eye_plus.y, 0.1f, 1.0f);
+		ImGui::InputFloat("eye.Z", &eye_plus.z, 0.1f, 1.0f);
+		ImGui::InputFloat("focus.X", &focus_plus.x, 0.1f, 1.0f);
+		ImGui::InputFloat("focus.Y", &focus_plus.y, 0.1f, 1.0f);
+		ImGui::InputFloat("focus.Z", &focus_plus.z, 0.1f, 1.0f);
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Slider"))
+	{
+		ImGui::SliderFloat("eye_X", &eye_plus.x, -350.1f, 350.1f);
+		ImGui::SliderFloat("eye_Y", &eye_plus.y, -350.1f, 350.1);
+		ImGui::SliderFloat("eye_Z", &eye_plus.z, -350.1f, 350.1);
+		ImGui::SliderFloat("focus_X", &focus_plus.x, -350.1f, 350.1);
+		ImGui::SliderFloat("focus_Y", &focus_plus.y, -350.1f, 350.1);
+		ImGui::SliderFloat("focus_Z", &focus_plus.z, -350.1f, 350.1);
+		ImGui::TreePop();
+	}
+	ImGui::Text("intro_timer = %.3f", intro_timer);
+	ImGui::End();
+#endif // USE_IMGUI
+
 }
 
 //攻撃当たり判定が全て終了しているか確認する
@@ -3355,29 +3491,32 @@ void Knight::FaceAnimation(float elapsed_time)
 	switch (face_anim)
 	{
 	case Knight::FaceAnim::NORMAL:
-		eye_offset = face_eye_offset[FaceEye_Num::NORMAL_EYE];
-		mouse_offset = face_mouse_offset[FaceMouse_Num::NORMAL_MOUSE];
+		eye_offset = face_eye_offset[scastI(FaceEye_Num::NORMAL_EYE)];
+		mouth_offset = face_mouth_offset[scastI(FaceMouth_Num::NORMAL_MOUSE)];
 		face_wink_time += elapsed_time;
-		if (face_wink_time > static_cast<float>(now_player) * 3.0f)
+		if (face_wink_time > wink_interval)
 		{
 			face_anim = FaceAnim::WINK;
 			face_wink_time = 0.0f;
 		}
 		break;
+	case Knight::FaceAnim::NORMAL_LIP_SYNC:
+		FaceLipSync(elapsed_time);
+		break;
 	case Knight::FaceAnim::WINK:
 		FaceWink(elapsed_time);
 		break;
 	case Knight::FaceAnim::Damage:
-		eye_offset = face_eye_offset[FaceEye_Num::KAOMOJI];
-		mouse_offset = face_mouse_offset[FaceMouse_Num::POKAN];
+		eye_offset = face_eye_offset[scastI(FaceEye_Num::KAOMOJI)];
+		face_mouth_num = FaceMouth_Num::POKAN;
 		break;
 	case Knight::FaceAnim::YARUKI:
-		eye_offset = face_eye_offset[FaceEye_Num::TURI];
-		mouse_offset = face_mouse_offset[FaceMouse_Num::NORMAL_MOUSE];
+		eye_offset = face_eye_offset[scastI(FaceEye_Num::TURI)];
+		face_mouth_num = FaceMouth_Num::NORMAL_MOUSE;
 		break;
 	case Knight::FaceAnim::KOUHUN:
-		eye_offset = face_eye_offset[FaceEye_Num::KIRAME];
-		mouse_offset = face_mouse_offset[FaceMouse_Num::OOGUTI];
+		eye_offset = face_eye_offset[scastI(FaceEye_Num::KIRAME)];
+		face_mouth_num = FaceMouth_Num::OOGUTI;
 		break;
 	default:
 		break;
@@ -3393,28 +3532,28 @@ void Knight::FaceWink(float elapsed_time)
 	{
 		switch (wink_state)
 		{
-		case Knight::FIRST:
-			eye_offset = face_eye_offset[FaceEye_Num::WINK1];
+		case Wink_State::FIRST:
+			eye_offset = face_eye_offset[scastI(FaceEye_Num::WINK1)];
 			wink_state = Wink_State::SECOND;
 			break;
-		case Knight::SECOND:
-			eye_offset = face_eye_offset[FaceEye_Num::WINK2];
+		case Wink_State::SECOND:
+			eye_offset = face_eye_offset[scastI(FaceEye_Num::WINK2)];
 			wink_state = Wink_State::THIRD;
 			break;
-		case Knight::THIRD:
-			eye_offset = face_eye_offset[FaceEye_Num::CLOSE];
+		case Wink_State::THIRD:
+			eye_offset = face_eye_offset[scastI(FaceEye_Num::CLOSE)];
 			wink_state = Wink_State::FOURTH;
 			break;
-		case Knight::FOURTH:
-			eye_offset = face_eye_offset[FaceEye_Num::WINK2];
+		case Wink_State::FOURTH:
+			eye_offset = face_eye_offset[scastI(FaceEye_Num::WINK2)];
 			wink_state = Wink_State::FIVE;
 			break;
-		case Knight::FIVE:
-			eye_offset = face_eye_offset[FaceEye_Num::WINK1];
+		case Wink_State::FIVE:
+			eye_offset = face_eye_offset[scastI(FaceEye_Num::WINK1)];
 			wink_state = Wink_State::SIX;
 			break;
-		case Knight::SIX:
-			eye_offset = face_eye_offset[FaceEye_Num::NORMAL_EYE];
+		case Wink_State::SIX:
+			eye_offset = face_eye_offset[scastI(FaceEye_Num::NORMAL_EYE)];
 			wink_state = Wink_State::FIRST;
 			face_anim = FaceAnim::NORMAL;
 			break;
@@ -3425,11 +3564,42 @@ void Knight::FaceWink(float elapsed_time)
 	}
 }
 
+
+//口パクの処理
+void Knight::FaceLipSync(float elapsed_time)
+{
+	lip_sync_time += elapsed_time;
+	if (lip_sync_time > 0.1f)
+	{
+		for (int i = 0; i < 300; i++)
+		{
+			int mouth = rand() % lip_sync_can.size();
+			if (mouth != scastI(face_mouth_num))
+			{
+				face_mouth_num = lip_sync_can[mouth];
+				break;
+			}
+		}
+		
+		lip_sync_time = 0.0f;
+	}
+}
+
+
+
+//表情変更
 void Knight::ChangeFace(FaceAnim anim)
 {
 	face_anim = anim;
 	face_wink_time = 0.0f;
 	wink_state = Wink_State::FIRST;
+	//表情がまばたき込みの場合のみ
+	if (face_anim == FaceAnim::NORMAL||
+		face_anim ==FaceAnim::NORMAL_LIP_SYNC)
+	{
+		//ランダムでまばたきの間隔を決定
+		wink_interval =static_cast<float>((rand() % 5) + 1);
+	}
 }
 
 void Knight::AttackDetailsSet()
@@ -3494,4 +3664,41 @@ void Knight::AttackDetailsSet()
 	default:
 		break;
 	}
+}
+
+std::wstring Knight::RandTextSelect()
+{
+	TextList rnd = static_cast<TextList>(rand() % scastI(TextList::TEXT_END));
+	
+	switch (rnd)
+	{
+	case Knight::TextList::NORMAL:
+		return std::wstring(L"テステス_NORMAL");
+		break;
+	case Knight::TextList::WARLIKE:
+		return std::wstring(L"テステス_WARLIKE");
+		break;
+	case Knight::TextList::CRIOSITY:
+		return std::wstring(L"テステス_CRIOSITY");
+		break;
+	case Knight::TextList::TEXT_END:
+		break;
+	default:
+		break;
+	}
+	
+}
+
+void Knight::TextDraw()
+{
+	if (!text_on)
+	{
+		return;
+	}
+
+	FRAMEWORK.font->Begin(FRAMEWORK.context.Get());
+	FRAMEWORK.font->Draw(
+		static_cast<float>(FRAMEWORK.SCREEN_WIDTH / 2.0f) - 150.0f,
+		static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) - 100.0f, lip_text.c_str());
+	FRAMEWORK.font->End(FRAMEWORK.context.Get());
 }

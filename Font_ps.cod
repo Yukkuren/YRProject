@@ -25,6 +25,7 @@
 // Name                 Index   Mask Register SysValue  Format   Used
 // -------------------- ----- ------ -------- -------- ------- ------
 // SV_TARGET                0   xyzw        0   TARGET   float   xyzw
+// SV_TARGET                1   xyzw        1   TARGET   float   xyzw
 //
 //
 // Sampler/Resource to DX9 shader sampler mappings:
@@ -37,22 +38,27 @@
 // Level9 shader bytecode:
 //
     ps_2_x
+    def c0, 0, 0, 0, 0
     dcl t0.xy
     dcl t1
     dcl_2d s0
     texld r0, t0, s0
-    mul r0, r0.x, t1
+    mul r0, r0, t1
     mov oC0, r0
+    mov r0, c0.x
+    mov oC1, r0
 
-// approximately 3 instruction slots used (1 texture, 2 arithmetic)
+// approximately 5 instruction slots used (1 texture, 4 arithmetic)
 ps_4_0
 dcl_sampler s0, mode_default
 dcl_resource_texture2d (float,float,float,float) t0
 dcl_input_ps linear v1.xy
 dcl_input_ps linear v2.xyzw
 dcl_output o0.xyzw
+dcl_output o1.xyzw
 dcl_temps 1
 sample r0.xyzw, v1.xyxx, t0.xyzw, s0
-mul o0.xyzw, r0.xxxx, v2.xyzw
+mul o0.xyzw, r0.xyzw, v2.xyzw
+mov o1.xyzw, l(0,0,0,0)
 ret 
-// Approximately 3 instruction slots used
+// Approximately 4 instruction slots used

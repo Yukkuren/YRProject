@@ -21,8 +21,8 @@ void SceneTitle::Init()
 	Rato = 3.0f;
 	g1.Init();
 	g2.Init();
-	fedo_start = false;
-	fedo_alpha = 1.0f;
+	fado_start = false;
+	fado_alpha = 1.0f;
 
 	//将来的に消す
 	select_p1 = scastI(INPUT_PLAYER::NONE);
@@ -207,9 +207,9 @@ if (pKeyState.nflg == 1)
 		if (end)
 		{
 			//フェードアウトをスタートさせる
-			fedo_start = true;
+			fado_start = true;
 		}
-		if (fedo_start)
+		if (fado_start)
 		{
 			if (FedoOut(elapsed_time))
 			{
@@ -225,9 +225,9 @@ if (pKeyState.nflg == 1)
 		else
 		{
 			//フェードアウトがスタートしてない場合は画面を映す
-			if (fedo_alpha > 0.0f)
+			if (fado_alpha > 0.0f)
 			{
-				fedo_alpha -= FEDO_MIX(elapsed_time);
+				fado_alpha -= FEDO_MIX(elapsed_time);
 			}
 		}
 
@@ -350,7 +350,7 @@ void SceneTitle::Draw(float elapsed_time)
 		// フォントの描画
 		{
 			FRAMEWORK.font->Begin(FRAMEWORK.context.Get());
-			FRAMEWORK.font->Draw(500, 0, L"abcdefg");
+			FRAMEWORK.font->Draw(static_cast<float>(FRAMEWORK.SCREEN_WIDTH / 2.0f)-150.0f, static_cast<float>(FRAMEWORK.SCREEN_HEIGHT)-100.0f, L"abcdefg");
 			FRAMEWORK.font->Draw(500, 50, L"あいうえお");
 			FRAMEWORK.font->Draw(500, 100, L"カキクケコ");
 			FRAMEWORK.font->Draw(500, 150, L"漢字最高！");
@@ -361,7 +361,7 @@ void SceneTitle::Draw(float elapsed_time)
 
 	}
 
-	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fedo_alpha));
+	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
 
 #if USE_IMGUI
 	//ImGui
@@ -375,9 +375,9 @@ void SceneTitle::Draw(float elapsed_time)
 
 bool SceneTitle::FedoOut(float elapsed_time)
 {
-	fedo_alpha += FEDO_MIX(elapsed_time);
+	fado_alpha += FEDO_MIX(elapsed_time);
 
-	if (fedo_alpha > 1.0f)
+	if (fado_alpha > 1.0f)
 	{
 		return true;
 	}

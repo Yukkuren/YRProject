@@ -529,6 +529,120 @@ void Font::Draw(float x, float y, const wchar_t* string)
 	}
 }
 
+
+
+void Font::Draw(float x, float y, const char* string)
+{
+	size_t length = ::strlen(string);
+
+	float start_x = x;
+	float start_y = y;
+	float space = fontWidth;
+
+	for (size_t i = 0; i < length; ++i)
+	{
+		// 文字値から文字情報が格納されているコードを取得
+		WORD word = static_cast<WORD>(string[i]);
+		const wchar_t t = string[i];
+		WORD code = characterIndices.at(word);
+
+		// 特殊制御用コードの処理
+		if (code == CharacterInfo::EndCode)
+		{
+			break;
+		}
+		else if (code == CharacterInfo::ReturnCode)
+		{
+			x = start_x;
+			y += fontHeight;
+			continue;
+		}
+		else if (code == CharacterInfo::TabCode)
+		{
+			x += space * 4;
+			continue;
+		}
+		else if (code == CharacterInfo::SpaceCode)
+		{
+			x += space;
+			continue;
+		}
+
+		// 文字情報を取得し、頂点データを編集
+		const CharacterInfo& info = characterInfos.at(code);
+
+		float positionX = x + info.xoffset;// + 0.5f;
+		float positionY = y + info.yoffset;// + 0.5f;
+
+		// 0---1
+		// |   |
+		// 2---3
+		currentVertex[0].position.x = positionX;
+		currentVertex[0].position.y = positionY;
+		currentVertex[0].position.z = 0.0f;
+		currentVertex[0].texcoord.x = info.left;
+		currentVertex[0].texcoord.y = info.top;
+		currentVertex[0].color.x = 1.0f;
+		currentVertex[0].color.y = 1.0f;
+		currentVertex[0].color.z = 1.0f;
+		currentVertex[0].color.w = 1.0f;
+
+		currentVertex[1].position.x = positionX + info.width;
+		currentVertex[1].position.y = positionY;
+		currentVertex[1].position.z = 0.0f;
+		currentVertex[1].texcoord.x = info.right;
+		currentVertex[1].texcoord.y = info.top;
+		currentVertex[1].color.x = 1.0f;
+		currentVertex[1].color.y = 1.0f;
+		currentVertex[1].color.z = 1.0f;
+		currentVertex[1].color.w = 1.0f;
+
+		currentVertex[2].position.x = positionX;
+		currentVertex[2].position.y = positionY + info.height;
+		currentVertex[2].position.z = 0.0f;
+		currentVertex[2].texcoord.x = info.left;
+		currentVertex[2].texcoord.y = info.bottom;
+		currentVertex[2].color.x = 1.0f;
+		currentVertex[2].color.y = 1.0f;
+		currentVertex[2].color.z = 1.0f;
+		currentVertex[2].color.w = 1.0f;
+
+		currentVertex[3].position.x = positionX + info.width;
+		currentVertex[3].position.y = positionY + info.height;
+		currentVertex[3].position.z = 0.0f;
+		currentVertex[3].texcoord.x = info.right;
+		currentVertex[3].texcoord.y = info.bottom;
+		currentVertex[3].color.x = 1.0f;
+		currentVertex[3].color.y = 1.0f;
+		currentVertex[3].color.z = 1.0f;
+		currentVertex[3].color.w = 1.0f;
+
+		// NDC座標変換
+		for (int j = 0; j < 4; ++j)
+		{
+			currentVertex[j].position.x = 2.0f * currentVertex[j].position.x / screenWidth - 1.0f;
+			currentVertex[j].position.y = 1.0f - 2.0f * currentVertex[j].position.y / screenHeight;
+		}
+		currentVertex += 4;
+
+		x += info.xadvance;
+
+		// テクスチャが切り替わる度に描画する情報を設定
+		if (currentPage != info.page)
+		{
+			currentPage = info.page;
+
+			Subset subset;
+			subset.shaderResourceView = shaderResourceViews.at(info.page).Get();
+			subset.startIndex = currentIndexCount;
+			subset.indexCount = 0;
+			subsets.emplace_back(subset);
+		}
+		currentIndexCount += 6;
+	}
+}
+
+
 void Font::End(ID3D11DeviceContext* context)
 {
 	// 頂点編集終了
@@ -552,7 +666,7 @@ void Font::End(ID3D11DeviceContext* context)
 
 	// レンダーステート設定
 	const float blend_factor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	context->OMSetBlendState(blendState.Get(), blend_factor, 0xFFFFFFFF);
+	//context->OMSetBlendState(blendState.Get(), blend_factor, 0xFFFFFFFF);
 	context->OMSetDepthStencilState(depthStencilState.Get(), 0);
 	context->RSSetState(rasterizerState.Get());
 	context->PSSetSamplers(0, 1, samplerState.GetAddressOf());
