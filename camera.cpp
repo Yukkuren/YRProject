@@ -165,3 +165,22 @@ void Camera::CameraMove(YRShader *shader)
 		}
 	}
 }
+
+void Camera::SpecifiedLerp(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& focus,float factor)
+{
+	//指定したカメラの位置まで現在のカメラを少しずつ補間移動する
+
+	DirectX::XMVECTOR now_eye_vector = DirectX::XMLoadFloat3(&this->eye);
+	DirectX::XMVECTOR eye_vector = DirectX::XMLoadFloat3(&eye);
+	DirectX::XMVECTOR now_focus_vector = DirectX::XMLoadFloat3(&this->focus);
+	DirectX::XMVECTOR focus_vector = DirectX::XMLoadFloat3(&focus);
+
+	DirectX::XMVECTOR eye_larp = DirectX::XMVectorLerp(now_eye_vector,eye_vector,  factor);
+	DirectX::XMVECTOR focus_larp = DirectX::XMVectorLerp(now_focus_vector,focus_vector,  factor);
+
+
+	DirectX::XMStoreFloat3(&this->eye, eye_larp);
+	DirectX::XMStoreFloat3(&this->focus, focus_larp);
+
+	YRCamera.Active();
+}

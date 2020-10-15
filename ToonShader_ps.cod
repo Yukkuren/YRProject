@@ -56,7 +56,7 @@
 // SV_TARGET                1   xyzw        1   TARGET   float   xyzw
 //
 ps_5_0
-dcl_globalFlags refactoringAllowed | skipOptimization
+dcl_globalFlags refactoringAllowed
 dcl_constantbuffer CB0[534], immediateIndexed
 dcl_sampler s0, mode_default
 dcl_resource_texture2d (float,float,float,float) t0
@@ -66,172 +66,48 @@ dcl_input_ps linear v3.xyz
 dcl_input_ps linear v4.xyz
 dcl_output o0.xyzw
 dcl_output o1.xyzw
-dcl_temps 8
-//
-// Initial variable locations:
-//   v0.x <- input.SV_Position.x; v0.y <- input.SV_Position.y; v0.z <- input.SV_Position.z; v0.w <- input.SV_Position.w; 
-//   v1.x <- input.Tex.x; v1.y <- input.Tex.y; 
-//   v2.x <- input.Color.x; v2.y <- input.Color.y; v2.z <- input.Color.z; v2.w <- input.Color.w; 
-//   v3.x <- input.wNormal.x; v3.y <- input.wNormal.y; v3.z <- input.wNormal.z; 
-//   v4.x <- input.wPos.x; v4.y <- input.wPos.y; v4.z <- input.wPos.z; 
-//   o1.x <- <main return value>.Luminance.x; o1.y <- <main return value>.Luminance.y; o1.z <- <main return value>.Luminance.z; o1.w <- <main return value>.Luminance.w; 
-//   o0.x <- <main return value>.Color.x; o0.y <- <main return value>.Color.y; o0.z <- <main return value>.Color.z; o0.w <- <main return value>.Color.w
-//
-#line 40 "E:\ゲーム制作\YRProject\ToonShader_ps.hlsl"
-sample_indexable(texture2d)(float,float,float,float) r0.xyzw, v1.xyxx, t0.xyzw, s0  // r0.x <- color.x; r0.y <- color.y; r0.z <- color.z; r0.w <- color.w
-
-#line 41
+dcl_temps 5
+lt r0.x, v2.w, l(0.000000)
+if_nz r0.x
+  mov o0.xyz, v2.xyzx
+  mov o0.w, l(1.000000)
+  mov o1.xyz, cb0[533].wwww
+  mov o1.w, l(1.000000)
+  ret 
+endif 
+sample_indexable(texture2d)(float,float,float,float) r0.xyzw, v1.xyxx, t0.xyzw, s0
 dp3 r1.x, v3.xyzx, v3.xyzx
 rsq r1.x, r1.x
-mul r1.xyz, r1.xxxx, v3.xyzx  // r1.x <- N.x; r1.y <- N.y; r1.z <- N.z
-
-#line 43
-mov r2.xyz, -v4.xyzx
-add r2.xyz, r2.xyzx, cb0[524].xyzx
+mul r1.xyz, r1.xxxx, v3.xyzx
+add r2.xyz, -v4.xyzx, cb0[524].xyzx
 dp3 r1.w, r2.xyzx, r2.xyzx
 rsq r1.w, r1.w
-mul r2.xyz, r1.wwww, r2.xyzx  // r2.x <- E.x; r2.y <- E.y; r2.z <- E.z
-
-#line 44
-mov r3.xyz, -cb0[9].xyzx
-dp3 r1.w, r3.xyzx, r3.xyzx
+mul r2.xyz, r1.wwww, r2.xyzx
+dp3 r1.w, -cb0[9].xyzx, -cb0[9].xyzx
 rsq r1.w, r1.w
-mul r3.xyz, r1.wwww, r3.xyzx  // r3.x <- L.x; r3.y <- L.y; r3.z <- L.z
-
-#line 46
-mov r4.xyz, cb0[11].xyzx  // r4.x <- A.x; r4.y <- A.y; r4.z <- A.z
-
-#line 49
-mov r5.xyz, cb0[10].xyzx  // r5.x <- C.x; r5.y <- C.y; r5.z <- C.z
-
-#line 50
-mov r6.xyz, l(1.000000,1.000000,1.000000,0)  // r6.x <- Kd.x; r6.y <- Kd.y; r6.z <- Kd.z
-
-#line 51
-nop 
-mov r1.xyz, r1.xyzx
-mov r3.xyz, r3.xyzx
-mov r5.xyz, r5.xyzx
-mov r6.xyz, r6.xyzx
-
-#line 9
-dp3 r1.w, r1.xyzx, r3.xyzx  // r1.w <- D
-
-#line 10
-lt r1.w, r1.w, l(0.300000)
-if_nz r1.w
-  mov r1.w, l(0.200000)  // r1.w <- D
-else 
-
-#line 11
-  mov r1.w, l(0.600000)  // r1.w <- D
-endif 
-
-#line 13
-mul r6.xyz, r5.xyzx, r6.xyzx
-mul r6.xyz, r1.wwww, r6.xyzx  // r6.x <- <ToonDiffuse return value>.x; r6.y <- <ToonDiffuse return value>.y; r6.z <- <ToonDiffuse return value>.z
-
-#line 51
-mov r6.xyz, r6.xyzx  // r6.x <- D.x; r6.y <- D.y; r6.z <- D.z
-
-#line 54
-itof r7.xyz, l(1, 1, 1, 0)  // r7.x <- Ks.x; r7.y <- Ks.y; r7.z <- Ks.z
-
-#line 55
-nop 
-mov r1.xyz, r1.xyzx
-mov r3.xyz, r3.xyzx
-mov r5.xyz, r5.xyzx
-mov r2.xyz, r2.xyzx
-mov r7.xyz, r7.xyzx
-
-#line 25
-dp3 r1.w, r3.xyzx, r1.xyzx
+mul r3.xyz, r1.wwww, -cb0[9].xyzx
+dp3 r1.w, r1.xyzx, r3.xyzx
+lt r2.w, r1.w, l(0.300000)
+movc r2.w, r2.w, l(0.200000), l(0.600000)
+mul r4.xyz, r2.wwww, cb0[10].xyzx
 add r1.w, r1.w, r1.w
-mov r1.w, -r1.w
-mul r1.xyz, r1.wwww, r1.xyzx
-add r1.xyz, r3.xyzx, r1.xyzx  // r1.x <- R.x; r1.y <- R.y; r1.z <- R.z
-
-#line 26
+mad r1.xyz, r1.xyzx, -r1.wwww, r3.xyzx
 dp3 r1.w, r1.xyzx, r1.xyzx
 rsq r1.w, r1.w
 mul r1.xyz, r1.wwww, r1.xyzx
-
-#line 27
-dp3 r1.x, r1.xyzx, r2.xyzx  // r1.x <- S
-
-#line 28
-itof r1.y, l(0)
-max r1.x, r1.x, r1.y
-
-#line 29
-mov r1.y, l(1.000000)
-mul r1.y, r1.x, r1.y
-mul r1.x, r1.x, r1.x
-mul r1.x, r1.x, r1.x
-mul r1.x, r1.x, r1.y  // r1.x <- S
-
-#line 30
+dp3 r1.x, r1.xyzx, r2.xyzx
+max r1.x, r1.x, l(0.000000)
+mul r1.y, r1.x, r1.x
+mul r1.y, r1.y, r1.y
+mul r1.x, r1.y, r1.x
 lt r1.x, l(0.500000), r1.x
-if_nz r1.x
-  mov r1.x, l(0.800000)  // r1.x <- S
-else 
-
-#line 31
-  mov r1.x, l(0.400000)  // r1.x <- S
-endif 
-
-#line 32
-mul r1.xyz, r7.xyzx, r1.xxxx
-mul r1.xyz, r5.xyzx, r1.xyzx  // r1.x <- <ToonSpecular return value>.x; r1.y <- <ToonSpecular return value>.y; r1.z <- <ToonSpecular return value>.z
-
-#line 55
-mov r1.xyz, r1.xyzx  // r1.x <- S.x; r1.y <- S.y; r1.z <- S.z
-
-#line 60
-itof r1.w, l(0)
-lt r1.w, v2.w, r1.w
-if_nz r1.w
-
-#line 62
-  itof r2.w, l(1)  // r2.w <- Out.Color.w
-  mov r2.xyz, v2.xyzx  // r2.x <- Out.Color.x; r2.y <- Out.Color.y; r2.z <- Out.Color.z
-
-#line 65
-  mov r3.xyz, cb0[533].wwww  // r3.x <- lumi.x; r3.y <- lumi.y; r3.z <- lumi.z
-  mov r3.w, l(1.000000)  // r3.w <- lumi.w
-
-#line 66
-  mov r3.xyzw, r3.xyzw  // r3.x <- Out.Luminance.x; r3.y <- Out.Luminance.y; r3.z <- Out.Luminance.z; r3.w <- Out.Luminance.w
-
-#line 67
-  mov o0.xyzw, r2.xyzw
-  mov o1.xyzw, r3.xyzw
-  ret 
-
-#line 68
-endif   // r2.x <- E.x; r2.y <- E.y; r2.z <- E.z; r3.x <- L.x; r3.y <- L.y; r3.z <- L.z
-
-#line 70
-mul r2.xyz, r6.xyzx, cb0[8].xyzx
-add r2.xyz, r2.xyzx, r4.xyzx
-add r1.xyz, r1.xyzx, r2.xyzx
+movc r1.x, r1.x, l(0.800000), l(0.400000)
+mad r1.yzw, r4.xxyz, cb0[8].xxyz, cb0[11].xxyz
+mad r1.xyz, r1.xxxx, cb0[10].xyzx, r1.yzwy
 mul r1.xyz, r1.xyzx, v2.xyzx
-mul r0.xyz, r0.xyzx, r1.xyzx
-
-#line 72
-mov r0.xyz, r0.xyzx  // r0.x <- Out.Color.x; r0.y <- Out.Color.y; r0.z <- Out.Color.z
-mov r0.w, r0.w  // r0.w <- Out.Color.w
-
-#line 75
-mov r1.xyz, cb0[533].wwww  // r1.x <- lumi.x; r1.y <- lumi.y; r1.z <- lumi.z
-mov r1.w, l(1.000000)  // r1.w <- lumi.w
-
-#line 76
-mov r1.xyzw, r1.xyzw  // r1.x <- Out.Luminance.x; r1.y <- Out.Luminance.y; r1.z <- Out.Luminance.z; r1.w <- Out.Luminance.w
-
-#line 78
-mov o0.xyzw, r0.xyzw  // o0.x <- <main return value>.Color.x; o0.y <- <main return value>.Color.y; o0.z <- <main return value>.Color.z; o0.w <- <main return value>.Color.w
-mov o1.xyzw, r1.xyzw  // o1.x <- <main return value>.Luminance.x; o1.y <- <main return value>.Luminance.y; o1.z <- <main return value>.Luminance.z; o1.w <- <main return value>.Luminance.w
+mul o0.xyz, r0.xyzx, r1.xyzx
+mov o0.w, r0.w
+mov o1.xyz, cb0[533].wwww
+mov o1.w, l(1.000000)
 ret 
-// Approximately 88 instruction slots used
+// Approximately 43 instruction slots used

@@ -328,7 +328,7 @@ public:
 	virtual void StopEnd() = 0;
 	virtual void TrackDash(float decision, float elapsed_time) = 0;
 
-	virtual bool Intro() = 0;
+	virtual bool Intro(float elapsed_time) = 0;
 	virtual bool WinPerformance() = 0;
 
 	virtual bool AttackLoad() = 0;

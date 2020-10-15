@@ -484,7 +484,7 @@ void SceneGame::Update(float elapsed_time)
 			player2p->pad->Update(game_speed);
 
 			//1Pイントロ更新
-			if (player1p->Intro())
+			if (player1p->Intro(elapsed_time))
 			{
 				main_loop = MAIN_LOOP::INTRO2P;
 			}
@@ -504,7 +504,7 @@ void SceneGame::Update(float elapsed_time)
 			player2p->pad->Update(game_speed);
 
 			//2Pイントロ更新
-			if (player2p->Intro())
+			if (player2p->Intro(elapsed_time))
 			{
 				fedo_start = true;
 			}
@@ -838,6 +838,12 @@ void SceneGame::Draw(float elapsed_time)
 		//ImGui::Text("anim : %f", motion.anim_timer);
 		ImGui::Text("time : %f", timer);
 		ImGui::Checkbox("Camera_Debug", &camera_move_debug);
+		if (ImGui::Button(u8"カメラをプレイヤー1に"))
+		{
+			eye = player1p->pos.GetDXFLOAT3();
+			focus = player1p->pos.GetDXFLOAT3();
+			eye.z -= 10.0f;
+		}
 		//ImGui::InputFloat("scroll", &scall, 0.01f, 100.0f);
 		//ImGui::SliderFloat("rollX", &roll.x, 0.0f, 30.00f);
 		//ImGui::SliderFloat("rollY", &roll.y, 0.0f, 30.00f);
@@ -1437,7 +1443,7 @@ void SceneGame::CameraRequest(float elapsed_time)
 		DirectX::XMFLOAT3 eye = YRCamera.GetEye();
 		DirectX::XMFLOAT3 focus = YRCamera.GetFocus();
 		float fov = YRCamera.GetFov();
-		float elap = 50.0f;
+		//float elap = 50.0f;
 
 		DirectX::XMVECTOR scene_eye_vector = DirectX::XMLoadFloat3(&Scene_eye.GetDXFLOAT3());
 		DirectX::XMVECTOR eye_vector = DirectX::XMLoadFloat3(&eye);
@@ -1448,7 +1454,7 @@ void SceneGame::CameraRequest(float elapsed_time)
 		
 		DirectX::XMVECTOR eye_larp = DirectX::XMVectorLerp(eye_vector, scene_eye_vector, 0.05f);
 		DirectX::XMVECTOR focus_larp = DirectX::XMVectorLerp(focus_vector, scene_focus_vector, 0.05f);
-		DirectX::XMVECTOR fov_larp = DirectX::XMVectorLerp(fov_vector, scene_fov_vector, 0.9);
+		DirectX::XMVECTOR fov_larp = DirectX::XMVectorLerp(fov_vector, scene_fov_vector, 0.1f);
 
 		
 		DirectX::XMStoreFloat3(&eye, eye_larp);

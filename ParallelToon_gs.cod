@@ -59,7 +59,7 @@
 // TEXCOORD                 2   xyz         4     NONE   float   xyz 
 //
 gs_5_0
-dcl_globalFlags refactoringAllowed | skipOptimization
+dcl_globalFlags refactoringAllowed
 dcl_constantbuffer CB0[534], immediateIndexed
 dcl_input v[3][0].xyzw
 dcl_input v[3][1].xyz
@@ -68,7 +68,7 @@ dcl_input v[3][3].xyzw
 dcl_input v[3][4].xyz
 dcl_input v[3][5].xyz
 dcl_input vPrim
-dcl_temps 11
+dcl_temps 7
 dcl_inputprimitive triangle 
 dcl_stream m0
 dcl_outputtopology trianglestrip 
@@ -78,516 +78,191 @@ dcl_output o2.xyzw
 dcl_output o3.xyz
 dcl_output o4.xyz
 dcl_maxout 6
-//
-// Initial variable locations:
-//   vPrim <- primID; 
-//   m0 <- Stream; 
-//   v[0][0].x <- input[0].Position.x; v[0][0].y <- input[0].Position.y; v[0][0].z <- input[0].Position.z; v[0][0].w <- input[0].Position.w; 
-//   v[0][1].x <- input[0].Normal.x; v[0][1].y <- input[0].Normal.y; v[0][1].z <- input[0].Normal.z; 
-//   v[0][2].x <- input[0].Tex.x; v[0][2].y <- input[0].Tex.y; 
-//   v[0][3].x <- input[0].Color.x; v[0][3].y <- input[0].Color.y; v[0][3].z <- input[0].Color.z; v[0][3].w <- input[0].Color.w; 
-//   v[0][4].x <- input[0].wNormal.x; v[0][4].y <- input[0].wNormal.y; v[0][4].z <- input[0].wNormal.z; 
-//   v[0][5].x <- input[0].wPos.x; v[0][5].y <- input[0].wPos.y; v[0][5].z <- input[0].wPos.z; 
-//   v[1][0].x <- input[1].Position.x; v[1][0].y <- input[1].Position.y; v[1][0].z <- input[1].Position.z; v[1][0].w <- input[1].Position.w; 
-//   v[1][1].x <- input[1].Normal.x; v[1][1].y <- input[1].Normal.y; v[1][1].z <- input[1].Normal.z; 
-//   v[1][2].x <- input[1].Tex.x; v[1][2].y <- input[1].Tex.y; 
-//   v[1][3].x <- input[1].Color.x; v[1][3].y <- input[1].Color.y; v[1][3].z <- input[1].Color.z; v[1][3].w <- input[1].Color.w; 
-//   v[1][4].x <- input[1].wNormal.x; v[1][4].y <- input[1].wNormal.y; v[1][4].z <- input[1].wNormal.z; 
-//   v[1][5].x <- input[1].wPos.x; v[1][5].y <- input[1].wPos.y; v[1][5].z <- input[1].wPos.z; 
-//   v[2][0].x <- input[2].Position.x; v[2][0].y <- input[2].Position.y; v[2][0].z <- input[2].Position.z; v[2][0].w <- input[2].Position.w; 
-//   v[2][1].x <- input[2].Normal.x; v[2][1].y <- input[2].Normal.y; v[2][1].z <- input[2].Normal.z; 
-//   v[2][2].x <- input[2].Tex.x; v[2][2].y <- input[2].Tex.y; 
-//   v[2][3].x <- input[2].Color.x; v[2][3].y <- input[2].Color.y; v[2][3].z <- input[2].Color.z; v[2][3].w <- input[2].Color.w; 
-//   v[2][4].x <- input[2].wNormal.x; v[2][4].y <- input[2].wNormal.y; v[2][4].z <- input[2].wNormal.z; 
-//   v[2][5].x <- input[2].wPos.x; v[2][5].y <- input[2].wPos.y; v[2][5].z <- input[2].wPos.z
-//
-#line 3 "E:\ゲーム制作\YRProject\ParallelToon.hlsli"
-mov r0.x, l(0.007000)  // r0.x <- LW
-
-#line 4
-itof r1.xyzw, l(0, 0, 0, -1)  // r1.x <- LC.x; r1.y <- LC.y; r1.z <- LC.z; r1.w <- LC.w
-
-#line 40 "E:\ゲーム制作\YRProject\ParallelToon_gs.hlsl"
-mov r0.y, l(0)  // r0.y <- i
-mov r0.z, r0.y  // r0.z <- i
+mov r0.x, cb0[4].x
+mov r0.y, cb0[5].x
+mov r0.z, cb0[6].x
+mov r0.w, cb0[7].x
+mov r1.x, cb0[4].y
+mov r1.y, cb0[5].y
+mov r1.z, cb0[6].y
+mov r1.w, cb0[7].y
+mov r2.x, cb0[4].w
+mov r2.y, cb0[5].w
+mov r2.z, cb0[6].w
+mov r2.w, cb0[7].w
+mov r3.x, l(0)
 loop 
-  ilt r0.w, r0.z, l(3)
-  breakc_z r0.w
-
-#line 44
-  mov r2.xyz, cb0[524].xyzx  // r2.x <- E.x; r2.y <- E.y; r2.z <- E.z
-
-#line 46
-  mov r3.xyz, -r2.xyzx
-  add r3.xyz, r3.xyzx, v[r0.z + 0][5].xyzx
-  dp3 r0.w, cb0[533].xyzx, r3.xyzx
-  mul r3.xyz, r0.wwww, cb0[533].xyzx
-  add r3.xyz, r2.xyzx, r3.xyzx  // r3.x <- P.x; r3.y <- P.y; r3.z <- P.z
-
-#line 47
-  mov r2.xyz, -r2.xyzx
-  add r2.xyz, r2.xyzx, r3.xyzx
-  dp3 r0.w, r2.xyzx, r2.xyzx
-  sqrt r0.w, r0.w  // r0.w <- len
-
-#line 48
-  mov r2.xyz, -r3.xyzx
-  add r2.xyz, r2.xyzx, v[r0.z + 0][5].xyzx
-  dp3 r2.x, r2.xyzx, r2.xyzx
-  sqrt r2.x, r2.x
-  div r0.w, r2.x, r0.w  // r0.w <- h
-
-#line 49
-  max r2.z, r0.w, l(0.050000)  // r2.z <- h
-
-#line 50
-  itof r3.xyzw, l(1, 0, 0, 0)  // r3.x <- Mat._m00; r3.y <- Mat._m10; r3.z <- Mat._m20; r3.w <- Mat._m30
-  itof r4.xyzw, l(0, 1, 0, 0)  // r4.x <- Mat._m01; r4.y <- Mat._m11; r4.z <- Mat._m21; r4.w <- Mat._m31
-  itof r5.xyzw, l(0, 0, 0, 1)  // r5.x <- Mat._m03; r5.y <- Mat._m13; r5.z <- Mat._m23; r5.w <- Mat._m33
-  itof r2.xyw, l(0, 0, 0, 0)  // r2.x <- Mat._m02; r2.y <- Mat._m12; r2.w <- Mat._m32
-  mov r2.z, r2.z  // r2.z <- Mat._m22
-
-#line 56
-  dp4 r6.x, cb0[4].xyzw, r3.xyzw  // r6.x <- newWorld._m00
-  dp4 r7.x, cb0[4].xyzw, r4.xyzw  // r7.x <- newWorld._m01
-  dp4 r8.x, cb0[4].xyzw, r2.xyzw  // r8.x <- newWorld._m02
-  dp4 r9.x, cb0[4].xyzw, r5.xyzw  // r9.x <- newWorld._m03
-  dp4 r6.y, cb0[5].xyzw, r3.xyzw  // r6.y <- newWorld._m10
-  dp4 r7.y, cb0[5].xyzw, r4.xyzw  // r7.y <- newWorld._m11
-  dp4 r8.y, cb0[5].xyzw, r2.xyzw  // r8.y <- newWorld._m12
-  dp4 r9.y, cb0[5].xyzw, r5.xyzw  // r9.y <- newWorld._m13
-  dp4 r6.z, cb0[6].xyzw, r3.xyzw  // r6.z <- newWorld._m20
-  dp4 r7.z, cb0[6].xyzw, r4.xyzw  // r7.z <- newWorld._m21
-  dp4 r8.z, cb0[6].xyzw, r2.xyzw  // r8.z <- newWorld._m22
-  dp4 r9.z, cb0[6].xyzw, r5.xyzw  // r9.z <- newWorld._m23
-  dp4 r6.w, cb0[7].xyzw, r3.xyzw  // r6.w <- newWorld._m30
-  dp4 r7.w, cb0[7].xyzw, r4.xyzw  // r7.w <- newWorld._m31
-  dp4 r8.w, cb0[7].xyzw, r2.xyzw  // r8.w <- newWorld._m32
-  dp4 r9.w, cb0[7].xyzw, r5.xyzw  // r9.w <- newWorld._m33
-
-#line 57
-  dp4 r0.w, v[r0.z + 0][0].xyzw, r6.xyzw  // r0.w <- Pos.x
-  dp4 r2.x, v[r0.z + 0][0].xyzw, r7.xyzw  // r2.x <- Pos.y
-  dp4 r2.y, v[r0.z + 0][0].xyzw, r8.xyzw  // r2.y <- Pos.z
-  dp4 r2.z, v[r0.z + 0][0].xyzw, r9.xyzw  // r2.z <- Pos.w
-
-#line 58
-  mul r3.xyzw, r0.wwww, cb0[525].xyzw
-  mul r4.xyzw, r2.xxxx, cb0[526].xyzw
-  add r3.xyzw, r3.xyzw, r4.xyzw
-  mul r4.xyzw, r2.yyyy, cb0[527].xyzw
-  add r3.xyzw, r3.xyzw, r4.xyzw
-  mul r2.xyzw, r2.zzzz, cb0[528].xyzw
-  add r2.xyzw, r2.xyzw, r3.xyzw  // r2.x <- Pos.x; r2.y <- Pos.y; r2.z <- Pos.z; r2.w <- Pos.w
-
-#line 59
-  mul r3.xyzw, r2.xxxx, cb0[529].xyzw
-  mul r4.xyzw, r2.yyyy, cb0[530].xyzw
-  add r3.xyzw, r3.xyzw, r4.xyzw
-  mul r4.xyzw, r2.zzzz, cb0[531].xyzw
-  add r3.xyzw, r3.xyzw, r4.xyzw
-  mul r2.xyzw, r2.wwww, cb0[532].xyzw
-  add r2.xyzw, r2.xyzw, r3.xyzw  // r2.x <- Pos.x; r2.y <- Pos.y; r2.z <- Pos.z; r2.w <- Pos.w
-
-#line 60
-  div r2.xyzw, r2.xyzw, r2.wwww
-
-#line 62
-  mov r2.xyzw, r2.xyzw  // r2.x <- data.SV_Position.x; r2.y <- data.SV_Position.y; r2.z <- data.SV_Position.z; r2.w <- data.SV_Position.w
-
-#line 63
-  mov r3.xyz, v[r0.z + 0][4].xyzx  // r3.x <- data.wNormal.x; r3.y <- data.wNormal.y; r3.z <- data.wNormal.z
-
-#line 64
-  mov r4.xy, v[r0.z + 0][2].xyxx  // r4.x <- data.Tex.x; r4.y <- data.Tex.y
-
-#line 65
-  mov r5.xyzw, v[r0.z + 0][3].xyzw  // r5.x <- data.Color.x; r5.y <- data.Color.y; r5.z <- data.Color.z; r5.w <- data.Color.w
-
-#line 66
-  mov r6.xyz, v[r0.z + 0][5].xyzx  // r6.x <- data.wPos.x; r6.y <- data.wPos.y; r6.z <- data.wPos.z
-
-#line 68
-  mov o0.xyzw, r2.xyzw
-  mov o1.xy, r4.xyxx
-  mov o2.xyzw, r5.xyzw
-  mov o3.xyz, r3.xyzx
-  mov o4.xyz, r6.xyzx
+  ige r3.y, r3.x, l(3)
+  breakc_nz r3.y
+  add r3.yzw, -cb0[524].xxyz, v[r3.x + 0][5].xxyz
+  dp3 r3.y, cb0[533].xyzx, r3.yzwy
+  mul r4.xyz, r3.yyyy, cb0[533].xyzx
+  mad r3.yzw, cb0[533].xxyz, r3.yyyy, cb0[524].xxyz
+  dp3 r4.x, r4.xyzx, r4.xyzx
+  sqrt r4.x, r4.x
+  add r3.yzw, -r3.yyzw, v[r3.x + 0][5].xxyz
+  dp3 r3.y, r3.yzwy, r3.yzwy
+  sqrt r3.y, r3.y
+  div r3.y, r3.y, r4.x
+  max r3.y, r3.y, l(0.050000)
+  mul r4.x, r3.y, cb0[4].z
+  mul r4.y, r3.y, cb0[5].z
+  mul r4.z, r3.y, cb0[6].z
+  mul r4.w, r3.y, cb0[7].z
+  dp4 r3.y, v[r3.x + 0][0].xyzw, r0.xyzw
+  dp4 r3.z, v[r3.x + 0][0].xyzw, r1.xyzw
+  dp4 r3.w, v[r3.x + 0][0].xyzw, r4.xyzw
+  dp4 r4.x, v[r3.x + 0][0].xyzw, r2.xyzw
+  mul r5.xyzw, r3.zzzz, cb0[526].xyzw
+  mad r5.xyzw, r3.yyyy, cb0[525].xyzw, r5.xyzw
+  mad r5.xyzw, r3.wwww, cb0[527].xyzw, r5.xyzw
+  mad r4.xyzw, r4.xxxx, cb0[528].xyzw, r5.xyzw
+  mul r5.xyzw, r4.yyyy, cb0[530].xyzw
+  mad r5.xyzw, r4.xxxx, cb0[529].xyzw, r5.xyzw
+  mad r5.xyzw, r4.zzzz, cb0[531].xyzw, r5.xyzw
+  mad r4.xyzw, r4.wwww, cb0[532].xyzw, r5.xyzw
+  div r4.xyzw, r4.xyzw, r4.wwww
+  mov o0.xyzw, r4.xyzw
+  mov o1.xy, v[r3.x + 0][2].xyxx
+  mov o2.xyzw, v[r3.x + 0][3].xyzw
+  mov o3.xyz, v[r3.x + 0][4].xyzx
+  mov o4.xyz, v[r3.x + 0][5].xyzx
   emit_stream m0
-
-#line 69
-  iadd r0.z, r0.z, l(1)
+  iadd r3.x, r3.x, l(1)
 endloop 
-
-#line 71
 cut_stream m0
-
-#line 76
-mov r2.xyz, v[0][1].xyzx
-mov r2.w, l(0)
-mul r2.xyzw, r0.xxxx, r2.xyzw
-add r2.xyzw, r2.xyzw, v[0][0].xyzw  // r2.x <- P.x; r2.y <- P.y; r2.z <- P.z; r2.w <- P.w
-
-#line 95
-nop 
-mov r2.xyzw, r2.xyzw
-
-#line 6
-mov r0.yzw, cb0[524].xxyz  // r0.y <- E.x; r0.z <- E.y; r0.w <- E.z
-
-#line 8
-mul r3.xyz, r2.xxxx, cb0[4].xyzx
-mul r4.xyz, r2.yyyy, cb0[5].xyzx
-add r3.xyz, r3.xyzx, r4.xyzx
-mul r4.xyz, r2.zzzz, cb0[6].xyzx
-add r3.xyz, r3.xyzx, r4.xyzx
-mul r4.xyz, r2.wwww, cb0[7].xyzx
-add r3.xyz, r3.xyzx, r4.xyzx  // r3.x <- wPOS.x; r3.y <- wPOS.y; r3.z <- wPOS.z
-
-#line 9
-mov r4.xyz, -r0.yzwy
-add r4.xyz, r3.xyzx, r4.xyzx
-dp3 r3.w, cb0[533].xyzx, r4.xyzx
-mul r4.xyz, r3.wwww, cb0[533].xyzx
-add r4.xyz, r0.yzwy, r4.xyzx  // r4.x <- P.x; r4.y <- P.y; r4.z <- P.z
-
-#line 10
-mov r0.yzw, -r0.yyzw
-add r0.yzw, r0.yyzw, r4.xxyz
-dp3 r0.y, r0.yzwy, r0.yzwy
-sqrt r0.y, r0.y  // r0.y <- len
-
-#line 11
-mov r4.xyz, -r4.xyzx
-add r3.xyz, r3.xyzx, r4.xyzx
-dp3 r0.z, r3.xyzx, r3.xyzx
-sqrt r0.z, r0.z
-div r0.y, r0.z, r0.y  // r0.y <- h
-
-#line 12
-max r3.z, r0.y, l(0.050000)  // r3.z <- h
-
-#line 16
-itof r4.xyzw, l(1, 0, 0, 0)  // r4.x <- Mat._m00; r4.y <- Mat._m10; r4.z <- Mat._m20; r4.w <- Mat._m30
-itof r5.xyzw, l(0, 1, 0, 0)  // r5.x <- Mat._m01; r5.y <- Mat._m11; r5.z <- Mat._m21; r5.w <- Mat._m31
-itof r6.xyzw, l(0, 0, 0, 1)  // r6.x <- Mat._m03; r6.y <- Mat._m13; r6.z <- Mat._m23; r6.w <- Mat._m33
-itof r3.xyw, l(0, 0, 0, 0)  // r3.x <- Mat._m02; r3.y <- Mat._m12; r3.w <- Mat._m32
-mov r3.z, r3.z  // r3.z <- Mat._m22
-
-#line 22
-dp4 r7.x, cb0[4].xyzw, r4.xyzw  // r7.x <- newWorld._m00
-dp4 r8.x, cb0[4].xyzw, r5.xyzw  // r8.x <- newWorld._m01
-dp4 r9.x, cb0[4].xyzw, r3.xyzw  // r9.x <- newWorld._m02
-dp4 r10.x, cb0[4].xyzw, r6.xyzw  // r10.x <- newWorld._m03
-dp4 r7.y, cb0[5].xyzw, r4.xyzw  // r7.y <- newWorld._m10
-dp4 r8.y, cb0[5].xyzw, r5.xyzw  // r8.y <- newWorld._m11
-dp4 r9.y, cb0[5].xyzw, r3.xyzw  // r9.y <- newWorld._m12
-dp4 r10.y, cb0[5].xyzw, r6.xyzw  // r10.y <- newWorld._m13
-dp4 r7.z, cb0[6].xyzw, r4.xyzw  // r7.z <- newWorld._m20
-dp4 r8.z, cb0[6].xyzw, r5.xyzw  // r8.z <- newWorld._m21
-dp4 r9.z, cb0[6].xyzw, r3.xyzw  // r9.z <- newWorld._m22
-dp4 r10.z, cb0[6].xyzw, r6.xyzw  // r10.z <- newWorld._m23
-dp4 r7.w, cb0[7].xyzw, r4.xyzw  // r7.w <- newWorld._m30
-dp4 r8.w, cb0[7].xyzw, r5.xyzw  // r8.w <- newWorld._m31
-dp4 r9.w, cb0[7].xyzw, r3.xyzw  // r9.w <- newWorld._m32
-dp4 r10.w, cb0[7].xyzw, r6.xyzw  // r10.w <- newWorld._m33
-
-#line 23
-dp4 r0.y, r2.xyzw, r7.xyzw  // r0.y <- Posi.x
-dp4 r0.z, r2.xyzw, r8.xyzw  // r0.z <- Posi.y
-dp4 r0.w, r2.xyzw, r9.xyzw  // r0.w <- Posi.z
-dp4 r2.x, r2.xyzw, r10.xyzw  // r2.x <- Posi.w
-
-#line 24
-mul r3.xyzw, r0.yyyy, cb0[525].xyzw
-mul r4.xyzw, r0.zzzz, cb0[526].xyzw
-add r3.xyzw, r3.xyzw, r4.xyzw
-mul r4.xyzw, r0.wwww, cb0[527].xyzw
-add r3.xyzw, r3.xyzw, r4.xyzw
-mul r2.xyzw, r2.xxxx, cb0[528].xyzw
-add r2.xyzw, r2.xyzw, r3.xyzw  // r2.x <- Posi.x; r2.y <- Posi.y; r2.z <- Posi.z; r2.w <- Posi.w
-
-#line 25
-mul r3.xyzw, r2.xxxx, cb0[529].xyzw
-mul r4.xyzw, r2.yyyy, cb0[530].xyzw
-add r3.xyzw, r3.xyzw, r4.xyzw
-mul r4.xyzw, r2.zzzz, cb0[531].xyzw
-add r3.xyzw, r3.xyzw, r4.xyzw
-mul r2.xyzw, r2.wwww, cb0[532].xyzw
-add r2.xyzw, r2.xyzw, r3.xyzw  // r2.x <- Posi.x; r2.y <- Posi.y; r2.z <- Posi.z; r2.w <- Posi.w
-
-#line 26
-div r2.xyzw, r2.xyzw, r2.wwww
-
-#line 28
-mov r2.xyzw, r2.xyzw  // r2.x <- <MatPos return value>.x; r2.y <- <MatPos return value>.y; r2.z <- <MatPos return value>.z; r2.w <- <MatPos return value>.w
-
-#line 95
-mov r2.xyzw, r2.xyzw  // r2.x <- data.SV_Position.x; r2.y <- data.SV_Position.y; r2.z <- data.SV_Position.z; r2.w <- data.SV_Position.w
-
-#line 98
-mov r0.yzw, -v[0][4].xxyz  // r0.y <- data.wNormal.x; r0.z <- data.wNormal.y; r0.w <- data.wNormal.z
-
-#line 99
-mov r3.xy, v[0][2].xyxx  // r3.x <- data.Tex.x; r3.y <- data.Tex.y
-
-#line 100
-mov r1.xyzw, r1.xyzw  // r1.x <- data.Color.x; r1.y <- data.Color.y; r1.z <- data.Color.z; r1.w <- data.Color.w
-
-#line 101
-mov r4.xyz, v[0][5].xyzx  // r4.x <- data.wPos.x; r4.y <- data.wPos.y; r4.z <- data.wPos.z
-
-#line 103
-mov o0.xyzw, r2.xyzw
-mov o1.xy, r3.xyxx
-mov o2.xyzw, r1.xyzw
-mov o3.xyz, r0.yzwy
-mov o4.xyz, r4.xyzx
-emit_stream m0
-
-#line 104
-mov r2.xyz, v[2][1].xyzx
-mov r2.w, l(0)
-mul r2.xyzw, r0.xxxx, r2.xyzw
-add r2.xyzw, r2.xyzw, v[2][0].xyzw  // r2.x <- P.x; r2.y <- P.y; r2.z <- P.z; r2.w <- P.w
-
-#line 107
-nop 
-mov r2.xyzw, r2.xyzw
-
-#line 6
-mov r0.yzw, cb0[524].xxyz  // r0.y <- E.x; r0.z <- E.y; r0.w <- E.z
-
-#line 8
-mul r3.xyz, r2.xxxx, cb0[4].xyzx
-mul r4.xyz, r2.yyyy, cb0[5].xyzx
-add r3.xyz, r3.xyzx, r4.xyzx
-mul r4.xyz, r2.zzzz, cb0[6].xyzx
-add r3.xyz, r3.xyzx, r4.xyzx
-mul r4.xyz, r2.wwww, cb0[7].xyzx
-add r3.xyz, r3.xyzx, r4.xyzx  // r3.x <- wPOS.x; r3.y <- wPOS.y; r3.z <- wPOS.z
-
-#line 9
-mov r4.xyz, -r0.yzwy
-add r4.xyz, r3.xyzx, r4.xyzx
-dp3 r3.w, cb0[533].xyzx, r4.xyzx
-mul r4.xyz, r3.wwww, cb0[533].xyzx
-add r4.xyz, r0.yzwy, r4.xyzx  // r4.x <- P.x; r4.y <- P.y; r4.z <- P.z
-
-#line 10
-mov r0.yzw, -r0.yyzw
-add r0.yzw, r0.yyzw, r4.xxyz
-dp3 r0.y, r0.yzwy, r0.yzwy
-sqrt r0.y, r0.y  // r0.y <- len
-
-#line 11
-mov r4.xyz, -r4.xyzx
-add r3.xyz, r3.xyzx, r4.xyzx
-dp3 r0.z, r3.xyzx, r3.xyzx
-sqrt r0.z, r0.z
-div r0.y, r0.z, r0.y  // r0.y <- h
-
-#line 12
-max r3.z, r0.y, l(0.050000)  // r3.z <- h
-
-#line 16
-itof r4.xyzw, l(1, 0, 0, 0)  // r4.x <- Mat._m00; r4.y <- Mat._m10; r4.z <- Mat._m20; r4.w <- Mat._m30
-itof r5.xyzw, l(0, 1, 0, 0)
-itof r6.xyzw, l(0, 0, 0, 1)
-itof r3.xyw, l(0, 0, 0, 0)  // r3.x <- Mat._m02; r3.y <- Mat._m12; r3.w <- Mat._m32
-mov r3.z, r3.z  // r3.z <- Mat._m22
-
-#line 22
-dp4 r7.x, cb0[4].xyzw, r4.xyzw
-dp4 r8.x, cb0[4].xyzw, r5.xyzw
-dp4 r9.x, cb0[4].xyzw, r3.xyzw
-dp4 r10.x, cb0[4].xyzw, r6.xyzw
-dp4 r7.y, cb0[5].xyzw, r4.xyzw
-dp4 r8.y, cb0[5].xyzw, r5.xyzw
-dp4 r9.y, cb0[5].xyzw, r3.xyzw
-dp4 r10.y, cb0[5].xyzw, r6.xyzw
-dp4 r7.z, cb0[6].xyzw, r4.xyzw
-dp4 r8.z, cb0[6].xyzw, r5.xyzw
-dp4 r9.z, cb0[6].xyzw, r3.xyzw
-dp4 r10.z, cb0[6].xyzw, r6.xyzw
-dp4 r7.w, cb0[7].xyzw, r4.xyzw
-dp4 r8.w, cb0[7].xyzw, r5.xyzw
-dp4 r9.w, cb0[7].xyzw, r3.xyzw
-dp4 r10.w, cb0[7].xyzw, r6.xyzw
-
-#line 23
-dp4 r0.y, r2.xyzw, r7.xyzw  // r0.y <- Posi.x
-dp4 r0.z, r2.xyzw, r8.xyzw  // r0.z <- Posi.y
-dp4 r0.w, r2.xyzw, r9.xyzw  // r0.w <- Posi.z
-dp4 r2.x, r2.xyzw, r10.xyzw  // r2.x <- Posi.w
-
-#line 24
-mul r3.xyzw, r0.yyyy, cb0[525].xyzw
-mul r4.xyzw, r0.zzzz, cb0[526].xyzw
-add r3.xyzw, r3.xyzw, r4.xyzw
-mul r4.xyzw, r0.wwww, cb0[527].xyzw
-add r3.xyzw, r3.xyzw, r4.xyzw
-mul r2.xyzw, r2.xxxx, cb0[528].xyzw
-add r2.xyzw, r2.xyzw, r3.xyzw  // r2.x <- Posi.x; r2.y <- Posi.y; r2.z <- Posi.z; r2.w <- Posi.w
-
-#line 25
-mul r3.xyzw, r2.xxxx, cb0[529].xyzw
-mul r4.xyzw, r2.yyyy, cb0[530].xyzw
-add r3.xyzw, r3.xyzw, r4.xyzw
-mul r4.xyzw, r2.zzzz, cb0[531].xyzw
-add r3.xyzw, r3.xyzw, r4.xyzw
-mul r2.xyzw, r2.wwww, cb0[532].xyzw
-add r2.xyzw, r2.xyzw, r3.xyzw  // r2.x <- Posi.x; r2.y <- Posi.y; r2.z <- Posi.z; r2.w <- Posi.w
-
-#line 26
-div r2.xyzw, r2.xyzw, r2.wwww
-
-#line 28
-mov r2.xyzw, r2.xyzw  // r2.x <- <MatPos return value>.x; r2.y <- <MatPos return value>.y; r2.z <- <MatPos return value>.z; r2.w <- <MatPos return value>.w
-
-#line 107
-mov r2.xyzw, r2.xyzw  // r2.x <- data.SV_Position.x; r2.y <- data.SV_Position.y; r2.z <- data.SV_Position.z; r2.w <- data.SV_Position.w
-
-#line 108
-mov r0.yzw, -v[2][4].xxyz  // r0.y <- data.wNormal.x; r0.z <- data.wNormal.y; r0.w <- data.wNormal.z
-
-#line 109
-mov r3.xy, v[2][2].xyxx  // r3.x <- data.Tex.x; r3.y <- data.Tex.y
-
-#line 111
-mov r4.xyz, v[2][5].xyzx  // r4.x <- data.wPos.x; r4.y <- data.wPos.y; r4.z <- data.wPos.z
-
-#line 112
-mov o0.xyzw, r2.xyzw
-mov o1.xy, r3.xyxx
-mov o2.xyzw, r1.xyzw
-mov o3.xyz, r0.yzwy
-mov o4.xyz, r4.xyzx
-emit_stream m0
-
-#line 114
-mov r2.xyz, v[1][1].xyzx
-mov r2.w, l(0)
-mul r0.xyzw, r0.xxxx, r2.xyzw
-add r0.xyzw, r0.xyzw, v[1][0].xyzw  // r0.x <- P.x; r0.y <- P.y; r0.z <- P.z; r0.w <- P.w
-
-#line 115
-nop 
-mov r0.xyzw, r0.xyzw
-
-#line 6
-mov r2.xyz, cb0[524].xyzx  // r2.x <- E.x; r2.y <- E.y; r2.z <- E.z
-
-#line 8
-mul r3.xyz, r0.xxxx, cb0[4].xyzx
-mul r4.xyz, r0.yyyy, cb0[5].xyzx
-add r3.xyz, r3.xyzx, r4.xyzx
-mul r4.xyz, r0.zzzz, cb0[6].xyzx
-add r3.xyz, r3.xyzx, r4.xyzx
-mul r4.xyz, r0.wwww, cb0[7].xyzx
-add r3.xyz, r3.xyzx, r4.xyzx  // r3.x <- wPOS.x; r3.y <- wPOS.y; r3.z <- wPOS.z
-
-#line 9
-mov r4.xyz, -r2.xyzx
-add r4.xyz, r3.xyzx, r4.xyzx
-dp3 r2.w, cb0[533].xyzx, r4.xyzx
-mul r4.xyz, r2.wwww, cb0[533].xyzx
-add r4.xyz, r2.xyzx, r4.xyzx  // r4.x <- P.x; r4.y <- P.y; r4.z <- P.z
-
-#line 10
-mov r2.xyz, -r2.xyzx
-add r2.xyz, r2.xyzx, r4.xyzx
-dp3 r2.x, r2.xyzx, r2.xyzx
-sqrt r2.x, r2.x  // r2.x <- len
-
-#line 11
-mov r2.yzw, -r4.xxyz
-add r2.yzw, r2.yyzw, r3.xxyz
-dp3 r2.y, r2.yzwy, r2.yzwy
-sqrt r2.y, r2.y
-div r2.x, r2.y, r2.x  // r2.x <- h
-
-#line 12
-max r2.z, r2.x, l(0.050000)  // r2.z <- h
-
-#line 16
-itof r3.xyzw, l(1, 0, 0, 0)  // r3.x <- Mat._m00; r3.y <- Mat._m10; r3.z <- Mat._m20; r3.w <- Mat._m30
-itof r4.xyzw, l(0, 1, 0, 0)  // r4.x <- Mat._m01; r4.y <- Mat._m11; r4.z <- Mat._m21; r4.w <- Mat._m31
-itof r5.xyzw, l(0, 0, 0, 1)  // r5.x <- Mat._m03; r5.y <- Mat._m13; r5.z <- Mat._m23; r5.w <- Mat._m33
-itof r2.xyw, l(0, 0, 0, 0)  // r2.x <- Mat._m02; r2.y <- Mat._m12; r2.w <- Mat._m32
-mov r2.z, r2.z  // r2.z <- Mat._m22
-
-#line 22
-dp4 r6.x, cb0[4].xyzw, r3.xyzw  // r6.x <- newWorld._m00
-dp4 r7.x, cb0[4].xyzw, r4.xyzw  // r7.x <- newWorld._m01
-dp4 r8.x, cb0[4].xyzw, r2.xyzw  // r8.x <- newWorld._m02
-dp4 r9.x, cb0[4].xyzw, r5.xyzw  // r9.x <- newWorld._m03
-dp4 r6.y, cb0[5].xyzw, r3.xyzw  // r6.y <- newWorld._m10
-dp4 r7.y, cb0[5].xyzw, r4.xyzw  // r7.y <- newWorld._m11
-dp4 r8.y, cb0[5].xyzw, r2.xyzw  // r8.y <- newWorld._m12
-dp4 r9.y, cb0[5].xyzw, r5.xyzw  // r9.y <- newWorld._m13
-dp4 r6.z, cb0[6].xyzw, r3.xyzw  // r6.z <- newWorld._m20
-dp4 r7.z, cb0[6].xyzw, r4.xyzw  // r7.z <- newWorld._m21
-dp4 r8.z, cb0[6].xyzw, r2.xyzw  // r8.z <- newWorld._m22
-dp4 r9.z, cb0[6].xyzw, r5.xyzw  // r9.z <- newWorld._m23
-dp4 r6.w, cb0[7].xyzw, r3.xyzw  // r6.w <- newWorld._m30
-dp4 r7.w, cb0[7].xyzw, r4.xyzw  // r7.w <- newWorld._m31
-dp4 r8.w, cb0[7].xyzw, r2.xyzw  // r8.w <- newWorld._m32
-dp4 r9.w, cb0[7].xyzw, r5.xyzw  // r9.w <- newWorld._m33
-
-#line 23
-dp4 r2.x, r0.xyzw, r6.xyzw  // r2.x <- Posi.x
-dp4 r2.y, r0.xyzw, r7.xyzw  // r2.y <- Posi.y
-dp4 r2.z, r0.xyzw, r8.xyzw  // r2.z <- Posi.z
-dp4 r0.x, r0.xyzw, r9.xyzw  // r0.x <- Posi.w
-
-#line 24
-mul r3.xyzw, r2.xxxx, cb0[525].xyzw
-mul r4.xyzw, r2.yyyy, cb0[526].xyzw
-add r3.xyzw, r3.xyzw, r4.xyzw
-mul r2.xyzw, r2.zzzz, cb0[527].xyzw
-add r2.xyzw, r2.xyzw, r3.xyzw
-mul r0.xyzw, r0.xxxx, cb0[528].xyzw
-add r0.xyzw, r0.xyzw, r2.xyzw  // r0.x <- Posi.x; r0.y <- Posi.y; r0.z <- Posi.z; r0.w <- Posi.w
-
-#line 25
-mul r2.xyzw, r0.xxxx, cb0[529].xyzw
-mul r3.xyzw, r0.yyyy, cb0[530].xyzw
-add r2.xyzw, r2.xyzw, r3.xyzw
-mul r3.xyzw, r0.zzzz, cb0[531].xyzw
-add r2.xyzw, r2.xyzw, r3.xyzw
-mul r0.xyzw, r0.wwww, cb0[532].xyzw
-add r0.xyzw, r0.xyzw, r2.xyzw  // r0.x <- Posi.x; r0.y <- Posi.y; r0.z <- Posi.z; r0.w <- Posi.w
-
-#line 26
+mov r0.xyz, v[0][1].xyzx
+mov r0.w, l(0)
+mad r0.xyzw, r0.xyzw, l(0.007000, 0.007000, 0.007000, 0.007000), v[0][0].xyzw
+mul r1.xyz, r0.yyyy, cb0[5].xyzx
+mad r1.xyz, r0.xxxx, cb0[4].xyzx, r1.xyzx
+mad r1.xyz, r0.zzzz, cb0[6].xyzx, r1.xyzx
+mad r1.xyz, r0.wwww, cb0[7].xyzx, r1.xyzx
+add r2.xyz, r1.xyzx, -cb0[524].xyzx
+dp3 r1.w, cb0[533].xyzx, r2.xyzx
+mul r2.xyz, r1.wwww, cb0[533].xyzx
+mad r3.xyz, cb0[533].xyzx, r1.wwww, cb0[524].xyzx
+dp3 r1.w, r2.xyzx, r2.xyzx
+add r1.xyz, r1.xyzx, -r3.xyzx
+dp3 r1.x, r1.xyzx, r1.xyzx
+sqrt r1.xw, r1.xxxw
+div r1.x, r1.x, r1.w
+max r1.x, r1.x, l(0.050000)
+mul r2.x, r1.x, cb0[4].z
+mul r2.y, r1.x, cb0[5].z
+mul r2.z, r1.x, cb0[6].z
+mul r2.w, r1.x, cb0[7].z
+mov r1.x, cb0[4].x
+mov r1.y, cb0[5].x
+mov r1.z, cb0[6].x
+mov r1.w, cb0[7].x
+dp4 r3.x, r0.xyzw, r1.xyzw
+mov r4.x, cb0[4].y
+mov r4.y, cb0[5].y
+mov r4.z, cb0[6].y
+mov r4.w, cb0[7].y
+dp4 r3.y, r0.xyzw, r4.xyzw
+dp4 r2.x, r0.xyzw, r2.xyzw
+mov r5.x, cb0[4].w
+mov r5.y, cb0[5].w
+mov r5.z, cb0[6].w
+mov r5.w, cb0[7].w
+dp4 r0.x, r0.xyzw, r5.xyzw
+mul r6.xyzw, r3.yyyy, cb0[526].xyzw
+mad r3.xyzw, r3.xxxx, cb0[525].xyzw, r6.xyzw
+mad r2.xyzw, r2.xxxx, cb0[527].xyzw, r3.xyzw
+mad r0.xyzw, r0.xxxx, cb0[528].xyzw, r2.xyzw
+mul r2.xyzw, r0.yyyy, cb0[530].xyzw
+mad r2.xyzw, r0.xxxx, cb0[529].xyzw, r2.xyzw
+mad r2.xyzw, r0.zzzz, cb0[531].xyzw, r2.xyzw
+mad r0.xyzw, r0.wwww, cb0[532].xyzw, r2.xyzw
 div r0.xyzw, r0.xyzw, r0.wwww
-
-#line 28
-mov r0.xyzw, r0.xyzw  // r0.x <- <MatPos return value>.x; r0.y <- <MatPos return value>.y; r0.z <- <MatPos return value>.z; r0.w <- <MatPos return value>.w
-
-#line 115
-mov r0.xyzw, r0.xyzw  // r0.x <- data.SV_Position.x; r0.y <- data.SV_Position.y; r0.z <- data.SV_Position.z; r0.w <- data.SV_Position.w
-
-#line 118
-mov r2.xyz, -v[1][4].xyzx  // r2.x <- data.wNormal.x; r2.y <- data.wNormal.y; r2.z <- data.wNormal.z
-
-#line 119
-mov r3.xy, v[1][2].xyxx  // r3.x <- data.Tex.x; r3.y <- data.Tex.y
-
-#line 121
-mov r4.xyz, v[1][5].xyzx  // r4.x <- data.wPos.x; r4.y <- data.wPos.y; r4.z <- data.wPos.z
-
-#line 122
 mov o0.xyzw, r0.xyzw
-mov o1.xy, r3.xyxx
-mov o2.xyzw, r1.xyzw
-mov o3.xyz, r2.xyzx
-mov o4.xyz, r4.xyzx
+mov o1.xy, v[0][2].xyxx
+mov o2.xyzw, l(0,0,0,-1.000000)
+mov o3.xyz, -v[0][4].xyzx
+mov o4.xyz, v[0][5].xyzx
 emit_stream m0
-
-#line 124
+mov r0.xyz, v[2][1].xyzx
+mov r0.w, l(0)
+mad r0.xyzw, r0.xyzw, l(0.007000, 0.007000, 0.007000, 0.007000), v[2][0].xyzw
+mul r2.xyz, r0.yyyy, cb0[5].xyzx
+mad r2.xyz, r0.xxxx, cb0[4].xyzx, r2.xyzx
+mad r2.xyz, r0.zzzz, cb0[6].xyzx, r2.xyzx
+mad r2.xyz, r0.wwww, cb0[7].xyzx, r2.xyzx
+add r3.xyz, r2.xyzx, -cb0[524].xyzx
+dp3 r2.w, cb0[533].xyzx, r3.xyzx
+mul r3.xyz, r2.wwww, cb0[533].xyzx
+mad r6.xyz, cb0[533].xyzx, r2.wwww, cb0[524].xyzx
+dp3 r2.w, r3.xyzx, r3.xyzx
+add r2.xyz, r2.xyzx, -r6.xyzx
+dp3 r2.x, r2.xyzx, r2.xyzx
+sqrt r2.xw, r2.xxxw
+div r2.x, r2.x, r2.w
+max r2.x, r2.x, l(0.050000)
+mul r3.x, r2.x, cb0[4].z
+mul r3.y, r2.x, cb0[5].z
+mul r3.z, r2.x, cb0[6].z
+mul r3.w, r2.x, cb0[7].z
+dp4 r2.x, r0.xyzw, r1.xyzw
+dp4 r2.y, r0.xyzw, r4.xyzw
+dp4 r2.z, r0.xyzw, r3.xyzw
+dp4 r0.x, r0.xyzw, r5.xyzw
+mul r3.xyzw, r2.yyyy, cb0[526].xyzw
+mad r3.xyzw, r2.xxxx, cb0[525].xyzw, r3.xyzw
+mad r2.xyzw, r2.zzzz, cb0[527].xyzw, r3.xyzw
+mad r0.xyzw, r0.xxxx, cb0[528].xyzw, r2.xyzw
+mul r2.xyzw, r0.yyyy, cb0[530].xyzw
+mad r2.xyzw, r0.xxxx, cb0[529].xyzw, r2.xyzw
+mad r2.xyzw, r0.zzzz, cb0[531].xyzw, r2.xyzw
+mad r0.xyzw, r0.wwww, cb0[532].xyzw, r2.xyzw
+div r0.xyzw, r0.xyzw, r0.wwww
+mov o0.xyzw, r0.xyzw
+mov o1.xy, v[2][2].xyxx
+mov o2.xyzw, l(0,0,0,-1.000000)
+mov o3.xyz, -v[2][4].xyzx
+mov o4.xyz, v[2][5].xyzx
+emit_stream m0
+mov r0.xyz, v[1][1].xyzx
+mov r0.w, l(0)
+mad r0.xyzw, r0.xyzw, l(0.007000, 0.007000, 0.007000, 0.007000), v[1][0].xyzw
+mul r2.xyz, r0.yyyy, cb0[5].xyzx
+mad r2.xyz, r0.xxxx, cb0[4].xyzx, r2.xyzx
+mad r2.xyz, r0.zzzz, cb0[6].xyzx, r2.xyzx
+mad r2.xyz, r0.wwww, cb0[7].xyzx, r2.xyzx
+add r3.xyz, r2.xyzx, -cb0[524].xyzx
+dp3 r2.w, cb0[533].xyzx, r3.xyzx
+mul r3.xyz, r2.wwww, cb0[533].xyzx
+mad r6.xyz, cb0[533].xyzx, r2.wwww, cb0[524].xyzx
+dp3 r2.w, r3.xyzx, r3.xyzx
+add r2.xyz, r2.xyzx, -r6.xyzx
+dp3 r2.x, r2.xyzx, r2.xyzx
+sqrt r2.xw, r2.xxxw
+div r2.x, r2.x, r2.w
+max r2.x, r2.x, l(0.050000)
+mul r3.x, r2.x, cb0[4].z
+mul r3.y, r2.x, cb0[5].z
+mul r3.z, r2.x, cb0[6].z
+mul r3.w, r2.x, cb0[7].z
+dp4 r1.x, r0.xyzw, r1.xyzw
+dp4 r1.y, r0.xyzw, r4.xyzw
+dp4 r1.z, r0.xyzw, r3.xyzw
+dp4 r0.x, r0.xyzw, r5.xyzw
+mul r2.xyzw, r1.yyyy, cb0[526].xyzw
+mad r2.xyzw, r1.xxxx, cb0[525].xyzw, r2.xyzw
+mad r1.xyzw, r1.zzzz, cb0[527].xyzw, r2.xyzw
+mad r0.xyzw, r0.xxxx, cb0[528].xyzw, r1.xyzw
+mul r1.xyzw, r0.yyyy, cb0[530].xyzw
+mad r1.xyzw, r0.xxxx, cb0[529].xyzw, r1.xyzw
+mad r1.xyzw, r0.zzzz, cb0[531].xyzw, r1.xyzw
+mad r0.xyzw, r0.wwww, cb0[532].xyzw, r1.xyzw
+div r0.xyzw, r0.xyzw, r0.wwww
+mov o0.xyzw, r0.xyzw
+mov o1.xy, v[1][2].xyxx
+mov o2.xyzw, l(0,0,0,-1.000000)
+mov o3.xyz, -v[1][4].xyzx
+mov o4.xyz, v[1][5].xyzx
+emit_stream m0
 cut_stream m0
-
-#line 125
 ret 
-// Approximately 320 instruction slots used
+// Approximately 187 instruction slots used

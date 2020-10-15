@@ -37,19 +37,14 @@
 // Level9 shader bytecode:
 //
     ps_2_x
-    dcl t0.xy  // input<4,5>
-    dcl t1  // input<6,7,8,9>
+    dcl t0.xy
+    dcl t1
     dcl_2d s0
-
-#line 10 "E:\ゲーム制作\YRProject\SpriteEx_ps.hlsl"
     texld r0, t0, s0
-    mul r0, r0, t1  // ::color<0,1,2,3>
-    mov r0, r0  // ::main<0,1,2,3>
+    mul r0, r0, t1
+    mov oC0, r0
 
-#line 7
-    mov oC0, r0  // ::main<0,1,2,3>
-
-// approximately 4 instruction slots used (1 texture, 3 arithmetic)
+// approximately 3 instruction slots used (1 texture, 2 arithmetic)
 ps_4_0
 dcl_sampler s0, mode_default
 dcl_resource_texture2d (float,float,float,float) t0
@@ -57,18 +52,7 @@ dcl_input_ps linear v1.xy
 dcl_input_ps linear v2.xyzw
 dcl_output o0.xyzw
 dcl_temps 1
-//
-// Initial variable locations:
-//   v0.x <- input.Position.x; v0.y <- input.Position.y; v0.z <- input.Position.z; v0.w <- input.Position.w; 
-//   v1.x <- input.Tex.x; v1.y <- input.Tex.y; 
-//   v2.x <- input.Color.x; v2.y <- input.Color.y; v2.z <- input.Color.z; v2.w <- input.Color.w; 
-//   o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
-//
-#line 10 "E:\ゲーム制作\YRProject\SpriteEx_ps.hlsl"
 sample r0.xyzw, v1.xyxx, t0.xyzw, s0
-mul r0.xyzw, r0.xyzw, v2.xyzw  // r0.x <- color.x; r0.y <- color.y; r0.z <- color.z; r0.w <- color.w
-
-#line 12
-mov o0.xyzw, r0.xyzw
+mul o0.xyzw, r0.xyzw, v2.xyzw
 ret 
-// Approximately 4 instruction slots used
+// Approximately 3 instruction slots used

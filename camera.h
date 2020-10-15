@@ -71,6 +71,9 @@ public:
 
 	void CameraMove(YRShader* shader);
 
+	//w’è‚µ‚½ˆÊ’u‚Ü‚ÅƒJƒƒ‰‚Ì“®‚«‚ğ•âŠ®ˆÚ“®‚·‚é
+	void SpecifiedLerp(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& focus,float factor);
+
 	//getter
 	const DirectX::XMFLOAT4X4& GetView()const;
 	const DirectX::XMFLOAT4X4& GetProjection()const;
@@ -80,6 +83,8 @@ public:
 	const float& GetAspect()const;
 	const float& GetNear()const;
 	const float& GetFar()const;
+
+
 
 	const DirectX::XMFLOAT3& GetAt()const;
 

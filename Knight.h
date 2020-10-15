@@ -31,6 +31,7 @@ enum class KNIGHTATK :int
 struct Model_MotionData
 {
 	std::shared_ptr<Model>			wait_R = nullptr;
+	std::shared_ptr<Model>			intro_R = nullptr;
 	std::shared_ptr<Model>			damage_R_g_u = nullptr;
 	std::shared_ptr<Model>			jaku_R_f = nullptr;
 	std::shared_ptr<Model>			jaku_R_t = nullptr;
@@ -241,7 +242,7 @@ public:
 	void StopUpdate();
 	void StopEnd();
 
-	bool Intro();
+	bool Intro(float elapsed_time);
 
 	bool AttackLoad();			//生成時攻撃パラメーターを読み込む
 	bool AttackWrite();			//デバック時パラメーターを書き出す
@@ -256,11 +257,20 @@ public:
 	//イントロ用列挙
 	enum class INTRO_KNIGHT : int
 	{
-		SET = 0,
-		CAMERA_ZOOM,
+		SET = 0,	//セットする
+		WAIT,		//後から見る
+		ZOOM_SET,	//セットする
+		ZOOM,		//口パクを見る
+		PULL,		//少し引く
+		PUSH,		//少し寄る
+		PULL_2,		//少し引く
+		FIN_SET,	//セット
+		FIN,		//斜め後ろから見る
 		FINISH,
 	};
 	INTRO_KNIGHT	intro_state;
+
+	float			intro_timer;		//イントロで使用する
 
 	//勝利演出用列挙
 	enum class WIN_PERFORMANCE_KNIGHT : int
@@ -269,6 +279,25 @@ public:
 		FINISH,
 	};
 	WIN_PERFORMANCE_KNIGHT win_state;
+
+	//特殊技カメラ処理用列挙
+	enum class CAMERA_STATE_KNIGHT : int
+	{
+		FIRST = 0,
+		SECOND,
+		THIRD,
+		FOUR,
+		FIVE,
+		SIX,
+		SEVEN,
+		EIGHT,
+		NINE,
+		TEN,
+		ELEVEN,
+		TWELVE,
+		THIRTEEN,
+		STATE_END,
+	}; CAMERA_STATE_KNIGHT camera_state_knight;
 
 
 

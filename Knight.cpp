@@ -149,6 +149,9 @@ void Knight::Init(YR_Vector3 InitPos)
 	face_wink_time = 0.0f;
 	wink_state = Wink_State::FIRST;
 	jump_can_timer = 0.0f;
+
+	camera_state_knight = CAMERA_STATE_KNIGHT::FIRST;
+	intro_timer = 0.0f;
 }
 
 
@@ -196,9 +199,16 @@ void Knight::LoadData(int color_number)
 	//------------------------------------------//
 	//		アニメーションボーンデータ読み込み		//
 	//------------------------------------------//
+	//待機モーション
 	if (model_motion.wait_R == nullptr)
 	{
 		model_motion.wait_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_wait.fbx");
+	}
+
+	//イントロモーション
+	if (model_motion.intro_R == nullptr)
+	{
+		model_motion.intro_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_Intro_R.fbx");
 	}
 
 	//ダメージモーション
@@ -270,7 +280,7 @@ void Knight::LoadData(int color_number)
 	{
 		anim = std::make_unique<ModelAnim>(main);
 		anim->PlayAnimation(0, true);
-		anim->NodeChange(model_motion.wait_R);
+		anim->NodeChange(model_motion.intro_R);
 	}
 }
 
@@ -3227,30 +3237,37 @@ bool Knight::Intro()
 {
 	//イントロの行動をする
 	//カメラもこちらで動かす
+	YR_Vector3	focus;
+	YR_Vector3	eye;
 	switch (intro_state)
 	{
 	case Knight::INTRO_KNIGHT::SET:
-		YRCamera.SetFocus(pos.GetDXFLOAT3());
-		YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 0.0f, -25.0f));
-		intro_state = INTRO_KNIGHT::CAMERA_ZOOM;
-		break;
-	case Knight::INTRO_KNIGHT::CAMERA_ZOOM:
-	{
-		YR_Vector3 vec, eye, focus;
-		focus = YRCamera.GetFocus();
-		eye = YRCamera.GetEye();
-		vec = focus - eye;
-		float len = vec.Length();
-		if (len < 0.5f)
-		{
-			intro_state = INTRO_KNIGHT::FINISH;
-			break;
-		}
-		vec.Normalize();
-		eye += vec * 0.1f;
-		//eye.y += 0.1f;
+		//原点を設定(初期化)
+		focus = YR_Vector3(pos.x, pos.y, pos.z);
+		eye = YR_Vector3(pos.x - Getapply(12.0f), pos.y - 2.0f, pos.z - 7.0f);
 		YRCamera.SetEye(eye.GetDXFLOAT3());
-	}
+		YRCamera.SetFocus(focus.GetDXFLOAT3());
+		intro_state = INTRO_KNIGHT::WAIT;
+		break;
+	case Knight::INTRO_KNIGHT::WAIT:
+		//指定した位置までカメラを動かしていく(更新)
+		focus = YR_Vector3(pos.x, pos.y, pos.z);
+		eye = YR_Vector3(pos.x - Getapply(7.0f), pos.y - 2.0f, pos.z - 7.0f);
+		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 0.05f);
+		break;
+	case Knight::INTRO_KNIGHT::ZOOM_SET:
+		break;
+	case Knight::INTRO_KNIGHT::ZOOM:
+		break;
+	case Knight::INTRO_KNIGHT::PULL:
+		break;
+	case Knight::INTRO_KNIGHT::PUSH:
+		break;
+	case Knight::INTRO_KNIGHT::PULL_2:
+		break;
+	case Knight::INTRO_KNIGHT::FIN_SET:
+		break;
+	case Knight::INTRO_KNIGHT::FIN:
 		break;
 	case Knight::INTRO_KNIGHT::FINISH:
 		return true;
@@ -3258,7 +3275,6 @@ bool Knight::Intro()
 	default:
 		break;
 	}
-	
 
 	return false;
 }
@@ -3464,6 +3480,7 @@ void Knight::AttackDetailsSet()
 		break;
 	case AttackState::SPECIAL_ATTACK:
 		YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
+		camera_state_knight = CAMERA_STATE_KNIGHT::FIRST;
 		ChangeFace(FaceAnim::KOUHUN);
 		break;
 	case AttackState::DESIRE_SPECIAL:
