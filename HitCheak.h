@@ -4,6 +4,8 @@
 #include"HitBox.h"
 #include"AttackBox.h"
 
+constexpr float guard_damege_adj = 2.0f;
+
 class Hitcheak
 {
 public:

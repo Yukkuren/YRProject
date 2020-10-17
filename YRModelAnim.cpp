@@ -565,6 +565,65 @@ void ModelAnim::NodeChange(std::shared_ptr<Model>& resource)
 		dst.translate = src.translate;
 		res++;
 	}*/
-	m_current_animation = 0;
+	//m_current_animation = 0;
+	m_current_seconds = 0.0f;
+}
+
+void ModelAnim::NodeChange(std::shared_ptr<Model>& resource, int anim_num)
+{
+	PlayAnimation(anim_num, true);
+	// ÉmÅ[Éh
+	const std::vector<ModelData::Node>& res_nodes = resource->GetNodes();
+
+	//m_nodes.resize(res_nodes.size());
+	int res = 0;
+	model_resource_anim = resource;
+
+
+	ModelData::NodeKeyData dummy =
+	{
+		DirectX::XMFLOAT3(0.0f,0.0f,0.0f),
+		DirectX::XMFLOAT4(0.0f,0.0f,0.0f,0.0f),
+		DirectX::XMFLOAT3(0.0f,0.0f,0.0f)
+	};
+
+	for (int i = 0; i < model_resource_anim->m_data->animations[anim_num].keyframes.size(); i++)
+	{
+		if (model_resource_anim->m_data->animations[anim_num].keyframes[i].node_keys.size() != m_nodes.size())
+		{
+			model_resource_anim->m_data->animations[anim_num].keyframes[i].node_keys.insert(model_resource_anim->m_data->animations[anim_num].keyframes[i].node_keys.begin() + 1, dummy);
+		}
+	}
+
+	/*if (res_nodes.size() != m_nodes.size())
+	{
+		for (int i = 0; i < model_resource_anim->m_data->animations.size(); i++)
+		{
+			for (int o = 0; o < model_resource_anim->m_data->animations[i].keyframes.size(); o++)
+			{
+				model_resource_anim->m_data->animations[i].keyframes[o].node_keys.insert(model_resource_anim->m_data->animations[i].keyframes[o].node_keys.begin() + 1, dummy);
+			}
+		}
+	}*/
+
+	res = 0;
+
+	/*for (size_t node_index = 0; node_index < m_nodes.size(); ++node_index)
+	{
+		if (node_index == 1&&m_nodes.size()!=res_nodes.size())
+		{
+			continue;
+		}
+		auto&& src = res_nodes.at(res);
+		auto&& dst = m_nodes.at(node_index);
+
+		dst.name = src.name.c_str();
+		dst.parent = src.parent_index >= 0 ? &m_nodes.at(src.parent_index) : nullptr;
+		dst.scale = src.scale;
+		dst.rotate = src.rotate;
+		dst.translate = src.translate;
+		res++;
+	}*/
+	//m_current_animation = 0;
 	m_current_seconds = 0.0f;
 }

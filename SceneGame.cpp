@@ -261,14 +261,15 @@ void SceneGame::LoadData()
 	//選択したキャラクターをそれぞれ生成する
 	SetPlayerCharacter(player1p, FRAMEWORK.sceneselect.select_p1);
 	SetPlayerCharacter(player2p, FRAMEWORK.sceneselect.select_p2);
+	player1p->now_player = 1;
+	player2p->now_player = 2;
 	//生成後初期化する(座標系、HP、UI座標など)
 	player1p->Init(PL.pos1P);
 	player2p->Init(PL.pos2P);
 	player1p->LoadData(1);
 	player2p->LoadData(2);
 	//キャラにどのプレイヤーが操作しているかの情報を与える
-	player1p->now_player = 1;
-	player2p->now_player = 2;
+	
 	PL.HP_MAX1P = player1p->hp;
 	PL.HP_MAX2P = player2p->hp;
 	PL.ratio1P = player1p->hp / PL.HP_MAX1P * 800.0f;

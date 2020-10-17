@@ -32,76 +32,31 @@ struct Model_MotionData
 {
 	std::shared_ptr<Model>			wait_R = nullptr;
 	std::shared_ptr<Model>			intro_R = nullptr;
+	std::shared_ptr<Model>			intro_L = nullptr;
 	std::shared_ptr<Model>			damage_R_g_u = nullptr;
-	std::shared_ptr<Model>			jaku_R_f = nullptr;
-	std::shared_ptr<Model>			jaku_R_t = nullptr;
-	std::shared_ptr<Model>			jaku_R_l = nullptr;
-	std::shared_ptr<Model>			thu_R_f = nullptr;
-	std::shared_ptr<Model>			thu_R_t = nullptr;
-	std::shared_ptr<Model>			thu_R_l = nullptr;
-	std::shared_ptr<Model>			kyo_R_f = nullptr;
-	std::shared_ptr<Model>			kyo_R_t = nullptr;
-	std::shared_ptr<Model>			kyo_R_l = nullptr;
-	std::shared_ptr<Model>			d_jaku_R_f = nullptr;
-	std::shared_ptr<Model>			d_jaku_R_t = nullptr;
-	std::shared_ptr<Model>			d_jaku_R_l = nullptr;
-	std::shared_ptr<Model>			d_thu_R_f = nullptr;
-	std::shared_ptr<Model>			d_thu_R_t = nullptr;
-	std::shared_ptr<Model>			d_thu_R_l = nullptr;
-	std::shared_ptr<Model>			u_kyo_R_f = nullptr;
-	std::shared_ptr<Model>			u_kyo_R_t = nullptr;
-	std::shared_ptr<Model>			u_kyo_R_l = nullptr;
-	std::shared_ptr<Model>			a_jaku_R_f = nullptr;
-	std::shared_ptr<Model>			a_jaku_R_t = nullptr;
-	std::shared_ptr<Model>			a_jaku_R_l = nullptr;
-	std::shared_ptr<Model>			a_thu_R_f = nullptr;
-	std::shared_ptr<Model>			a_thu_R_t = nullptr;
-	std::shared_ptr<Model>			a_thu_R_l = nullptr;
-	std::shared_ptr<Model>			a_kyo_R_f = nullptr;
-	std::shared_ptr<Model>			a_kyo_R_t = nullptr;
-	std::shared_ptr<Model>			a_kyo_R_l = nullptr;
-	std::shared_ptr<Model>			a_ukyo_R_f = nullptr;
-	std::shared_ptr<Model>			a_ukyo_R_t = nullptr;
-	std::shared_ptr<Model>			a_ukyo_R_l = nullptr;
-	std::shared_ptr<Model>			steal_R_f = nullptr;
-	std::shared_ptr<Model>			steal_R_t = nullptr;
-	std::shared_ptr<Model>			steal_R_l = nullptr;
-	std::shared_ptr<Model>			slow_R_f = nullptr;
-	std::shared_ptr<Model>			slow_R_t = nullptr;
-	std::shared_ptr<Model>			slow_R_l = nullptr;
-	std::shared_ptr<Model>			track_R_f = nullptr;
-	std::shared_ptr<Model>			track_R_t = nullptr;
-	std::shared_ptr<Model>			track_R_l = nullptr;
-	std::shared_ptr<Model>			jaku_rh_R_f = nullptr;
-	std::shared_ptr<Model>			jaku_rh_R_t = nullptr;
-	std::shared_ptr<Model>			jaku_rh_R_l = nullptr;
-	std::shared_ptr<Model>			thu_rh_R_f = nullptr;
-	std::shared_ptr<Model>			thu_rh_R_t = nullptr;
-	std::shared_ptr<Model>			thu_rh_R_l = nullptr;
-	std::shared_ptr<Model>			kyo_rh_R_f = nullptr;
-	std::shared_ptr<Model>			kyo_rh_R_t = nullptr;
-	std::shared_ptr<Model>			kyo_rh_R_l = nullptr;
-	std::shared_ptr<Model>			jaku_lh_R_f = nullptr;
-	std::shared_ptr<Model>			jaku_lh_R_t = nullptr;
-	std::shared_ptr<Model>			jaku_lh_R_l = nullptr;
-	std::shared_ptr<Model>			thu_lh_R_f = nullptr;
-	std::shared_ptr<Model>			thu_lh_R_t = nullptr;
-	std::shared_ptr<Model>			thu_lh_R_l = nullptr;
-	std::shared_ptr<Model>			kyo_lh_R_f = nullptr;
-	std::shared_ptr<Model>			kyo_lh_R_t = nullptr;
-	std::shared_ptr<Model>			kyo_lh_R_l = nullptr;
-	std::shared_ptr<Model>			special_R_f = nullptr;
-	std::shared_ptr<Model>			special_R_t = nullptr;
-	std::shared_ptr<Model>			special_R_l = nullptr;
-	std::shared_ptr<Model>			disire_s_R_f = nullptr;
-	std::shared_ptr<Model>			disire_s_R_t = nullptr;
-	std::shared_ptr<Model>			disire_s_R_l = nullptr;
-	std::shared_ptr<Model>			disire_m_R_f = nullptr;
-	std::shared_ptr<Model>			disire_m_R_t = nullptr;
-	std::shared_ptr<Model>			disire_m_R_l = nullptr;
-	std::shared_ptr<Model>			extend_R_f = nullptr;
-	std::shared_ptr<Model>			extend_R_t = nullptr;
-	std::shared_ptr<Model>			extend_R_l = nullptr;
+	std::shared_ptr<Model>			jaku_R = nullptr;
+	std::shared_ptr<Model>			thu_R = nullptr;
+	std::shared_ptr<Model>			kyo_R = nullptr;
+	std::shared_ptr<Model>			d_jaku_R = nullptr;
+	std::shared_ptr<Model>			d_thu_R = nullptr;
+	std::shared_ptr<Model>			u_kyo_R = nullptr;
+	std::shared_ptr<Model>			a_jaku_R = nullptr;
+	std::shared_ptr<Model>			a_thu_R = nullptr;
+	std::shared_ptr<Model>			a_kyo_R = nullptr;
+	std::shared_ptr<Model>			a_ukyo_R = nullptr;
+	std::shared_ptr<Model>			steal_R = nullptr;
+	std::shared_ptr<Model>			slow_R = nullptr;
+	std::shared_ptr<Model>			track_R = nullptr;
+	std::shared_ptr<Model>			jaku_rh_R = nullptr;
+	std::shared_ptr<Model>			thu_rh_R = nullptr;
+	std::shared_ptr<Model>			kyo_rh_R = nullptr;
+	std::shared_ptr<Model>			jaku_lh_R = nullptr;
+	std::shared_ptr<Model>			thu_lh_R = nullptr;
+	std::shared_ptr<Model>			kyo_lh_R = nullptr;
+	std::shared_ptr<Model>			special_R = nullptr;
+	std::shared_ptr<Model>			disire_s_R = nullptr;
+	std::shared_ptr<Model>			disire_m_R = nullptr;
+	std::shared_ptr<Model>			extend_R = nullptr;
 
 public:
 	std::vector <std::shared_ptr<Model>> model_R;
@@ -186,6 +141,8 @@ public:
 	void CancelList();
 	void AttackDetailsSet();
 
+	void HitBoxTransition(HitBoxState state);
+
 	void GuardAnimSet();
 	void WaitAnimSet();
 	void WinAnimSet();
@@ -201,10 +158,10 @@ public:
 	//----------------------------------//
 	void Jaku(float elapsed_time);
 	void Thu(float elapsed_time);
-	void Kyo(float fream, float elapsed_time);
+	void Kyo(float elapsed_time);
 	void D_Jaku(float elapsed_time);
-	void D_Thu(float fream, float elapsed_time);
-	void U_Kyo(float fream, float elapsed_time);
+	void D_Thu(float elapsed_time);
+	void U_Kyo(float elapsed_time);
 	void Hadouken(float elapsed_time);
 	void Thu_Hadouken(float elapsed_time);
 	void Kyo_Hadouken(float elapsed_time);
@@ -381,6 +338,7 @@ public:
 
 	FaceAnim face_anim = FaceAnim::NORMAL;
 	float face_wink_time = 0.0f;				//ウインク処理用変数
+	float face_wink_interval_timer = 0.0f;		//ウインクの間隔を調整する変数
 	float wink_interval = 3.0f;					//ウインクの間隔
 	float lip_sync_time = 0.0f;					//口パク処理用変数
 
@@ -401,6 +359,7 @@ public:
 
 	void FaceAnimation(float elapsed_time);				//表情のアニメーション処理
 	void FaceWink(float elapsed_time);					//ウインクの処理
+	bool FaceWink_bool(float elapsed_time);				//ウインクの処理(口パクなどと合わせる用)
 	void FaceLipSync(float elapsed_time);				//口パクの処理
 
 	void ChangeFace(FaceAnim anim);						//表情を変える関数(enumで定義)

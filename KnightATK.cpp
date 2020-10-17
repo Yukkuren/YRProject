@@ -42,9 +42,7 @@ void Knight::Jaku(float elapsed_time)
 		anim_ccodinate = ac_attack[scastI(attack_state)].timer;
 		attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft);
 		fream = non_target;
-		anim->NodeChange(model_motion.jaku_R_t);
-		//motion.MeshSet(jaku_r_t);
-		//motion.AnimReset();
+		anim->NodeChange(model_motion.jaku_R,scastI(AnimAtk::TIMER));
 		
 	}
 
@@ -78,8 +76,6 @@ void Knight::Jaku(float elapsed_time)
 		return;
 	}
 
-	//atk.back().SpeedPlus(YR_Vector3(5.0f, 5.0f), elapsed_time);
-
 	//攻撃が全て終了したことを確認する
 	if (AttackEndCheck())
 	{
@@ -93,35 +89,13 @@ void Knight::Jaku(float elapsed_time)
 			attack_list[now_at_list].now_attack_num = 0;
 			later = attack_list[now_at_list].later;
 			anim_ccodinate = ac_attack[scastI(attack_state)].later;
-			anim->NodeChange(model_motion.jaku_R_l);
+			anim->NodeChange(model_motion.jaku_R,scastI(AnimAtk::LATER));
 			//motion.MeshSet(base);
 			//motion.AnimReset();
 		}
 	}
 
 	specialfream = 0;
-	/*if (atk[scastI(KNIGHTATK::ONE)].knock_start)
-	{
-		pos.x -= atk[scastI(KNIGHTATK::ONE)].knockback;
-		atk[scastI(KNIGHTATK::ONE)].knockback = 0.0f;;
-		if (!ground)
-		{
-			speed_Y.Set(60.0f);
-		}
-	}
-	YR_Vector3 cent{ pos.x + Getapply(100.0f),pos.y };
-	YR_Vector3 range{ 50.0f,50.0f };
-	if (ground)
-	{
-		atk[scastI(KNIGHTATK::ONE)].Update(
-			cent, range, 5, 5, 15, 10, 15, YR_Vector3(Getapply(5.0f), 0.0f), AttackBox::MIDDLE, Getapply(10.0f),elapsed_time);
-	}
-	else
-	{
-		atk[scastI(KNIGHTATK::ONE)].Update(
-			cent, range, 5, 5, 15, 10, 20, YR_Vector3(Getapply(5.0f), 20.0f), AttackBox::MIDDLE, Getapply(10.0f),elapsed_time);
-	}
-	specialfream = 0;*/
 }
 
 void Knight::Thu(float elapsed_time)
@@ -266,7 +240,7 @@ void Knight::Thu(float elapsed_time)
 	specialfream = 0;*/
 }
 
-void Knight::Kyo(float fream, float elapsed_time)
+void Knight::Kyo(float elapsed_time)
 {
 	/*if (atk[scastI(KNIGHTATK::ONE)].knock_start)
 	{
@@ -316,7 +290,7 @@ void Knight::D_Jaku(float elapsed_time)
 }
 
 
-void Knight::D_Thu(float fream, float elapsed_time)
+void Knight::D_Thu(float elapsed_time)
 {
 	//Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(-31.0f, 134.0f);
 	//hit[scastI(KNIGHTHIT::BODY)].size = YR_Vector3(110.0f, 62.0f);
@@ -346,44 +320,80 @@ void Knight::D_Thu(float fream, float elapsed_time)
 	//specialfream = 0;
 }
 
-void Knight::U_Kyo(float fream, float elapsed_time)
+void Knight::U_Kyo(float elapsed_time)
 {
-	/*if (atk[scastI(KNIGHTATK::ONE)].knock_start)
+	//後隙が設定された後はこの関数には入らない
+	if (later > -1 && later < target_max)
 	{
-		pos.x -= atk[scastI(KNIGHTATK::ONE)].knockback;
-		atk[scastI(KNIGHTATK::ONE)].knockback = 0.0f;;
+		return;
 	}
-	YR_Vector3 cent{ pos.x + Getapply(100.0f),pos.y - 100.0f };
-	YR_Vector3 range{ 150.0f,150.0f };
-	if (specialfream != 0)
+
+	//発生フレームになるまで回す
+	if (fream < target_max)
 	{
-		if (ground)
+		fream -= elapsed_time;
+	}
+
+
+	//発生フレームになったら攻撃判定を生成する
+	if (fream < 0.0f)
+	{
+		int attack_num = attack_list[scastI(attack_state)].now_attack_num;
+		anim_ccodinate = ac_attack[scastI(attack_state)].timer;
+		attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft);
+		fream = non_target;
+		anim->NodeChange(model_motion.u_kyo_R, scastI(AnimAtk::TIMER));
+
+	}
+
+	int now_at_list = scastI(attack_state);
+
+	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
+	if (!atk.empty())
+	{
+		for (auto& a : atk)
 		{
-			atk[scastI(KNIGHTATK::ONE)].Update(
-				cent, range, 5, specialfream, 30, 50, 30, YR_Vector3(Getapply(50.0f), 10.0f), AttackBox::UP, Getapply(50.0f),elapsed_time);
+			if (knock)
+			{
+				a.parameter.knockback = 0.0f;
+			}
+			if (a.knock_start)
+			{
+				pos.x -= a.parameter.knockback * rightOrleft;
+				a.parameter.knockback = 0.0f;
+				if (!ground)
+				{
+					speed_Y.Set(60.0f);
+				}
+				knock = true;
+			}
+		}
+	}
+
+	if (atk.empty())
+	{
+		//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
+		return;
+	}
+
+	//攻撃が全て終了したことを確認する
+	if (AttackEndCheck())
+	{
+		//まだ攻撃が残っていれば次の攻撃に移る
+		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
+		{
+			fream = attack_list[scastI(attack_state)].attack_single[attack_list[now_at_list].now_attack_num].fream;
 		}
 		else
 		{
-			cent = { pos.x + Getapply(100.0f),pos.y + 50.0f };
-			atk[scastI(KNIGHTATK::ONE)].Update(
-				cent, range, 5, specialfream, 30, 50, 30, YR_Vector3(Getapply(50.0f), -25.0f), AttackBox::UP, Getapply(50.0f),elapsed_time);
+			attack_list[now_at_list].now_attack_num = 0;
+			later = attack_list[now_at_list].later;
+			anim_ccodinate = ac_attack[scastI(attack_state)].later;
+			anim->NodeChange(model_motion.u_kyo_R, scastI(AnimAtk::LATER));
 		}
 	}
-	else
-	{
-		if (ground)
-		{
-			atk[scastI(KNIGHTATK::ONE)].Update(
-				cent, range, 5, 20, 30, 50, 30, YR_Vector3(Getapply(50.0f), 10.0f), AttackBox::UP, Getapply(50.0f),elapsed_time);
-		}
-		else
-		{
-			cent = { pos.x + Getapply(100.0f),pos.y + 50.0f };
-			atk[scastI(KNIGHTATK::ONE)].Update(
-				cent, range, 5, 20, 30, 50, 30, YR_Vector3(Getapply(50.0f), -25.0f), AttackBox::UP, Getapply(50.0f),elapsed_time);
-		}
-	}
-	specialfream = 0;*/
+
+	specialfream = 0;
 }
 
 void Knight::P_Kyo(float elapsed_time)
@@ -711,7 +721,7 @@ void Knight::SpecialAttack(float elapsed_time)
 		anim_ccodinate = ac_attack[scastI(attack_state)].timer;
 		attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft);
 		fream = non_target;
-		anim->NodeChange(model_motion.special_R_t);
+		anim->NodeChange(model_motion.special_R,scastI(AnimAtk::TIMER));
 		YRCamera.RequestCamera(Camera::Request::RELEASE, now_player);
 	}
 
@@ -758,7 +768,7 @@ void Knight::SpecialAttack(float elapsed_time)
 			attack_list[now_at_list].now_attack_num = 0;
 			later = attack_list[now_at_list].later;
 			anim_ccodinate = ac_attack[scastI(attack_state)].later;
-			anim->NodeChange(model_motion.special_R_l);
+			anim->NodeChange(model_motion.special_R,scastI(AnimAtk::LATER));
 		}
 	}
 

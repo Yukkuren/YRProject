@@ -33,6 +33,18 @@ enum class PLSELECT :int
 	PLSELECT_END,
 };
 
+
+//--------------------------------------
+//	**アニメーション選択
+//	・NodeChange時に送り、アニメーションを指定する
+//--------------------------------------
+enum class AnimAtk :int
+{
+	FREAM = 0,	//発生
+	LATER,		//後隙
+	TIMER,		//持続
+};
+
 //---------------------------------------------
 // **スピードクラス**
 //・プレイヤーに加算するY軸方向の力を処理する
@@ -70,11 +82,12 @@ public:
 //----------------------------------------------
 enum class ActState : int
 {
+	//右向きの時
 	NONE = 0,		//何もない(default)
 	WAIT,			//待機(default)m
 	GUARD,			//ガード(default)
 	SQUAT,			//しゃがみ(default)m
-	MOVER,			//右移動(default)
+	MOVER,			//右移動(default)m
 	MOVEL,			//左移動(default)
 	DASH,			//ダッシュ(default)
 	BACK,			//バックステップ(default)
@@ -88,6 +101,7 @@ enum class ActState : int
 	FALL,			//空中でダウンしている状態
 	KNOCK,			//攻撃を受けてのけぞる
 	ATTACK,			//攻撃中
+	ACT_END,		//(終点)
 };
 
 enum class AttackState : int
@@ -165,9 +179,14 @@ public:
 	Command							linkage_command;//どのコマンドで攻撃を発生させるか
 	bool							ground_on;		//攻撃は空中、地上どちらで発生させるか(trueで地上発生)
 	bool							squat_on;		//しゃがみ攻撃がどうか(trueでしゃがみ攻撃)
+	float							need_gauge;		//攻撃を行うのに必要なゲージ量(1.0単位で記述)
+	PAD								linkage_stick;	//どの方向への入力で攻撃を発生させるか
+	AttackState						aid_attack_name;//ゲージが足りなかった場合出す技
+
 public:
 	AttackList() : now_attack_num(0), attack_name(AttackState::NONE), later(0.0f),
-		attack_max(0), linkage_button(PAD::BUTTOM_END), linkage_command(Command::NOCOMMAND), ground_on(true), squat_on(false) {};
+		attack_max(0), linkage_button(PAD::BUTTOM_END), linkage_command(Command::NOCOMMAND), ground_on(true), squat_on(false),
+	need_gauge(0.0f),linkage_stick(PAD::BUTTOM_END),aid_attack_name(AttackState::NONE){};
 	//攻撃当たり判定を生成する
 	void SetAttack(std::vector<AttackBox> *atk, float rightOrleft)
 	{
@@ -190,6 +209,24 @@ public:
 		now_attack_num++;
 	}
 };
+
+
+
+
+//---------------------------------------------------------------------------
+// **当たり判定リストクラス**
+//・当たり判定のパラメーターを各行動ごとに保存するクラス
+//・プレイヤークラスのUpdateで毎回パラメーターを入れていく
+//・ただし当たり判定の数はキャラによって変わる為、変数はvector型で持たせ、
+//　キャラ生成時に必要な個数分生成する
+//----------------------------------------------------------------------------
+class HitParameterList
+{
+public:
+	std::array<HitParameter,scastI(ActState::ACT_END)>			act_parameter;		//攻撃以外の行動時の当たり判定
+	std::array<HitParameter, scastI(AttackState::ATTACK_END)>	attack_parameter;	//攻撃時の当たり判定
+};
+
 
 
 
@@ -230,7 +267,7 @@ public:
 	float				gravity;		//重力値
 	float				specialfream;	//弱コンボ等でフレームを減らす際の数値
 	bool				finish;			//行動が終了したときのみtrue
-	bool				step;
+	bool				step;			//ステップ中はtrue(他の処理を行わない)
 	bool				hightrigger;	//ハイジャンプ時true、通常時false
 	int					trackgauge;		//追尾ダッシュの残り回数
 	float				gauge;			//ゲージ
@@ -244,9 +281,10 @@ public:
 	std::vector<AttackBox> atk;			//当たり判定
 	
 	std::array<Animation_Coordinate, scastI(AttackState::ATTACK_END)>	ac_attack;	//攻撃ごとのアニメーション調整値
+	std::array<float, scastI(ActState::ACT_END)>						ac_act;		//行動ごとのアニメーション調整値(一つのアニメーションのみなのでfloat)
 
-
-	std::vector<AttackList>		attack_list;	//攻撃のリスト。生成時に読み込み、保存する(攻撃発生時にパラメーターを送る)
+	std::vector<AttackList>								attack_list;	//攻撃のリスト。生成時に読み込み、保存する(攻撃発生時にパラメーターを送る)
+	std::vector<HitParameterList>						hitparam_list;	//当たり判定のリスト。生成時に読み込み、保存する(当たり判定の数だけ生成する)
 
 public:
 	//モデル用変数
@@ -311,6 +349,8 @@ public:
 	virtual void CancelList() = 0;
 	virtual void StateNone() = 0;
 	virtual void KnockUpdate(float elapsed_time) = 0;
+
+	virtual void HitBoxTransition(HitBoxState state) = 0;
 
 	virtual void AttackInput() = 0;
 	virtual void Attack(float decision, float elapsed_time) = 0;

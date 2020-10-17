@@ -20,20 +20,20 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 		{
 			for (int hitnum = 0; hitnum < h_max; hitnum++)
 			{
-				float a = (pos.x + attack[atknum].parameter.distance.x) - attack[atknum].parameter.size.x;
-				float b = hit[hitnum].center.x + hit[hitnum].size.x;
-				float c = (pos.x + attack[atknum].parameter.distance.x) + attack[atknum].parameter.size.x;
-				float d = hit[hitnum].center.x - hit[hitnum].size.x;
-				float e = (pos.y + attack[atknum].parameter.distance.y) - attack[atknum].parameter.size.y;
-				float f = hit[hitnum].center.y + hit[hitnum].size.y;
-				float g = (pos.y + attack[atknum].parameter.distance.y) + attack[atknum].parameter.size.y;
-				float h = hit[hitnum].center.y - hit[hitnum].size.y;
+				//float a = (pos.x + attack[atknum].parameter.distance.x) - attack[atknum].parameter.size.x;
+				//float b = hit[hitnum].center.x + hit[hitnum].parameter.size.x;
+				//float c = (pos.x + attack[atknum].parameter.distance.x) + attack[atknum].parameter.size.x;
+				//float d = hit[hitnum].center.x - hit[hitnum].parameter.size.x;
+				//float e = (pos.y + attack[atknum].parameter.distance.y) - attack[atknum].parameter.size.y;
+				//float f = hit[hitnum].center.y + hit[hitnum].parameter.size.y;
+				//float g = (pos.y + attack[atknum].parameter.distance.y) + attack[atknum].parameter.size.y;
+				//float h = hit[hitnum].center.y - hit[hitnum].parameter.size.y;
 
-				if (attack[atknum].pos.x - attack[atknum].parameter.size.x<hit[hitnum].center.x + hit[hitnum].size.x &&
-					attack[atknum].pos.x + attack[atknum].parameter.size.x>hit[hitnum].center.x - hit[hitnum].size.x)
+				if (attack[atknum].pos.x - attack[atknum].parameter.size.x<hit[hitnum].center.x + hit[hitnum].parameter.size.x &&
+					attack[atknum].pos.x + attack[atknum].parameter.size.x>hit[hitnum].center.x - hit[hitnum].parameter.size.x)
 				{
-					if (attack[atknum].pos.y - attack[atknum].parameter.size.y<hit[hitnum].center.y + hit[hitnum].size.y &&
-						attack[atknum].pos.y + attack[atknum].parameter.size.y>hit[hitnum].center.y - hit[hitnum].size.y)
+					if (attack[atknum].pos.y - attack[atknum].parameter.size.y<hit[hitnum].center.y + hit[hitnum].parameter.size.y &&
+						attack[atknum].pos.y + attack[atknum].parameter.size.y>hit[hitnum].center.y - hit[hitnum].parameter.size.y)
 					{
 						int flag = 0;
 						//0:ÉKÅ[Éhê¨å˜
@@ -44,57 +44,57 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 						switch (attack[atknum].parameter.type)
 						{
 						case AttackBox::UP:
-							if (hit[hitnum].guard == HitBox::NOGUARD)
+							if (hit[hitnum].parameter.state == HitBoxState::NOGUARD)
 							{
 								flag = 1;
 							}
-							if (hit[hitnum].guard == HitBox::DOWN)
+							if (hit[hitnum].parameter.state == HitBoxState::DOWN)
 							{
 								flag = 1;
 							}
-							if (hit[hitnum].guard == HitBox::INVINCIBLE)
+							if (hit[hitnum].parameter.state == HitBoxState::INVINCIBLE)
 							{
 								flag = 2;
 							}
 							break;
 						case AttackBox::MIDDLE:
-							if (hit[hitnum].guard == HitBox::NOGUARD)
+							if (hit[hitnum].parameter.state == HitBoxState::NOGUARD)
 							{
 								flag = 1;
 							}
-							if (hit[hitnum].guard == HitBox::INVINCIBLE)
+							if (hit[hitnum].parameter.state == HitBoxState::INVINCIBLE)
 							{
 								flag = 2;
 							}
 							break;
 						case AttackBox::DOWN:
-							if (hit[hitnum].guard == HitBox::NOGUARD)
+							if (hit[hitnum].parameter.state == HitBoxState::NOGUARD)
 							{
 								flag = 1;
 							}
-							if (hit[hitnum].guard == HitBox::MIDDLE)
+							if (hit[hitnum].parameter.state == HitBoxState::MIDDLE)
 							{
 								flag = 1;
 							}
-							if (hit[hitnum].guard == HitBox::INVINCIBLE)
+							if (hit[hitnum].parameter.state == HitBoxState::INVINCIBLE)
 							{
 								flag = 2;
 							}
 							break;
 						case AttackBox::STEAL:
-							if (hit[hitnum].guard == HitBox::NOGUARD)
+							if (hit[hitnum].parameter.state == HitBoxState::NOGUARD)
 							{
 								flag = 3;
 							}
-							if (hit[hitnum].guard == HitBox::MIDDLE)
+							if (hit[hitnum].parameter.state == HitBoxState::MIDDLE)
 							{
 								flag = 3;
 							}
-							if (hit[hitnum].guard == HitBox::DOWN)
+							if (hit[hitnum].parameter.state == HitBoxState::DOWN)
 							{
 								flag = 3;
 							}
-							if (hit[hitnum].guard == HitBox::INVINCIBLE)
+							if (hit[hitnum].parameter.state == HitBoxState::INVINCIBLE)
 							{
 								flag = 2;
 							}
@@ -193,10 +193,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 							hit[hitnum].guard_ok = true;
 							attack[atknum].hit_ok = false;
 							attack[atknum].knock_start = true;
-							hit[hitnum].damege = attack[atknum].parameter.damege / 2;
+							hit[hitnum].damege = attack[atknum].parameter.damege / guard_damege_adj;
 							hit[hitnum].timer = attack[atknum].parameter.HB_timer;
-							hit[hitnum].hitback.x = attack[atknum].parameter.hitback.x / 2;
-							hit[hitnum].hitback.y = attack[atknum].parameter.hitback.y / 2;
+							hit[hitnum].hitback.x = attack[atknum].parameter.hitback.x / guard_damege_adj;
+							hit[hitnum].hitback.y = attack[atknum].parameter.hitback.y / guard_damege_adj;
 							for (int n = 0; n < attack.size(); n++)
 							{
 								attack[n].parameter.damege = 0;
@@ -257,13 +257,16 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 
 void Hitcheak::HitPlayer(HitBox* pl1, float& pos1, HitBox* pl2, float& pos2)
 {
-	if (pl1[0].center.x - pl1[0].size.x<pl2[0].center.x + pl2[0].size.x && pl1[0].center.x + pl1[0].size.x>pl2[0].center.x - pl2[0].size.x)
+	//0Ç™ïKÇ∏ëÃÇÃìñÇΩÇËîªíËÇ…Ç»ÇÈà◊0ÇæÇØÇ≈îªíËÇµÇƒÇ¢ÇÈ
+	if (pl1[0].center.x - pl1[0].parameter.size.x<pl2[0].center.x + pl2[0].parameter.size.x &&
+		pl1[0].center.x + pl1[0].parameter.size.x>pl2[0].center.x - pl2[0].parameter.size.x)
 	{
-		if (pl1[0].center.y - pl1[0].size.y<pl2[0].center.y + pl2[0].size.y && pl1[0].center.y + pl1[0].size.y>pl2[0].center.y - pl2[0].size.y)
+		if (pl1[0].center.y - pl1[0].parameter.size.y<pl2[0].center.y + pl2[0].parameter.size.y &&
+			pl1[0].center.y + pl1[0].parameter.size.y>pl2[0].center.y - pl2[0].parameter.size.y)
 		{
 			//pl1[0].hitother = true;
 			//pl2[0].hitother = true;
-			float moving_correction = (pl1[0].size.x / 2) + (pl2[0].size.x / 2);
+			float moving_correction = (pl1[0].parameter.size.x / 2.0f) + (pl2[0].parameter.size.x / 2.0f);
 			if (pos1 < pos2)
 			{
 				//while (1)

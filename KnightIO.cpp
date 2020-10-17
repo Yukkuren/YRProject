@@ -19,7 +19,10 @@ bool Knight::DEBUGAttackLoad()
 	attack_list[scastI(AttackState::JAKU)].linkage_button = PAD::X;
 	attack_list[scastI(AttackState::JAKU)].linkage_command = Command::NOCOMMAND;
 	attack_list[scastI(AttackState::JAKU)].ground_on = true;
-	attack_list[scastI(AttackState::JAKU)].ground_on = false;
+	attack_list[scastI(AttackState::JAKU)].squat_on = false;
+	attack_list[scastI(AttackState::JAKU)].linkage_stick = PAD::BUTTOM_END;
+	attack_list[scastI(AttackState::JAKU)].need_gauge = 0.0f;
+	attack_list[scastI(AttackState::JAKU)].aid_attack_name = AttackState::NONE;
 	for (int i = 0; i < attack_list[scastI(AttackState::JAKU)].attack_max; i++)
 	{
 		attack_list[scastI(AttackState::JAKU)].attack_single[i].fream = 0.1f;
@@ -56,6 +59,9 @@ bool Knight::DEBUGAttackLoad()
 	attack_list[scastI(AttackState::SPECIAL_ATTACK)].linkage_command = Command::NOCOMMAND;
 	attack_list[scastI(AttackState::SPECIAL_ATTACK)].ground_on = true;
 	attack_list[scastI(AttackState::SPECIAL_ATTACK)].squat_on = false;
+	attack_list[scastI(AttackState::SPECIAL_ATTACK)].linkage_stick = PAD::BUTTOM_END;
+	attack_list[scastI(AttackState::SPECIAL_ATTACK)].need_gauge = 0.0f;
+	attack_list[scastI(AttackState::SPECIAL_ATTACK)].aid_attack_name = AttackState::NONE;
 	
 	for (int i = 0; i < attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_max; i++)
 	{
@@ -87,6 +93,20 @@ bool Knight::DEBUGAttackLoad()
 		attack_list[i].attack_name = a;
 	}
 
+	hitparam_list.resize(scastI(KNIGHTHIT::END));
+	for (int list = 0; list < hitparam_list[scastI(KNIGHTHIT::BODY)].act_parameter.size(); list++)
+	{
+		hitparam_list[scastI(KNIGHTHIT::BODY)].act_parameter[list].distance = YR_Vector3(0.0f, 0.0f);
+		hitparam_list[scastI(KNIGHTHIT::BODY)].act_parameter[list].size = YR_Vector3(2.0f, 2.9f);
+		hitparam_list[scastI(KNIGHTHIT::BODY)].act_parameter[list].state = HitBoxState::NOGUARD;
+	}
+	for (int list = 0; list < hitparam_list[scastI(KNIGHTHIT::LEG)].act_parameter.size(); list++)
+	{
+		hitparam_list[scastI(KNIGHTHIT::LEG)].act_parameter[list].distance = YR_Vector3(0.0f, 0.0f);
+		hitparam_list[scastI(KNIGHTHIT::LEG)].act_parameter[list].size = YR_Vector3(1.4f, 0.8f);
+		hitparam_list[scastI(KNIGHTHIT::LEG)].act_parameter[list].state = HitBoxState::NOGUARD;
+	}
+
 	return true;
 }
 
@@ -101,13 +121,18 @@ bool Knight::AttackLoad()
 	{
 		ifs >> attack_list[list].later;
 		ifs >> attack_list[list].attack_max;
-		int pad,com;
+		int pad,com,stick,aid;
 		ifs >> pad;
 		ifs >> com;
 		attack_list[list].linkage_button = static_cast<PAD>(pad);
 		attack_list[list].linkage_command = static_cast<Command>(com);
 		ifs >> attack_list[list].ground_on;
 		ifs >> attack_list[list].squat_on;
+		ifs >> attack_list[list].need_gauge;
+		ifs >> stick;
+		ifs >> aid;
+		attack_list[list].linkage_stick = static_cast<PAD>(stick);
+		attack_list[list].aid_attack_name = static_cast<AttackState>(aid);
 		attack_list[list].attack_single.resize(attack_list[list].attack_max);
 
 		//攻撃回数ごとのパラメータ書き出し
@@ -180,6 +205,69 @@ bool Knight::AttackLoad()
 	anim_ifs.close();
 
 
+
+	//アニメーション調整値を読み込む
+	std::ifstream anim_act_ifs("./Data/CharaParameter/Knight/AnimActParam.txt");
+	for (int list = 0; list < ac_act.size(); list++)
+	{
+		anim_act_ifs >> ac_act[list];
+	}
+	//もし落ちたらエラーを出す
+	if (anim_ifs.fail())
+	{
+		bool set = false;
+		ImGui::SetNextWindowSize(ImVec2(250, 500), 2);
+		ImGui::Begin("Error", &set);
+		//std::cout << ”読み込みに失敗しました” << std::endl;
+		ImGui::Text("アニメーション調整値の読み込みに失敗しました");
+		ImGui::End();
+	}
+	//ファイルを閉じる
+	anim_act_ifs.close();
+
+
+
+	//当たり判定調整値を読み込む
+	std::ifstream hit_ifs("./Data/CharaParameter/Knight/HitParam.txt");
+	for (int list = 0; list < hitparam_list.size(); list++)
+	{
+		for (int act = 0; act < hitparam_list[list].act_parameter.size(); act++)
+		{
+			//行動中当たり判定読み込み
+			hit_ifs >> hitparam_list[list].act_parameter[act].distance.x;
+			hit_ifs >> hitparam_list[list].act_parameter[act].distance.y;
+			hit_ifs >> hitparam_list[list].act_parameter[act].size.x;
+			hit_ifs >> hitparam_list[list].act_parameter[act].size.y;
+			int state;
+			hit_ifs >> state;
+			hitparam_list[list].act_parameter[act].state = static_cast<HitBoxState>(state);
+		}
+		for (int atk = 0; atk < hitparam_list[list].attack_parameter.size(); atk++)
+		{
+			//攻撃中当たり判定読み込み
+			hit_ifs >> hitparam_list[list].attack_parameter[atk].distance.x;
+			hit_ifs >> hitparam_list[list].attack_parameter[atk].distance.y;
+			hit_ifs >> hitparam_list[list].attack_parameter[atk].size.x;
+			hit_ifs >> hitparam_list[list].attack_parameter[atk].size.y;
+			int state;
+			hit_ifs >> state;
+			hitparam_list[list].attack_parameter[atk].state = static_cast<HitBoxState>(state);
+		}
+	}
+	//もし落ちたらエラーを出す
+	if (hit_ifs.fail())
+	{
+		bool set = false;
+		ImGui::SetNextWindowSize(ImVec2(250, 500), 2);
+		ImGui::Begin("Error", &set);
+		//std::cout << ”読み込みに失敗しました” << std::endl;
+		ImGui::Text("アニメーション調整値の読み込みに失敗しました");
+		ImGui::End();
+	}
+	//ファイルを閉じる
+	hit_ifs.close();
+
+
 	return true;
 }
 
@@ -194,10 +282,14 @@ bool Knight::AttackClean()
 		ac_attack[list].fream = 1.0f;
 		ac_attack[list].timer = 1.0f;
 		ac_attack[list].later = 1.0f;
+		attack_list[list].now_attack_num = 0;
 		attack_list[list].linkage_button = PAD::BUTTOM_END;
 		attack_list[list].linkage_command = Command::NOCOMMAND;
 		attack_list[list].ground_on = true;
 		attack_list[list].squat_on = false;
+		attack_list[list].need_gauge = 0.0f;
+		attack_list[list].linkage_stick = PAD::BUTTOM_END;
+		attack_list[list].aid_attack_name = AttackState::NONE;
 		//攻撃回数ごとのパラメータ初期化
 		for (int sin = 0; sin < attack_list[list].attack_single.size(); sin++)
 		{
@@ -225,6 +317,35 @@ bool Knight::AttackClean()
 			}
 		}
 	}
+
+	//アニメーション調整値を全て初期化する
+	for (int list = 0; list < ac_attack.size(); list++)
+	{
+		ac_attack[list].fream = 1.0f;
+		ac_attack[list].timer = 1.0f;
+		ac_attack[list].later = 1.0f;
+	}
+	for (int list = 0; list < ac_act.size(); list++)
+	{
+		ac_act[list] = 1.0f;
+	}
+
+	//当たり判定調整値も全て初期化する
+	for (int list = 0; list < hitparam_list.size(); list++)
+	{
+		for (int act = 0; act < hitparam_list[list].act_parameter.size(); act++)
+		{
+			hitparam_list[list].act_parameter[act].distance = YR_Vector3(0.0f, 0.0f);
+			hitparam_list[list].act_parameter[act].size = YR_Vector3(1.0f, 1.0f);
+			hitparam_list[list].act_parameter[act].state = HitBoxState::NOGUARD;
+		}
+		for (int atk = 0; atk < hitparam_list[list].attack_parameter.size(); atk++)
+		{
+			hitparam_list[list].attack_parameter[atk].distance = YR_Vector3(0.0f, 0.0f);
+			hitparam_list[list].attack_parameter[atk].size = YR_Vector3(1.0f, 1.0f);
+			hitparam_list[list].attack_parameter[atk].state = HitBoxState::NOGUARD;
+		}
+	}
 	return true;
 }
 
@@ -241,6 +362,9 @@ bool Knight::AttackWrite()
 		outputfile << scastI(attack_list[list].linkage_command) << std::endl;
 		outputfile << attack_list[list].ground_on << std::endl;
 		outputfile << attack_list[list].squat_on << std::endl;
+		outputfile << attack_list[list].need_gauge << std::endl;
+		outputfile << scastI(attack_list[list].linkage_stick) << std::endl;
+		outputfile << scastI(attack_list[list].aid_attack_name) << std::endl;
 
 		//攻撃回数ごとのパラメータ書き出し
 		if (!attack_list[list].attack_single.empty())
@@ -294,6 +418,39 @@ bool Knight::AttackWrite()
 	}
 
 	animout.close();
+
+	std::ofstream animactout("./Data/CharaParameter/Knight/AnimActParam.txt");
+	for (int list = 0; list < ac_act.size(); list++)
+	{
+		animactout << ac_act[list] << std::endl;
+	}
+
+	animactout.close();
+
+	//当たり判定調整値も書き出す
+	std::ofstream hitout("./Data/CharaParameter/Knight/HitParam.txt");
+	for (int list = 0; list < hitparam_list.size(); list++)
+	{
+		for (int act = 0; act < hitparam_list[list].act_parameter.size(); act++)
+		{
+			//行動中当たり判定書き込み
+			hitout << hitparam_list[list].act_parameter[act].distance.x << std::endl;
+			hitout << hitparam_list[list].act_parameter[act].distance.y << std::endl;
+			hitout << hitparam_list[list].act_parameter[act].size.x << std::endl;
+			hitout << hitparam_list[list].act_parameter[act].size.y << std::endl;
+			hitout << scastI(hitparam_list[list].act_parameter[act].state) << std::endl;
+		}
+		for (int atk = 0; atk < hitparam_list[list].attack_parameter.size(); atk++)
+		{
+			//攻撃中当たり判定書き込み
+			hitout << hitparam_list[list].attack_parameter[atk].distance.x << std::endl;
+			hitout << hitparam_list[list].attack_parameter[atk].distance.y << std::endl;
+			hitout << hitparam_list[list].attack_parameter[atk].size.x << std::endl;
+			hitout << hitparam_list[list].attack_parameter[atk].size.y << std::endl;
+			hitout << scastI(hitparam_list[list].attack_parameter[atk].state) << std::endl;
+		}
+	}
+	hitout.close();
 
 	return true;
 }

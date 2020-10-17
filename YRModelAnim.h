@@ -54,6 +54,7 @@ public:
 		);
 
 	void NodeChange(std::shared_ptr<Model>& resource);
+	void NodeChange(std::shared_ptr<Model>& resource,int anim_num);
 
 private:
 	std::shared_ptr<Model>			m_model_resource;
