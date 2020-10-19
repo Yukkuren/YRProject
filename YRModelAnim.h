@@ -56,6 +56,9 @@ public:
 	void NodeChange(std::shared_ptr<Model>& resource);
 	void NodeChange(std::shared_ptr<Model>& resource,int anim_num);
 
+	const bool &GetLoopAnim()const  { return m_loop_animation; };	//再生中のアニメーションがループするかを返す
+	const int& GetEndAnim()const { return m_current_animation; };	//再生中のアニメーションが終了したかを返す(-1なら終了)
+
 private:
 	std::shared_ptr<Model>			m_model_resource;
 	std::shared_ptr<Model>			model_resource_anim = nullptr;

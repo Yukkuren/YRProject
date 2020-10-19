@@ -31,6 +31,13 @@ enum class KNIGHTATK :int
 struct Model_MotionData
 {
 	std::shared_ptr<Model>			wait_R = nullptr;
+	std::shared_ptr<Model>			squat_R = nullptr;
+	std::shared_ptr<Model>			walk_R = nullptr;
+	std::shared_ptr<Model>			back_R = nullptr;
+	std::shared_ptr<Model>			dash_R = nullptr;
+	std::shared_ptr<Model>			backstep_R = nullptr;
+	std::shared_ptr<Model>			jump_R = nullptr;
+	std::shared_ptr<Model>			air_jump_R = nullptr;
 	std::shared_ptr<Model>			intro_R = nullptr;
 	std::shared_ptr<Model>			intro_L = nullptr;
 	std::shared_ptr<Model>			damage_R_g_u = nullptr;
@@ -69,7 +76,7 @@ class Knight : public Player
 {
 private:
 	const float walkspeed = 10.1f;		//歩く速度(代入)
-	const float dashspeed = 30.1f;		//ダッシュ速度
+	const float dashspeed = 40.1f;		//ダッシュ速度
 	const float backstepS = 0.5f;
 	const float stepspeed = 0.5f;
 	const float jump_max = 100.0f;		//ジャンプの最大速度(超えると減速し始め落ちる)
@@ -151,6 +158,7 @@ public:
 
 	void AttackInput();	//攻撃するボタンが押されたか確認し、押されていればその行動をさせる
 	void Attack(float decision, float elapsed_time);		//以下の関数を制御する
+	void AttackDefault(float elapsed_time);//特殊な記述のある攻撃以外はこの関数を使用する
 
 
 	//----------------------------------//
@@ -162,6 +170,10 @@ public:
 	void D_Jaku(float elapsed_time);
 	void D_Thu(float elapsed_time);
 	void U_Kyo(float elapsed_time);
+	void A_Jaku(float elapsed_time);
+	void A_Thu(float elapsed_time);
+	void A_Kyo(float elapsed_time);
+	void A_UKyo(float elapsed_time);
 	void Hadouken(float elapsed_time);
 	void Thu_Hadouken(float elapsed_time);
 	void Kyo_Hadouken(float elapsed_time);

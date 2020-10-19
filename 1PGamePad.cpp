@@ -137,7 +137,6 @@ void GamePad1::Update(float elapsed_time)
 			}
 		}
 
-		//ほとんどない状況だが一応スティックが両方に傾けられている場合は動かないように
 		if (x_input[scastI(PAD::STICK_R)] == 0 && x_input[scastI(PAD::STICK_L)] == 0)
 		{
 			dash_trigger = false;
@@ -269,7 +268,7 @@ void GamePad1::Update(float elapsed_time)
 
 		if (com_list.trigger)
 		{
-			com_list.command_timer++;
+			com_list.command_timer+=elapsed_time;
 		}
 	}
 	else
@@ -504,7 +503,7 @@ void GamePad1::Update(float elapsed_time)
 
 		if (com_list.trigger)
 		{
-			com_list.command_timer++;
+			com_list.command_timer += elapsed_time;
 		}
 
 		/*if (Key[KEY_INPUT_O] > 0)

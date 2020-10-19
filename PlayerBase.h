@@ -88,9 +88,9 @@ enum class ActState : int
 	GUARD,			//ガード(default)
 	SQUAT,			//しゃがみ(default)m
 	MOVER,			//右移動(default)m
-	MOVEL,			//左移動(default)
-	DASH,			//ダッシュ(default)
-	BACK,			//バックステップ(default)
+	MOVEL,			//左移動(default)m
+	DASH,			//ダッシュ(default)m
+	BACK,			//バックステップ(default)m
 	JUMP,			//ジャンプ(default)m
 	AIR_F,			//空中前ダッシュ(default)
 	AIR_B,			//空中後ダッシュ(default)
@@ -281,7 +281,10 @@ public:
 	std::vector<AttackBox> atk;			//当たり判定
 	
 	std::array<Animation_Coordinate, scastI(AttackState::ATTACK_END)>	ac_attack;	//攻撃ごとのアニメーション調整値
-	std::array<float, scastI(ActState::ACT_END)>						ac_act;		//行動ごとのアニメーション調整値(一つのアニメーションのみなのでfloat)
+	std::array<Animation_Coordinate, scastI(ActState::ACT_END)>			ac_act;		//行動ごとのアニメーション調整値
+
+	float												jump_later = 1.0f;			//ジャンプの着地隙
+	float												dash_later = 1.0f;			//ダッシュの後隙
 
 	std::vector<AttackList>								attack_list;	//攻撃のリスト。生成時に読み込み、保存する(攻撃発生時にパラメーターを送る)
 	std::vector<HitParameterList>						hitparam_list;	//当たり判定のリスト。生成時に読み込み、保存する(当たり判定の数だけ生成する)

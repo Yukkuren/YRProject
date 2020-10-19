@@ -298,10 +298,10 @@ void SceneGame::UnInit()
 	//プレイヤーのUninit関数を回す
 	player1p->Uninit();
 	player1p.reset();
-	player1p = nullptr;
+	//player1p = nullptr;
 	player2p->Uninit();
 	player2p.reset();
-	player2p = nullptr;
+	//player2p = nullptr;
 	//SceneGameの画像などを解放する
 	test.reset();
 	geo.reset();
@@ -1371,14 +1371,17 @@ void SceneGame::PauseUpdate()
 	//ポーズ中行う処理
 	if (player1p->pad->x_input[scastI(PAD::START)] == 1 || player2p->pad->x_input[scastI(PAD::START)] == 1)
 	{
-		pause = FALSE;
+		pause = false;
 		//pauseTimer = 20;
 	}
 	if (player1p->pad->x_input[scastI(PAD::LB)] == 1 ||player2p->pad->x_input[scastI(PAD::LB)] == 1)
 	{
-		//セレクト画面に戻る
-		fado_start = true;
+		//fado_start = true;
 		//FRAMEWORK.SetScene(SCENE_SELECT);
+		player1p->Init(PL.pos1P);
+		player2p->Init(PL.pos2P);
+		Init();
+		pause = false;
 	}
 }
 

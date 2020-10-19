@@ -117,6 +117,9 @@ bool Knight::AttackLoad()
 	attack_list.resize(scastI(AttackState::ATTACK_END));
 	std::ifstream ifs("./Data/CharaParameter/Knight/AttackParam.txt");
 
+	ifs >> jump_later;
+	ifs >> dash_later;
+
 	for (int list = 0; list < attack_list.size(); list++)
 	{
 		ifs >> attack_list[list].later;
@@ -210,7 +213,9 @@ bool Knight::AttackLoad()
 	std::ifstream anim_act_ifs("./Data/CharaParameter/Knight/AnimActParam.txt");
 	for (int list = 0; list < ac_act.size(); list++)
 	{
-		anim_act_ifs >> ac_act[list];
+		anim_act_ifs >> ac_act[list].fream;
+		anim_act_ifs >> ac_act[list].timer;
+		anim_act_ifs >> ac_act[list].later;
 	}
 	//もし落ちたらエラーを出す
 	if (anim_ifs.fail())
@@ -273,6 +278,9 @@ bool Knight::AttackLoad()
 
 bool Knight::AttackClean()
 {
+	jump_later = 1.0f;
+	dash_later = 1.0f;
+
 	//攻撃パラメーターを全て初期化する
 	for (int list = 0; list < attack_list.size(); list++)
 	{
@@ -327,7 +335,9 @@ bool Knight::AttackClean()
 	}
 	for (int list = 0; list < ac_act.size(); list++)
 	{
-		ac_act[list] = 1.0f;
+		ac_act[list].fream = 1.0f;
+		ac_act[list].timer = 1.0f;
+		ac_act[list].later = 1.0f;
 	}
 
 	//当たり判定調整値も全て初期化する
@@ -354,6 +364,9 @@ bool Knight::AttackWrite()
 	//AttackStateの順に保存する
 	std::ofstream outputfile("./Data/CharaParameter/Knight/AttackParam.txt");
 	
+	outputfile << jump_later << std::endl;
+	outputfile << dash_later << std::endl;
+
 	for (int list = 0; list < attack_list.size(); list++)
 	{
 		outputfile << attack_list[list].later << std::endl;
@@ -422,7 +435,9 @@ bool Knight::AttackWrite()
 	std::ofstream animactout("./Data/CharaParameter/Knight/AnimActParam.txt");
 	for (int list = 0; list < ac_act.size(); list++)
 	{
-		animactout << ac_act[list] << std::endl;
+		animactout << ac_act[list].fream << std::endl;
+		animactout << ac_act[list].timer << std::endl;
+		animactout << ac_act[list].later << std::endl;
 	}
 
 	animactout.close();

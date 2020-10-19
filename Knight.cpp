@@ -203,6 +203,7 @@ void Knight::Init(YR_Vector3 InitPos)
 
 void Knight::LoadData(int color_number)
 {
+	attack_list.resize(1);
 #if USE_IMGUI
 	DEBUGAttackLoad();
 	AttackClean();
@@ -251,6 +252,48 @@ void Knight::LoadData(int color_number)
 		model_motion.wait_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_wait.fbx");
 	}
 
+	//しゃがみ
+	if (model_motion.squat_R == nullptr)
+	{
+		model_motion.squat_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_squat_R.fbx");
+	}
+
+	//歩き
+	if (model_motion.walk_R == nullptr)
+	{
+		model_motion.walk_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_walk_R.fbx");
+	}
+
+	//後退
+	if (model_motion.back_R == nullptr)
+	{
+		model_motion.back_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_back_R.fbx");
+	}
+
+	//ダッシュ
+	if (model_motion.dash_R == nullptr)
+	{
+		model_motion.dash_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_dash_R.fbx");
+	}
+
+	//バックステップ
+	if (model_motion.backstep_R == nullptr)
+	{
+		model_motion.backstep_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_backstep_R.fbx");
+	}
+
+	//ジャンプ
+	if (model_motion.jump_R == nullptr)
+	{
+		model_motion.jump_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_jump_R.fbx");
+	}
+
+	//空中ジャンプ
+	if (model_motion.air_jump_R == nullptr)
+	{
+		model_motion.air_jump_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_air_jump_R_f.fbx");
+	}
+
 	//イントロモーション
 	if (model_motion.intro_R == nullptr)
 	{
@@ -273,10 +316,82 @@ void Knight::LoadData(int color_number)
 		model_motion.jaku_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_jaku_R.fbx");
 	}
 
+	//中攻撃
+	if (model_motion.thu_R == nullptr)
+	{
+		model_motion.thu_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_thu_R.fbx");
+	}
+
+	//強攻撃(対空&下強)
+	if (model_motion.kyo_R == nullptr)
+	{
+		model_motion.kyo_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_kyo_R.fbx");
+	}
+
+	//下弱攻撃
+	if (model_motion.d_jaku_R == nullptr)
+	{
+		model_motion.d_jaku_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_d_jaku_R.fbx");
+	}
+
+	//下中攻撃
+	if (model_motion.d_thu_R == nullptr)
+	{
+		model_motion.d_thu_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_d_thu_R.fbx");
+	}
+
 	//上強攻撃
 	if (model_motion.u_kyo_R == nullptr)
 	{
 		model_motion.u_kyo_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_u_kyo_R.fbx");
+	}
+
+	//上強攻撃
+	if (model_motion.u_kyo_R == nullptr)
+	{
+		model_motion.u_kyo_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_u_kyo_R.fbx");
+	}
+
+	//空弱攻撃
+	if (model_motion.a_jaku_R == nullptr)
+	{
+		model_motion.a_jaku_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_air_jaku_R.fbx");
+	}
+
+	//空中攻撃
+	if (model_motion.a_thu_R == nullptr)
+	{
+		model_motion.a_thu_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_air_thu_R.fbx");
+	}
+
+	//空強攻撃
+	if (model_motion.a_kyo_R == nullptr)
+	{
+		model_motion.a_kyo_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_air_kyo_R.fbx");
+	}
+
+	//空上強攻撃
+	if (model_motion.a_ukyo_R == nullptr)
+	{
+		model_motion.a_ukyo_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_air_ukyo_R.fbx");
+	}
+
+	//掴み攻撃
+	if (model_motion.steal_R == nullptr)
+	{
+		model_motion.steal_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_steal_R.fbx");
+	}
+
+	//投げ攻撃
+	if (model_motion.slow_R == nullptr)
+	{
+		model_motion.slow_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_slow_R.fbx");
+	}
+
+	//ホーミングダッシュ攻撃
+	if (model_motion.track_R == nullptr)
+	{
+		model_motion.track_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_track_R.fbx");
 	}
 
 	//超必殺技
@@ -533,7 +648,14 @@ void Knight::Update(float decision, float elapsed_time)
 
 	if (!attack)
 	{
-		anim_ccodinate = ac_act[scastI(act_state)];
+		if (act_state == ActState::DASH)
+		{
+			//特定の行動時は指定した値を入れる
+		}
+		else
+		{
+			anim_ccodinate = ac_act[scastI(act_state)].fream;
+		}
 	}
 	/*if (attack_state != AttackState::D_THU && act_state != ActState::DOWN && act_state != ActState::SQUAT && attack_state != AttackState::D_JAKU)
 	{
@@ -597,7 +719,15 @@ void Knight::AttackInput()
 							if (attack_list[list].squat_on)
 							{
 								//攻撃リストにしゃがみ判定が設定されていた場合、現在のステートがしゃがみか確認する
-								if (act_state != ActState::SQUAT)
+								if (act_state != ActState::SQUAT || pad->x_input[scastI(PAD::STICK_D)] == 0)
+								{
+									continue;
+								}
+							}
+							else
+							{
+								//設定されていない場合はしゃがんでないか確認する
+								if (act_state == ActState::SQUAT || pad->x_input[scastI(PAD::STICK_D)] > 0)
 								{
 									continue;
 								}
@@ -953,20 +1083,20 @@ void Knight::Attack(float decision, float elapsed_time)
 	AttackUpdate(elapsed_time);	//攻撃判定の更新
 	if (ground)
 	{
-		if (speed.x > 0)
+		if (speed.x > 0.0f)
 		{
-			speed.x--;
-			if (speed.x < 0)
+			speed.x -= brake_speed * elapsed_time;
+			if (speed.x < 0.0f)
 			{
 				speed.x = 0;
 			}
 		}
-		if (speed.x < 0)
+		if (speed.x < 0.0f)
 		{
-			speed.x++;
-			if (speed.x > 0)
+			speed.x += brake_speed * elapsed_time;
+			if (speed.x > 0.0f)
 			{
-				speed.x = 0;
+				speed.x = 0.0f;
 			}
 		}
 	}
@@ -1031,33 +1161,7 @@ void Knight::Attack(float decision, float elapsed_time)
 			//下段中攻撃(コンボルート。弱から下段中攻撃が繋がる)
 			if (ground)
 			{
-				if (pad->x_input[static_cast<int>(PAD::Y)] == 1)
-				{
-					for (int atknum = 0; atknum < scastI(KNIGHTATK::END); atknum++)
-					{
-						if (atk[atknum].knock_start)
-						{
-							//pad->que.back().timer = 0;
-							//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-							//attack = TRUE;
-							//atk[scastI(KNIGHTATK::ONE)].start = FALSE;
-							//later = -1;
-							//for (int i = 0; i < scastI(KNIGHTATK::END); i++)
-							//{
-							//	atk[i].Init();
-							//}
-							//moveflag = false;
-							//atk[scastI(KNIGHTATK::ONE)].fin = FALSE;
-							//act_state = ActState::ATTACK;
-							////描画をセット
-
-							//attack_state = AttackState::D_THU;
-							//pos.x += Getapply(50.0f);
-							//specialfream = 3;
-							break;
-						}
-					}
-				}
+				
 			}
 		}
 		break;
@@ -1195,6 +1299,22 @@ void Knight::Attack(float decision, float elapsed_time)
 		//上段強攻撃
 		U_Kyo(elapsed_time);
 		break;
+	case AttackState::A_JAKU:
+		//空中弱攻撃
+		A_Jaku(elapsed_time);
+		break;
+	case AttackState::A_THU:
+		//空中中攻撃
+		A_Thu(elapsed_time);
+		break;
+	case AttackState::A_KYO:
+		//空中強攻撃
+		A_Kyo(elapsed_time);
+		break;
+	case AttackState::A_UKYO:
+		//空中上強攻撃
+		A_UKyo(elapsed_time);
+		break;
 	case AttackState::D_JAKU:
 		//下段弱攻撃
 		D_Jaku(elapsed_time);
@@ -1250,6 +1370,7 @@ void Knight::Attack(float decision, float elapsed_time)
 	{
 		later -= elapsed_time;
 		CancelList();
+		AttackInput();
 	}
 
 	//後隙消費後元のステートに戻す
@@ -1263,11 +1384,20 @@ void Knight::Attack(float decision, float elapsed_time)
 		{
 			if (act_state != ActState::WAIT)
 			{
-				act_state = ActState::NONE;
+				
+				if (pad->x_input[scastI(PAD::STICK_D)] > 0 || pad->x_input[scastI(PAD::STICK_RDown)] > 0 || pad->x_input[scastI(PAD::STICK_LDown)] > 0)
+				{
+					act_state = ActState::SQUAT;
+					anim_ccodinate = ac_act[scastI(ActState::SQUAT)].fream;
+					anim->NodeChange(model_motion.squat_R);
+				}
+				else
+				{
+					act_state = ActState::NONE;
+					anim_ccodinate = ac_act[scastI(ActState::WAIT)].fream;
+					anim->NodeChange(model_motion.wait_R);
+				}
 				attack_state = AttackState::NONE;
-				anim_ccodinate = 1.0f;
-				anim->PlayAnimation(0, true);
-				anim->NodeChange(model_motion.wait_R);
 				ChangeFace(FaceAnim::NORMAL);
 			}
 		}
@@ -1623,6 +1753,13 @@ void Knight::DrawDEBUG(
 		std::string now_play = std::to_string(now_player);
 		now_play += std::string(":RyuHitBox");
 		ImGui::Begin(now_play.c_str());
+		ImGui::Text(u8"行動ステート");
+		ImGui::Text(act_name_list[scastI(act_state)].c_str());
+		ImGui::Text(u8"攻撃ステート");
+		ImGui::Text(attack_name_list[scastI(attack_state)].c_str());
+
+		ImGui::SliderFloat(u8"ジャンプの着地スキ", &jump_later, 0.0f, 2.0f);
+		ImGui::SliderFloat(u8"ダッシュの着地スキ", &dash_later, 0.0f, 2.0f);
 
 		if (ImGui::TreeNode(u8"プレイヤー当たり判定調整"))
 		{
@@ -1645,7 +1782,10 @@ void Knight::DrawDEBUG(
 								ImGui::SliderInt(u8"状態", &state, 0, scastI(HitBoxState::END));
 								hitparam_list[list].act_parameter[act].state = static_cast<HitBoxState>(state);
 								ImGui::Text(hitstate_name_list[state].c_str());
-								ImGui::InputFloat(u8"モーション速度", &ac_act[act], 0.01f, 0.1f);
+								ImGui::InputFloat(u8"モーション速度 : 発生", &ac_act[act].fream, 0.01f, 0.1f);
+								ImGui::InputFloat(u8"モーション速度 : 持続", &ac_act[act].timer, 0.01f, 0.1f);
+								ImGui::InputFloat(u8"モーション速度 : 後隙", &ac_act[act].later, 0.01f, 0.1f);
+								ImGui::Text(u8"ものによってはfreamしか使用しないものもあるので注意");
 								ImGui::TreePop();
 							}
 						}
@@ -2183,12 +2323,18 @@ void Knight::Move(float decision)
 
 			if (rightOrleft > 0)
 			{
+				//バックステップ
 				step = true;
 				act_state = ActState::BACK;
 				moveflag = false;
 				//描画をセット
 
 				speed.x = -backstepS;
+			}
+			else
+			{
+				//ダッシュ左向き
+				act_state = ActState::DASH;
 			}
 		}
 	}
@@ -2207,6 +2353,14 @@ void Knight::Move(float decision)
 
 				speed.x = backstepS;
 			}
+			else
+			{
+				//ダッシュ右向き
+				act_state = ActState::DASH;
+				anim->NodeChange(model_motion.dash_R,scastI(AnimAtk::FREAM));
+				anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
+				anim_ccodinate = ac_act[scastI(act_state)].fream;
+			}
 		}
 	}
 
@@ -2224,6 +2378,16 @@ void Knight::Move(float decision)
 			{
 				speed.x = -dashspeed;
 				act_state = ActState::DASH;
+				if (!anim->GetLoopAnim())
+				{
+					//現在のアニメーションがダッシュの開始アニメーションだった場合
+					if (anim->GetEndAnim()==-1)
+					{
+						//アニメーションが終了したら持続アニメーションに切り替える
+						anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::TIMER));
+						anim_ccodinate = ac_act[scastI(act_state)].timer;
+					}
+				}
 			}
 		}
 	}
@@ -2252,6 +2416,16 @@ void Knight::Move(float decision)
 			{
 				speed.x = dashspeed;
 				act_state = ActState::DASH;
+				if (!anim->GetLoopAnim())
+				{
+					//現在のアニメーションがダッシュの開始アニメーションだった場合
+					if (anim->GetEndAnim()==-1)
+					{
+						//アニメーションが終了したら持続アニメーションに切り替える
+						anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::TIMER));
+						anim_ccodinate = ac_act[scastI(act_state)].timer;
+					}
+				}
 			}
 		}
 	}
@@ -2264,28 +2438,56 @@ void Knight::Move(float decision)
 		}
 	}
 
+	if (pad->x_input[static_cast<int>(PAD::L_DASH)] == 0 && pad->x_input[static_cast<int>(PAD::R_DASH)] == 0)
+	{
+
+	}
+	if (pad->x_input[static_cast<int>(PAD::L_DASH)] > 0 && pad->x_input[static_cast<int>(PAD::R_DASH)] > 0)
+	{
+
+	}
 
 	//どちらも押されているor押されていないなら元に戻す
 	if (pad->x_input[static_cast<int>(PAD::STICK_L)] == 0 && pad->x_input[static_cast<int>(PAD::STICK_R)] == 0)
 	{
-		if (act_state != ActState::WAIT)
+		if (act_state == ActState::DASH)
+		{
+			//現在のステートがダッシュだった場合
+			act_state = ActState::ATTACK;
+			attack_state = AttackState::NONE;
+			attack = true;
+			later = dash_later;
+			anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::LATER));
+			anim->PlayAnimation(scastI(AnimAtk::LATER), false);
+			moveflag = false;
+		}
+		else
 		{
 			act_state = ActState::NONE;
 		}
 		moveflag = false;
-		speed.x = 0.0f;
+		//speed.x = 0.0f;
 	}
 	if (pad->x_input[static_cast<int>(PAD::STICK_L)] > 0 && pad->x_input[static_cast<int>(PAD::STICK_R)] > 0)
 	{
-		if (act_state != ActState::WAIT)
+		if (act_state == ActState::DASH)
+		{
+			//現在のステートがダッシュだった場合
+			act_state = ActState::ATTACK;
+			attack_state = AttackState::NONE;
+			attack = true;
+			later = dash_later;
+			anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::LATER));
+			anim->PlayAnimation(scastI(AnimAtk::LATER), false);
+			moveflag = false;
+		}
+		else
 		{
 			act_state = ActState::NONE;
 		}
 		moveflag = false;
-		speed.x = 0.0f;
+		//speed.x = 0.0f;
 	}
-
-
 }
 
 void Knight::MoveAnimSet()
@@ -2293,23 +2495,33 @@ void Knight::MoveAnimSet()
 	if (pad->x_input[static_cast<int>(PAD::STICK_L)] > 0)
 	{
 		moveflag = true;
-		//描画をセット
 
 		if (rightOrleft > 0)
 		{
 			//描画をセット
+			//右向き
+			anim->NodeChange(model_motion.back_R);
+			anim_ccodinate = ac_act[scastI(ActState::MOVEL)].fream;
 		}
-
+		else
+		{
+			//左向き
+		}
 	}
 	if (pad->x_input[static_cast<int>(PAD::STICK_R)] > 0)
 	{
 		moveflag = true;
-		//描画をセット
 
 		if (rightOrleft < 0)
 		{
 			//描画をセット
-
+			//左向き
+		}
+		else
+		{
+			//右向き
+			anim->NodeChange(model_motion.walk_R);
+			anim_ccodinate = ac_act[scastI(ActState::MOVER)].fream;
 		}
 	}
 }
@@ -2343,6 +2555,17 @@ void Knight::WaitAnimSet()
 		//描画をセット
 
 		act_state = ActState::WAIT;
+		if (rightOrleft > 0)
+		{
+			//右向きの時
+			anim->NodeChange(model_motion.wait_R);
+			anim_ccodinate = ac_act[scastI(act_state)].fream;
+		}
+		else
+		{
+			//左向きの時
+			anim_ccodinate = ac_act[scastI(act_state)].fream;
+		}
 		speed.x = 0.0f;
 		moveflag = false;
 	}
@@ -2861,13 +3084,23 @@ void Knight::GuardBack(float elapsed_time)
 
 void Knight::Squat()
 {
-	if (act_state == ActState::GUARD || act_state == ActState::BACK || act_state == ActState::AIR_B || act_state == ActState::AIR_F)
+	if (act_state == ActState::GUARD || act_state == ActState::DASH|| act_state == ActState::BACK || act_state == ActState::AIR_B || act_state == ActState::AIR_F)
 	{
 		return;
 	}
 	if (!ground)
 	{
 		return;
+	}
+	if (pad->x_input[scastI(PAD::STICK_D)] ==1 || pad->x_input[scastI(PAD::STICK_RDown)] == 1 || pad->x_input[scastI(PAD::STICK_LDown)] == 1)
+	{
+		//Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(0.0f, 15.0f);
+		//hit[scastI(KNIGHTHIT::BODY)].size = YR_Vector3(65.0f, 130.0f);
+		moveflag = false;
+		act_state = ActState::SQUAT;
+		//描画をセット
+		anim->NodeChange(model_motion.squat_R);
+		anim_ccodinate = ac_act[scastI(act_state)].fream;
 	}
 	if (pad->x_input[scastI(PAD::STICK_D)] > 0 || pad->x_input[scastI(PAD::STICK_RDown)] > 0 || pad->x_input[scastI(PAD::STICK_LDown)] > 0)
 	{
@@ -2885,6 +3118,7 @@ void Knight::Squat()
 			//描画をセット
 
 		}
+
 		if (act_state != ActState::WAIT)
 		{
 			act_state = ActState::NONE;
@@ -3101,8 +3335,9 @@ void Knight::StateNone()
 //掴み攻撃
 void Knight::Steal(float elapsed_time)
 {
-	YR_Vector3 cent{ pos.x + Getapply(100.0f),pos.y };
-	YR_Vector3 range{ 50.0f,50.0f };
+	AttackDefault(elapsed_time);
+	//YR_Vector3 cent{ pos.x + Getapply(100.0f),pos.y };
+	//YR_Vector3 range{ 50.0f,50.0f };
 	//atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 10, 10, 15, 20, 13, YR_Vector3(Getapply(0.0f), 0.0f), AttackBox::STEAL, Getapply(0.0f), true,elapsed_time);
 	
 	//--------------------------------
