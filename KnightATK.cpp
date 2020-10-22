@@ -8,8 +8,6 @@
 //				攻撃関数
 
 
-
-
 void Knight::Slow(float elapsed_time)
 {
 	AttackDefault(elapsed_time);
@@ -29,20 +27,19 @@ void Knight::AttackDefault(float elapsed_time)
 	{
 		fream -= elapsed_time;
 	}
-
-
+	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
 	//発生フレームになったら攻撃判定を生成する
 	if (fream < 0.0f)
 	{
-		int attack_num = attack_list[scastI(attack_state)].now_attack_num;
-		anim_ccodinate = ac_attack[scastI(attack_state)].timer;
-		attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft);
+		//int attack_num = attack_list[real].now_attack_num;
+		anim_ccodinate = ac_attack[now_at_list].timer;
+		attack_list[now_at_list].SetAttack(&atk, rightOrleft,pos);
 		fream = non_target;
-		anim->NodeChange(model_motion.model_R[scastI(attack_state)], scastI(AnimAtk::TIMER));
+		anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 
 	}
 
-	int now_at_list = scastI(attack_state);
+	
 
 	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
 	if (!atk.empty())
@@ -78,16 +75,14 @@ void Knight::AttackDefault(float elapsed_time)
 		//まだ攻撃が残っていれば次の攻撃に移る
 		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
 		{
-			fream = attack_list[scastI(attack_state)].attack_single[attack_list[now_at_list].now_attack_num].fream;
+			fream = attack_list[now_at_list].attack_single[attack_list[now_at_list].now_attack_num].fream;
 		}
 		else
 		{
 			attack_list[now_at_list].now_attack_num = 0;
 			later = attack_list[now_at_list].later;
-			anim_ccodinate = ac_attack[scastI(attack_state)].later;
-			anim->NodeChange(model_motion.model_R[scastI(attack_state)], scastI(AnimAtk::LATER));
-			//motion.MeshSet(base);
-			//motion.AnimReset();
+			anim_ccodinate = ac_attack[now_at_list].later;
+			anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
 		}
 	}
 }
@@ -141,7 +136,7 @@ void Knight::U_Kyo(float elapsed_time)
 	{
 		int attack_num = attack_list[scastI(attack_state)].now_attack_num;
 		anim_ccodinate = ac_attack[scastI(attack_state)].timer;
-		attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft);
+		attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft,pos);
 		fream = non_target;
 		anim->NodeChange(model_motion.u_kyo_R, scastI(AnimAtk::TIMER));
 
@@ -248,27 +243,6 @@ void Knight::Kyo_Hadouken(float elapsed_time)
 	AttackDefault(elapsed_time);
 	
 }
-
-
-
-
-void Knight::HadouUpdate(float elapsed_time)
-{
-	
-}
-
-void Knight::Thu_HadouUpdate(float elapsed_time)
-{
-	
-}
-
-
-void Knight::Kyo_HadouUpdate(float elapsed_time)
-{
-	
-}
-
-
 
 
 
@@ -395,8 +369,6 @@ void Knight::SpecialAttack(float elapsed_time)
 			YRCamera.RequestCamera(Camera::Request::WEAKEN, now_player);
 			break;
 		}
-		//YRCamera.SetEye(eye.GetDXFLOAT3());
-		//YRCamera.SetFocus(focus.GetDXFLOAT3());
 	}
 
 
@@ -404,7 +376,7 @@ void Knight::SpecialAttack(float elapsed_time)
 	{
 		int attack_num = attack_list[scastI(attack_state)].now_attack_num;
 		anim_ccodinate = ac_attack[scastI(attack_state)].timer;
-		attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft);
+		attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft,pos);
 		fream = non_target;
 		anim->NodeChange(model_motion.special_R,scastI(AnimAtk::TIMER));
 		YRCamera.RequestCamera(Camera::Request::RELEASE, now_player);

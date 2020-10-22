@@ -23,6 +23,7 @@ bool Knight::DEBUGAttackLoad()
 	attack_list[scastI(AttackState::JAKU)].linkage_stick = PAD::BUTTOM_END;
 	attack_list[scastI(AttackState::JAKU)].need_gauge = 0.0f;
 	attack_list[scastI(AttackState::JAKU)].aid_attack_name = AttackState::NONE;
+	attack_list[scastI(AttackState::JAKU)].real_attack = attack_list[scastI(AttackState::JAKU)].attack_name;
 	for (int i = 0; i < attack_list[scastI(AttackState::JAKU)].attack_max; i++)
 	{
 		attack_list[scastI(AttackState::JAKU)].attack_single[i].fream = 0.1f;
@@ -62,6 +63,7 @@ bool Knight::DEBUGAttackLoad()
 	attack_list[scastI(AttackState::SPECIAL_ATTACK)].linkage_stick = PAD::BUTTOM_END;
 	attack_list[scastI(AttackState::SPECIAL_ATTACK)].need_gauge = 0.0f;
 	attack_list[scastI(AttackState::SPECIAL_ATTACK)].aid_attack_name = AttackState::NONE;
+	attack_list[scastI(AttackState::SPECIAL_ATTACK)].real_attack = attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_name;
 	
 	for (int i = 0; i < attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_max; i++)
 	{
@@ -124,7 +126,7 @@ bool Knight::AttackLoad()
 	{
 		ifs >> attack_list[list].later;
 		ifs >> attack_list[list].attack_max;
-		int pad,com,stick,aid;
+		int pad,com,stick,aid,real;
 		ifs >> pad;
 		ifs >> com;
 		attack_list[list].linkage_button = static_cast<PAD>(pad);
@@ -134,9 +136,12 @@ bool Knight::AttackLoad()
 		ifs >> attack_list[list].need_gauge;
 		ifs >> stick;
 		ifs >> aid;
+		ifs >> real;
 		attack_list[list].linkage_stick = static_cast<PAD>(stick);
 		attack_list[list].aid_attack_name = static_cast<AttackState>(aid);
+		attack_list[list].real_attack = static_cast<AttackState>(real);
 		attack_list[list].attack_single.resize(attack_list[list].attack_max);
+
 
 		//攻撃回数ごとのパラメータ書き出し
 		if (!attack_list[list].attack_single.empty())
@@ -298,6 +303,8 @@ bool Knight::AttackClean()
 		attack_list[list].need_gauge = 0.0f;
 		attack_list[list].linkage_stick = PAD::BUTTOM_END;
 		attack_list[list].aid_attack_name = AttackState::NONE;
+		attack_list[list].attack_name = static_cast<AttackState>(list);
+		attack_list[list].real_attack = attack_list[list].attack_name;
 		//攻撃回数ごとのパラメータ初期化
 		for (int sin = 0; sin < attack_list[list].attack_single.size(); sin++)
 		{
@@ -378,6 +385,7 @@ bool Knight::AttackWrite()
 		outputfile << attack_list[list].need_gauge << std::endl;
 		outputfile << scastI(attack_list[list].linkage_stick) << std::endl;
 		outputfile << scastI(attack_list[list].aid_attack_name) << std::endl;
+		outputfile << scastI(attack_list[list].real_attack) << std::endl;
 
 		//攻撃回数ごとのパラメータ書き出し
 		if (!attack_list[list].attack_single.empty())

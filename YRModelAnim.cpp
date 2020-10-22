@@ -18,9 +18,9 @@ ModelAnim::ModelAnim(std::shared_ptr<Model>& resource)
 
 		dst.name = src.name;
 		dst.parent = src.parent_index >= 0 ? &m_nodes.at(src.parent_index) : nullptr;
-		dst.scale = src.scale;
+		dst.scale = src.scale.GetDXFLOAT3();
 		dst.rotate = src.rotate;
-		dst.translate = src.translate;
+		dst.translate = src.translate.GetDXFLOAT3();
 	}
 
 	D3D11_BUFFER_DESC buffer_desc{};
@@ -175,12 +175,15 @@ void ModelAnim::UpdateAnimation(float elapsed_time)
 
 					Node& node = m_nodes[node_index];
 
-					DirectX::XMVECTOR s0 = DirectX::XMLoadFloat3(&key0.scale);
-					DirectX::XMVECTOR s1 = DirectX::XMLoadFloat3(&key1.scale);
+					XMFLOAT3 scale = key0.scale.GetDXFLOAT3();
+					
+
+					DirectX::XMVECTOR s0 = DirectX::XMLoadFloat3(&key0.scale.GetDXFLOAT3());
+					DirectX::XMVECTOR s1 = DirectX::XMLoadFloat3(&key1.scale.GetDXFLOAT3());
 					DirectX::XMVECTOR r0 = DirectX::XMLoadFloat4(&key0.rotate);
 					DirectX::XMVECTOR r1 = DirectX::XMLoadFloat4(&key1.rotate);
-					DirectX::XMVECTOR t0 = DirectX::XMLoadFloat3(&key0.translate);
-					DirectX::XMVECTOR t1 = DirectX::XMLoadFloat3(&key1.translate);
+					DirectX::XMVECTOR t0 = DirectX::XMLoadFloat3(&key0.translate.GetDXFLOAT3());
+					DirectX::XMVECTOR t1 = DirectX::XMLoadFloat3(&key1.translate.GetDXFLOAT3());
 
 					DirectX::XMVECTOR s = DirectX::XMVectorLerp(s0, s1, rate);
 					DirectX::XMVECTOR r = DirectX::XMQuaternionSlerp(r0, r1, rate);
@@ -243,12 +246,12 @@ void ModelAnim::UpdateAnimation(float elapsed_time)
 
 					Node& node = m_nodes[node_index];
 
-					DirectX::XMVECTOR s0 = DirectX::XMLoadFloat3(&key0.scale);
-					DirectX::XMVECTOR s1 = DirectX::XMLoadFloat3(&key1.scale);
+					DirectX::XMVECTOR s0 = DirectX::XMLoadFloat3(&key0.scale.GetDXFLOAT3());
+					DirectX::XMVECTOR s1 = DirectX::XMLoadFloat3(&key1.scale.GetDXFLOAT3());
 					DirectX::XMVECTOR r0 = DirectX::XMLoadFloat4(&key0.rotate);
 					DirectX::XMVECTOR r1 = DirectX::XMLoadFloat4(&key1.rotate);
-					DirectX::XMVECTOR t0 = DirectX::XMLoadFloat3(&key0.translate);
-					DirectX::XMVECTOR t1 = DirectX::XMLoadFloat3(&key1.translate);
+					DirectX::XMVECTOR t0 = DirectX::XMLoadFloat3(&key0.translate.GetDXFLOAT3());
+					DirectX::XMVECTOR t1 = DirectX::XMLoadFloat3(&key1.translate.GetDXFLOAT3());
 
 					DirectX::XMVECTOR s = DirectX::XMVectorLerp(s0, s1, rate);
 					DirectX::XMVECTOR r = DirectX::XMQuaternionSlerp(r0, r1, rate);
@@ -304,9 +307,9 @@ void ModelAnim::CalculateLocalTransform()
 
 // ワールド変換行列計算
 void ModelAnim::CalculateWorldTransform(
-	DirectX::XMFLOAT3& pos,
-	DirectX::XMFLOAT3& scale,
-	DirectX::XMFLOAT3& angle)
+	const DirectX::XMFLOAT3& pos,
+	const DirectX::XMFLOAT3& scale,
+	const DirectX::XMFLOAT3& angle)
 {
 
 	//ワールド変換行列の初期化
@@ -524,7 +527,7 @@ void ModelAnim::NodeChange(std::shared_ptr<Model>& resource)
 	ModelData::NodeKeyData dummy = 
 	{
 		DirectX::XMFLOAT3(0.0f,0.0f,0.0f),
-		DirectX::XMFLOAT4(0.0f,0.0f,0.0f,0.0f),
+		YR_Vector4(0.0f,0.0f,0.0f,0.0f),
 		DirectX::XMFLOAT3(0.0f,0.0f,0.0f) 
 	};
 
@@ -583,7 +586,7 @@ void ModelAnim::NodeChange(std::shared_ptr<Model>& resource, int anim_num)
 	ModelData::NodeKeyData dummy =
 	{
 		DirectX::XMFLOAT3(0.0f,0.0f,0.0f),
-		DirectX::XMFLOAT4(0.0f,0.0f,0.0f,0.0f),
+		YR_Vector4(0.0f,0.0f,0.0f,0.0f),
 		DirectX::XMFLOAT3(0.0f,0.0f,0.0f)
 	};
 

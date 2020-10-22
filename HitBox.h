@@ -1,7 +1,7 @@
 #ifndef _HITBOX_H_
 #define _HITBOX_H_
 
-#include "YR_VECTOR3.h"
+#include "YR_VectorMaster.h"
 #include "YRShader.h"
 
 

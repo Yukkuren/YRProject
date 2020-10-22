@@ -5,7 +5,7 @@
 
 #include "Skinned_mesh.h"
 
-#include "YR_VECTOR3.h"
+#include "YR_VectorMaster.h"
 #include "HitBox.h"
 #include "AttackBox.h"
 #include "Tracking.h"
@@ -108,11 +108,11 @@ enum class AttackState : int
 {
 	NONE = 0,		//UŒ‚–³‚µ
 	JAKU,			//ãm
-	THU,			//’†m
-	KYO,			//‹­(‘Î‹ó&‰º‹­)m
+	THU,			//’†(‰º’†)m
+	D_KYO,			//‰º‹­(’†‚ÌŸ‚Éo‚é‹­UŒ‚)
 	D_JAKU,			//‰ºãm
 	D_THU,			//‰º’†m
-	U_KYO,			//ã‹­m
+	U_KYO,			//ã‹­(‹­UŒ‚)m
 	A_JAKU,			//‹óãUŒ‚m
 	A_THU,			//‹ó’†UŒ‚m
 	A_KYO,			//‹ó‹­UŒ‚m
@@ -130,6 +130,9 @@ enum class AttackState : int
 	DESIRE_SPECIAL,	//Œã’´•KE
 	DESIRE_METEOR,	//‘¦€‹Z
 	EXTENDATK,		//–³“GUŒ‚
+	JAKU_THU,		//ã‚ÌŸ‚Éo‚é’†UŒ‚m
+	JAKU_KYO,		//’†‚ÌŸ‚Éo‚é‹­UŒ‚m
+
 	ATTACK_END,		//Å‘åƒTƒCƒY
 };
 
@@ -182,29 +185,29 @@ public:
 	float							need_gauge;		//UŒ‚‚ğs‚¤‚Ì‚É•K—v‚ÈƒQ[ƒW—Ê(1.0’PˆÊ‚Å‹Lq)
 	PAD								linkage_stick;	//‚Ç‚Ì•ûŒü‚Ö‚Ì“ü—Í‚ÅUŒ‚‚ğ”­¶‚³‚¹‚é‚©
 	AttackState						aid_attack_name;//ƒQ[ƒW‚ª‘«‚è‚È‚©‚Á‚½ê‡o‚·‹Z
-
+	AttackState						real_attack;	//ÀÛ‚ÌUŒ‚(Šî–{‚Íattack_name‚Æ“¯‚¶‚à‚Ì‚ğ“ü‚êA“Á’è‚ÌUŒ‚‚Æ“¯‚¶UŒ‚‚ğo‚·ê‡‚Í‚»‚ÌUŒ‚–¼‚ğ“ü‚ê‚é)
 public:
 	AttackList() : now_attack_num(0), attack_name(AttackState::NONE), later(0.0f),
 		attack_max(0), linkage_button(PAD::BUTTOM_END), linkage_command(Command::NOCOMMAND), ground_on(true), squat_on(false),
-	need_gauge(0.0f),linkage_stick(PAD::BUTTOM_END),aid_attack_name(AttackState::NONE){};
+		need_gauge(0.0f), linkage_stick(PAD::BUTTOM_END), aid_attack_name(AttackState::NONE), real_attack(attack_name) {};
 	//UŒ‚“–‚½‚è”»’è‚ğ¶¬‚·‚é
-	void SetAttack(std::vector<AttackBox> *atk, float rightOrleft)
+	void SetAttack(std::vector<AttackBox> *atk, float rightOrleft, YR_Vector3 pl_pos)
 	{
 		for (int quantity = 0; quantity < attack_single[now_attack_num].quantity; quantity++)
 		{
 			atk->push_back(AttackBox());
-			atk->back().Init(attack_single[now_attack_num].parameter[quantity],rightOrleft);
+			atk->back().Init(attack_single[now_attack_num].parameter[quantity], rightOrleft, pl_pos);
 		}
 		now_attack_num++;
 	}
 
 	//”ò‚Ñ“¹‹ïUŒ‚“–‚½‚è”»’è‚ğƒZƒbƒg‚·‚é
-	void SetAttack(std::vector<AttackBox>* atk, float rightOrleft, YR_Vector3 plus_speed)
+	void SetAttack(std::vector<AttackBox>* atk, float rightOrleft, YR_Vector3 pl_pos, YR_Vector3 plus_speed)
 	{
 		for (int quantity = 0; quantity < attack_single[now_attack_num].quantity; quantity++)
 		{
 			atk->push_back(AttackBox());
-			atk->back().Init(attack_single[now_attack_num].parameter[quantity], rightOrleft, plus_speed);
+			atk->back().Init(attack_single[now_attack_num].parameter[quantity], rightOrleft, pl_pos, plus_speed);
 		}
 		now_attack_num++;
 	}

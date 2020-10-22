@@ -2,7 +2,7 @@
 #define _KNIGHT_H_
 
 #include "PlayerBase.h"
-#include "YR_VECTOR3.h"
+#include "YR_VectorMaster.h"
 #include "AttackBox.h"
 #include "HitBox.h"
 #include <vector>
@@ -146,7 +146,7 @@ public:
 	void WakeUp();
 	void GaugeUp(float add);
 	void CancelList();
-	void AttackDetailsSet();
+	void AttackDetailsSet(const AttackState &attack_state);
 
 	void HitBoxTransition(HitBoxState state);
 
@@ -177,9 +177,6 @@ public:
 	void Hadouken(float elapsed_time);
 	void Thu_Hadouken(float elapsed_time);
 	void Kyo_Hadouken(float elapsed_time);
-	void HadouUpdate(float elapsed_time);
-	void Thu_HadouUpdate(float elapsed_time);
-	void Kyo_HadouUpdate(float elapsed_time);
 	void P_Kyo(float elapsed_time);
 	void TrackDash(float decision, float elapsed_time);
 	void Steal(float elapsed_time);

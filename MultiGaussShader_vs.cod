@@ -36,7 +36,7 @@ dcl_temps 2
 //   o1.x <- <main return value>.TexCoord.x; o1.y <- <main return value>.TexCoord.y; 
 //   o0.x <- <main return value>.Position.x; o0.y <- <main return value>.Position.y; o0.z <- <main return value>.Position.z; o0.w <- <main return value>.Position.w
 //
-#line 7 "E:\ゲーム制作\YRProject\MultiGaussShader_vs.hlsl"
+#line 7 "F:\ゲーム制作\YRProject\MultiGaussShader_vs.hlsl"
 mov r0.xyz, v0.xyzx  // r0.x <- Out.Position.x; r0.y <- Out.Position.y; r0.z <- Out.Position.z
 mov r0.w, l(1.000000)  // r0.w <- Out.Position.w
 

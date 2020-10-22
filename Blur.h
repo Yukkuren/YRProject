@@ -1,7 +1,7 @@
 #pragma once
 #include <DirectXMath.h>
 #include <array>
-#include "YR_VECTOR3.h"
+#include "YR_VectorMaster.h"
 
 //------------------------------------------------
 //		単一ガウスぼかしブルーム用パラメーター

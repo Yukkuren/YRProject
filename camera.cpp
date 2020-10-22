@@ -1,7 +1,7 @@
 #include "camera.h"
 #include "YRMouse.h"
 #include "collision.h"
-#include "YR_VECTOR3.h"
+#include "YR_VectorMaster.h"
 #include "framework.h"
 
 void Camera::Active()

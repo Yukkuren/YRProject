@@ -63,7 +63,7 @@
     dcl t0.xy  // input<4,5>
     dcl_2d s0
 
-#line 7 "E:\ゲーム制作\YRProject\GaussShader_ps.hlsl"
+#line 7 "F:\ゲーム制作\YRProject\GaussShader_ps.hlsl"
     mov r0.w, -c0.x
     add r0.x, r0.w, c17.x
     cmp r0.w, r0.x, c17.x, c17.y  // ::i<0>
@@ -473,7 +473,7 @@ dcl_temps 4
 //   v1.x <- input.Tex.x; v1.y <- input.Tex.y; 
 //   o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
 //
-#line 5 "E:\ゲーム制作\YRProject\GaussShader_ps.hlsl"
+#line 5 "F:\ゲーム制作\YRProject\GaussShader_ps.hlsl"
 itof r0.xyz, l(0, 0, 0, 0)  // r0.x <- result.x; r0.y <- result.y; r0.z <- result.z
 
 #line 7

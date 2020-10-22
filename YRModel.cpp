@@ -4,6 +4,8 @@
 #include "framework.h"
 #include <codecvt>
 #include <array>
+
+
 //#define _CRTDBG_MAP_ALLOC						// mallocによるメモリリーク検出でCPPファイル名と行数出力指定
 //#define DBG_NEW new( _NORMAL_BLOCK , __FILE__ , __LINE__)	// new によるメモリリーク検出でCPPファイル名と行数出力指定
 //#include <stdio.h>
@@ -31,8 +33,20 @@ Model::Model(const char* filename)
 	color_texture_face = nullptr;
 
 	//_CrtDumpMemoryLeaks();
-	Load(filename);
 
+	SerialNameGet(filename);
+
+	if (FileCheck())
+	{
+		//シリアライズされたバイナリを読み込む
+		LoadSerial();
+	}
+	else
+	{
+		//普通にFBXから読み込み、シリアライズする
+		Load(filename);
+		Serialize();
+	}
 	// マテリアル
 	m_materials.resize(m_data->materials.size());
 	for (size_t material_index = 0; material_index < m_materials.size(); ++material_index)
@@ -926,5 +940,82 @@ int Model::FindMaterialIndex(FbxScene* fbx_scene, const FbxSurfaceMaterial* fbx_
 		}
 	}
 	return -1;
+}
+
+void Model::Serialize()
+{
+	std::string name = Serial_name + std::string("model");
+	std::ofstream ofs(name.c_str(),std::ios_base::out|std::ios_base::binary);
+	std::stringstream ss;
+	{
+		cereal::BinaryOutputArchive o_archive(ss);
+		o_archive(cereal::make_nvp("root", m_data));
+	}
+
+	ofs << ss.str();
+	ofs.close();
+	ss.clear();
+	//std::cout << ss.str() << std::endl;
+
+}
+
+void Model::SerialNameGet(const char* filename)
+{
+	//シリアライズで書き出すファイルのディレクトリと名前を決める関数
+	Serial_name = std::string(filename);
+
+
+	int size = 0;
+	for (int i = Serial_name.size() - 1; i > 0; i--)
+	{
+
+		if (Serial_name.at(i) == '.')
+		{
+			break;
+		}
+		size++;
+	}
+	//「.」まで切り出すので使用する際は拡張子のみつける
+	int sizes = Serial_name.size() - size;
+	Serial_name = Serial_name.substr(0, sizes);
+}
+
+bool Model::FileCheck()
+{
+	//シリアライズされたファイルがあるか確認する関数
+	std::string file = Serial_name + std::string("model");
+
+	std::ifstream ifs(file.c_str());
+
+	if (ifs.is_open())
+	{
+		//ファイルがあった
+		ifs.close();
+		return true;
+	}
+	else
+	{
+		//ファイルがなかった
+		ifs.close();
+		return false;
+	}
+
+	return false;
+}
+
+void Model::LoadSerial()
+{
+	//バイナリファイルを読み込む
+	std::string name = Serial_name + std::string("model");
+	std::ifstream ifs(name.c_str(), std::ios_base::in | std::ios_base::binary);
+	std::stringstream ss;
+	ss << ifs.rdbuf();
+	{
+		cereal::BinaryInputArchive i_archive(ss);
+		i_archive(cereal::make_nvp("root", m_data));
+	}
+
+	ifs.close();
+	ss.clear();
 }
 

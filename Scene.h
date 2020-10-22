@@ -7,7 +7,7 @@
 #include <directxmath.h>
 //#include <memory>
 #include< Windows.h>
-#include "YR_VECTOR3.h"
+#include "YR_VectorMaster.h"
 #include "YRGamePad.h"
 #include <thread>
 #include "PlayerBase.h"
@@ -79,6 +79,16 @@ private:
 	POINT mouse_pos;
 	bool camera_move_debug;
 public:
+
+	//2Pの行動制御列挙
+	enum class Player2PControl : int
+	{
+		OPERATION,	//操作
+		SUSPENSION,	//動かない
+		AI,			//AI
+		END,		//終了コマンド
+	}; Player2PControl pl2_con = Player2PControl::OPERATION;
+
 	float	timer = 0.0f;
 	int		sco[6] = { 0,0,0,0,0,0 };
 
@@ -204,6 +214,8 @@ public:
 
 	DirectX::XMFLOAT2	Distance(DirectX::XMFLOAT2& s_pos, DirectX::XMFLOAT2& e_pos);
 	void				ScoreImageSet();
+
+	void				Control2PState(float elapsed_time);
 
 public:
 	//ゲーム処理関数

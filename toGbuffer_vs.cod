@@ -78,7 +78,7 @@
     dcl_texcoord2 v2  // input<6,7>
     dcl_texcoord3 v3  // input<8,9,10,11>
 
-#line 6 "E:\ゲーム制作\YRProject\toGbuffer_vs.hlsl"
+#line 6 "F:\ゲーム制作\YRProject\toGbuffer_vs.hlsl"
     mov r0.xyz, v0  // ::P<0,1,2>
     mul r1, r0.x, c1
     mul r2, r0.y, c2
@@ -151,7 +151,7 @@ dcl_temps 4
 //   o1.x <- <main return value>.color.x; o1.y <- <main return value>.color.y; o1.z <- <main return value>.color.z; o1.w <- <main return value>.color.w; 
 //   o0.x <- <main return value>.Position.x; o0.y <- <main return value>.Position.y; o0.z <- <main return value>.Position.z; o0.w <- <main return value>.Position.w
 //
-#line 6 "E:\ゲーム制作\YRProject\toGbuffer_vs.hlsl"
+#line 6 "F:\ゲーム制作\YRProject\toGbuffer_vs.hlsl"
 mov r0.xyz, v0.xyzx  // r0.x <- P.x; r0.y <- P.y; r0.z <- P.z
 mov r0.w, l(1.000000)  // r0.w <- P.w
 

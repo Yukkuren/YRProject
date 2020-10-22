@@ -1,4 +1,4 @@
-#include "YR_VECTOR3.h"
+#include "YR_VectorMaster.h"
 
 bool YR_Vector3::operator == (const YR_Vector3& R)
 {

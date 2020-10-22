@@ -14,13 +14,13 @@
 
 std::array<std::string, scastI(AttackState::ATTACK_END)> attack_name_list =
 {
-	u8"攻撃無し",
+	u8"攻撃無し()の中身は攻撃内容",
 	u8"弱",
-	u8"中",
-	u8"強(対空&下強)",
+	u8"中(下中攻撃)",
+	u8"下強(中の次に出る強攻撃)",
 	u8"下弱",
 	u8"下中",
-	u8"上強",
+	u8"上強(中の次に出る強攻撃)",
 	u8"空弱攻撃",
 	u8"空中攻撃",
 	u8"空強攻撃",
@@ -37,7 +37,9 @@ std::array<std::string, scastI(AttackState::ATTACK_END)> attack_name_list =
 	u8"前超必殺",
 	u8"後超必殺",
 	u8"即死技",
-	u8"無敵攻撃"
+	u8"無敵攻撃",
+	u8"弱の次に出る中攻撃",
+	u8"中の次に出る強攻撃",
 };
 
 std::array<std::string, scastI(ActState::ACT_END)> act_name_list =
@@ -403,8 +405,8 @@ void Knight::LoadData(int color_number)
 	{
 		model_motion.model_R.push_back(model_motion.wait_R);	//攻撃無し(代わりとして待機を入れている)
 		model_motion.model_R.push_back(model_motion.jaku_R);	//弱
-		model_motion.model_R.push_back(model_motion.thu_R);		//中
-		model_motion.model_R.push_back(model_motion.kyo_R);		//強(対空&下強)
+		model_motion.model_R.push_back(model_motion.d_thu_R);	//中(下中)
+		model_motion.model_R.push_back(model_motion.kyo_R);		//下強(中の次に出る強攻撃)
 		model_motion.model_R.push_back(model_motion.d_jaku_R);	//下弱
 		model_motion.model_R.push_back(model_motion.d_thu_R);	//下中
 		model_motion.model_R.push_back(model_motion.u_kyo_R);	//上強
@@ -425,6 +427,9 @@ void Knight::LoadData(int color_number)
 		model_motion.model_R.push_back(model_motion.disire_s_R);//後超必殺
 		model_motion.model_R.push_back(model_motion.disire_m_R);//即死技
 		model_motion.model_R.push_back(model_motion.extend_R);	//無敵攻撃
+		model_motion.model_R.push_back(model_motion.thu_R);		//弱の次に出る中攻撃
+		model_motion.model_R.push_back(model_motion.kyo_R);		//中の次に出る強攻撃
+
 	}
 
 
@@ -514,9 +519,6 @@ void Knight::Update(float decision, float elapsed_time)
 	finish = false;
 	DamageCheck();
 	WaitAnimSet();
-	HadouUpdate(elapsed_time);
-	Thu_HadouUpdate(elapsed_time);
-	Kyo_HadouUpdate(elapsed_time);
 	if (pos.y <= POS_Y)
 	{
 		ground = true;
@@ -610,7 +612,40 @@ void Knight::Update(float decision, float elapsed_time)
 			}
 			//しゃがみやガードなどを先に判定
 			Squat();
-			AttackInput();
+			//ガードでない時
+			if (act_state != ActState::GUARD)
+			{
+				Step();
+				if (step)
+				{
+					//ステップ中は処理しない
+				}
+				else
+				{
+
+					//地面についている場合のみ
+					if (ground)
+					{
+						if (!moveflag)
+						{
+							MoveAnimSet();
+						}
+						if (moveflag)
+						{
+							Move(rightOrleft);
+						}
+					}
+
+					AttackInput();
+				}
+
+				if (!attack)
+				{
+					Jump();
+				}
+
+			}
+			NoneChange();
 
 		}
 		break;
@@ -650,7 +685,7 @@ void Knight::Update(float decision, float elapsed_time)
 	{
 		if (act_state == ActState::DASH)
 		{
-			//特定の行動時は指定した値を入れる
+			//特定の行動時は指定した値を入れる為なにも処理をしない
 		}
 		else
 		{
@@ -673,110 +708,84 @@ void Knight::Update(float decision, float elapsed_time)
 
 void Knight::AttackInput()
 {
-	//ガードでない時
-	if (act_state != ActState::GUARD)
-	{
-		Step();
-		if (step)
-		{
-			//ステップ中は処理しない
-		}
-		else
-		{
-
-			//地面についている場合のみ
-			if (ground)
-			{
-				if (!moveflag)
-				{
-					MoveAnimSet();
-				}
-				if (moveflag)
-				{
-					Move(rightOrleft);
-				}
-			}
-
+	
 			//-------------------------------------------------------------------
 			// *概要*
 			//・コマンドは二種類のみ
 			//--------------------------------------------------------------------
 				//攻撃のリストの入力判定を全て確認する(0は攻撃無しの為、1から確認していく)
-			for (int list = 1; list < attack_list.size(); list++)
+	for (int list = 1; list < attack_list.size(); list++)
+	{
+		int button = scastI(attack_list[list].linkage_button);
+		Command now_com = attack_list[list].linkage_command;
+		if (pad->x_input[button] == 1)
+		{
+			pad->que.back().timer = 0;
+			//コマンド判定
+			Command command = pad->com_list.CommandCheack(button, pad->input_history.data(), rightOrleft);
+			if (now_com == command)
 			{
-				int button = scastI(attack_list[list].linkage_button);
-				Command now_com = attack_list[list].linkage_command;
-				if (pad->x_input[button] == 1)
+				//指定したコマンドが同じで空中、地上の条件も同じだった場合
+				if (ground == attack_list[list].ground_on)
 				{
-					pad->que.back().timer = 0;
-					//コマンド判定
-					Command command = pad->com_list.CommandCheack(button, pad->input_history.data(), rightOrleft);
-					if (now_com == command)
+					if (attack_list[list].squat_on)
 					{
-						//指定したコマンドが同じで空中、地上の条件も同じだった場合
-						if (ground == attack_list[list].ground_on)
+						//攻撃リストにしゃがみ判定が設定されていた場合、現在のステートがしゃがみか確認する
+						if (act_state != ActState::SQUAT && pad->x_input[scastI(PAD::STICK_D)] == 0)
 						{
-							if (attack_list[list].squat_on)
-							{
-								//攻撃リストにしゃがみ判定が設定されていた場合、現在のステートがしゃがみか確認する
-								if (act_state != ActState::SQUAT || pad->x_input[scastI(PAD::STICK_D)] == 0)
-								{
-									continue;
-								}
-							}
-							else
-							{
-								//設定されていない場合はしゃがんでないか確認する
-								if (act_state == ActState::SQUAT || pad->x_input[scastI(PAD::STICK_D)] > 0)
-								{
-									continue;
-								}
-							}
-							if (attack_list[list].linkage_stick != PAD::BUTTOM_END)
-							{
-								//スティックの入力が指定されている場合確認する
-								if (pad->x_input[scastI(attack_list[list].linkage_stick)] == 0)
-								{
-									continue;
-								}
-							}
-							if (attack_list[list].need_gauge <= gauge)
-							{
-								//ゲージの必要量を確認する
-								attack_state = static_cast<AttackState>(list);
-							}
-							else
-							{
-								//ゲージが足りない場合指定した技を出す
-								attack_state = attack_list[list].aid_attack_name;
-							}
-
-							//攻撃を決定する
-							attack = TRUE;
-							moveflag = false;
-							act_state = ActState::ATTACK;
-							fream = attack_list[scastI(attack_state)].attack_single[0].fream;
-							anim_ccodinate = ac_attack[scastI(attack_state)].fream;
-							attack_list[scastI(attack_state)].now_attack_num = 0;
-							later = non_target;
-							production_time = 0.0f;
-							//描画をセット
-							anim->NodeChange(model_motion.model_R[scastI(attack_state)], scastI(AnimAtk::FREAM));
-							//攻撃ごとに個別の設定を行う
-							AttackDetailsSet();
-							break;
+							continue;
 						}
 					}
+					else
+					{
+						//設定されていない場合はしゃがんでないか確認する
+						if (act_state == ActState::SQUAT || pad->x_input[scastI(PAD::STICK_D)] > 0)
+						{
+							continue;
+						}
+					}
+					if (attack_list[list].linkage_stick != PAD::BUTTOM_END)
+					{
+						//スティックの入力が指定されている場合確認する
+						if (pad->x_input[scastI(attack_list[list].linkage_stick)] == 0)
+						{
+							continue;
+						}
+					}
+					//実際の攻撃内容
+					int real = scastI(attack_list[list].real_attack);
+
+					if (attack_list[real].need_gauge <= gauge)
+					{
+						//ゲージの必要量を確認する
+						//通常の攻撃の場合、実際の攻撃内容は入れずに攻撃名をそのまま入れる
+						attack_state = static_cast<AttackState>(list);
+					}
+					else
+					{
+						//ゲージが足りない場合指定した技を出す
+						attack_state = attack_list[real].aid_attack_name;
+					}
+
+
+					//攻撃を決定する
+					attack = TRUE;
+					moveflag = false;
+					act_state = ActState::ATTACK;
+					fream = attack_list[real].attack_single[0].fream;
+					anim_ccodinate = ac_attack[real].fream;
+					attack_list[real].now_attack_num = 0;
+					later = non_target;
+					production_time = 0.0f;
+					//描画をセット
+					anim->NodeChange(model_motion.model_R[real], scastI(AnimAtk::FREAM));
+					//攻撃ごとに個別の設定を行う
+					AttackDetailsSet(attack_list[list].real_attack);
+					return;
 				}
 			}
-
-			if (!attack)
-			{
-				Jump();
-			}
-
 		}
-		NoneChange();
+	}
 
 			//	//弱攻撃
 			//	if (pad->x_input[scastI(PAD::X)] == 1)
@@ -1034,7 +1043,6 @@ void Knight::AttackInput()
 			//		speed_Y.Set(0.0f);
 			//		trackgauge--;
 			//	}
-	}
 	//しゃがみ攻撃
 	//if (act_state == ActState::SQUAT)
 	//{
@@ -1133,132 +1141,136 @@ void Knight::Attack(float decision, float elapsed_time)
 		//弱攻撃
 		Jaku(elapsed_time);
 		//中攻撃(連打した場合は弱→中→強と繋がるように)
-		if (later > 0 && later < target_max)
-		{
-			//中攻撃
-			if (pad->x_input[static_cast<int>(PAD::X)] == 1)
-			{
-				//pad->que.back().timer = 0;
-				//attack = TRUE;
-				//later = non_target;
-				//moveflag = false;
-				//act_state = ActState::ATTACK;
-				//if (ground)
-				//{
-				//	//描画をセット
-				//}
-				//else
-				//{
-				//	//描画をセット
-				//}
-				//attack_state = AttackState::SPECIAL_ATTACK;
-				//fream = attack_list[scastI(attack_state)].attack_single[0].fream;
-				//YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
-				//production_time = 0.0f;
+		//if (later > 0 && later < target_max)
+		//{
+		//	//中攻撃
+		//	if (pad->x_input[static_cast<int>(PAD::X)] == 1)
+		//	{
+		//		//pad->que.back().timer = 0;
+		//		//attack = TRUE;
+		//		//later = non_target;
+		//		//moveflag = false;
+		//		//act_state = ActState::ATTACK;
+		//		//if (ground)
+		//		//{
+		//		//	//描画をセット
+		//		//}
+		//		//else
+		//		//{
+		//		//	//描画をセット
+		//		//}
+		//		//attack_state = AttackState::SPECIAL_ATTACK;
+		//		//fream = attack_list[scastI(attack_state)].attack_single[0].fream;
+		//		//YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
+		//		//production_time = 0.0f;
 
-				specialfream = 2;
-			}
-			//下段中攻撃(コンボルート。弱から下段中攻撃が繋がる)
-			if (ground)
-			{
-				
-			}
-		}
+		//		specialfream = 2;
+		//	}
+		//	//下段中攻撃(コンボルート。弱から下段中攻撃が繋がる)
+		//	if (ground)
+		//	{
+		//		
+		//	}
+		//}
 		break;
 	case AttackState::THU:
-		//中攻撃
-		Thu(elapsed_time);
-		if (later > -1)
-		{
-			//強攻撃
-			if (pad->x_input[static_cast<int>(PAD::X)] == 1)
-			{
-				if (ground)
-				{
-					//pad->que.back().timer = 0;
-					//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-					//attack = TRUE;
-					//atk[scastI(KNIGHTATK::ONE)].start = FALSE;
-					//later = -1;
-					//for (int i = 0; i < scastI(KNIGHTATK::END); i++)
-					//{
-					//	atk[i].Init();
-					//}
-					//moveflag = false;
-					//atk[scastI(KNIGHTATK::ONE)].fin = FALSE;
-					////描画をセット
-					//act_state = ActState::ATTACK;
-					//attack_state = AttackState::KYO;
-					//pos.x += Getapply(50.0f);
-					//specialfream = 4;
-				}
-				else
-				{
-					//pad->que.back().timer = 0;
-					//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-					//attack = TRUE;
-					//atk[scastI(KNIGHTATK::ONE)].start = FALSE;
-					//later = -1;
-					//for (int i = 0; i < scastI(KNIGHTATK::END); i++)
-					//{
-					//	atk[i].Init();
-					//}
-					//moveflag = false;
-					//atk[scastI(KNIGHTATK::ONE)].fin = FALSE;
-					////描画をセット
+		//中攻撃(下中)
+		D_Thu(elapsed_time);
+		//if (later > -1)
+		//{
+		//	//強攻撃
+		//	if (pad->x_input[static_cast<int>(PAD::X)] == 1)
+		//	{
+		//		if (ground)
+		//		{
+		//			//pad->que.back().timer = 0;
+		//			//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
+		//			//attack = TRUE;
+		//			//atk[scastI(KNIGHTATK::ONE)].start = FALSE;
+		//			//later = -1;
+		//			//for (int i = 0; i < scastI(KNIGHTATK::END); i++)
+		//			//{
+		//			//	atk[i].Init();
+		//			//}
+		//			//moveflag = false;
+		//			//atk[scastI(KNIGHTATK::ONE)].fin = FALSE;
+		//			////描画をセット
+		//			//act_state = ActState::ATTACK;
+		//			//attack_state = AttackState::KYO;
+		//			//pos.x += Getapply(50.0f);
+		//			//specialfream = 4;
+		//		}
+		//		else
+		//		{
+		//			//pad->que.back().timer = 0;
+		//			//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
+		//			//attack = TRUE;
+		//			//atk[scastI(KNIGHTATK::ONE)].start = FALSE;
+		//			//later = -1;
+		//			//for (int i = 0; i < scastI(KNIGHTATK::END); i++)
+		//			//{
+		//			//	atk[i].Init();
+		//			//}
+		//			//moveflag = false;
+		//			//atk[scastI(KNIGHTATK::ONE)].fin = FALSE;
+		//			////描画をセット
 
-					//attack_state = AttackState::U_KYO;
-					//act_state = ActState::ATTACK;
-					//pos.x += Getapply(50.0f);
-					//specialfream = 4;
-					break;
-				}
-			}
-		}
+		//			//attack_state = AttackState::U_KYO;
+		//			//act_state = ActState::ATTACK;
+		//			//pos.x += Getapply(50.0f);
+		//			//specialfream = 4;
+		//			break;
+		//		}
+		//	}
+		//}
 		break;
-	case AttackState::KYO:
-		//強攻撃
+	case AttackState::D_KYO:
+		//中の次に出る強攻撃
 		Kyo(elapsed_time);
-		if (later > -1)
-		{
-			//ホーミングダッシュ
-			if (pad->x_input[static_cast<int>(PAD::X)] == 1)
-			{
-				for (int atknum = 0; atknum < scastI(KNIGHTATK::END); atknum++)
-				{
-					if (atk[atknum].knock_start)
-					{
-						/*pad->que.back().timer = 0;
-						attack = TRUE;
-						atk[scastI(KNIGHTATK::ONE)].start = FALSE;
-						later = -1;
-						for (int i = 0; i < scastI(KNIGHTATK::END); i++)
-						{
-							atk[i].Init();
-						}
-						moveflag = false;
-						atk[scastI(KNIGHTATK::ONE)].fin = FALSE;*/
-						if (trackgauge > 0)
-						{
-							tracking.Init();
-							//描画をセット
+		//if (later > -1)
+		//{
+		//	//ホーミングダッシュ
+		//	if (pad->x_input[static_cast<int>(PAD::X)] == 1)
+		//	{
+		//		for (int atknum = 0; atknum < scastI(KNIGHTATK::END); atknum++)
+		//		{
+		//			if (atk[atknum].knock_start)
+		//			{
+		//				/*pad->que.back().timer = 0;
+		//				attack = TRUE;
+		//				atk[scastI(KNIGHTATK::ONE)].start = FALSE;
+		//				later = -1;
+		//				for (int i = 0; i < scastI(KNIGHTATK::END); i++)
+		//				{
+		//					atk[i].Init();
+		//				}
+		//				moveflag = false;
+		//				atk[scastI(KNIGHTATK::ONE)].fin = FALSE;*/
+		//				if (trackgauge > 0)
+		//				{
+		//					tracking.Init();
+		//					//描画をセット
 
-							attack_state = AttackState::TRACK_DASH;
-							act_state = ActState::ATTACK;
-							pos.y -= 5.0f;
-							speed.y = 0.0f;
-							speed.x = 0.0f;
-							hightrigger = false;
-							jumpflag = false;
-							max_jump_flag = false;
-							speed_Y.Set(0.0f);
-							trackgauge--;
-						}
-						break;
-					}
-				}
-			}
-		}
+		//					attack_state = AttackState::TRACK_DASH;
+		//					act_state = ActState::ATTACK;
+		//					pos.y -= 5.0f;
+		//					speed.y = 0.0f;
+		//					speed.x = 0.0f;
+		//					hightrigger = false;
+		//					jumpflag = false;
+		//					max_jump_flag = false;
+		//					speed_Y.Set(0.0f);
+		//					trackgauge--;
+		//				}
+		//				break;
+		//			}
+		//		}
+		//	}
+		//}
+		break;
+	case AttackState::D_JAKU:
+		//下段弱攻撃
+		D_Jaku(elapsed_time);
 		break;
 	case AttackState::D_THU:
 		//下段中攻撃
@@ -1315,10 +1327,6 @@ void Knight::Attack(float decision, float elapsed_time)
 		//空中上強攻撃
 		A_UKyo(elapsed_time);
 		break;
-	case AttackState::D_JAKU:
-		//下段弱攻撃
-		D_Jaku(elapsed_time);
-		break;
 	case AttackState::JAKU_RHURF:
 		Hadouken(elapsed_time);
 		break;
@@ -1347,10 +1355,19 @@ void Knight::Attack(float decision, float elapsed_time)
 	case AttackState::SPECIAL_ATTACK:
 		SpecialAttack(elapsed_time);
 		break;
+	case AttackState::JAKU_THU:
+		//弱の次に出る中攻撃
+		Thu(elapsed_time);
+		break;
+	case AttackState::JAKU_KYO:
+		//中の次に出る強攻撃
+		Kyo(elapsed_time);
+		break;
 	default:
 		break;
 	}
 
+	
 
 	//攻撃判定の終了フラグが出たら後隙を決定し減らす処理を行う
 	/*for (int atknum = 0; atknum < scastI(KNIGHTATK::END); atknum++)
@@ -1920,22 +1937,17 @@ void Knight::DrawDEBUG(
 		{
 			if (ImGui::TreeNode(attack_name_list[scastI(attack_list[list].attack_name)].c_str()))
 			{
-				ImGui::InputFloat(u8"後スキ", &attack_list[list].later, 0.01f, 0.1f);
-				ImGui::InputInt(u8"攻撃回数", &attack_list[list].attack_max, 1, 10);
-				ImGui::InputFloat(u8"モーション速度:発生", &ac_attack[list].fream, 0.01f, 0.1f);
-				ImGui::InputFloat(u8"モーション速度:持続", &ac_attack[list].timer, 0.01f, 0.1f);
-				ImGui::InputFloat(u8"モーション速度:後スキ", &ac_attack[list].later, 0.01f, 0.1f);
+				int real = scastI(attack_list[list].real_attack);
 				int pad = scastI(attack_list[list].linkage_button);
-				ImGui::InputInt(u8"ボタン", &pad, 1, 10);
+				ImGui::SliderInt(u8"ボタン", &pad, 0, scastI(PAD::PAD_END));
 				attack_list[list].linkage_button = static_cast<PAD>(pad);
 				ImGui::Text(pad_name_list[pad].c_str());
 				int com = scastI(attack_list[list].linkage_command);
-				ImGui::InputInt(u8"コマンド", &com, 1, 10);
+				ImGui::SliderInt(u8"コマンド", &com, 0, scastI(Command::LHURF));
 				attack_list[list].linkage_command = static_cast<Command>(com);
 				ImGui::Text(command_name_list[com].c_str());
 				ImGui::Checkbox(u8"地上技", &attack_list[list].ground_on);
 				ImGui::Checkbox(u8"しゃがみ攻撃", &attack_list[list].squat_on);
-				ImGui::InputFloat(u8"必要なゲージ量", &attack_list[list].need_gauge, 1.0f, 10.0f);
 				ImGui::Checkbox(u8"スティックの入力を必要とする", &linkage_stick_on[list]);
 				if (linkage_stick_on[list])
 				{
@@ -1948,71 +1960,87 @@ void Knight::DrawDEBUG(
 				{
 					attack_list[list].linkage_stick = PAD::BUTTOM_END;
 				}
-				if (attack_list[list].need_gauge >= 1.0f)
+				ImGui::SliderInt(u8"攻撃内容", &real, 0, scastI(AttackState::ATTACK_END) - 1);
+				attack_list[list].real_attack = static_cast<AttackState>(real);
+				if (attack_list[list].attack_name != attack_list[list].real_attack)
 				{
-					int aid_attack = scastI(attack_list[list].aid_attack_name);
-					ImGui::SliderInt(u8"ゲージが足りない場合の攻撃", &aid_attack, scastI(AttackState::NONE), scastI(AttackState::ATTACK_END));
-					ImGui::Text(attack_name_list[aid_attack].c_str());
-					attack_list[list].aid_attack_name = static_cast<AttackState>(aid_attack);
+					ImGui::Text(attack_name_list[scastI(attack_list[list].real_attack)].c_str());
 				}
 				else
 				{
-					attack_list[list].aid_attack_name = AttackState::NONE;
-				}
-
-
-				attack_list[list].attack_single.resize(attack_list[list].attack_max);
-				//攻撃回数ごとのパラメータ表示
-				ImGui::Text(u8"攻撃回数ごとのパラメータ");
-				if (!attack_list[list].attack_single.empty())
-				{
-					for (int sin = 0; sin < attack_list[list].attack_single.size(); sin++)
+					ImGui::InputFloat(u8"後スキ", &attack_list[list].later, 0.01f, 0.1f);
+					ImGui::InputInt(u8"攻撃回数", &attack_list[list].attack_max, 1, 10);
+					ImGui::InputFloat(u8"モーション速度:発生", &ac_attack[list].fream, 0.01f, 0.1f);
+					ImGui::InputFloat(u8"モーション速度:持続", &ac_attack[list].timer, 0.01f, 0.1f);
+					ImGui::InputFloat(u8"モーション速度:後スキ", &ac_attack[list].later, 0.01f, 0.1f);
+					ImGui::InputFloat(u8"必要なゲージ量", &attack_list[list].need_gauge, 1.0f, 10.0f);
+					if (attack_list[list].need_gauge >= 1.0f)
 					{
-						std::string now_sin = std::string("ATK_Single:")+std::to_string(sin);
-						if (ImGui::TreeNode(now_sin.c_str()))
+						int aid_attack = scastI(attack_list[list].aid_attack_name);
+						ImGui::SliderInt(u8"ゲージが足りない場合の攻撃", &aid_attack, scastI(AttackState::NONE), scastI(AttackState::ATTACK_END));
+						ImGui::Text(attack_name_list[aid_attack].c_str());
+						attack_list[list].aid_attack_name = static_cast<AttackState>(aid_attack);
+					}
+					else
+					{
+						attack_list[list].aid_attack_name = AttackState::NONE;
+					}
+
+
+					attack_list[list].attack_single.resize(attack_list[list].attack_max);
+					//攻撃回数ごとのパラメータ表示
+					ImGui::Text(u8"攻撃回数ごとのパラメータ");
+					if (!attack_list[list].attack_single.empty())
+					{
+						for (int sin = 0; sin < attack_list[list].attack_single.size(); sin++)
 						{
-							ImGui::InputFloat(u8"発生フレーム", &attack_list[list].attack_single[sin].fream, 0.01f, 0.1f);
-							ImGui::InputInt(u8"当たり判定の数", &attack_list[list].attack_single[sin].quantity, 1, 10);
-							attack_list[list].attack_single[sin].parameter.resize(attack_list[list].attack_single[sin].quantity);
-							if (!attack_list[list].attack_single[sin].parameter.empty())
+							std::string now_sin = std::string("ATK_Single:") + std::to_string(sin);
+							if (ImGui::TreeNode(now_sin.c_str()))
 							{
-								for (int para = 0; para < attack_list[list].attack_single[sin].parameter.size(); para++)
+								ImGui::InputFloat(u8"発生フレーム", &attack_list[list].attack_single[sin].fream, 0.01f, 0.1f);
+								ImGui::InputInt(u8"当たり判定の数", &attack_list[list].attack_single[sin].quantity, 1, 10);
+								attack_list[list].attack_single[sin].parameter.resize(attack_list[list].attack_single[sin].quantity);
+								if (!attack_list[list].attack_single[sin].parameter.empty())
 								{
-									//攻撃判定内部パラメーター表示
-									std::string now_para = u8"判定";
-									now_para += std::to_string(para);
-									if (ImGui::TreeNode(now_para.c_str()))
+									for (int para = 0; para < attack_list[list].attack_single[sin].parameter.size(); para++)
 									{
-										ImGui::InputFloat(u8"プレイヤーとの距離X", &attack_list[list].attack_single[sin].parameter[para].distance.x, 0.01f, 0.1f);
-										ImGui::InputFloat(u8"プレイヤーとの距離Y", &attack_list[list].attack_single[sin].parameter[para].distance.y, 0.01f, 0.1f);
-										ImGui::InputFloat(u8"サイズX", &attack_list[list].attack_single[sin].parameter[para].size.x, 0.01f, 0.1f);
-										ImGui::InputFloat(u8"サイズY", &attack_list[list].attack_single[sin].parameter[para].size.y, 0.01f, 0.1f);
-										ImGui::InputFloat(u8"持続フレーム", &attack_list[list].attack_single[sin].parameter[para].timer, 0.01f, 0.1f);
-										ImGui::InputFloat(u8"ダメージ", &attack_list[list].attack_single[sin].parameter[para].damege, 0.01f, 0.1f);
-										ImGui::InputFloat(u8"のけぞり時間", &attack_list[list].attack_single[sin].parameter[para].HB_timer, 0.01f, 0.1f);
-										ImGui::InputFloat(u8"吹っ飛びX", &attack_list[list].attack_single[sin].parameter[para].hitback.x, 0.01f, 0.1f);
-										ImGui::InputFloat(u8"吹っ飛びY", &attack_list[list].attack_single[sin].parameter[para].hitback.y, 0.01f, 0.1f);
-										ImGui::InputInt(u8"攻撃タイプ", &attack_list[list].attack_single[sin].parameter[para].type, 1, 10);
-										ImGui::Text(u8"0:上段。1:中段。2:下段。3:つかみ");
-										ImGui::InputFloat(u8"ノックバック(Xのみ)", &attack_list[list].attack_single[sin].parameter[para].knockback, 0.01f, 0.1f);
-										ImGui::Checkbox(u8"ゲージを獲得しない", &attack_list[list].attack_single[sin].parameter[para].gaugeout);
-										ImGui::InputFloat(u8"つかみ抜けされる時間", &attack_list[list].attack_single[sin].parameter[para].stealtimer, 0.01f, 0.1f);
-										int hit_stop_time = scastI(attack_list[list].attack_single[sin].parameter[para].HS_timer);
-										ImGui::InputInt(u8"ヒットストップ時間", &hit_stop_time, 1.0f, 10.0f);
-										ImGui::Text(u8"0:短い。1:普通。2:長い。3以降:短い");
-										attack_list[list].attack_single[sin].parameter[para].HS_timer = static_cast<HitStopTime>(hit_stop_time);
-										if(!attack_list[list].attack_single[sin].parameter[para].gaugeout)
-											{ ImGui::InputFloat(u8"ゲージ獲得量", &attack_list[list].attack_single[sin].parameter[para].gauge_get, 0.01f, 0.1f); }
-										ImGui::TreePop();
+										//攻撃判定内部パラメーター表示
+										std::string now_para = u8"判定";
+										now_para += std::to_string(para);
+										if (ImGui::TreeNode(now_para.c_str()))
+										{
+											ImGui::InputFloat(u8"プレイヤーとの距離X", &attack_list[list].attack_single[sin].parameter[para].distance.x, 0.01f, 0.1f);
+											ImGui::InputFloat(u8"プレイヤーとの距離Y", &attack_list[list].attack_single[sin].parameter[para].distance.y, 0.01f, 0.1f);
+											ImGui::InputFloat(u8"サイズX", &attack_list[list].attack_single[sin].parameter[para].size.x, 0.01f, 0.1f);
+											ImGui::InputFloat(u8"サイズY", &attack_list[list].attack_single[sin].parameter[para].size.y, 0.01f, 0.1f);
+											ImGui::InputFloat(u8"持続フレーム", &attack_list[list].attack_single[sin].parameter[para].timer, 0.01f, 0.1f);
+											ImGui::InputFloat(u8"ダメージ", &attack_list[list].attack_single[sin].parameter[para].damege, 0.01f, 0.1f);
+											ImGui::InputFloat(u8"のけぞり時間", &attack_list[list].attack_single[sin].parameter[para].HB_timer, 0.01f, 0.1f);
+											ImGui::InputFloat(u8"吹っ飛びX", &attack_list[list].attack_single[sin].parameter[para].hitback.x, 0.01f, 0.1f);
+											ImGui::InputFloat(u8"吹っ飛びY", &attack_list[list].attack_single[sin].parameter[para].hitback.y, 0.01f, 0.1f);
+											ImGui::SliderInt(u8"攻撃タイプ", &attack_list[list].attack_single[sin].parameter[para].type, 0, 3);
+											ImGui::Text(u8"0:上段。1:中段。2:下段。3:つかみ");
+											ImGui::InputFloat(u8"ノックバック(Xのみ)", &attack_list[list].attack_single[sin].parameter[para].knockback, 0.01f, 0.1f);
+											ImGui::Checkbox(u8"ゲージを獲得しない", &attack_list[list].attack_single[sin].parameter[para].gaugeout);
+											ImGui::InputFloat(u8"つかみ抜けされる時間", &attack_list[list].attack_single[sin].parameter[para].stealtimer, 0.01f, 0.1f);
+											int hit_stop_time = scastI(attack_list[list].attack_single[sin].parameter[para].HS_timer);
+											ImGui::SliderInt(u8"ヒットストップ時間", &hit_stop_time, 0, scastI(HitStopTime::LONG));
+											ImGui::Text(u8"0:短い。1:普通。2:長い。3以降:短い");
+											attack_list[list].attack_single[sin].parameter[para].HS_timer = static_cast<HitStopTime>(hit_stop_time);
+											if (!attack_list[list].attack_single[sin].parameter[para].gaugeout)
+											{
+												ImGui::InputFloat(u8"ゲージ獲得量", &attack_list[list].attack_single[sin].parameter[para].gauge_get, 0.01f, 0.1f);
+											}
+											ImGui::TreePop();
+										}
 									}
 								}
-							}
 
-							ImGui::TreePop();
+								ImGui::TreePop();
+							}
 						}
 					}
 				}
-
 				ImGui::TreePop();
 			}
 		}
@@ -4017,7 +4045,7 @@ void Knight::ChangeFace(FaceAnim anim)
 	}
 }
 
-void Knight::AttackDetailsSet()
+void Knight::AttackDetailsSet(const AttackState& attack_state)
 {
 	//攻撃ごとに初回だけ通す処理を記述する
 	switch (attack_state)
@@ -4029,7 +4057,7 @@ void Knight::AttackDetailsSet()
 		break;
 	case AttackState::THU:
 		break;
-	case AttackState::KYO:
+	case AttackState::D_KYO:
 		break;
 	case AttackState::D_JAKU:
 		break;
@@ -4073,6 +4101,10 @@ void Knight::AttackDetailsSet()
 	case AttackState::DESIRE_METEOR:
 		break;
 	case AttackState::EXTENDATK:
+		break;
+	case AttackState::JAKU_THU:
+		break;
+	case AttackState::JAKU_KYO:
 		break;
 	case AttackState::ATTACK_END:
 		break;

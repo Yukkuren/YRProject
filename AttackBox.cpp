@@ -4,7 +4,7 @@
 #include "PlayerBase.h"
 #include "framework.h"
 
-void AttackBox::Init(AttackParameter& param, float rightOrleft)
+void AttackBox::Init(AttackParameter& param, float rightOrleft,YR_Vector3 pl_pos)
 {
 	attack = true;
 	fin = false;
@@ -19,9 +19,12 @@ void AttackBox::Init(AttackParameter& param, float rightOrleft)
 	{
 		hit_ok = true;
 	}
+
+	pos.x = pl_pos.x + ((parameter.distance.x) * rightOrleft);	//X座標更新
+	pos.y = pl_pos.y + ((parameter.distance.y));	//Y座標更新
 }
 
-void AttackBox::Init(AttackParameter& param, float rightOrleft, YR_Vector3 plus_speed)
+void AttackBox::Init(AttackParameter& param, float rightOrleft, YR_Vector3 pl_pos, YR_Vector3 plus_speed)
 {
 	attack = true;
 	fin = false;
@@ -37,6 +40,9 @@ void AttackBox::Init(AttackParameter& param, float rightOrleft, YR_Vector3 plus_
 	{
 		hit_ok = true;
 	}
+
+	pos.x = pl_pos.x + (parameter.distance.x * rightOrleft);	//X座標更新
+	pos.y = pl_pos.y + (parameter.distance.y);	//Y座標更新
 }
 
 

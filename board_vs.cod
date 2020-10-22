@@ -71,7 +71,7 @@ dcl_temps 3
 //   o1.x <- <main return value>.tex.x; o1.y <- <main return value>.tex.y; 
 //   o0.x <- <main return value>.position.x; o0.y <- <main return value>.position.y; o0.z <- <main return value>.position.z; o0.w <- <main return value>.position.w
 //
-#line 7 "E:\ゲーム制作\YRProject\board_vs.hlsl"
+#line 7 "F:\ゲーム制作\YRProject\board_vs.hlsl"
 mov r0.xyz, v0.xyzx  // r0.x <- P.x; r0.y <- P.y; r0.z <- P.z
 mov r0.w, l(1.000000)  // r0.w <- P.w
 

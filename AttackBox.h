@@ -1,6 +1,6 @@
 #ifndef _ATTACKBOX_H_
 #define _ATTACKBOX_H_
-#include "YR_VECTOR3.h"
+#include "YR_VectorMaster.h"
 #include "YRShader.h"
 
 //--------------------------------------------------
@@ -48,8 +48,8 @@ public:
 	YR_Vector3			speed;		//攻撃の移動速度
 	YR_Vector3			plus_speed;	//飛び道具用の常に付与するスピード
 
-	void Init(AttackParameter& param, float rightOrleft);
-	void Init(AttackParameter& param, float rightOrleft, YR_Vector3 plus_speed);
+	void Init(AttackParameter& param, float rightOrleft, YR_Vector3 pl_pos);
+	void Init(AttackParameter& param, float rightOrleft, YR_Vector3 pl_pos, YR_Vector3 plus_speed);
 	void Update(YR_Vector3 pl_pos, float elapsed_time);
 	void Draw(YRShader* shader,
 		const DirectX::XMMATRIX& view,

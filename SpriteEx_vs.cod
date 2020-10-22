@@ -37,7 +37,7 @@
     dcl_texcoord2 v2  // input<6,7>
     dcl_texcoord3 v3  // input<8,9,10,11>
 
-#line 11 "E:\ゲーム制作\YRProject\SpriteEx_vs.hlsl"
+#line 11 "F:\ゲーム制作\YRProject\SpriteEx_vs.hlsl"
     mul r0, v0.xyzx, c1.xxxy
     add r0, r0, c1.yyyx  // ::output<0,1,2,3>
     mov r1, v3  // ::output<6,7,8,9>
@@ -71,7 +71,7 @@ dcl_temps 3
 //   o1.x <- <main return value>.Tex.x; o1.y <- <main return value>.Tex.y; 
 //   o0.x <- <main return value>.Position.x; o0.y <- <main return value>.Position.y; o0.z <- <main return value>.Position.z; o0.w <- <main return value>.Position.w
 //
-#line 11 "E:\ゲーム制作\YRProject\SpriteEx_vs.hlsl"
+#line 11 "F:\ゲーム制作\YRProject\SpriteEx_vs.hlsl"
 itof r0.w, l(1)  // r0.w <- output.Position.w
 mov r0.xyz, v0.xyzx  // r0.x <- output.Position.x; r0.y <- output.Position.y; r0.z <- output.Position.z
 

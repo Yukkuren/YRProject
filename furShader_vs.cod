@@ -85,7 +85,7 @@ dcl_temps 7
 //   o1.x <- <main return value>.Tex.x; o1.y <- <main return value>.Tex.y; 
 //   o0.x <- <main return value>.Position.x; o0.y <- <main return value>.Position.y; o0.z <- <main return value>.Position.z; o0.w <- <main return value>.Position.w
 //
-#line 5 "E:\ゲーム制作\YRProject\furShader_vs.hlsl"
+#line 5 "F:\ゲーム制作\YRProject\furShader_vs.hlsl"
 itof r0.xyz, l(0, 0, 0, 0)  // r0.x <- output.wNormal.x; r0.y <- output.wNormal.y; r0.z <- output.wNormal.z
 
 #line 7

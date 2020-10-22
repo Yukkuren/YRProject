@@ -34,9 +34,9 @@ public:
 	// çsóÒåvéZ
 	void CalculateLocalTransform();
 	void CalculateWorldTransform(
-		DirectX::XMFLOAT3& pos,
-		DirectX::XMFLOAT3& scale,
-		DirectX::XMFLOAT3& angle);
+		const DirectX::XMFLOAT3& pos,
+		const DirectX::XMFLOAT3& scale,
+		const DirectX::XMFLOAT3& angle);
 
 	const std::vector<Node>& GetNodes() const { return m_nodes; }
 	const Model* GetModelResource() const { return m_model_resource.get(); }

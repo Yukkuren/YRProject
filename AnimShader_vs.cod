@@ -49,7 +49,7 @@ dcl_temps 4
 //   o1.x <- <main return value>.Size.x; o1.y <- <main return value>.Size.y; o1.z <- <main return value>.UV_pos.x; o1.w <- <main return value>.UV_pos.y; 
 //   o0.x <- <main return value>.Position.x; o0.y <- <main return value>.Position.y; o0.z <- <main return value>.Position.z
 //
-#line 6 "E:\ゲーム制作\YRProject\AnimShader_vs.hlsl"
+#line 6 "F:\ゲーム制作\YRProject\AnimShader_vs.hlsl"
 mov r0.xyz, v0.xyzx  // r0.x <- output.Position.x; r0.y <- output.Position.y; r0.z <- output.Position.z
 
 #line 7

@@ -335,9 +335,6 @@
     <ClInclude Include="World.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="YR_VECTOR3.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="YRModel.h">
       <Filter>Header</Filter>
     </ClInclude>
@@ -361,6 +358,9 @@
     </ClInclude>
     <ClInclude Include="Knight.h">
       <Filter>Chara\Knight</Filter>
+    </ClInclude>
+    <ClInclude Include="YR_VectorMaster.h">
+      <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

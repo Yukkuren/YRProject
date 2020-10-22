@@ -35,7 +35,7 @@
     dcl_texcoord1 v1  // color<0,1,2,3>
     dcl_texcoord2 v2  // texcoord<0,1>
 
-#line 11 "E:\ゲーム制作\YRProject\Font_vs.hlsl"
+#line 11 "F:\ゲーム制作\YRProject\Font_vs.hlsl"
     mov r0, v0  // ::vout<0,1,2,3>
     mov r1, v1  // ::vout<6,7,8,9>
     mov r2.xy, v2  // ::vout<4,5>
@@ -67,7 +67,7 @@ dcl_temps 3
 //   o1.x <- <main return value>.texcoord.x; o1.y <- <main return value>.texcoord.y; 
 //   o0.x <- <main return value>.position.x; o0.y <- <main return value>.position.y; o0.z <- <main return value>.position.z; o0.w <- <main return value>.position.w
 //
-#line 11 "E:\ゲーム制作\YRProject\Font_vs.hlsl"
+#line 11 "F:\ゲーム制作\YRProject\Font_vs.hlsl"
 mov r0.xyzw, v0.xyzw  // r0.x <- vout.position.x; r0.y <- vout.position.y; r0.z <- vout.position.z; r0.w <- vout.position.w
 
 #line 12

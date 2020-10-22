@@ -98,9 +98,9 @@ public:
 	//Šî–{“I‚É‚±‚Á‚¿‚ðŽg‚¤(position,scale,angle’¼“ü—ÍŒ^)
 	void Render(
 		YRShader					*shader,
-		DirectX::XMFLOAT3			&pos,
-		DirectX::XMFLOAT3			&scale,
-		DirectX::XMFLOAT3			&angle,
+		const DirectX::XMFLOAT3			&pos,
+		const DirectX::XMFLOAT3			&scale,
+		const DirectX::XMFLOAT3			&angle,
 		const DirectX::XMMATRIX		&view,
 		const DirectX::XMMATRIX		&projection,
 		const DirectX::XMFLOAT4		&light_direction,

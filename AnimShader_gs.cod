@@ -65,7 +65,7 @@ dcl_maxout 4
 //   v[0][2].x <- In[0].UV_size.x; v[0][2].y <- In[0].UV_size.y; 
 //   v[0][3].x <- In[0].Color.x; v[0][3].y <- In[0].Color.y; v[0][3].z <- In[0].Color.z; v[0][3].w <- In[0].Color.w
 //
-#line 8 "E:\ゲーム制作\YRProject\AnimShader_gs.hlsl"
+#line 8 "F:\ゲーム制作\YRProject\AnimShader_gs.hlsl"
 mul r0.xyzw, cb0[0].xyzw, v[0][0].xxxx
 mul r1.xyzw, cb0[1].xyzw, v[0][0].yyyy
 add r0.xyzw, r0.xyzw, r1.xyzw

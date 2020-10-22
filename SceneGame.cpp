@@ -17,6 +17,17 @@
 //
 //------------------------------------------------
 
+#if USE_IMGUI
+
+std::array<std::string, scastI(SceneGame::Player2PControl::END)> p2_con_name_list =
+{
+	u8"操作",
+	u8"動かない",
+	u8"AI",
+};
+
+#endif // USE_IMGUI
+
 
 void SceneGame::SetPlayerCharacter(std::unique_ptr<Player>& player, int select)
 {
@@ -79,6 +90,9 @@ void SceneGame::Init()
 	hit_stop_elapsed = 0.0f;
 	game_speed = 0.0f;
 	blur_on = false;
+
+	//2Pの動き
+	pl2_con = Player2PControl::OPERATION;
 }
 
 
@@ -557,7 +571,7 @@ void SceneGame::Update(float elapsed_time)
 				
 				//パッド更新
 				player1p->pad->Update(game_speed);
-				//player2p->pad->Update(game_speed);
+				Control2PState(game_speed);
 				if (pause)
 				{
 					//ポーズ中
@@ -863,6 +877,10 @@ void SceneGame::Draw(float elapsed_time)
 		ImGui::Begin("palam", &show_another_window);
 		//ImGui::Text("anim : %f", motion.anim_timer);
 		ImGui::Text("time : %f", timer);
+		int pl2p_con = scastI(pl2_con);
+		ImGui::Text(u8"2Pの挙動 :"); ImGui::SameLine();
+		ImGui::SliderInt(p2_con_name_list[pl2p_con].c_str(), &pl2p_con, 0, scastI(Player2PControl::AI));
+		pl2_con = static_cast<Player2PControl>(pl2p_con);
 		ImGui::Checkbox("Camera_Debug", &camera_move_debug);
 		if (ImGui::Button(u8"カメラをプレイヤー1に"))
 		{
@@ -1111,7 +1129,7 @@ void SceneGame::Draw(float elapsed_time)
 
 #if USE_IMGUI
 		player1p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed *p1_elapsed_time);
-		player2p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed *p2_elapsed_time);
+		//player2p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed *p2_elapsed_time);
 		
 		/*motion.DrawContinue(
 		skinShader.get(),
@@ -1792,5 +1810,24 @@ void SceneGame::RenderBlur()
 			multi_blur_texture.get(),
 			0.0f, 0.0f, 1920.0f, 1080.0f,
 			0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);*/
+	}
+}
+
+void SceneGame::Control2PState(float elapsed_time)
+{
+	switch (pl2_con)
+	{
+	case SceneGame::Player2PControl::OPERATION:
+		//操作可能
+		player2p->pad->Update(elapsed_time);
+		break;
+	case SceneGame::Player2PControl::SUSPENSION:
+		//操作不能
+		break;
+	case SceneGame::Player2PControl::AI:
+		//AI
+		break;
+	default:
+		break;
 	}
 }

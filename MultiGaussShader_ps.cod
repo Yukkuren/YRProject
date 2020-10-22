@@ -48,7 +48,7 @@ dcl_temps 3
 //   v1.x <- input.TexCoord.x; v1.y <- input.TexCoord.y; 
 //   o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
 //
-#line 12 "E:\ゲーム制作\YRProject\MultiGaussShader_ps.hlsl"
+#line 12 "F:\ゲーム制作\YRProject\MultiGaussShader_ps.hlsl"
 itof r0.xyz, l(0, 0, 0, 0)  // r0.x <- result.x; r0.y <- result.y; r0.z <- result.z
 
 #line 13

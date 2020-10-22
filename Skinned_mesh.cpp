@@ -1340,9 +1340,9 @@ bool Skinned_mesh::Load(const char* fbx_filename, std::shared_ptr<Texture> tex, 
 //			 マテリアルのカラーとviewflagは書かなくてもいい
 void Skinned_mesh::Render(
 	YRShader					*shader,
-	DirectX::XMFLOAT3			&pos,				//モデルの位置
-	DirectX::XMFLOAT3			&scale,				//モデルの大きさ
-	DirectX::XMFLOAT3			&angle,				//モデルの回転
+	const DirectX::XMFLOAT3			&pos,				//モデルの位置
+	const DirectX::XMFLOAT3			&scale,				//モデルの大きさ
+	const DirectX::XMFLOAT3			&angle,				//モデルの回転
 	const DirectX::XMMATRIX		&view,				//ビュー行列
 	const DirectX::XMMATRIX		&projection,		//プロジェクション行列
 	const DirectX::XMFLOAT4		&light_direction,	//ライト進行方向

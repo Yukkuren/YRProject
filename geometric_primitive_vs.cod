@@ -63,7 +63,7 @@
     def c12, 1, 0, 0, 0
     dcl_texcoord v0  // position<0,1,2>
 
-#line 26 "E:\ゲーム制作\YRProject\geometric_primitive_vs.hlsl"
+#line 26 "F:\ゲーム制作\YRProject\geometric_primitive_vs.hlsl"
     mov r0.xy, c12
     dp4 r1.x, c1, r0.xyyy  // ::newWorld<0>
     dp4 r2.x, c1.yxzw, r0.xyyy  // ::newWorld<1>
@@ -125,7 +125,7 @@ dcl_temps 8
 //   v0.x <- position.x; v0.y <- position.y; v0.z <- position.z; 
 //   o0.x <- <main return value>.position.x; o0.y <- <main return value>.position.y; o0.z <- <main return value>.position.z; o0.w <- <main return value>.position.w
 //
-#line 20 "E:\ゲーム制作\YRProject\geometric_primitive_vs.hlsl"
+#line 20 "F:\ゲーム制作\YRProject\geometric_primitive_vs.hlsl"
 itof r0.xyzw, l(1, 0, 0, 0)  // r0.x <- Mat._m00; r0.y <- Mat._m10; r0.z <- Mat._m20; r0.w <- Mat._m30
 itof r1.xyzw, l(0, 1, 0, 0)  // r1.x <- Mat._m01; r1.y <- Mat._m11; r1.z <- Mat._m21; r1.w <- Mat._m31
 itof r2.xyzw, l(0, 0, 0, 0)  // r2.x <- Mat._m02; r2.y <- Mat._m12; r2.z <- Mat._m22; r2.w <- Mat._m32

@@ -1,7 +1,7 @@
 #ifndef _WORLD_H_
 #define _WORLD_H_
 
-#include	"YR_VECTOR3.h"
+#include	"YR_VectorMaster.h"
 
 const float limit_size = 21.0f;		//左右の移動量の制限値
 const float adjustment_eye = 8.0f;	//カメラのズーム距離補正値

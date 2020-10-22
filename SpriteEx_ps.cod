@@ -41,7 +41,7 @@
     dcl t1  // input<6,7,8,9>
     dcl_2d s0
 
-#line 10 "E:\ゲーム制作\YRProject\SpriteEx_ps.hlsl"
+#line 10 "F:\ゲーム制作\YRProject\SpriteEx_ps.hlsl"
     texld r0, t0, s0
     mul r0, r0, t1  // ::color<0,1,2,3>
     mov r0, r0  // ::main<0,1,2,3>
@@ -64,7 +64,7 @@ dcl_temps 1
 //   v2.x <- input.Color.x; v2.y <- input.Color.y; v2.z <- input.Color.z; v2.w <- input.Color.w; 
 //   o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
 //
-#line 10 "E:\ゲーム制作\YRProject\SpriteEx_ps.hlsl"
+#line 10 "F:\ゲーム制作\YRProject\SpriteEx_ps.hlsl"
 sample r0.xyzw, v1.xyxx, t0.xyzw, s0
 mul r0.xyzw, r0.xyzw, v2.xyzw  // r0.x <- color.x; r0.y <- color.y; r0.z <- color.z; r0.w <- color.w
 

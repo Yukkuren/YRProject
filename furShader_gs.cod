@@ -102,10 +102,10 @@ dcl_maxout 48
 //   v[2][3].x <- input[2].Color.x; v[2][3].y <- input[2].Color.y; v[2][3].z <- input[2].Color.z; v[2][3].w <- input[2].Color.w; 
 //   v[2][4].x <- input[2].wPos.x; v[2][4].y <- input[2].wPos.y; v[2][4].z <- input[2].wPos.z
 //
-#line 38 "E:\ゲーム制作\YRProject\furShader.hlsli"
+#line 38 "F:\ゲーム制作\YRProject\furShader.hlsli"
 mov r0.x, l(16)  // r0.x <- LAYER
 
-#line 8 "E:\ゲーム制作\YRProject\furShader_gs.hlsl"
+#line 8 "F:\ゲーム制作\YRProject\furShader_gs.hlsl"
 mov r0.yzw, -v[0][0].zzxy
 add r0.yzw, r0.yyzw, v[1][0].zzxy  // r0.y <- vec1.z; r0.z <- vec1.x; r0.w <- vec1.y
 

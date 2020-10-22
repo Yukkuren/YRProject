@@ -79,7 +79,7 @@ dcl_maxout 3
 //   v[2][2].x <- input[2].Color.x; v[2][2].y <- input[2].Color.y; v[2][2].z <- input[2].Color.z; v[2][2].w <- input[2].Color.w; 
 //   v[2][3].x <- input[2].wPos.x; v[2][3].y <- input[2].wPos.y; v[2][3].z <- input[2].wPos.z
 //
-#line 9 "E:\ゲーム制作\YRProject\flatShader_gs.hlsl"
+#line 9 "F:\ゲーム制作\YRProject\flatShader_gs.hlsl"
 mov r0.xyz, -v[0][0].zxyz
 add r0.xyz, r0.xyzx, v[1][0].zxyz  // r0.x <- vec1.z; r0.y <- vec1.x; r0.z <- vec1.y
 

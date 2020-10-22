@@ -7,6 +7,18 @@
 #include<memory>
 #include "Texture.h"
 #include <fbxsdk.h> 
+#include "YR_VectorMaster.h"
+
+
+#include <cereal/cereal.hpp>
+#include <cereal/archives/binary.hpp>
+#include <cereal/types/string.hpp>
+#include <cereal/types/unordered_map.hpp>
+#include <cereal/types/memory.hpp>
+#include <cereal/types/vector.hpp>
+#include <fstream>
+
+
 
 struct ModelData
 {
@@ -22,18 +34,29 @@ public:
 	{
 		std::string				name;			//ノード名
 		int						parent_index;	//親ノードの数
-		DirectX::XMFLOAT3		scale;
-		DirectX::XMFLOAT4		rotate;
-		DirectX::XMFLOAT3		translate;
+		YR_Vector3				scale;
+		YR_Vector4				rotate;
+		YR_Vector3				translate;
+
+		template<class Archive>
+		void serialize(Archive& archive)
+		{
+			archive(CEREAL_NVP(name), CEREAL_NVP(parent_index), CEREAL_NVP(scale), CEREAL_NVP(rotate), CEREAL_NVP(translate));
+		}
 	};
 
 	struct Vertex
 	{
-		DirectX::XMFLOAT3		position;
-		DirectX::XMFLOAT3		normal;
-		DirectX::XMFLOAT2		texcoord;
-		DirectX::XMFLOAT4		bone_weights;
-		DirectX::XMINT4			bone_indices;
+		YR_Vector3				position;
+		YR_Vector3				normal;
+		YR_Vector2				texcoord;
+		YR_Vector4				bone_weights;
+		YR_INT4					bone_indices;
+		template<class Archive>
+		void serialize(Archive& archive)
+		{
+			archive(CEREAL_NVP(position), CEREAL_NVP(normal), CEREAL_NVP(texcoord), CEREAL_NVP(bone_weights), CEREAL_NVP(bone_indices));
+		}
 	};
 
 	struct Subset
@@ -41,6 +64,11 @@ public:
 		int					material_index;
 		int					start_index;
 		int					index_count;
+		template<class Archive>
+		void serialize(Archive& archive)
+		{
+			archive(CEREAL_NVP(material_index), CEREAL_NVP(start_index), CEREAL_NVP(index_count));
+		}
 	};
 
 	struct Mesh
@@ -52,9 +80,16 @@ public:
 		int					node_index;
 
 		std::vector<int>					node_indices;
-		std::vector<DirectX::XMFLOAT4X4>	inverse_transforms;
+		std::vector<YR_Vector4X4>			inverse_transforms;
 
-		~Mesh(){
+		template<class Archive>
+		void serialize(Archive& archive)
+		{
+			archive(CEREAL_NVP(vertices), CEREAL_NVP(indices), CEREAL_NVP(subsets), CEREAL_NVP(node_index),
+				CEREAL_NVP(node_indices), CEREAL_NVP(inverse_transforms));
+		}
+
+		~Mesh() {
 			vertices.clear();
 			indices.clear();
 			subsets.clear();
@@ -65,21 +100,39 @@ public:
 
 	struct Material
 	{
-		DirectX::XMFLOAT4	color;
+		YR_Vector4			color;
 		std::string			texture_filename;
+
+		template<class Archive>
+		void serialize(Archive& archive)
+		{
+			archive(CEREAL_NVP(color), CEREAL_NVP(texture_filename));
+		}
 	};
 
 	struct NodeKeyData
 	{
-		DirectX::XMFLOAT3	scale;
-		DirectX::XMFLOAT4	rotate;
-		DirectX::XMFLOAT3	translate;
+		YR_Vector3			scale;
+		YR_Vector4			rotate;
+		YR_Vector3			translate;
+
+		template<class Archive>
+		void serialize(Archive& archive)
+		{
+			archive(CEREAL_NVP(scale), CEREAL_NVP(rotate), CEREAL_NVP(translate));
+		}
 	};
 
 	struct Keyframe
 	{
 		float						seconds;
 		std::vector<NodeKeyData>	node_keys;
+
+		template<class Archive>
+		void serialize(Archive& archive)
+		{
+			archive(CEREAL_NVP(seconds), CEREAL_NVP(node_keys));
+		}
 
 		~Keyframe() {
 			node_keys.clear();
@@ -89,6 +142,12 @@ public:
 	{
 		float						seconds_length;
 		std::vector<Keyframe>		keyframes;
+
+		template<class Archive>
+		void serialize(Archive& archive)
+		{
+			archive(CEREAL_NVP(seconds_length), CEREAL_NVP(keyframes));
+		}
 
 		~Animation() {
 			keyframes.clear();
@@ -101,6 +160,12 @@ public:
 	std::vector<Material>	materials;
 
 	std::vector<Animation>	animations;
+
+	template<class Archive>
+	void serialize(Archive& archive)
+	{
+		archive(CEREAL_NVP(nodes), CEREAL_NVP(meshes), CEREAL_NVP(materials), CEREAL_NVP(animations));
+	}
 };
 
 
@@ -119,6 +184,7 @@ public:
 		m_materials.clear();
 		m_meshes.clear();
 	}
+	std::string Serial_name;
 
 private:
 	// モデルデータを構築
@@ -145,6 +211,13 @@ private:
 
 	// FBXファイルからモデルを読み込み
 	bool Load(const char* filename);
+
+
+	void SerialNameGet(const char* filename);
+	bool FileCheck();
+	void Serialize();
+	void LoadSerial();
+
 
 public:
 	enum Material_Attribute : int
@@ -187,8 +260,8 @@ public:
 	};
 
 	const std::vector<Mesh>& GetMeshes() const { return m_meshes; }
-	const std::vector<ModelData::Node>& GetNodes() const { return m_data->nodes; }
-	const std::vector<ModelData::Animation>& GetAnimations() const { return m_data->animations; }
+	std::vector<ModelData::Node>& GetNodes(){ return m_data->nodes; }
+	std::vector<ModelData::Animation>& GetAnimations(){ return m_data->animations; }
 	std::vector<Mesh>		m_meshes;
 	//テクスチャ利用
 	std::shared_ptr<Texture> color_texture_main = nullptr;

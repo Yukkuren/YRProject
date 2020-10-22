@@ -1,7 +1,7 @@
 #ifndef _TRACKING_H_
 #define _TRACKING_H_
 
-#include	"YR_Vector3.h"
+#include	"YR_VectorMaster.h"
 
 class Tracking
 {

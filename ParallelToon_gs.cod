@@ -101,13 +101,13 @@ dcl_maxout 6
 //   v[2][4].x <- input[2].wNormal.x; v[2][4].y <- input[2].wNormal.y; v[2][4].z <- input[2].wNormal.z; 
 //   v[2][5].x <- input[2].wPos.x; v[2][5].y <- input[2].wPos.y; v[2][5].z <- input[2].wPos.z
 //
-#line 3 "E:\ゲーム制作\YRProject\ParallelToon.hlsli"
+#line 3 "F:\ゲーム制作\YRProject\ParallelToon.hlsli"
 mov r0.x, l(0.007000)  // r0.x <- LW
 
 #line 4
 itof r1.xyzw, l(0, 0, 0, -1)  // r1.x <- LC.x; r1.y <- LC.y; r1.z <- LC.z; r1.w <- LC.w
 
-#line 40 "E:\ゲーム制作\YRProject\ParallelToon_gs.hlsl"
+#line 40 "F:\ゲーム制作\YRProject\ParallelToon_gs.hlsl"
 mov r0.y, l(0)  // r0.y <- i
 mov r0.z, r0.y  // r0.z <- i
 loop 
