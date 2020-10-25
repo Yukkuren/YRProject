@@ -186,10 +186,13 @@ public:
 	PAD								linkage_stick;	//‚Ç‚Ì•ûŒü‚Ö‚Ì“ü—Í‚ÅUŒ‚‚ğ”­¶‚³‚¹‚é‚©
 	AttackState						aid_attack_name;//ƒQ[ƒW‚ª‘«‚è‚È‚©‚Á‚½ê‡o‚·‹Z
 	AttackState						real_attack;	//ÀÛ‚ÌUŒ‚(Šî–{‚Íattack_name‚Æ“¯‚¶‚à‚Ì‚ğ“ü‚êA“Á’è‚ÌUŒ‚‚Æ“¯‚¶UŒ‚‚ğo‚·ê‡‚Í‚»‚ÌUŒ‚–¼‚ğ“ü‚ê‚é)
+	bool							speed_on;		//ƒXƒs[ƒh‚ğ“ü‚ê‚éê‡‚Ítrue
+	YR_Vector3						speed;			//UŒ‚”»’è‚É‰ÁZ‚·‚é‘¬“x
 public:
 	AttackList() : now_attack_num(0), attack_name(AttackState::NONE), later(0.0f),
 		attack_max(0), linkage_button(PAD::BUTTOM_END), linkage_command(Command::NOCOMMAND), ground_on(true), squat_on(false),
-		need_gauge(0.0f), linkage_stick(PAD::BUTTOM_END), aid_attack_name(AttackState::NONE), real_attack(attack_name) {};
+		need_gauge(0.0f), linkage_stick(PAD::BUTTOM_END), aid_attack_name(AttackState::NONE), real_attack(attack_name),
+		speed_on(false), speed(0.0f, 0.0f, 0.0f) {};
 	//UŒ‚“–‚½‚è”»’è‚ğ¶¬‚·‚é
 	void SetAttack(std::vector<AttackBox> *atk, float rightOrleft, YR_Vector3 pl_pos)
 	{

@@ -81,7 +81,7 @@ void AttackBox::Update(YR_Vector3 pl_pos, float elapsed_time)
 
 void AttackBox::SpeedPlus(YR_Vector3 plus_speed, float elapsed_time)
 {
-	speed += plus_speed * elapsed_time;
+	this->plus_speed += plus_speed * elapsed_time;
 }
 
 //void AttackBox::Update(

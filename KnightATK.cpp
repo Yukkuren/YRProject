@@ -33,10 +33,24 @@ void Knight::AttackDefault(float elapsed_time)
 	{
 		//int attack_num = attack_list[real].now_attack_num;
 		anim_ccodinate = ac_attack[now_at_list].timer;
-		attack_list[now_at_list].SetAttack(&atk, rightOrleft,pos);
+		if (attack_list[now_at_list].now_attack_num == 0)
+		{
+			//初回の攻撃のみアニメーションを変える
+			anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+		}
+		if (attack_list[now_at_list].speed_on)
+		{
+			//攻撃に速度を付与する場合
+			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos, attack_list[now_at_list].speed);
+		}
+		else
+		{
+			//付与しない場合
+			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos);
+		}
 		fream = non_target;
-		anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
-
+		
+		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
 
 	
@@ -79,6 +93,7 @@ void Knight::AttackDefault(float elapsed_time)
 		}
 		else
 		{
+			//ない場合は後隙に移行する
 			attack_list[now_at_list].now_attack_num = 0;
 			later = attack_list[now_at_list].later;
 			anim_ccodinate = ac_attack[now_at_list].later;
@@ -101,7 +116,90 @@ void Knight::Thu(float elapsed_time)
 
 void Knight::Kyo(float elapsed_time)
 {
-	AttackDefault(elapsed_time);
+	//後隙が設定された後はこの関数には入らない
+	if (later > -1 && later < target_max)
+	{
+		return;
+	}
+
+	//発生フレームになるまで回す
+	if (fream < target_max)
+	{
+		fream -= elapsed_time;
+	}
+	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
+	//発生フレームになったら攻撃判定を生成する
+	if (fream < 0.0f)
+	{
+		//int attack_num = attack_list[real].now_attack_num;
+		anim_ccodinate = ac_attack[now_at_list].timer;
+		if (attack_list[now_at_list].now_attack_num == 0)
+		{
+			//初回の攻撃のみアニメーションを変える
+			anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+		}
+		if (attack_list[now_at_list].speed_on)
+		{
+			//攻撃に速度を付与する場合
+			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos, YR_Vector3(attack_list[now_at_list].speed.x*rightOrleft, attack_list[now_at_list].speed.y));
+		}
+		else
+		{
+			//付与しない場合
+			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos);
+		}
+		fream = non_target;
+
+		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+	}
+
+
+
+	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
+	if (!atk.empty())
+	{
+		for (auto& a : atk)
+		{
+			if (knock)
+			{
+				a.parameter.knockback = 0.0f;
+			}
+			if (a.knock_start)
+			{
+				pos.x -= a.parameter.knockback * rightOrleft;
+				a.parameter.knockback = 0.0f;
+				if (!ground)
+				{
+					speed_Y.Set(60.0f);
+				}
+				knock = true;
+			}
+		}
+	}
+
+	if (atk.empty())
+	{
+		//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
+		return;
+	}
+
+	//攻撃が全て終了したことを確認する
+	if (AttackEndCheck())
+	{
+		//まだ攻撃が残っていれば次の攻撃に移る
+		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
+		{
+			fream = attack_list[now_at_list].attack_single[attack_list[now_at_list].now_attack_num].fream;
+		}
+		else
+		{
+			//ない場合は後隙に移行する
+			attack_list[now_at_list].now_attack_num = 0;
+			later = attack_list[now_at_list].later;
+			anim_ccodinate = ac_attack[now_at_list].later;
+			anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+		}
+	}
 }
 
 
@@ -118,15 +216,20 @@ void Knight::D_Thu(float elapsed_time)
 
 void Knight::U_Kyo(float elapsed_time)
 {
+	constexpr float up_gravity = 20.0f;
 	//後隙が設定された後はこの関数には入らない
 	if (later > -1 && later < target_max)
 	{
+		//重力を付与する
+		pos.y -= up_gravity * elapsed_time;
 		return;
 	}
 
 	//発生フレームになるまで回す
 	if (fream < target_max)
 	{
+		//少し浮かす
+		pos.y += up_gravity * elapsed_time;
 		fream -= elapsed_time;
 	}
 
@@ -147,6 +250,8 @@ void Knight::U_Kyo(float elapsed_time)
 	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
 	if (!atk.empty())
 	{
+		//重力を付与する
+		pos.y -= up_gravity * elapsed_time;
 		for (auto& a : atk)
 		{
 			if (knock)
@@ -157,10 +262,6 @@ void Knight::U_Kyo(float elapsed_time)
 			{
 				pos.x -= a.parameter.knockback * rightOrleft;
 				a.parameter.knockback = 0.0f;
-				if (!ground)
-				{
-					speed_Y.Set(60.0f);
-				}
 				knock = true;
 			}
 		}
