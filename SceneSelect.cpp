@@ -84,7 +84,7 @@ void SceneSelect::Update(float elapsed_time)
 {
 	//ƒ[ƒhI—¹
 	if (load_fin)
-	{if (pKeyState.nflg == 1)
+	{if (pKeyState.nflg == 1 || FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::START)] == 1)
 		{
 			select_p1 = scastI(PLSELECT::KNIGHT);
 			select_p2 = scastI(PLSELECT::KNIGHT);

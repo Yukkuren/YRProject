@@ -380,7 +380,7 @@ void SceneGame::StartSet()
 	Scene_fov = 10.0f * 0.01745f;
 	Scene_aspect = 1920.0f / 1080.0f;
 	Scene_nearZ = 1.4f;
-	Scene_farZ = 1000.0f;
+	Scene_farZ = 100000.0f;
 
 	//カメラ初期設定
 	YRCamera.SetEye(Scene_eye.GetDXFLOAT3());			//視点
@@ -860,8 +860,6 @@ void SceneGame::Draw(float elapsed_time)
 	//ライト方向
 	static DirectX::XMFLOAT4 light_direction = DirectX::XMFLOAT4(-1, 0, 1, 0);
 	static DirectX::XMFLOAT4 ambient_color(0.3f, 0.3f, 0.3f, 0.5f);
-	static float anim_count = 0.0f;
-	static DirectX::XMFLOAT3 box_angle = { DirectX::XMConvertToRadians(-90.0f),0.0f,0.0f };
 	//FRAMEWORK.context.Get()->OMSetRenderTargets(1, FRAMEWORK.view.GetAddressOf(), FRAMEWORK.depth.Get());
 	SetRenderTexture();
 #if USE_IMGUI
@@ -947,9 +945,6 @@ void SceneGame::Draw(float elapsed_time)
 		YRCamera.SetFocus(focus);
 		YRCamera.SetPerspective(fov* 0.01745f, aspect, nearZ, farZ);
 		//YRCamera.SetPerspective(fov, aspect, 0.0001f, 1000000.0f);
-		ImGui::InputFloat("box_angle.x", &box_angle.x, 0.01f, 0.01f);
-		ImGui::InputFloat("box_angle.y", &box_angle.y, 0.01f, 0.01f);
-		ImGui::InputFloat("box_angle.z", &box_angle.z, 0.01f, 0.01f);
 		ImGui::End();
 	}
 #endif
@@ -1135,7 +1130,7 @@ void SceneGame::Draw(float elapsed_time)
 
 #if USE_IMGUI
 		player1p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed *p1_elapsed_time);
-		//player2p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed *p2_elapsed_time);
+		player2p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed *p2_elapsed_time);
 		
 		/*motion.DrawContinue(
 		skinShader.get(),

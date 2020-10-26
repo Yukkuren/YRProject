@@ -271,6 +271,8 @@ public:
 	float				later;			//後隙フレーム(初期値にnon_targetを入れておく)
 	float				knocktimer;		//喰らい時間
 	float				gravity;		//重力値
+	float				down_force;		//ジャンプ時に重力とは別に働く下方向の力
+	float				fall_force;		//空中ダウン中に重力とは別に働く下方向の力
 	float				specialfream;	//弱コンボ等でフレームを減らす際の数値
 	bool				finish;			//行動が終了したときのみtrue
 	bool				step;			//ステップ中はtrue(他の処理を行わない)
@@ -350,7 +352,7 @@ public:
 	virtual void Guard(float decision) = 0;
 	virtual void Squat() = 0;
 	virtual void GuardBack(float elapsed_time) = 0;
-	virtual void FallUpdate() = 0;
+	virtual void FallUpdate(float elapsed_time) = 0;
 	virtual void DownUpdate() = 0;
 	virtual void PassiveUpdate() = 0;
 	virtual void WakeUp() = 0;

@@ -27,6 +27,8 @@ void Knight::Init(YR_Vector3 InitPos)
 	max_jump_flag = false;
 	hp = 1000;
 	gravity = 40.0f;
+	down_force = 200.0f;
+	fall_force = 100.0f;
 	knocktimer = 0.0f;
 	ground = true;
 	jumpflag = false;
@@ -449,7 +451,7 @@ void Knight::Update(float decision, float elapsed_time)
 		break;
 	case ActState::FALL:
 		//空中でダウンしている状態
-		FallUpdate();
+		FallUpdate(elapsed_time);
 		break;
 	case ActState::KNOCK:
 		//攻撃を受けてのけぞる
@@ -628,13 +630,17 @@ void Knight::AttackInput()
 						//攻撃リストにしゃがみ判定が設定されていた場合、現在のステートがしゃがみか確認する
 						if (act_state != ActState::SQUAT && pad->x_input[scastI(PAD::STICK_D)] == 0)
 						{
-							continue;
+							if (pad->x_input[scastI(PAD::STICK_LDown)] == 0 && pad->x_input[scastI(PAD::STICK_RDown)] == 0)
+							{
+								continue;
+							}
 						}
 					}
 					else
 					{
 						//設定されていない場合はしゃがんでないか確認する
-						if (act_state == ActState::SQUAT || pad->x_input[scastI(PAD::STICK_D)] > 0)
+						if (act_state == ActState::SQUAT || pad->x_input[scastI(PAD::STICK_D)] > 0||
+							pad->x_input[scastI(PAD::STICK_LDown)] > 0|| pad->x_input[scastI(PAD::STICK_RDown)] > 0)
 						{
 							continue;
 						}
@@ -2283,7 +2289,7 @@ void Knight::JumpUpdate(float elapsed_time)
 
 	if (max_jump_flag)
 	{
-		speed.y -= (200.0f * elapsed_time);
+		speed.y -= (down_force * elapsed_time);
 		if (hightrigger)
 		{
 			if (speed.y - (gravity*elapsed_time) < 0.0f)
@@ -2399,12 +2405,12 @@ void Knight::KnockUpdate(float elapsed_time)
 	{
 		if (hit[i].hitback.x != 0)
 		{
-			pos.x += hit[i].hitback.x;
+			pos.x += hit[i].hitback.x*elapsed_time;
 			pflag = true;
 		}
 		if (hit[i].hitback.y != 0)
 		{
-			pos.y += hit[i].hitback.y;
+			pos.y += hit[i].hitback.y*elapsed_time;
 			pflag = true;
 			if (pos.y < POS_Y)
 			{
@@ -2676,7 +2682,7 @@ void Knight::Squat()
 }
 
 
-void Knight::FallUpdate()
+void Knight::FallUpdate(float elapsed_time)
 {
 	if (ground)
 	{
@@ -2691,10 +2697,12 @@ void Knight::FallUpdate()
 	}
 	else
 	{
-		if (pos.y < POS_Y)
+		//空中時
+		if (pos.y > POS_Y)
 		{
-			pos.y += speed.y;
-			speed.y += 1.0f;
+			//重力を付与する
+			pos.y -= fall_force * elapsed_time;
+			//speed.y += 10.0f * elapsed_time;
 		}
 		if (pad->x_input[scastI(PAD::X)] == 1 || pad->x_input[scastI(PAD::Y)] == 1 ||
 			pad->x_input[scastI(PAD::B)] == 1 || pad->x_input[scastI(PAD::A)] == 1)

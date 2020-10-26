@@ -266,7 +266,6 @@ void SceneTest::Draw(float elapsed_time)
 	//ƒ‰ƒCƒg•ûŒü
 	static DirectX::XMFLOAT4 light_direction = DirectX::XMFLOAT4(0, -1, 1, 0);
 	static DirectX::XMFLOAT4 ambient_color(0.3f, 0.3f, 0.3f, 0.5f);
-	static float anim_count = 0.0f;
 	//static DirectX::XMFLOAT3 box_angle = { DirectX::XMConvertToRadians(-90.0f),0.0f,0.0f };
 
 #if USE_IMGUI

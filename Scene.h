@@ -87,9 +87,14 @@ public:
 	};
 
 public:
+	//FBXデータ
 	std::unique_ptr<Skinned_mesh> sky = nullptr;
 	std::unique_ptr<Skinned_mesh> stage_data = nullptr;
+	
+	//シェーダー
 	std::unique_ptr<YRShader> skyShader = nullptr;
+	std::unique_ptr<YRShader> skinShader = nullptr;
+	//std::unique_ptr<YRShader> ToonShader = nullptr;
 
 	YR_Vector3	Sky_Pos = YR_Vector3(0.0f, 0.0f, 0.0f);
 	YR_Vector3	Sky_Scale = YR_Vector3(1.0f, 1.0f, 1.0f);

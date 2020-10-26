@@ -5,7 +5,7 @@
 #include "YRShader.h"
 
 
-constexpr float hitback_Adjustment = 10.0f;
+constexpr float hitback_Adjustment = 300.0f;
 
 enum class HitBoxState : int
 {

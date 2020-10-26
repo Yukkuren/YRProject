@@ -40,9 +40,13 @@ void HitBox::Update(YR_Vector3 pl_pos, HitParameter& param, float elapsed_time)
 				hitback.x = 0.0f;
 			}
 		}
-		if (hitback.y > -50.0f)
+		if (hitback.y > 0.0f)
 		{
 			hitback.y -= (elapsed_time * hitback_Adjustment);
+			if (hitback.y < 0.0f)
+			{
+				hitback.y = 0.0f;
+			}
 		}
 		if (timer < 0.0f)
 		{

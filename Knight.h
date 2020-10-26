@@ -140,7 +140,7 @@ public:
 	void Guard(float decision);
 	void GuardBack(float elapsed_time);
 	void Squat();
-	void FallUpdate();
+	void FallUpdate(float elapsed_time);
 	void DownUpdate();
 	void PassiveUpdate();
 	void WakeUp();
