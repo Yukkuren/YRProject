@@ -103,6 +103,11 @@ private:
 		fur_element_desc.push_back(tex);
 		fur_element_desc.push_back(wight);
 		fur_element_desc.push_back(bone);
+
+		//sky
+		sky_element_desc.push_back(pos);
+		sky_element_desc.push_back(normal);
+		sky_element_desc.push_back(tex);
 	};
 public:
 	enum ShaderType
@@ -120,6 +125,7 @@ public:
 		GAUSS,
 		MULTI_GAUSS,
 		FUR,
+		SKY,
 	};
 
 	std::vector<D3D11_INPUT_ELEMENT_DESC> skin_element_desc;
@@ -135,6 +141,7 @@ public:
 	std::vector<D3D11_INPUT_ELEMENT_DESC> gauss_element_desc;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> multi_gauss_element_desc;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> fur_element_desc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> sky_element_desc;
 
 	static INPUT_ELEMENT_DESC &getInstance()
 	{

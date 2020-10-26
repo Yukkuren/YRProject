@@ -71,6 +71,43 @@ struct PlayerALL
 	
 };
 
+//--------------------------------------------------
+//			ステージクラス
+//--------------------------------------------------
+//	ステージ用のモデル、シェーダーをもつクラス
+//	ステージの描画などもこのクラスで行う
+//--------------------------------------------------
+class Stage
+{
+public:
+
+	enum class StageType : int
+	{
+		NORMAL = 0,
+	};
+
+public:
+	std::unique_ptr<Skinned_mesh> sky = nullptr;
+	std::unique_ptr<Skinned_mesh> stage_data = nullptr;
+	std::unique_ptr<YRShader> skyShader = nullptr;
+
+	YR_Vector3	Sky_Pos = YR_Vector3(0.0f, 0.0f, 0.0f);
+	YR_Vector3	Sky_Scale = YR_Vector3(1.0f, 1.0f, 1.0f);
+	YR_Vector3	Sky_Angle = YR_Vector3(DirectX::XMConvertToRadians(-90.0f), 0.0f, 0.0f);
+
+	YR_Vector3	Stage_Pos = YR_Vector3(0.0f, 0.0f, 0.0f);
+	YR_Vector3	Stage_Scale = YR_Vector3(1.0f, 1.0f, 1.0f);
+	YR_Vector3	Stage_Angle = YR_Vector3(DirectX::XMConvertToRadians(-90.0f), 0.0f, 0.0f);
+
+	void Init(StageType type);
+	void Uninit();
+	void Draw(const DirectX::XMMATRIX& view,
+		const DirectX::XMMATRIX& projection,
+		const DirectX::XMFLOAT4& light_direction,
+		const DirectX::XMFLOAT4& light_color,
+		const DirectX::XMFLOAT4& ambient_color,
+		float						elapsed_time);
+};
 
 
 class SceneGame : public SceneBase
@@ -135,6 +172,8 @@ public:
 
 	std::unique_ptr<geometric_primitive>	geo = nullptr;		//板ポリデータ。当たり判定の描画に使う
 	//std::unique_ptr<Skinned_mesh>	skin = nullptr;
+
+	Stage					stage;				//ステージの実体。モデルのデータ、シェーダーを持つ
 
 	//画像関係
 	std::unique_ptr<Sprite> test = nullptr;
@@ -437,6 +476,7 @@ public:
 	std::unique_ptr<YRShader> gaussShader = nullptr;
 	std::unique_ptr<YRShader> multi_gaussShader = nullptr;
 	std::unique_ptr<YRShader> furShader = nullptr;
+	std::unique_ptr<YRShader> skyShader = nullptr;
 
 	//テクスチャ
 	std::unique_ptr<Texture> color_texture = nullptr;

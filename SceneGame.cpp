@@ -92,7 +92,7 @@ void SceneGame::Init()
 	blur_on = false;
 
 	//2Pの動き
-	pl2_con = Player2PControl::OPERATION;
+	pl2_con = Player2PControl::SUSPENSION;
 }
 
 
@@ -270,6 +270,8 @@ void SceneGame::LoadData()
 	}
 	
 
+	//ステージの選択
+	stage.Init(Stage::StageType::NORMAL);
 	
 
 	//選択したキャラクターをそれぞれ生成する
@@ -278,10 +280,10 @@ void SceneGame::LoadData()
 	player1p->now_player = 1;
 	player2p->now_player = 2;
 	//生成後初期化する(座標系、HP、UI座標など)
-	player1p->Init(PL.pos1P);
-	player2p->Init(PL.pos2P);
 	player1p->LoadData(1);
 	player2p->LoadData(2);
+	player1p->Init(PL.pos1P);
+	player2p->Init(PL.pos2P);
 	//キャラにどのプレイヤーが操作しているかの情報を与える
 	
 	PL.HP_MAX1P = player1p->hp;
@@ -355,6 +357,9 @@ void SceneGame::UnInit()
 	ParallelToonShader = nullptr;
 	ToonShader.reset();
 	ToonShader = nullptr;
+
+	//ステージ解放
+	stage.Uninit();
 }
 
 
@@ -961,18 +966,19 @@ void SceneGame::Draw(float elapsed_time)
 	DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(1, 1, 1, 1);
 	
 	//仮背景
-	test->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 0.5f);
+	//test->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 0.5f);
 	
-	//テスト描画(赤ポリ)
-	geo->render(
-		geoShader.get(),
-		DirectX::XMFLOAT3(0.0f, 0.0f, 20.0f),
-		DirectX::XMFLOAT3(3.0f, 3.0f, 0.0f),
-		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-		V,
-		P,
-		DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.5f)
-	);
+	////テスト描画(赤ポリ)
+	//geo->render(
+	//	geoShader.get(),
+	//	DirectX::XMFLOAT3(0.0f, 0.0f, 20.0f),
+	//	DirectX::XMFLOAT3(3.0f, 3.0f, 0.0f),
+	//	DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+	//	V,
+	//	P,
+	//	DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.5f)
+	//);
+	stage.Draw(V, P, light_direction, lightColor, ambient_color, elapsed_time);
 
 	switch (main_loop)
 	{

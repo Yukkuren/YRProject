@@ -86,6 +86,15 @@ void Knight::Init(YR_Vector3 InitPos)
 	ChangeFace(FaceAnim::NORMAL_LIP_SYNC);
 
 	text_on = false;
+
+	if (now_player == 1)
+	{
+		anim->NodeChange(model_motion.intro_R);
+	}
+	else
+	{
+		anim->NodeChange(model_motion.intro_L);
+	}
 }
 
 
@@ -326,14 +335,14 @@ void Knight::LoadData(int color_number)
 	{
 		anim = std::make_unique<ModelAnim>(main);
 		//anim->PlayAnimation(0, true);
-		if (now_player == 1)
+		/*if (now_player == 1)
 		{
 			anim->NodeChange(model_motion.intro_R);
 		}
 		else
 		{
 			anim->NodeChange(model_motion.intro_L);
-		}
+		}*/
 	}
 }
 

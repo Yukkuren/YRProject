@@ -75,6 +75,11 @@ void SceneTest::Init()
 		furShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::FUR);
 		furShader->Create("./Data/Shader/furShader_vs.cso", "./Data/Shader/furShader_ps.cso", "./Data/Shader/furShader_gs.cso");
 	}
+	if (skyShader == nullptr)
+	{
+		skyShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SKY);
+		skyShader->Create("./Data/Shader/SkyMapShader_vs.cso", "./Data/Shader/SkyMapShader_ps.cso");
+	}
 
 	//ƒJƒƒ‰‰Šúİ’è
 	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -25));			//‹“_
@@ -115,7 +120,7 @@ void SceneTest::Init()
 
 	if (sky == nullptr)
 	{
-		sky = std::make_unique<Skinned_mesh>("./Data/FBX/SKY/SkyBlock.fbx");
+		sky = std::make_unique<Skinned_mesh>("./Data/FBX/SKY/skyblock_re.fbx");
 	}
 
 	//motion.MeshSet(box);
@@ -436,7 +441,7 @@ void SceneTest::RenderTexture(
 	static float Distance = 1.0f;
 	static float Density = 1.0f;
 	//static DirectX::XMFLOAT3 sky_scale = { 10.0f,10.0f,10.0f };
-	static float sky_scale[3] = { 10.0f };
+	static float sky_scale[3] = { 1.0f,1.0f,1.0f };
 
 #ifdef USE_IMGUI
 	{
@@ -448,7 +453,9 @@ void SceneTest::RenderTexture(
 		ImGui::InputFloat("knight_angle.z", &knight_angle.z, 0.01f, 0.01f);
 		ImGui::InputFloat(u8"–Ñ‚Ì’·‚³", &Distance, 0.01f, 0.01f);
 		ImGui::InputFloat(u8"–Ñ‚Ì–§“x", &Density, 0.01f, 0.01f);
-		ImGui::InputFloat3(u8"‹ó", sky_scale, 10);
+		ImGui::InputFloat(u8"‹ó.x", &sky_scale[0], 0.01f, 0.01f);
+		ImGui::InputFloat(u8"‹ó.y", &sky_scale[1], 0.01f, 0.01f);
+		ImGui::InputFloat(u8"‹ó.z", &sky_scale[2], 0.01f, 0.01f);
 	}
 #endif // USE_IMGUI
 
@@ -553,10 +560,10 @@ void SceneTest::RenderTexture(
 	fur->Set(1);
 
 
-	sky->Render(skinShader.get(),
+	sky->Render(skyShader.get(),
 		knight_pos,
 		DirectX::XMFLOAT3(sky_scale[0], sky_scale[1], sky_scale[2]),
-		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+		DirectX::XMFLOAT3(DirectX::XMConvertToRadians(-90.0f), 0.0f, 0.0f),
 		view,
 		projection,
 		light_direction,
@@ -572,7 +579,7 @@ void SceneTest::RenderTexture(
 		DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
 		knight_angle);
 	motion->Draw(
-		furShader.get(),
+		flatShader.get(),
 		view, projection, light_direction, light_color, ambient_color
 	);
 

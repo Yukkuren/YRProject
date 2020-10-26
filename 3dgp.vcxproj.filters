@@ -106,6 +106,12 @@
     <FxCompile Include="furShader_gs.hlsl">
       <Filter>Shader\furShader</Filter>
     </FxCompile>
+    <FxCompile Include="SkyMapShader_vs.hlsl">
+      <Filter>Shader\SkyMapShader</Filter>
+    </FxCompile>
+    <FxCompile Include="SkyMapShader_ps.hlsl">
+      <Filter>Shader\SkyMapShader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="1PGamePad.cpp">
@@ -236,6 +242,9 @@
     </ClCompile>
     <ClCompile Include="KnightIO.cpp">
       <Filter>Chara\Knight</Filter>
+    </ClCompile>
+    <ClCompile Include="Stage.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -409,6 +418,9 @@
     <None Include="furShader.hlsli">
       <Filter>Shader\furShader</Filter>
     </None>
+    <None Include="SkyMapShader.hlsli">
+      <Filter>Shader\SkyMapShader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shader">
@@ -479,6 +491,9 @@
     </Filter>
     <Filter Include="Chara\Knight">
       <UniqueIdentifier>{8715d91a-395a-4d38-88ee-399fbe88c70c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\SkyMapShader">
+      <UniqueIdentifier>{6ed5c030-8a72-4171-bd4b-c31649de38b3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
