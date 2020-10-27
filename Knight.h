@@ -82,6 +82,7 @@ private:
 	const float jump_max = 100.0f;		//ジャンプの最大速度(超えると減速し始め落ちる)
 	const float high_jump_max = 120.0f;	//ハイジャンプの最大速度(超えると減速し始め落ちる)
 	const float brake_speed =10000.0f;	//停止時にかかるブレーキ(基本ピタッと止まるので数値は大きめ)
+	const float track_speed = 30.0f;	//ホーミングダッシュの速度
 
 	float		production_time = 0.0f;	//カメラ演出に使う変数
 	

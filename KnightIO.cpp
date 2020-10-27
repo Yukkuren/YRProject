@@ -710,8 +710,14 @@ void Knight::DrawDEBUG(
 		ImGui::InputFloat("eye_offset.y", &eye_offset.y, 0.01f, 0.01f);
 		ImGui::InputFloat("mouse_offset.x", &mouth_offset.x, 0.01f, 0.01f);
 		ImGui::InputFloat("mouse_offset.y", &mouth_offset.y, 0.01f, 0.01f);
-		ImGui::Text("player.y:%f", pos.y);
 		ImGui::Text("player.x:%f", pos.x);
+		ImGui::Text("player.y:%f", pos.y);
+		ImGui::SliderFloat("scale_x", &scale.x, -10.0f, 10.0f);
+		ImGui::SliderFloat("scale_y", &scale.y, -10.0f, 10.0f);
+		ImGui::SliderFloat("scale_z", &scale.z, -10.0f, 10.0f);
+		ImGui::SliderFloat("angle_x", &angle.x, -10.0f, 10.0f);
+		ImGui::SliderFloat("angle_y", &angle.y, -10.0f, 10.0f);
+		ImGui::SliderFloat("angle_z", &angle.z, -10.0f, 10.0f);
 
 
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);

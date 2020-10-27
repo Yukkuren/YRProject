@@ -128,6 +128,12 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11SamplerState>		m_sampler_state;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>	m_dummy_srv;
 
+	/*DirectX::XMFLOAT4X4 coodinate_conversion = {
+		1,0,0,0,
+		0,0,1,0,
+		0,1,0,0,
+		0,0,0,1
+	};*/
 	DirectX::XMFLOAT4X4 coodinate_conversion = {
 		1,0,0,0,
 		0,0,1,0,

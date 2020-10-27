@@ -426,11 +426,11 @@ void ModelAnim::Draw(
 		for (const Model::Subset& subset : mesh.subsets)
 		{
 			DirectX::XMStoreFloat4x4(&cb.world_view_projection,
-				DirectX::XMLoadFloat4x4(&global_transform) *
+				/*DirectX::XMLoadFloat4x4(&global_transform) **/
 				DirectX::XMLoadFloat4x4(&coodinate_conversion) *
 				DirectX::XMLoadFloat4x4(&world_view_projection));
 			DirectX::XMStoreFloat4x4(&cb.world,
-				DirectX::XMLoadFloat4x4(&global_transform) *
+				/*DirectX::XMLoadFloat4x4(&global_transform) **/
 				DirectX::XMLoadFloat4x4(&coodinate_conversion) *
 				DirectX::XMLoadFloat4x4(&world));
 			//cb.material_color = subset.material->color;

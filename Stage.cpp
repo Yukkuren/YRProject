@@ -60,6 +60,7 @@ void Stage::Init(StageType type)
 	Stage_Pos = YR_Vector3(0.0f, -9.0f, -30.0f);
 	Stage_Scale = YR_Vector3(10.5f, 10.5f,10.5f);
 	Stage_Angle = YR_Vector3(DirectX::XMConvertToRadians(-90.0f), 0.0f, 0.0f);
+	//Stage_Angle = YR_Vector3(0.0f, 0.0f, 0.0f);
 }
 
 void Stage::Uninit()
