@@ -190,7 +190,7 @@ bool YRShader::Create_element(const char* VS_cso_file)
 {
 	switch (type)
 	{
-	case INPUT_ELEMENT_DESC::SKIN:
+	case ShaderType::SKIN:
 	{
 		UINT numElements = YRINPUT_ELEMENT_DESC.skin_element_desc.size();
 		create_vertex(
@@ -201,7 +201,7 @@ bool YRShader::Create_element(const char* VS_cso_file)
 			VertextLayout.GetAddressOf());
 	}
 	break;
-	case INPUT_ELEMENT_DESC::STATIC:
+	case ShaderType::STATIC:
 	{
 		UINT numElements = YRINPUT_ELEMENT_DESC.static_element_desc.size();
 		create_vertex(
@@ -212,7 +212,7 @@ bool YRShader::Create_element(const char* VS_cso_file)
 			VertextLayout.GetAddressOf());
 	}
 	break;
-	case INPUT_ELEMENT_DESC::SPRITE:
+	case ShaderType::SPRITE:
 	{
 		UINT numElements = YRINPUT_ELEMENT_DESC.sprite_element_desc.size();
 		create_vertex(
@@ -223,7 +223,7 @@ bool YRShader::Create_element(const char* VS_cso_file)
 			VertextLayout.GetAddressOf());
 	}
 	break;
-	case INPUT_ELEMENT_DESC::GEO:
+	case ShaderType::GEO:
 	{
 		UINT numElements = YRINPUT_ELEMENT_DESC.geometric_element_desc.size();
 		create_vertex(
@@ -234,7 +234,7 @@ bool YRShader::Create_element(const char* VS_cso_file)
 			VertextLayout.GetAddressOf());
 	}
 	break;
-	case INPUT_ELEMENT_DESC::BOARD:
+	case ShaderType::BOARD:
 	{
 		UINT numElements = YRINPUT_ELEMENT_DESC.board_element_desc.size();
 		create_vertex(
@@ -245,7 +245,7 @@ bool YRShader::Create_element(const char* VS_cso_file)
 			VertextLayout.GetAddressOf());
 	}
 	break;
-	case INPUT_ELEMENT_DESC::ANIM:
+	case ShaderType::ANIM:
 	{
 		UINT numElements = YRINPUT_ELEMENT_DESC.anim_element_desc.size();
 		create_vertex(
@@ -256,7 +256,7 @@ bool YRShader::Create_element(const char* VS_cso_file)
 			VertextLayout.GetAddressOf());
 	}
 	break;
-	case INPUT_ELEMENT_DESC::TOON:
+	case ShaderType::TOON:
 	{
 		UINT numElements = YRINPUT_ELEMENT_DESC.toon_element_desc.size();
 		create_vertex(
@@ -267,7 +267,7 @@ bool YRShader::Create_element(const char* VS_cso_file)
 			VertextLayout.GetAddressOf());
 	}
 	break;
-	case INPUT_ELEMENT_DESC::TOGBUF:
+	case ShaderType::TOGBUF:
 	{
 		UINT numElements = YRINPUT_ELEMENT_DESC.toGbuf_element_desc.size();
 		create_vertex(
@@ -278,7 +278,7 @@ bool YRShader::Create_element(const char* VS_cso_file)
 			VertextLayout.GetAddressOf());
 	}
 	break;
-	case INPUT_ELEMENT_DESC::SPRITE_EX:
+	case ShaderType::SPRITE_EX:
 	{
 		UINT numElements = YRINPUT_ELEMENT_DESC.spriteEx_element_desc.size();
 		create_vertex(
@@ -289,7 +289,7 @@ bool YRShader::Create_element(const char* VS_cso_file)
 			VertextLayout.GetAddressOf());
 	}
 	break;
-	case INPUT_ELEMENT_DESC::FLAT:
+	case ShaderType::FLAT:
 	{
 		UINT numElements = YRINPUT_ELEMENT_DESC.flat_element_desc.size();
 		create_vertex(
@@ -300,7 +300,7 @@ bool YRShader::Create_element(const char* VS_cso_file)
 			VertextLayout.GetAddressOf());
 	}
 	break;
-	case INPUT_ELEMENT_DESC::GAUSS:
+	case ShaderType::GAUSS:
 	{
 		UINT numElements = YRINPUT_ELEMENT_DESC.gauss_element_desc.size();
 		create_vertex(
@@ -311,7 +311,7 @@ bool YRShader::Create_element(const char* VS_cso_file)
 			VertextLayout.GetAddressOf());
 	}
 	break;
-	case INPUT_ELEMENT_DESC::MULTI_GAUSS:
+	case ShaderType::MULTI_GAUSS:
 	{
 		UINT numElements = YRINPUT_ELEMENT_DESC.multi_gauss_element_desc.size();
 		create_vertex(
@@ -322,7 +322,7 @@ bool YRShader::Create_element(const char* VS_cso_file)
 			VertextLayout.GetAddressOf());
 	}
 	break;
-	case INPUT_ELEMENT_DESC::FUR:
+	case ShaderType::FUR:
 	{
 		UINT numElements = YRINPUT_ELEMENT_DESC.fur_element_desc.size();
 		create_vertex(
@@ -333,7 +333,7 @@ bool YRShader::Create_element(const char* VS_cso_file)
 			VertextLayout.GetAddressOf());
 	}
 	break;
-	case INPUT_ELEMENT_DESC::SKY:
+	case ShaderType::SKY:
 	{
 		UINT numElements = YRINPUT_ELEMENT_DESC.sky_element_desc.size();
 		create_vertex(

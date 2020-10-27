@@ -12,72 +12,72 @@ void SceneTest::Init()
 	//シェーダー作成
 	if (spriteShader == nullptr)
 	{
-		spriteShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE);
+		spriteShader = std::make_unique<YRShader>(ShaderType::SPRITE);
 		spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
 	}
 	if (skinShader == nullptr)
 	{
-		skinShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SKIN);
+		skinShader = std::make_unique<YRShader>(ShaderType::SKIN);
 		skinShader->Create("./Data/Shader/Skinned_VS.cso", "./Data/Shader/Skinned_PS.cso");
 	}
 	if (geoShader == nullptr)
 	{
-		geoShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::GEO);
+		geoShader = std::make_unique<YRShader>(ShaderType::GEO);
 		geoShader->Create("./Data/Shader/geometric_primitive_vs.cso", "./Data/Shader/geometric_primitive_ps.cso");
 	}
 	if (boardShader == nullptr)
 	{
-		boardShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::BOARD);
+		boardShader = std::make_unique<YRShader>(ShaderType::BOARD);
 		boardShader->Create("./Data/Shader/board_vs.cso", "./Data/Shader/board_ps.cso");
 	}
 	if (animShader == nullptr)
 	{
-		animShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::ANIM);
+		animShader = std::make_unique<YRShader>(ShaderType::ANIM);
 		animShader->Create("./Data/Shader/AnimShader_vs.cso", "./Data/Shader/AnimShader_ps.cso", "./Data/Shader/AnimShader_gs.cso");
 	}
 	if (toonShader == nullptr)
 	{
-		toonShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::TOON);
+		toonShader = std::make_unique<YRShader>(ShaderType::TOON);
 		toonShader->Create("./Data/Shader/ToonShader_vs.cso", "./Data/Shader/ToonShader_ps.cso", "./Data/Shader/ToonShader_gs.cso");
 	}
 	if (paralleltoonShader == nullptr)
 	{
-		paralleltoonShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::TOON);
+		paralleltoonShader = std::make_unique<YRShader>(ShaderType::TOON);
 		paralleltoonShader->Create("./Data/Shader/ParallelToon_vs.cso", "./Data/Shader/ParallelToon_ps.cso", "./Data/Shader/ParallelToon_gs.cso");
 	}
 	if (toGbuffer == nullptr)
 	{
-		toGbuffer = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::TOGBUF);
+		toGbuffer = std::make_unique<YRShader>(ShaderType::TOGBUF);
 		toGbuffer->Create("./Data/Shader/toGbuffer_vs.cso", "./Data/Shader/toGbuffer_ps.cso");
 	}
 	if (spriteEx == nullptr)
 	{
-		spriteEx = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE_EX);
+		spriteEx = std::make_unique<YRShader>(ShaderType::SPRITE_EX);
 		spriteEx->Create("./Data/Shader/SpriteEx_vs.cso", "./Data/Shader/SpriteEx_ps.cso");
 	}
 	if (flatShader == nullptr)
 	{
-		flatShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::FLAT);
+		flatShader = std::make_unique<YRShader>(ShaderType::FLAT);
 		flatShader->Create("./Data/Shader/flatShader_vs.cso", "./Data/Shader/flatShader_ps.cso", "./Data/Shader/flatShader_gs.cso");
 	}
 	if (gaussShader == nullptr)
 	{
-		gaussShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::GAUSS);
+		gaussShader = std::make_unique<YRShader>(ShaderType::GAUSS);
 		gaussShader->Create("./Data/Shader/GaussShader_vs.cso", "./Data/Shader/GaussShader_ps.cso");
 	}
 	if (multi_gaussShader == nullptr)
 	{
-		multi_gaussShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::MULTI_GAUSS);
+		multi_gaussShader = std::make_unique<YRShader>(ShaderType::MULTI_GAUSS);
 		multi_gaussShader->Create("./Data/Shader/MultiGaussShader_vs.cso", "./Data/Shader/MultiGaussShader_ps.cso");
 	}
 	if (furShader == nullptr)
 	{
-		furShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::FUR);
+		furShader = std::make_unique<YRShader>(ShaderType::FUR);
 		furShader->Create("./Data/Shader/furShader_vs.cso", "./Data/Shader/furShader_ps.cso", "./Data/Shader/furShader_gs.cso");
 	}
 	if (skyShader == nullptr)
 	{
-		skyShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SKY);
+		skyShader = std::make_unique<YRShader>(ShaderType::SKY);
 		skyShader->Create("./Data/Shader/SkyMapShader_vs.cso", "./Data/Shader/SkyMapShader_ps.cso");
 	}
 

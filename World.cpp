@@ -64,6 +64,16 @@ YR_Vector3 Limit::Set(YR_Vector3 p1, YR_Vector3 p2, YR_Vector3 start_eye)
 	Left_max = camera_pos.x - limit_size;
 	Right_max = camera_pos.x + limit_size;
 
+	if (Left_max < -world_max_x)
+	{
+		Left_max = -world_max_x;
+	}
+
+	if (Right_max > world_max_x)
+	{
+		Right_max = world_max_x;
+	}
+
 
 	//y
 	if (p1.y > p2.y)

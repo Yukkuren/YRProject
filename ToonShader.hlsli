@@ -1,6 +1,6 @@
 #define MAX_BONES 128
 
-static const float LW = 0.007f;			//—ÖŠsü‚Ì‘¾‚³
+static const float LW = 0.004f;			//—ÖŠsü‚Ì‘¾‚³
 static const float4 LC = { 0,0,0,-1 };	//—ÖŠsü‚ÌF
 
 Texture2D DiffuseTexture : register(t0);

@@ -68,10 +68,6 @@ void Knight::AttackDefault(float elapsed_time)
 			{
 				pos.x -= a.parameter.knockback * rightOrleft;
 				a.parameter.knockback = 0.0f;
-				if (!ground)
-				{
-					speed_Y.Set(60.0f);
-				}
 				knock = true;
 			}
 		}
@@ -94,10 +90,16 @@ void Knight::AttackDefault(float elapsed_time)
 		else
 		{
 			//ない場合は後隙に移行する
+			//攻撃番号を初期化
 			attack_list[now_at_list].now_attack_num = 0;
+			//後隙を設定
 			later = attack_list[now_at_list].later;
+			//アニメーション速度を指定
 			anim_ccodinate = ac_attack[now_at_list].later;
+			//描画をセット
 			anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+			//行動終了フラグをオンに
+			finish = true;
 		}
 	}
 }
@@ -194,9 +196,13 @@ void Knight::Kyo(float elapsed_time)
 		else
 		{
 			//ない場合は後隙に移行する
+			//攻撃番号を初期化
 			attack_list[now_at_list].now_attack_num = 0;
+			//後隙を設定
 			later = attack_list[now_at_list].later;
+			//アニメーション速度を指定
 			anim_ccodinate = ac_attack[now_at_list].later;
+			//描画をセット
 			anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
 		}
 	}
@@ -283,10 +289,15 @@ void Knight::U_Kyo(float elapsed_time)
 		}
 		else
 		{
+			//ない場合は後隙に移行する
+			//攻撃番号を初期化
 			attack_list[now_at_list].now_attack_num = 0;
+			//後隙を設定
 			later = attack_list[now_at_list].later;
-			anim_ccodinate = ac_attack[scastI(attack_state)].later;
-			anim->NodeChange(model_motion.u_kyo_R, scastI(AnimAtk::LATER));
+			//アニメーション速度を指定
+			anim_ccodinate = ac_attack[now_at_list].later;
+			//描画をセット
+			anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
 		}
 	}
 }
@@ -523,14 +534,17 @@ void Knight::SpecialAttack(float elapsed_time)
 		}
 		else
 		{
+			//ない場合は後隙に移行する
+			//攻撃番号を初期化
 			attack_list[now_at_list].now_attack_num = 0;
+			//後隙を設定
 			later = attack_list[now_at_list].later;
-			anim_ccodinate = ac_attack[scastI(attack_state)].later;
-			anim->NodeChange(model_motion.special_R,scastI(AnimAtk::LATER));
+			//アニメーション速度を指定
+			anim_ccodinate = ac_attack[now_at_list].later;
+			//描画をセット
+			anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
 		}
 	}
-
-	specialfream = 0;
 }
 
 

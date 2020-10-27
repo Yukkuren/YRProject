@@ -4,7 +4,7 @@
 #include "YRShader.h"
 
 //--------------------------------------------------
-// **攻撃パラメーター構造体**
+// **攻撃パラメーター列挙**
 //・攻撃のパラメーターを当たり判定ごとに保存する構造体
 //--------------------------------------------------
 enum class HitStopTime : int
@@ -12,6 +12,17 @@ enum class HitStopTime : int
 	SHORT,
 	NORMAL,
 	LONG,
+};
+
+//--------------------------------------------------
+// **判定列挙**
+//・攻撃がヒット時に被弾したか、それともガードされたかを保存する列挙
+//--------------------------------------------------
+enum class HitResult : int
+{
+	NONE = 0,	//当たっていない
+	HIT,		//当たった
+	GUARD,		//ガードされた
 };
 
 struct AttackParameter
@@ -41,7 +52,8 @@ public:
 	bool				hit_ok;		//攻撃がでたときのみtrueにして当たったらfalse
 	bool				knock_start;//当たったらtrue
 	bool				plus;		//trueなら飛び道具。speedにplusを足していく
-	float				rightOrleft;	//右向きなら*1左向きなら*-1
+	float				rightOrleft;//右向きなら*1左向きなら*-1
+	HitResult			hit_result;	//攻撃ヒット時の結果を保存する
 	
 	AttackParameter		parameter;	//パラメーター
 	YR_Vector3			pos;		//攻撃の実際の中心

@@ -113,27 +113,27 @@ void SceneGame::LoadData()
 	//シェーダー作成
 	if (spriteShader == nullptr)
 	{
-		spriteShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE);
+		spriteShader = std::make_unique<YRShader>(ShaderType::SPRITE);
 		spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
 	}
 	if (skinShader == nullptr)
 	{
-		skinShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SKIN);
+		skinShader = std::make_unique<YRShader>(ShaderType::SKIN);
 		skinShader->Create("./Data/Shader/Skinned_VS.cso", "./Data/Shader/Skinned_PS.cso");
 	}
 	if (geoShader == nullptr)
 	{
-		geoShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::GEO);
+		geoShader = std::make_unique<YRShader>(ShaderType::GEO);
 		geoShader->Create("./Data/Shader/geometric_primitive_vs.cso", "./Data/Shader/geometric_primitive_ps.cso");
 	}
 	if (ParallelToonShader == nullptr)
 	{
-		ParallelToonShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::TOON);
+		ParallelToonShader = std::make_unique<YRShader>(ShaderType::TOON);
 		ParallelToonShader->Create("./Data/Shader/ParallelToon_vs.cso", "./Data/Shader/ParallelToon_ps.cso", "./Data/Shader/ParallelToon_gs.cso");
 	}
 	if (ToonShader == nullptr)
 	{
-		ToonShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::TOON);
+		ToonShader = std::make_unique<YRShader>(ShaderType::TOON);
 		ToonShader->Create("./Data/Shader/ToonShader_vs.cso", "./Data/Shader/ToonShader_ps.cso", "./Data/Shader/ToonShader_gs.cso");
 	}
 
@@ -255,17 +255,17 @@ void SceneGame::LoadData()
 	}
 	if (gaussShader == nullptr)
 	{
-		gaussShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::GAUSS);
+		gaussShader = std::make_unique<YRShader>(ShaderType::GAUSS);
 		gaussShader->Create("./Data/Shader/GaussShader_vs.cso", "./Data/Shader/GaussShader_ps.cso");
 	}
 	if (multi_gaussShader == nullptr)
 	{
-		multi_gaussShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::MULTI_GAUSS);
+		multi_gaussShader = std::make_unique<YRShader>(ShaderType::MULTI_GAUSS);
 		multi_gaussShader->Create("./Data/Shader/MultiGaussShader_vs.cso", "./Data/Shader/MultiGaussShader_ps.cso");
 	}
 	if (spriteEx == nullptr)
 	{
-		spriteEx = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SPRITE_EX);
+		spriteEx = std::make_unique<YRShader>(ShaderType::SPRITE_EX);
 		spriteEx->Create("./Data/Shader/SpriteEx_vs.cso", "./Data/Shader/SpriteEx_ps.cso");
 	}
 	

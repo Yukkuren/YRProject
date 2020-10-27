@@ -60,31 +60,50 @@
 //
     vs_2_x
     def c10, 0, 0, 0, 0
-    dcl_texcoord v0
-    dcl_texcoord1 v1
-    dcl_texcoord2 v2
-    mul r0, v1.y, c6
-    mad r0, v1.x, c5, r0
-    mad r0, v1.z, c7, r0
-    dp4 r1.x, r0, r0
-    rsq r1.x, r1.x
-    mul r0, r0, r1.x
-    dp4 r1.x, -c9, -c9
-    rsq r1.x, r1.x
-    mul r1, r1.x, -c9
-    dp4 r0.x, r1, r0
-    max r0.x, r0.x, c10.x
-    mul oT0.xyz, r0.x, c8
-    mul r0, v0.y, c2
-    mad r0, v0.x, c1, r0
-    mad r0, v0.z, c3, r0
-    mad r0, v0.w, c4, r0
-    mad oPos.xy, r0.w, c0, r0
-    mov oPos.zw, r0
-    mov oT0.w, c8.w
-    mov oT1.xy, v2
+    dcl_texcoord v0  // position<0,1,2,3>
+    dcl_texcoord1 v1  // normal<0,1,2,3>
+    dcl_texcoord2 v2  // texcoord<0,1>
 
-// approximately 20 instruction slots used
+#line 11 "D:\ゲーム制作\YRProject\Mesh_Static_VS.hlsl"
+    mul r0, v0.x, c1
+    mul r1, v0.y, c2
+    add r0, r0, r1
+    mul r1, v0.z, c3
+    add r0, r0, r1
+    mul r1, v0.w, c4
+    add r0, r0, r1  // ::vout<0,1,2,3>
+
+#line 14
+    mul r1, v1.x, c5
+    mul r2, v1.y, c6
+    add r1, r1, r2
+    mul r2, v1.z, c7
+    add r1, r1, r2
+    add r1, r1, c10.x
+    dp4 r2.x, r1, r1
+    rsq r2.x, r2.x
+    mul r1, r1, r2.x  // ::N<0,1,2,3>
+    mov r2, -c9
+    dp4 r3.x, r2, r2
+    rsq r3.x, r3.x
+    mul r2, r2, r3.x  // ::L<0,1,2,3>
+    dp4 r1.x, r2, r1
+    max r1.x, r1.x, c10.x
+    mul r1.xyz, r1.x, c8  // ::vout<4,5,6>
+    mov r1.w, c8.w  // ::vout<7>
+    mov r2.xy, v2  // ::vout<8,9>
+    mov oT0.xyz, r1  // ::main<4,5,6>
+    mov oT0.w, r1.w  // ::main<7>
+    mov r0.xy, r0  // ::main<0,1>
+    mov r0.zw, r0  // ::main<2,3>
+    mov oT1.xy, r2  // ::main<8,9>
+
+#line 8
+    mul r1.xy, r0.w, c0
+    add oPos.xy, r0, r1  // ::main<0,1>
+    mov oPos.zw, r0  // ::main<2,3>
+
+// approximately 33 instruction slots used
 vs_4_0
 dcl_constantbuffer CB0[10], immediateIndexed
 dcl_input v0.xyzw
@@ -93,24 +112,62 @@ dcl_input v2.xy
 dcl_output_siv o0.xyzw, position
 dcl_output o1.xyzw
 dcl_output o2.xy
-dcl_temps 2
-mul r0.xyzw, v0.yyyy, cb0[1].xyzw
-mad r0.xyzw, v0.xxxx, cb0[0].xyzw, r0.xyzw
-mad r0.xyzw, v0.zzzz, cb0[2].xyzw, r0.xyzw
-mad o0.xyzw, v0.wwww, cb0[3].xyzw, r0.xyzw
-mul r0.xyzw, v1.yyyy, cb0[5].xyzw
-mad r0.xyzw, v1.xxxx, cb0[4].xyzw, r0.xyzw
-mad r0.xyzw, v1.zzzz, cb0[6].xyzw, r0.xyzw
-dp4 r1.x, r0.xyzw, r0.xyzw
-rsq r1.x, r1.x
-mul r0.xyzw, r0.xyzw, r1.xxxx
-dp4 r1.x, -cb0[9].xyzw, -cb0[9].xyzw
-rsq r1.x, r1.x
-mul r1.xyzw, r1.xxxx, -cb0[9].xyzw
-dp4 r0.x, r1.xyzw, r0.xyzw
-max r0.x, r0.x, l(0.000000)
-mul o1.xyz, r0.xxxx, cb0[8].xyzx
-mov o1.w, cb0[8].w
-mov o2.xy, v2.xyxx
+dcl_temps 4
+//
+// Initial variable locations:
+//   v0.x <- position.x; v0.y <- position.y; v0.z <- position.z; v0.w <- position.w; 
+//   v1.x <- normal.x; v1.y <- normal.y; v1.z <- normal.z; v1.w <- normal.w; 
+//   v2.x <- texcoord.x; v2.y <- texcoord.y; 
+//   o2.x <- <main return value>.texcoord.x; o2.y <- <main return value>.texcoord.y; 
+//   o1.x <- <main return value>.color.x; o1.y <- <main return value>.color.y; o1.z <- <main return value>.color.z; o1.w <- <main return value>.color.w; 
+//   o0.x <- <main return value>.position.x; o0.y <- <main return value>.position.y; o0.z <- <main return value>.position.z; o0.w <- <main return value>.position.w
+//
+#line 11 "D:\ゲーム制作\YRProject\Mesh_Static_VS.hlsl"
+mul r0.xyzw, v0.xxxx, cb0[0].xyzw
+mul r1.xyzw, v0.yyyy, cb0[1].xyzw
+add r0.xyzw, r0.xyzw, r1.xyzw
+mul r1.xyzw, v0.zzzz, cb0[2].xyzw
+add r0.xyzw, r0.xyzw, r1.xyzw
+mul r1.xyzw, v0.wwww, cb0[3].xyzw
+add r0.xyzw, r0.xyzw, r1.xyzw  // r0.x <- vout.position.x; r0.y <- vout.position.y; r0.z <- vout.position.z; r0.w <- vout.position.w
+
+#line 13
+itof r1.x, l(0)  // r1.x <- normal.w
+
+#line 14
+mul r2.xyzw, v1.xxxx, cb0[4].xyzw
+mul r3.xyzw, v1.yyyy, cb0[5].xyzw
+add r2.xyzw, r2.xyzw, r3.xyzw
+mul r3.xyzw, v1.zzzz, cb0[6].xyzw
+add r2.xyzw, r2.xyzw, r3.xyzw
+mul r1.xyzw, r1.xxxx, cb0[7].xyzw
+add r1.xyzw, r1.xyzw, r2.xyzw
+dp4 r2.x, r1.xyzw, r1.xyzw
+rsq r2.x, r2.x
+mul r1.xyzw, r1.xyzw, r2.xxxx  // r1.x <- N.x; r1.y <- N.y; r1.z <- N.z; r1.w <- N.w
+
+#line 15
+mov r2.xyzw, -cb0[9].xyzw
+dp4 r3.x, r2.xyzw, r2.xyzw
+rsq r3.x, r3.x
+mul r2.xyzw, r2.xyzw, r3.xxxx  // r2.x <- L.x; r2.y <- L.y; r2.z <- L.z; r2.w <- L.w
+
+#line 17
+itof r3.x, l(0)
+dp4 r1.x, r2.xyzw, r1.xyzw
+max r1.x, r1.x, r3.x
+mul r1.xyz, r1.xxxx, cb0[8].xyzx  // r1.x <- vout.color.x; r1.y <- vout.color.y; r1.z <- vout.color.z
+
+#line 18
+mov r1.w, cb0[8].w  // r1.w <- vout.color.w
+
+#line 19
+mov r2.xy, v2.xyxx  // r2.x <- vout.texcoord.x; r2.y <- vout.texcoord.y
+
+#line 20
+mov o0.xyzw, r0.xyzw
+mov o1.xyz, r1.xyzx
+mov o1.w, r1.w
+mov o2.xy, r2.xyxx
 ret 
-// Approximately 19 instruction slots used
+// Approximately 33 instruction slots used

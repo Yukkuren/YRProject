@@ -179,6 +179,8 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 								attack[n].parameter.hitback = YR_Vector3(0.0f, 0.0f);
 								attack[n].hit_ok = false;
 							}
+							//UŒ‚‚ª“–‚½‚Á‚½‚±‚Æ‚ğ•Û‘¶‚·‚é
+							attack[atknum].hit_result = HitResult::HIT;
 							//PlaySE(SE_HIT);
 							return add;
 						}
@@ -204,6 +206,8 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 								attack[n].parameter.hitback = YR_Vector3(0.0f, 0.0f);
 								attack[n].hit_ok = false;
 							}
+							//UŒ‚‚ªƒK[ƒh‚³‚ê‚½‚±‚Æ‚ğ•Û‘¶‚·‚é
+							attack[atknum].hit_result = HitResult::GUARD;
 							return add;
 						}
 						if (flag == 2)
@@ -217,6 +221,8 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 							//’Í‚Ü‚ê‚½
 							hit[hitnum].steal = true;
 							hit[hitnum].steal_timer = 20;
+							//UŒ‚‚ª“–‚½‚Á‚½‚±‚Æ‚ğ•Û‘¶‚·‚é
+							attack[atknum].hit_result = HitResult::HIT;
 							return 0.0f;
 						}
 					}

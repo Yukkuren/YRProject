@@ -110,23 +110,6 @@ private:
 		sky_element_desc.push_back(tex);
 	};
 public:
-	enum ShaderType
-	{
-		SKIN,
-		STATIC,
-		SPRITE,
-		GEO,
-		BOARD,
-		ANIM,
-		TOON,
-		TOGBUF,
-		SPRITE_EX,
-		FLAT,
-		GAUSS,
-		MULTI_GAUSS,
-		FUR,
-		SKY,
-	};
 
 	std::vector<D3D11_INPUT_ELEMENT_DESC> skin_element_desc;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> static_element_desc;
@@ -152,11 +135,30 @@ public:
 };
 #define				YRINPUT_ELEMENT_DESC (INPUT_ELEMENT_DESC::getInstance())
 
+enum class ShaderType :int
+{
+	SKIN,
+	STATIC,
+	SPRITE,
+	GEO,
+	BOARD,
+	ANIM,
+	TOON,
+	TOGBUF,
+	SPRITE_EX,
+	FLAT,
+	GAUSS,
+	MULTI_GAUSS,
+	FUR,
+	SKY,
+};
+
+
 class YRShader
 {
 public:
 private:
-	INPUT_ELEMENT_DESC::ShaderType type;
+	ShaderType type;
 protected:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader>		VSShader = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11PixelShader>		PSShader = nullptr;
@@ -168,7 +170,7 @@ protected:
 	
 public:
 	//YRShader() {};
-	YRShader(INPUT_ELEMENT_DESC::ShaderType type) : type(type) {};
+	YRShader(ShaderType type) : type(type) {};
 	virtual ~YRShader() {};
 
 private:

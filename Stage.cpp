@@ -10,36 +10,51 @@ void Stage::Init(StageType type)
 			//シェーダー生成
 			if (skyShader == nullptr)
 			{
-				skyShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SKY);
+				skyShader = std::make_unique<YRShader>(ShaderType::SKY);
 				skyShader->Create("./Data/Shader/SkyMapShader_vs.cso", "./Data/Shader/SkyMapShader_ps.cso");
 			}
 			if (skinShader == nullptr)
 			{
-				skinShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::SKIN);
-				skinShader->Create("./Data/Shader/Skinned_VS.cso", "./Data/Shader/Skinned_PS.cso");
+				/*skinShader = std::make_unique<YRShader>(ShaderType::SKIN);
+				skinShader->Create("./Data/Shader/Skinned_VS.cso", "./Data/Shader/Skinned_PS.cso");*/
+				skinShader = std::make_unique<YRShader>(ShaderType::FLAT);
+				skinShader->Create("./Data/Shader/flatShader_vs.cso", "./Data/Shader/flatShader_ps.cso","./Data/Shader/flatShader_gs.cso");
 			}
 			/*if (ToonShader == nullptr)
 			{
-				ToonShader = std::make_unique<YRShader>(INPUT_ELEMENT_DESC::ShaderType::TOON);
+				ToonShader = std::make_unique<YRShader>(ShaderType::TOON);
 				ToonShader->Create("./Data/Shader/ToonShader_vs.cso", "./Data/Shader/ToonShader_ps.cso", "./Data/Shader/ToonShader_gs.cso");
 			}*/
 
 			//FBX読み込み
-			if (sky == nullptr)
+			/*if (sky == nullptr)
 			{
-				sky = std::make_unique<Skinned_mesh>("./Data/FBX/SKY/skyblock_re.fbx");
-			} 
+				sky = std::make_shared<Model>("./Data/FBX/SKY/skyblock_re.fbx");
+			} */
+			if (sky_data == nullptr)
+			{
+				sky_data = std::make_unique<Skinned_mesh>("./Data/FBX/SKY/skyblock_re.fbx");
+			}
 			if (stage_data == nullptr)
 			{
-				stage_data = std::make_unique<Skinned_mesh>("./Data/FBX/SKY/castle.fbx");
+				stage_data = std::make_shared<Model>("./Data/FBX/SKY/castle.fbx");
 			} 
+
+			/*if (sky_draw == nullptr)
+			{
+				sky_draw = std::make_unique<ModelAnim>(sky);
+			}*/
+			if (stage_draw == nullptr)
+			{
+				stage_draw = std::make_unique<ModelAnim>(stage_data);
+			}
 		}
 		break;
 	default:
 		break;
 	}
 	Sky_Pos = YR_Vector3(0.0f, -18.0f, 0.0f);
-	Sky_Scale = YR_Vector3(0.5f, 0.5f, 0.5f);
+	Sky_Scale = YR_Vector3(1.0f, 1.0f, 1.0f);
 	Sky_Angle = YR_Vector3(DirectX::XMConvertToRadians(-90.0f), 0.0f, 0.0f);
 
 	Stage_Pos = YR_Vector3(0.0f, -9.0f, -30.0f);
@@ -58,8 +73,10 @@ void Stage::Uninit()
 	ToonShader = nullptr;*/
 
 	//FBX解放
-	sky.reset();
-	sky = nullptr;
+	/*sky.reset();
+	sky = nullptr;*/
+	sky_data.reset();
+	sky_data = nullptr;
 	stage_data.reset();
 	stage_data = nullptr;
 }
@@ -72,7 +89,7 @@ void Stage::Draw(
 	const DirectX::XMFLOAT4& ambient_color,
 	float						elapsed_time)
 {
-	static DirectX::XMFLOAT4 light_direction_stage = DirectX::XMFLOAT4(0.0f, -0.7f, 0.8f, 0.0f);
+	static DirectX::XMFLOAT4 light_direction_stage = DirectX::XMFLOAT4(-0.4f, -0.7f, 0.7f, 0.0f);
 	static DirectX::XMFLOAT4 ambient_color_stage(0.0f, 0.0f, 0.0f, 0.5f);
 #ifdef USE_IMGUI
 	{
@@ -122,29 +139,30 @@ void Stage::Draw(
 	}
 #endif // USE_IMGUI
 
-	sky->Render(skyShader.get(),
-		Sky_Pos.GetDXFLOAT3(),
-		Sky_Scale.GetDXFLOAT3(),
-		Sky_Angle.GetDXFLOAT3(),
+	/*sky_draw->CalculateLocalTransform();
+	sky_draw->CalculateWorldTransform(Sky_Pos.GetDXFLOAT3(), Sky_Scale.GetDXFLOAT3(), Sky_Angle.GetDXFLOAT3());
+	sky_draw->Draw(skyShader.get(),
 		view,
 		projection,
 		light_direction,
 		light_color,
-		ambient_color,
-		elapsed_time,
-		0.0f
-	);
+		ambient_color
+	);*/
+	sky_data->Render(skyShader.get(),
+		Sky_Pos.GetDXFLOAT3(), Sky_Scale.GetDXFLOAT3(), Sky_Angle.GetDXFLOAT3(),
+		view,
+		projection,
+		light_direction,
+		light_color,
+		ambient_color, elapsed_time, 0.0f);
 
-	stage_data->Render(skinShader.get(),
-		Stage_Pos.GetDXFLOAT3(),
-		Stage_Scale.GetDXFLOAT3(),
-		Stage_Angle.GetDXFLOAT3(),
+	stage_draw->CalculateLocalTransform();
+	stage_draw->CalculateWorldTransform(Stage_Pos.GetDXFLOAT3(),Stage_Scale.GetDXFLOAT3(),Stage_Angle.GetDXFLOAT3());
+	stage_draw->Draw(skinShader.get(),
 		view,
 		projection,
 		light_direction_stage,
 		light_color,
-		ambient_color_stage,
-		elapsed_time,
-		0.0f
+		ambient_color_stage
 	);
 }

@@ -19,7 +19,7 @@ public:
 	static YR_Vector3 now_Scene_camera;
 };
 
-static const float world_max_x = 3840;
+static const float world_max_x = 130;
 static const float world_max_y = 2160;
 
 //extern YR_Vector3 camera;

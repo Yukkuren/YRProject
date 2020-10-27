@@ -670,13 +670,25 @@ void Knight::AttackInput()
 
 
 					//攻撃を決定する
-					attack = TRUE;
+					//現在攻撃判定が出ているなら全て消去する
+					AllAttackClear();
+					//攻撃の結果を初期化
+					hit_result = HitResult::NONE;
+					//攻撃中フラグをオンに
+					attack = true;
+					//移動フラグをオフに
 					moveflag = false;
+					//行動ステートを攻撃に
 					act_state = ActState::ATTACK;
+					//発生フレームを決定
 					fream = attack_list[real].attack_single[0].fream;
+					//アニメーション速度を指定
 					anim_ccodinate = ac_attack[real].fream;
+					//攻撃番号を初期化
 					attack_list[real].now_attack_num = 0;
+					//後隙を初期化
 					later = non_target;
+					//カメラ処理用変数を初期化
 					production_time = 0.0f;
 					//描画をセット
 					anim->NodeChange(model_motion.model_R[real], scastI(AnimAtk::FREAM));
@@ -1241,27 +1253,18 @@ void Knight::Attack(float decision, float elapsed_time)
 		break;
 	}
 
-	
-
-	//攻撃判定の終了フラグが出たら後隙を決定し減らす処理を行う
-	/*for (int atknum = 0; atknum < scastI(KNIGHTATK::END); atknum++)
+	//攻撃中、攻撃が当たった場合キャンセルして攻撃する
+	if (hit_result != HitResult::NONE)
 	{
-		if (atk[atknum].fin)
-		{
-			if (later == -1)
-			{
-				later = atk[atknum].later;
-			}
-			later--;
-		}
-	}*/
+		AttackInput();
+		Jump();
+	}
 
 	//後隙中にキャンセルして技を行えるかチェックする
 	if (later > 0 && later < target_max)
 	{
 		later -= elapsed_time;
-		CancelList();
-		AttackInput();
+		//CancelList();
 	}
 
 	//後隙消費後元のステートに戻す
@@ -1270,7 +1273,9 @@ void Knight::Attack(float decision, float elapsed_time)
 		finish = true;
 		later = non_target;
 		attack = false;
-		//atk[scastI(RYUATK::ONE)].start = FALSE;
+		//結果を初期化する
+		hit_result = HitResult::NONE;
+
 		if (ground)
 		{
 			if (act_state != ActState::WAIT)
@@ -1825,7 +1830,7 @@ bool Knight::Step()
 		{
 			if (speed.x < dashspeed)
 			{
-				speed_Y.Set(40.0f);
+				speed_Y.Set(0.0f);
 				step = false;
 				pad->dash_trigger = false;
 				act_state = ActState::JUMP;
@@ -2137,6 +2142,7 @@ void Knight::Jump()
 	{
 		if (pad->x_input[scastI(PAD::HIGH_UP)] == 1)
 		{
+			//ハイジャンプする
 			speed_Y.Set(0.0f);
 			pad->que.back().timer = 0;
 			jumpcount = 0;
@@ -2145,9 +2151,21 @@ void Knight::Jump()
 			max_jump_flag = false;
 			moveflag = false;
 			//描画をセット
-
 			act_state = ActState::JUMP;
+			anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::FREAM));
+			anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
 			jumpflag = true;
+
+			//現在攻撃判定が出ているなら全て消去する
+			AllAttackClear();
+			//攻撃の結果を初期化
+			hit_result = HitResult::NONE;
+			//後隙を初期化
+			later = non_target;
+			//攻撃フラグをオフに
+			attack = false;
+			//攻撃ステートを初期化
+			attack_state = AttackState::NONE;
 
 			if (pad->x_input[scastI(PAD::STICK_R)] > 0)
 			{
@@ -2173,6 +2191,7 @@ void Knight::Jump()
 
 		if (pad->x_input[scastI(PAD::STICK_U)] == 1)
 		{
+			//じゃんぷする
 			later = -1;
 			attack = FALSE;
 			speed_Y.Set(0.0f);
@@ -2183,10 +2202,22 @@ void Knight::Jump()
 			max_jump_flag = false;
 			moveflag = false;
 			//描画をセット
-
 			act_state = ActState::JUMP;
+			anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::FREAM));
+			anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
+			anim_ccodinate = ac_act[scastI(act_state)].fream;
 			jumpflag = true;
 			jump_can_timer = jump_max_time;
+			//現在攻撃判定が出ているなら全て消去する
+			AllAttackClear();
+			//攻撃の結果を初期化
+			hit_result = HitResult::NONE;
+			//後隙を初期化
+			later = non_target;
+			//攻撃フラグをオフに
+			attack = false;
+			//攻撃ステートを初期化
+			attack_state = AttackState::NONE;
 
 			if (pad->x_input[scastI(PAD::STICK_R)] > 0)
 			{
@@ -2224,10 +2255,21 @@ void Knight::Jump()
 				max_jump_flag = false;
 				moveflag = false;
 				//描画をセット
-
 				act_state = ActState::JUMP;
+				anim->NodeChange(model_motion.air_jump_R, scastI(AnimAtk::FREAM));
+				anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
 				jumpflag = true;
 				jump_can_timer = jump_max_time;
+				//現在攻撃判定が出ているなら全て消去する
+				AllAttackClear();
+				//攻撃の結果を初期化
+				hit_result = HitResult::NONE;
+				//後隙を初期化
+				later = non_target;
+				//攻撃フラグをオフに
+				attack = false;
+				//攻撃ステートを初期化
+				attack_state = AttackState::NONE;
 
 				if (pad->x_input[scastI(PAD::STICK_R)] > 0)
 				{
@@ -2250,13 +2292,22 @@ void Knight::Jump()
 		}
 	}
 
-
 }
 
 void Knight::JumpUpdate(float elapsed_time)
 {
 	if (jumpcount < 2 && jumpflag)
 	{
+		if (!anim->GetLoopAnim())
+		{
+			//現在のアニメーションがジャンプの開始アニメーションだった場合
+			if (anim->GetEndAnim() == -1)
+			{
+				//アニメーションが終了したら持続アニメーションに切り替える
+				anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::TIMER));
+				anim_ccodinate = ac_act[scastI(act_state)].timer;
+			}
+		}
 		if (jump_can_timer > 0.0f)
 		{
 			jump_can_timer -= elapsed_time;
@@ -2278,6 +2329,10 @@ void Knight::JumpUpdate(float elapsed_time)
 			else
 			{
 				speed.y += (2000.0f * elapsed_time);
+				if (speed_Y.speedY == 0.0f)
+				{
+					pos.y += (speed.y * elapsed_time);
+				}
 				//float hei = speed.y * elapsed_time;
 				if ((speed.y*elapsed_time) > (jump_max*elapsed_time))
 				{
@@ -2311,9 +2366,16 @@ void Knight::JumpUpdate(float elapsed_time)
 			max_jump_flag = false;
 			hightrigger = false;
 			speed.y = 0.0f;
-			act_state = ActState::NONE;
+			//act_state = ActState::NONE;
 			pos.y = POS_Y;
 			jumpflag = false;
+			//ジャンプの着地隙を発生する
+			act_state = ActState::ATTACK;
+			attack_state = AttackState::NONE;
+			attack = true;
+			later = jump_later;
+			anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::LATER));
+			anim->PlayAnimation(scastI(AnimAtk::LATER), false);
 		}
 	}
 }
@@ -2326,6 +2388,7 @@ void Knight::DamageCheck()
 		if (hit[i].hit)
 		{
 			//攻撃を受けていた
+			//ダメージ、吹っ飛びベクトルなどを保存
 			float dg = hit[i].damege - (combo_count * 1.2f);
 			if (dg <= 0)
 			{
@@ -2336,6 +2399,8 @@ void Knight::DamageCheck()
 			GaugeUp(hit[i].damege / 5);
 			hit[i].damege = 0;
 			hit[i].hit = false;
+
+			//プレイヤーをやられ状態にする
 			attack = false;
 			later = -1;
 			moveflag = false;
@@ -2353,11 +2418,8 @@ void Knight::DamageCheck()
 			pad->high_trigger = false;
 			hightrigger = false;
 			speed_Y.Set(0.0f);
-			/*for (int j = 0; j < scastI(KNIGHTATK::END); j++)
-			{
-				atk[j].Init();
-			}*/
 			AllAttackClear();
+			hit_result = HitResult::NONE;
 			act_state = ActState::KNOCK;
 			attack_state = AttackState::NONE;
 			anim->NodeChange(model_motion.damage_R_g_u);
@@ -2366,6 +2428,8 @@ void Knight::DamageCheck()
 		}
 		if (hit[i].steal)
 		{
+			//つかみ攻撃を受けた
+			//攻撃内容を保存し、つかまれ状態にする
 			HitBoxTransition(HitBoxState::NOGUARD);
 			attack = false;
 			later = -1;
@@ -2381,13 +2445,10 @@ void Knight::DamageCheck()
 			speed.x = 0.0f;
 			speed.y = 0.0f;
 			step = false;
+			hit_result = HitResult::NONE;
 			pad->dash_trigger = false;
 			pad->high_trigger = false;
 			hightrigger = false;
-			/*for (int j = 0; j < scastI(KNIGHTATK::END); j++)
-			{
-				atk[j].Init();
-			}*/
 			AllAttackClear();
 			hit[i].steal = false;
 			steal_escape = hit[i].steal_timer;
@@ -3381,9 +3442,9 @@ void Knight::AllAttackClear()
 {
 	if (!atk.empty())
 	{
-		for (auto& a : atk)
+		for (int a = 0; a < atk.size(); a++)
 		{
-			a.fin = true;
+			atk[a].fin = true;
 		}
 
 		EndAttackErase();
@@ -3398,6 +3459,13 @@ void Knight::AttackUpdate(float elapsed_time)
 		for (auto& a : atk)
 		{
 			a.Update(pos, elapsed_time);
+			if (a.hit_result != HitResult::NONE)
+			{
+				//攻撃が当たっていた場合、その内容を保存する
+				hit_result = a.hit_result;
+				//行動終了フラグをオンに
+				finish = true;
+			}
 		}
 	}
 }
