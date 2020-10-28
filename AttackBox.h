@@ -21,8 +21,10 @@ enum class HitStopTime : int
 enum class HitResult : int
 {
 	NONE = 0,	//当たっていない
-	HIT,		//当たった
 	GUARD,		//ガードされた
+	HIT,		//当たった
+	NO_CANCEL,	//キャンセルできない
+	END,
 };
 
 struct AttackParameter

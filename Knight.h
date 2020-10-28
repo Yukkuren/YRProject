@@ -167,6 +167,7 @@ public:
 
 	void AttackInput();	//攻撃するボタンが押されたか確認し、押されていればその行動をさせる
 	void Attack(float decision, float elapsed_time);		//以下の関数を制御する
+	void AttackSwitch(float decision, float elapsed_time);	//attack_stateによってそれぞれ異なる関数を動かす
 	void AttackDefault(float elapsed_time);//特殊な記述のある攻撃以外はこの関数を使用する
 
 
@@ -230,6 +231,11 @@ public:
 	void AttackUpdate(float elapsed_time);		//攻撃判定が存在する時のみ更新
 
 	void ReadySet();			//イントロ後、ゲーム開始までの設定を行う
+
+	bool ComboSet();
+	void ComboUpdate();
+
+	void ComboX(float decision, float elapsed_time);	//Xボタンコンボ関数
 
 	//イントロ用列挙
 	enum class INTRO_KNIGHT : int

@@ -47,31 +47,31 @@ enum class AnimAtk :int
 
 //---------------------------------------------
 // **スピードクラス**
-//・プレイヤーに加算するY軸方向の力を処理する
+//・プレイヤーに加算するX,Y軸方向の力を処理する
 //・攻撃関数実行時にSet関数を動かし、速度を入れる
 //・空中攻撃時のポップなどに利用する
 //----------------------------------------------
 class Speed
 {
 public:
-	float speedY = 0.0f;
+	float speed = 0.0f;
 	const float decrease_value = 100.0f;		//スピードの減少値
 
 	void Set(float speed)
 	{
-		speedY = speed;
+		this->speed = speed;
 	};
 	float Update(float elapsed_time)
 	{
-		if (speedY > 0.0f)
+		if (speed > 0.0f)
 		{
-			speedY -= (decrease_value * elapsed_time);
+			speed -= (decrease_value * elapsed_time);
 		}
 		else
 		{
-			speedY = 0.0f;
+			speed = 0.0f;
 		}
-		return speedY;
+		return speed;
 	};
 };
 
@@ -133,6 +133,16 @@ enum class AttackState : int
 	EXTENDATK,		//無敵攻撃
 	JAKU_THU,		//弱の次に出る中攻撃m
 	JAKU_KYO,		//中の次に出る強攻撃m
+	A_JAKU_RHURF,	//空中前弱必殺
+	A_THU_RHURF,	//空中前中必殺
+	A_KYO_RHURF,	//空中前強必殺
+	A_JAKU_LHURF,	//空中後弱必殺
+	A_THU_LHURF,	//空中後中必殺
+	A_KYO_LHURF,	//空中後強必殺
+	A_SPECIAL_ATTACK,//空中前超必殺
+	A_DESIRE_SPECIAL,//空中後超必殺
+
+	COMBO_X,		//Xボタンコンボ
 
 	ATTACK_END,		//最大サイズ
 };
@@ -189,11 +199,14 @@ public:
 	AttackState						real_attack;	//実際の攻撃(基本はattack_nameと同じものを入れ、特定の攻撃と同じ攻撃を出す場合はその攻撃名を入れる)
 	bool							speed_on;		//スピードを入れる場合はtrue
 	YR_Vector3						speed;			//攻撃判定に加算する速度
+	float							advance_speed;	//攻撃時前進する距離
+	AttackState						combo;			//連打した時にするコンボ
+	HitResult						conditions_hit;	//キャンセルするための攻撃ヒット条件
 public:
 	AttackList() : now_attack_num(0), attack_name(AttackState::NONE), later(0.0f),
 		attack_max(0), linkage_button(PAD::BUTTOM_END), linkage_command(Command::NOCOMMAND), ground_on(true), squat_on(false),
 		need_gauge(0.0f), linkage_stick(PAD::BUTTOM_END), aid_attack_name(AttackState::NONE), real_attack(attack_name),
-		speed_on(false), speed(0.0f, 0.0f, 0.0f) {};
+		speed_on(false), speed(0.0f, 0.0f, 0.0f), advance_speed(0.0f), combo(AttackState::NONE), conditions_hit(HitResult::HIT) {};
 	//攻撃当たり判定を生成する
 	void SetAttack(std::vector<AttackBox> *atk, float rightOrleft, YR_Vector3 pl_pos)
 	{
@@ -250,6 +263,18 @@ public:
 };
 
 
+//---------------------------------------------------------------
+// **コンボ保存構造体**
+//・コンボの種類、現在の番号を保存する構造体
+//---------------------------------------------------------------
+struct ComboList
+{
+public:
+	std::vector<AttackState>		combolist;	//コンボリスト
+	int								now_pos;	//現在のコンボの位置
+};
+
+
 class Player
 {
 protected:
@@ -266,6 +291,7 @@ public:
 	bool				attack;			//TRUEなら攻撃中
 	ActState			act_state;		//今行動可能か。また行動不可ならどういう状態か
 	AttackState			attack_state;	//今何の攻撃をしているか
+	AttackState			last_attack;	//最後になんの攻撃をしたか
 	float				rightOrleft;	//右向きなら*1左向きなら*-1
 	bool				moveflag;		//TRUEなら動いている
 	float				fream;			//発生フレーム
@@ -288,6 +314,7 @@ public:
 	float				anim_ccodinate;	//アニメーション速度を調整する変数
 	int					stop_state;		//ヒットストップ中の処理で使用
 	HitResult			hit_result;		//攻撃が当たった場合の結果を保存する
+	HitResult			atk_result;		//攻撃決定時にキャンセル用の条件を保存するための変数
 	std::vector<AttackBox> atk;			//当たり判定
 	
 	std::array<Animation_Coordinate, scastI(AttackState::ATTACK_END)>	ac_attack;	//攻撃ごとのアニメーション調整値
@@ -298,6 +325,7 @@ public:
 
 	std::vector<AttackList>								attack_list;	//攻撃のリスト。生成時に読み込み、保存する(攻撃発生時にパラメーターを送る)
 	std::vector<HitParameterList>						hitparam_list;	//当たり判定のリスト。生成時に読み込み、保存する(当たり判定の数だけ生成する)
+	ComboList											combolist_X;	//Xボタンコンボリスト
 
 public:
 	//モデル用変数
@@ -311,6 +339,7 @@ public:
 	YR_Vector3		speed;
 	YR_Vector3		stop_pos;
 	Tracking		tracking;
+	Speed			speed_X;
 	Speed			speed_Y;
 	std::unique_ptr<GamepadBase> pad;
 
@@ -367,6 +396,7 @@ public:
 
 	virtual void AttackInput() = 0;
 	virtual void Attack(float decision, float elapsed_time) = 0;
+	virtual void AttackSwitch(float decision, float elapsed_time) = 0;
 
 	virtual void WinAnimSet() = 0;
 
@@ -391,6 +421,9 @@ public:
 
 	virtual bool AttackLoad() = 0;
 	virtual bool AttackWrite() = 0;
+
+	virtual bool ComboSet() = 0;					//コンボ開始時、どの攻撃をしているかを確認してその後のコンボをセットする
+	virtual void ComboUpdate() = 0;					//コンボ更新。ステートを設定する
 
 public:
 	virtual bool AttackEndCheck() = 0;				//攻撃当たり判定が全て終了しているか確認する

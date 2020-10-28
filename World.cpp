@@ -74,29 +74,30 @@ YR_Vector3 Limit::Set(YR_Vector3 p1, YR_Vector3 p2, YR_Vector3 start_eye)
 		Right_max = world_max_x;
 	}
 
+	//プレイヤーのどちらかが画面外に出た場合にy座標に加算する値
+	float plus_y_up = 0.0f;
 
 	//y
 	if (p1.y > p2.y)
 	{
 		up_meter = p1.y;
 		distance_y = (p1.y - p2.y);
-		/*distance_y = (p1.y - p2.y) / 2.0f;
-		float correction = p2.y + distance_y;
-		//カメラの調整
-		camera_pos.y = correction;*/
+		plus_y_up += p1.y;
 	}
 	if (p1.y < p2.y)
 	{
 		up_meter = p2.y;
 		distance_y = (p2.y - p1.y);
+		plus_y_up += p2.y;
 	}
 
 	if (p1.y == p2.y)
 	{
 		up_meter = p1.y;
+		plus_y_up += p1.y;
 	}
 
-	float default_z = 12.0f;	//カメラが引き始めるプレイヤーの高さ
+	float default_z = 15.0f;	//カメラが引き始めるプレイヤーの高さ
 	float a = (start_eye.z - distance_x + adjustment_eye);
 	float b = (start_eye.z - distance_x + adjustment_eye - (up_meter - default_z));
 
@@ -107,7 +108,7 @@ YR_Vector3 Limit::Set(YR_Vector3 p1, YR_Vector3 p2, YR_Vector3 start_eye)
 	if (up_meter > default_z)
 	{
 		//プレイヤーの位置が既定の高さに達したらカメラを引く
-		float t = 0.05f;
+		float t = 0.1f;
 		if (distance_y > default_z)
 		{
 			//お互いの高さが同じ場合は画面を引かない
@@ -116,6 +117,11 @@ YR_Vector3 Limit::Set(YR_Vector3 p1, YR_Vector3 p2, YR_Vector3 start_eye)
 
 			DirectX::XMVECTOR lerp = DirectX::XMVectorLerp(now_z, far_z, t);
 			DirectX::XMStoreFloat(&now_Scene_camera.z, lerp);
+		}
+		//プレイヤーの高さの距離が一定以上の場合はY座標を調整する
+		if (plus_y_up > limit_size)
+		{
+			far_camera.y = (plus_y_up - adjustment_y);
 		}
 		DirectX::XMVECTOR now_y = DirectX::XMLoadFloat(&now_Scene_camera.y);
 		DirectX::XMVECTOR far_y = DirectX::XMLoadFloat(&far_camera.y);
@@ -128,6 +134,7 @@ YR_Vector3 Limit::Set(YR_Vector3 p1, YR_Vector3 p2, YR_Vector3 start_eye)
 	{
 		//カメラをもとに戻す
 		float t = 0.005f;
+		float t_y = 0.05f;
 		DirectX::XMVECTOR now_z = DirectX::XMLoadFloat(&now_Scene_camera.z);
 		DirectX::XMVECTOR near_z = DirectX::XMLoadFloat(&near_camera.z);
 
@@ -138,7 +145,7 @@ YR_Vector3 Limit::Set(YR_Vector3 p1, YR_Vector3 p2, YR_Vector3 start_eye)
 		DirectX::XMVECTOR near_y = DirectX::XMLoadFloat(&near_camera.y);
 
 
-		DirectX::XMVECTOR lerp_y = DirectX::XMVectorLerp(now_y, near_y, t);
+		DirectX::XMVECTOR lerp_y = DirectX::XMVectorLerp(now_y, near_y, t_y);
 		DirectX::XMStoreFloat(&now_Scene_camera.y, lerp_y);
 	}
 

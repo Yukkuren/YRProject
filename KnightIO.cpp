@@ -34,6 +34,15 @@ std::array<std::string, scastI(AttackState::ATTACK_END)> attack_name_list =
 	u8"無敵攻撃",
 	u8"弱の次に出る中攻撃",
 	u8"中の次に出る強攻撃",
+	u8"空中前弱必殺",
+	u8"空中前中必殺",
+	u8"空中前強必殺",
+	u8"空中後弱必殺",
+	u8"空中後中必殺",
+	u8"空中後強必殺",
+	u8"空中前超必殺",
+	u8"空中後超必殺",
+	u8"Xボタンコンボ",
 };
 
 std::array<std::string, scastI(ActState::ACT_END)> act_name_list =
@@ -115,6 +124,14 @@ std::array<std::string, scastI(HitBoxState::END)> hitstate_name_list =
 	u8"下段ガード",
 	u8"無敵",
 	u8"空中ガード",
+};
+
+std::array<std::string, scastI(HitResult::END)> result_name_list =
+{
+	u8"当たってない",
+	u8"ガードされた",
+	u8"当たった",
+	u8"キャンセルできない",
 };
 #endif // USE_IMGUI
 
@@ -241,7 +258,7 @@ bool Knight::AttackLoad()
 	{
 		ifs >> attack_list[list].later;
 		ifs >> attack_list[list].attack_max;
-		int pad,com,stick,aid,real;
+		int pad,com,stick,aid,real,next,result;
 		ifs >> pad;
 		ifs >> com;
 		attack_list[list].linkage_button = static_cast<PAD>(pad);
@@ -260,6 +277,12 @@ bool Knight::AttackLoad()
 		ifs >> attack_list[list].speed.x;
 		ifs >> attack_list[list].speed.y;
 		ifs >> attack_list[list].speed.z;
+		ifs >> attack_list[list].advance_speed;
+		ifs >> next;
+		ifs >> result;
+		attack_list[list].combo = static_cast<AttackState>(next);
+		attack_list[list].conditions_hit = static_cast<HitResult>(result);
+
 
 
 		//攻撃回数ごとのパラメータ書き出し
@@ -355,6 +378,30 @@ bool Knight::AttackLoad()
 	anim_act_ifs.close();
 
 
+	//Xボタンコンボリストを読み込む
+	std::ifstream combo_X_ifs("./Data/CharaParameter/Knight/Combo_X.txt");
+	int size, com;
+	combo_X_ifs >> size;
+	combolist_X.combolist.resize(size);
+	for (int list = 0; list < combolist_X.combolist.size(); list++)
+	{
+		combo_X_ifs >> com;
+		combolist_X.combolist[list] = static_cast<AttackState>(com);
+	}
+	//もし落ちたらエラーを出す
+	if (combo_X_ifs.fail())
+	{
+		bool set = false;
+		ImGui::SetNextWindowSize(ImVec2(250, 500), 2);
+		ImGui::Begin("Error", &set);
+		//std::cout << ”読み込みに失敗しました” << std::endl;
+		ImGui::Text("アニメーション調整値の読み込みに失敗しました");
+		ImGui::End();
+	}
+	//ファイルを閉じる
+	combo_X_ifs.close();
+
+
 
 	//当たり判定調整値を読み込む
 	std::ifstream hit_ifs("./Data/CharaParameter/Knight/HitParam.txt");
@@ -426,6 +473,9 @@ bool Knight::AttackClean()
 		attack_list[list].real_attack = attack_list[list].attack_name;
 		attack_list[list].speed_on = false;
 		attack_list[list].speed = YR_Vector3(0.0f, 0.0f);
+		attack_list[list].advance_speed = 0.0f;
+		attack_list[list].combo = attack_list[list].attack_name;
+		attack_list[list].conditions_hit = HitResult::HIT;
 		//攻撃回数ごとのパラメータ初期化
 		for (int sin = 0; sin < attack_list[list].attack_single.size(); sin++)
 		{
@@ -511,6 +561,9 @@ bool Knight::AttackWrite()
 		outputfile << attack_list[list].speed.x << std::endl;
 		outputfile << attack_list[list].speed.y << std::endl;
 		outputfile << attack_list[list].speed.z << std::endl;
+		outputfile << attack_list[list].advance_speed << std::endl;
+		outputfile << scastI(attack_list[list].combo) << std::endl;
+		outputfile << scastI(attack_list[list].conditions_hit) << std::endl;
 
 		//攻撃回数ごとのパラメータ書き出し
 		if (!attack_list[list].attack_single.empty())
@@ -599,6 +652,19 @@ bool Knight::AttackWrite()
 		}
 	}
 	hitout.close();
+
+	std::ofstream combo_X_out("./Data/CharaParameter/Knight/Combo_X.txt");
+	if (!combolist_X.combolist.empty())
+	{
+		combo_X_out << combolist_X.combolist.size() << std::endl;
+		for (int list = 0; list < combolist_X.combolist.size(); list++)
+		{
+			//Xボタンコンボリスト書き込み
+			combo_X_out << scastI(combolist_X.combolist[list]) << std::endl;
+		}
+	}
+
+	combo_X_out.close();
 
 	return true;
 }
@@ -860,12 +926,21 @@ void Knight::DrawDEBUG(
 				}
 				else
 				{
+					int next = scastI(attack_list[list].combo);
+					int result = scastI(attack_list[list].conditions_hit);
 					ImGui::InputFloat(u8"後スキ", &attack_list[list].later, 0.01f, 0.1f);
 					ImGui::InputInt(u8"攻撃回数", &attack_list[list].attack_max, 1, 10);
 					ImGui::InputFloat(u8"モーション速度:発生", &ac_attack[list].fream, 0.01f, 0.1f);
 					ImGui::InputFloat(u8"モーション速度:持続", &ac_attack[list].timer, 0.01f, 0.1f);
 					ImGui::InputFloat(u8"モーション速度:後スキ", &ac_attack[list].later, 0.01f, 0.1f);
-					ImGui::Checkbox(u8"スピードを付与する", &attack_list[list].speed_on);
+					ImGui::InputFloat(u8"前進する距離", &attack_list[list].advance_speed, 0.01f, 0.1f);
+					ImGui::SliderInt(u8"次の攻撃", &next, 0, scastI(AttackState::ATTACK_END) - 1);
+					attack_list[list].combo = static_cast<AttackState>(next);
+					ImGui::Text(attack_name_list[scastI(attack_list[list].combo)].c_str());
+					ImGui::SliderInt(u8"攻撃遷移条件", &result, 0, scastI(HitResult::END) - 1);
+					attack_list[list].conditions_hit = static_cast<HitResult>(result);
+					ImGui::Text(result_name_list[scastI(attack_list[list].conditions_hit)].c_str());
+					ImGui::Checkbox(u8"当たり判定にスピードを付与する", &attack_list[list].speed_on);
 					if (attack_list[list].speed_on)
 					{
 						ImGui::InputFloat(u8"加算スピードX", &attack_list[list].speed.x, 0.01f, 0.1f);
@@ -879,7 +954,7 @@ void Knight::DrawDEBUG(
 					if (attack_list[list].need_gauge >= 1.0f)
 					{
 						int aid_attack = scastI(attack_list[list].aid_attack_name);
-						ImGui::SliderInt(u8"ゲージが足りない場合の攻撃", &aid_attack, scastI(AttackState::NONE), scastI(AttackState::ATTACK_END));
+						ImGui::SliderInt(u8"ゲージが足りない場合の攻撃", &aid_attack, scastI(AttackState::NONE), scastI(AttackState::ATTACK_END) - 1);
 						ImGui::Text(attack_name_list[aid_attack].c_str());
 						attack_list[list].aid_attack_name = static_cast<AttackState>(aid_attack);
 					}
@@ -959,6 +1034,42 @@ void Knight::DrawDEBUG(
 			}
 			ImGui::TreePop();
 		}
+		ImGui::End();
+
+		std::string now_com = std::to_string(now_player);
+		now_com += std::string(":X_Combolist");
+		ImGui::Begin(now_com.c_str());
+
+		static AttackState at_state = AttackState::NONE;
+		int com_attack = scastI(at_state);
+		ImGui::SliderInt(u8"追加するコンボ攻撃", &com_attack, scastI(AttackState::NONE), scastI(AttackState::ATTACK_END) - 1);
+		ImGui::Text(attack_name_list[com_attack].c_str());
+		at_state = static_cast<AttackState>(com_attack);
+
+		if (ImGui::Button(u8"コンボ追加"))
+		{
+			combolist_X.combolist.push_back(AttackState());
+			combolist_X.combolist.back() = at_state;
+		}ImGui::SameLine();
+		if (ImGui::Button(u8"コンボ削除"))
+		{
+			if (!combolist_X.combolist.empty())
+			{
+				int size = combolist_X.combolist.size() - 1;
+				combolist_X.combolist.resize(size);
+			}
+		}
+
+		if (!combolist_X.combolist.empty())
+		{
+			ImGui::BeginChild(ImGui::GetID((void*)0), ImVec2(250, 100), ImGuiWindowFlags_NoTitleBar);
+			for (int i = 0; i < combolist_X.combolist.size(); ++i) {
+				ImGui::Text(attack_name_list[scastI(combolist_X.combolist[i])].c_str());
+			}
+			ImGui::EndChild();
+		}
+		
+
 		ImGui::End();
 	}
 	/*{

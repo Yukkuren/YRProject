@@ -31,6 +31,8 @@ void Knight::AttackDefault(float elapsed_time)
 	//発生フレームになったら攻撃判定を生成する
 	if (fream < 0.0f)
 	{
+		//前進しないようにする
+		speed_X.Set(0.0f);
 		//int attack_num = attack_list[real].now_attack_num;
 		anim_ccodinate = ac_attack[now_at_list].timer;
 		if (attack_list[now_at_list].now_attack_num == 0)
@@ -133,6 +135,8 @@ void Knight::Kyo(float elapsed_time)
 	//発生フレームになったら攻撃判定を生成する
 	if (fream < 0.0f)
 	{
+		//前進しないようにする
+		speed_X.Set(0.0f);
 		//int attack_num = attack_list[real].now_attack_num;
 		anim_ccodinate = ac_attack[now_at_list].timer;
 		if (attack_list[now_at_list].now_attack_num == 0)
@@ -243,6 +247,8 @@ void Knight::U_Kyo(float elapsed_time)
 	//発生フレームになったら攻撃判定を生成する
 	if (fream < 0.0f)
 	{
+		//前進しないようにする
+		speed_X.Set(0.0f);
 		int attack_num = attack_list[scastI(attack_state)].now_attack_num;
 		anim_ccodinate = ac_attack[scastI(attack_state)].timer;
 		attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft,pos);
@@ -486,6 +492,8 @@ void Knight::SpecialAttack(float elapsed_time)
 
 	if (fream < 0.0f)
 	{
+		//前進しないようにする
+		speed_X.Set(0.0f);
 		int attack_num = attack_list[scastI(attack_state)].now_attack_num;
 		anim_ccodinate = ac_attack[scastI(attack_state)].timer;
 		attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft,pos);
@@ -547,6 +555,181 @@ void Knight::SpecialAttack(float elapsed_time)
 	}
 }
 
+
+//---------------------------------------------------------------
+// **コンボセット関数**
+//・入力された攻撃にコンボステートが入っていた場合、
+//　そのコンボを入力された地点から開始しtrueを返す
+//---------------------------------------------------------------
+bool Knight::ComboSet()
+{
+	AttackState real = attack_list[scastI(attack_state)].real_attack;
+	AttackState truth = attack_list[scastI(attack_state)].real_attack;
+	AttackState combo = attack_list[scastI(attack_state)].combo;
+
+	switch (combo)
+	{
+	case AttackState::COMBO_X:
+	{
+		//Xボタンコンボ
+		combolist_X.now_pos = -1;
+		if (!combolist_X.combolist.empty())
+		{
+			for (int i = 0; i < combolist_X.combolist.size(); i++)
+			{
+				//コンボリストのどの位置に今の攻撃があるかを確認する
+				if (combolist_X.combolist[i] == real)
+				{
+					combolist_X.now_pos = i;
+					break;
+				}
+			}
+		}
+
+		if (combolist_X.now_pos < 0)
+		{
+			//その攻撃がコンボに含まれていなかった場合false
+			return false;
+		}
+		//コンボを更新
+		combolist_X.now_pos++;
+
+		//次の攻撃を設定する
+		truth = combolist_X.combolist[combolist_X.now_pos];
+	}
+		break;
+	default:
+		return false;
+		break;
+	}
+
+	int truth_num = scastI(truth);
+	int real_num = scastI(attack_list[truth_num].real_attack);
+
+	//攻撃を決定する
+	//現在攻撃判定が出ているなら全て消去する
+	AllAttackClear();
+	//この攻撃をキャンセルするための条件を保存する
+	atk_result = attack_list[real_num].conditions_hit;
+	//攻撃を保存する
+	last_attack = combo;
+	//攻撃内容をコンボに
+	attack_state = combo;
+	//攻撃の結果を初期化
+	hit_result = HitResult::NONE;
+	//攻撃中フラグをオンに
+	attack = true;
+	//移動フラグをオフに
+	moveflag = false;
+	//行動ステートを攻撃に
+	act_state = ActState::ATTACK;
+	//発生フレームを決定
+	fream = attack_list[real_num].attack_single[0].fream;
+	//アニメーション速度を指定
+	anim_ccodinate = ac_attack[real_num].fream;
+	//攻撃番号を初期化
+	attack_list[real_num].now_attack_num = 0;
+	//攻撃発生前の前進距離を設定する
+	speed_X.Set(attack_list[real_num].advance_speed);
+	//後隙を初期化
+	later = non_target;
+	//カメラ処理用変数を初期化
+	production_time = 0.0f;
+	//描画をセット
+	anim->NodeChange(model_motion.model_R[real_num], scastI(AnimAtk::FREAM));
+	//攻撃ごとに個別の設定を行う
+	AttackDetailsSet(attack_list[real_num].combo);
+
+	return true;
+}
+
+//---------------------------------------------------------------
+// **コンボ更新関数**
+//・コンボを進めていく
+//---------------------------------------------------------------
+void Knight::ComboUpdate()
+{
+	AttackState truth = last_attack;
+	AttackState combo = last_attack;
+
+	switch (combo)
+	{
+	case AttackState::COMBO_X:
+	{
+		//Xボタンコンボ
+		//コンボを更新
+		combolist_X.now_pos++;
+		if (combolist_X.combolist.empty())
+		{
+			return;
+		}
+		if (combolist_X.now_pos >= combolist_X.combolist.size())
+		{
+			return;
+		}
+		//次の攻撃を設定する
+		truth = combolist_X.combolist[combolist_X.now_pos];
+	}
+	break;
+	default:
+		return;
+		break;
+	}
+
+	int truth_num = scastI(truth);
+	int real_num = scastI(attack_list[truth_num].real_attack);
+
+	//攻撃を決定する
+	//現在攻撃判定が出ているなら全て消去する
+	AllAttackClear();
+	//この攻撃をキャンセルするための条件を保存する
+	atk_result = attack_list[real_num].conditions_hit;
+	//攻撃を保存する
+	last_attack = combo;
+	//攻撃内容をコンボに
+	attack_state = combo;
+	//攻撃の結果を初期化
+	hit_result = HitResult::NONE;
+	//攻撃中フラグをオンに
+	attack = true;
+	//移動フラグをオフに
+	moveflag = false;
+	//行動ステートを攻撃に
+	act_state = ActState::ATTACK;
+	//発生フレームを決定
+	fream = attack_list[real_num].attack_single[0].fream;
+	//アニメーション速度を指定
+	anim_ccodinate = ac_attack[real_num].fream;
+	//攻撃番号を初期化
+	attack_list[real_num].now_attack_num = 0;
+	//攻撃発生前の前進距離を設定する
+	speed_X.Set(attack_list[real_num].advance_speed);
+	//後隙を初期化
+	later = non_target;
+	//カメラ処理用変数を初期化
+	production_time = 0.0f;
+	//描画をセット
+	anim->NodeChange(model_motion.model_R[real_num], scastI(AnimAtk::FREAM));
+	//攻撃ごとに個別の設定を行う
+	AttackDetailsSet(attack_list[real_num].combo);
+}
+
+
+void Knight::ComboX(float decision, float elapsed_time)
+{
+	//Xボタンコンボ関数
+	if (combolist_X.now_pos >= combolist_X.combolist.size())
+	{
+		return;
+	}
+	AttackState truth = combolist_X.combolist[combolist_X.now_pos];
+	int truth_num = scastI(truth);
+	attack_state = attack_list[truth_num].real_attack;
+
+	AttackSwitch(decision, elapsed_time);
+
+	attack_state = last_attack;
+}
 
 //
 //--------------------------------------------------------------------------------------------
