@@ -712,12 +712,26 @@ void Knight::DrawDEBUG(
 		ImGui::InputFloat("mouse_offset.y", &mouth_offset.y, 0.01f, 0.01f);
 		ImGui::Text("player.x:%f", pos.x);
 		ImGui::Text("player.y:%f", pos.y);
-		ImGui::SliderFloat("scale_x", &scale.x, -10.0f, 10.0f);
-		ImGui::SliderFloat("scale_y", &scale.y, -10.0f, 10.0f);
-		ImGui::SliderFloat("scale_z", &scale.z, -10.0f, 10.0f);
-		ImGui::SliderFloat("angle_x", &angle.x, -10.0f, 10.0f);
-		ImGui::SliderFloat("angle_y", &angle.y, -10.0f, 10.0f);
-		ImGui::SliderFloat("angle_z", &angle.z, -10.0f, 10.0f);
+		if (ImGui::TreeNode("ModelParameter"))
+		{
+			ImGui::SliderFloat("scale_x", &scale.x, -10.0f, 10.0f);
+			ImGui::SliderFloat("scale_y", &scale.y, -10.0f, 10.0f);
+			ImGui::SliderFloat("scale_z", &scale.z, -10.0f, 10.0f);
+			ImGui::SliderFloat("angle_x", &angle.x, -10.0f, 10.0f);
+			ImGui::SliderFloat("angle_y", &angle.y, -10.0f, 10.0f);
+			ImGui::SliderFloat("angle_z", &angle.z, -10.0f, 10.0f);
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("JumpParameter"))
+		{
+			ImGui::SliderFloat("speed.y", &speed.y, -100.0f, -100.0f);
+			/*ImGui::SliderFloat("jump_max", &jump_max, 0.0f, 500.0f);
+			ImGui::SliderFloat("down_force", &down_force, 0.0f, 1000.0f);
+			ImGui::SliderFloat("high_jump_max", &high_jump_max, 0.0f, 1000.0f);
+			ImGui::SliderFloat("jump_speed", &jump_speed, 0.0f, 5000.0f);
+			ImGui::SliderFloat("high_jump_speed", &high_jump_speed, 0.0f, 5000.0f);*/
+			ImGui::TreePop();
+		}
 
 
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);

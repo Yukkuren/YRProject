@@ -566,8 +566,8 @@ void Knight::Update(float decision, float elapsed_time)
 
 	JumpUpdate(elapsed_time);
 
-	pos.x += speed.x * elapsed_time;
-	pos.y += speed_Y.Update(elapsed_time);
+	pos.x += (speed.x * elapsed_time);
+	pos.y += (speed_Y.Update(elapsed_time) * elapsed_time);
 
 	for (int list = 0; list < hit.size(); list++)
 	{
@@ -1308,9 +1308,10 @@ void Knight::Attack(float decision, float elapsed_time)
 		{
 			act_state = ActState::JUMP;
 			attack_state = AttackState::NONE;
-			anim_ccodinate = 1.0f;
 			//描画をセット
-
+			anim_ccodinate = ac_act[scastI(ActState::JUMP)].timer;
+			anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::TIMER));
+			max_jump_flag = true;
 		}
 	}
 }
@@ -2153,7 +2154,7 @@ void Knight::Jump()
 			speed_Y.Set(0.0f);
 			pad->que.back().timer = 0;
 			jumpcount = 0;
-			speed.y = 60.0f;
+			speed.y = high_jump_speed;
 			hightrigger = true;
 			max_jump_flag = false;
 			moveflag = false;
@@ -2192,6 +2193,7 @@ void Knight::Jump()
 				return;
 			}
 			speed.x = 0.0f;
+			return;
 
 		}
 
@@ -2199,13 +2201,13 @@ void Knight::Jump()
 		if (pad->x_input[scastI(PAD::STICK_U)] == 1)
 		{
 			//じゃんぷする
-			later = -1;
+			//later = -1;
 			attack = FALSE;
 			speed_Y.Set(0.0f);
 			pad->que.back().timer = 0;
 			jumpcount--;
 			hightrigger = false;
-			speed.y = 40.0f;
+			speed.y = jump_speed;
 			max_jump_flag = false;
 			moveflag = false;
 			//描画をセット
@@ -2252,13 +2254,13 @@ void Knight::Jump()
 		{
 			if (pad->x_input[scastI(PAD::STICK_U)] == 1)
 			{
-				later = -1;
+				//later = -1;
 				attack = FALSE;
 				speed_Y.Set(0.0f);
 				pad->que.back().timer = 0;
-				jumpcount--;
+				jumpcount = 0;
 				hightrigger = false;
-				speed.y = 40.0f;
+				speed.y = jump_speed;
 				max_jump_flag = false;
 				moveflag = false;
 				//描画をセット
@@ -2327,21 +2329,21 @@ void Knight::JumpUpdate(float elapsed_time)
 		{
 			if (hightrigger)
 			{
-				speed.y += (2000.0f * elapsed_time);
-				if ((speed.y * elapsed_time) > (high_jump_max * elapsed_time))
+				speed.y += (high_jump_speed * elapsed_time);
+				if (speed.y > high_jump_max)
 				{
 					max_jump_flag = true;
 				}
 			}
 			else
 			{
-				speed.y += (2000.0f * elapsed_time);
-				if (speed_Y.speedY == 0.0f)
+				speed.y += (jump_speed * elapsed_time);
+				/*if (speed_Y.speedY == 0.0f)
 				{
 					pos.y += (speed.y * elapsed_time);
-				}
+				}*/
 				//float hei = speed.y * elapsed_time;
-				if ((speed.y*elapsed_time) > (jump_max*elapsed_time))
+				if (speed.y > jump_max)
 				{
 					max_jump_flag = true;
 				}
@@ -3096,6 +3098,24 @@ void Knight::TrackDash(float decision,float elapsed_time)
 				a.parameter.knockback = 0.0f;
 				knock = true;
 			}
+		}
+		if (knock)
+		{
+			//ホーミングダッシュは当たった時点で攻撃が終了するので後隙を入力する
+			//上方向への速度を入力する(ちょっとホップさせる)
+			speed_Y.Set(30.0f);
+			//攻撃をすべて消去する
+			AllAttackClear();
+			//攻撃番号を初期化
+			attack_list[now_at_list].now_attack_num = 0;
+			//後隙を設定
+			later = attack_list[now_at_list].later;
+			//アニメーション速度を指定
+			anim_ccodinate = ac_attack[now_at_list].later;
+			//描画をセット
+			anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+			//行動終了フラグをオンに
+			finish = true;
 		}
 	}
 

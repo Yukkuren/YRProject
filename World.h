@@ -3,7 +3,7 @@
 
 #include	"YR_VectorMaster.h"
 
-const float limit_size = 21.0f;		//左右の移動量の制限値
+const float limit_size = 21.0f;		//移動量の制限値
 const float adjustment_eye = 8.0f;	//カメラのズーム距離補正値
 //const float adjustment_y = 6.0f;	//カメラのY方向の補正値
 

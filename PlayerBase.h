@@ -55,6 +55,7 @@ class Speed
 {
 public:
 	float speedY = 0.0f;
+	const float decrease_value = 100.0f;		//スピードの減少値
 
 	void Set(float speed)
 	{
@@ -64,7 +65,7 @@ public:
 	{
 		if (speedY > 0.0f)
 		{
-			speedY -= elapsed_time;
+			speedY -= (decrease_value * elapsed_time);
 		}
 		else
 		{

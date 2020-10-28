@@ -1410,10 +1410,8 @@ void SceneGame::PauseUpdate()
 void SceneGame::TrackSet()
 {
 	//ホーミングダッシュ用の値を変更する
-	//player1p->tracking.rival_Pos = player2p->pos;
-	//player2p->tracking.rival_Pos = player1p->pos;
-	//player1p->rival_state = player2p->state;
-	//player2p->rival_state = player1p->state;
+	player1p->tracking.rival_Pos = player2p->pos;
+	player2p->tracking.rival_Pos = player1p->pos;
 }
 
 

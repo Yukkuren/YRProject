@@ -80,6 +80,10 @@ YR_Vector3 Limit::Set(YR_Vector3 p1, YR_Vector3 p2, YR_Vector3 start_eye)
 	{
 		up_meter = p1.y;
 		distance_y = (p1.y - p2.y);
+		/*distance_y = (p1.y - p2.y) / 2.0f;
+		float correction = p2.y + distance_y;
+		//ƒJƒƒ‰‚Ì’²®
+		camera_pos.y = correction;*/
 	}
 	if (p1.y < p2.y)
 	{
