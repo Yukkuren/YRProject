@@ -569,6 +569,7 @@ void Knight::Update(float decision, float elapsed_time)
 		pad->pre_input = false;
 	}
 
+
 	JumpUpdate(elapsed_time);
 
 	pos.x += (speed.x * elapsed_time);
@@ -619,11 +620,11 @@ void Knight::Update(float decision, float elapsed_time)
 void Knight::AttackInput()
 {
 	
-			//-------------------------------------------------------------------
-			// *概要*
-			//・コマンドは二種類のみ
-			//--------------------------------------------------------------------
-				//攻撃のリストの入力判定を全て確認する(0は攻撃無しの為、1から確認していく)
+	//-------------------------------------------------------------------
+	// *概要*
+	//・コマンドは二種類のみ
+	//--------------------------------------------------------------------
+	//攻撃のリストの入力判定を全て確認する(0は攻撃無しの為、1から確認していく)
 	for (int list = 1; list < attack_list.size(); list++)
 	{
 		int button = scastI(attack_list[list].linkage_button);
@@ -636,405 +637,131 @@ void Knight::AttackInput()
 			if (now_com == command)
 			{
 				//指定したコマンドが同じで空中、地上の条件も同じだった場合
-				if (ground == attack_list[list].ground_on)
+				if (ground)
 				{
-					if (attack_list[list].squat_on)
+					//現在地上にいる場合は攻撃が空中専用じゃない場合は行う
+					if (attack_list[list].ground_on < Ground_C::GROUND)
 					{
-						//攻撃リストにしゃがみ判定が設定されていた場合、現在のステートがしゃがみか確認する
-						if (act_state != ActState::SQUAT && pad->x_input[scastI(PAD::STICK_D)] == 0)
-						{
-							if (pad->x_input[scastI(PAD::STICK_LDown)] == 0 && pad->x_input[scastI(PAD::STICK_RDown)] == 0)
-							{
-								continue;
-							}
-						}
+						continue;
 					}
-					else
+				}
+				else
+				{
+					//現在空中にいる場合は攻撃が地上専用じゃない場合は行う
+					if (attack_list[list].ground_on == Ground_C::GROUND)
 					{
-						//設定されていない場合はしゃがんでないか確認する
-						if (act_state == ActState::SQUAT || pad->x_input[scastI(PAD::STICK_D)] > 0||
-							pad->x_input[scastI(PAD::STICK_LDown)] > 0|| pad->x_input[scastI(PAD::STICK_RDown)] > 0)
-						{
-							continue;
-						}
+						continue;
 					}
-					if (attack_list[list].linkage_stick != PAD::BUTTOM_END)
+				}
+
+				if (attack_list[list].squat_on)
+				{
+					//攻撃リストにしゃがみ判定が設定されていた場合、現在のステートがしゃがみか確認する
+					if (act_state != ActState::SQUAT && pad->x_input[scastI(PAD::STICK_D)] == 0)
 					{
-						//スティックの入力が指定されている場合確認する
-						if (pad->x_input[scastI(attack_list[list].linkage_stick)] == 0)
+						if (pad->x_input[scastI(PAD::STICK_LDown)] == 0 && pad->x_input[scastI(PAD::STICK_RDown)] == 0)
 						{
 							continue;
 						}
 					}
-
-					if (last_attack == AttackState::COMBO_X)
+				}
+				else
+				{
+					//設定されていない場合はしゃがんでないか確認する
+					if (act_state == ActState::SQUAT || pad->x_input[scastI(PAD::STICK_D)] > 0 ||
+							pad->x_input[scastI(PAD::STICK_LDown)] > 0 || pad->x_input[scastI(PAD::STICK_RDown)] > 0)
+						{
+							continue;
+						}
+				}
+				if (attack_list[list].linkage_stick != PAD::BUTTOM_END)
+				{
+					//スティックの入力が指定されている場合確認する
+					if (pad->x_input[scastI(attack_list[list].linkage_stick)] == 0)
 					{
-						//コンボ状態に入っている場合はコンボ関数で攻撃のステートを決定する
-						ComboUpdate();
-						return;
+						continue;
 					}
-
-					//実際の攻撃内容
-					int real = scastI(attack_list[list].real_attack);
-					//int next = scastI(attack_list[list].real_attack);
-					if (attack_list[real].need_gauge <= gauge)
-					{
-						//ゲージの必要量を確認する
-						//通常の攻撃の場合、実際の攻撃内容は入れずに攻撃名をそのまま入れる
-						attack_state = static_cast<AttackState>(list);
-					}
-					else
-					{
-						//ゲージが足りない場合指定した技を出す
-						attack_state = attack_list[real].aid_attack_name;
-					}
-
-					//最後に行った攻撃が同じだった場合、コンボを確認して存在するならコンボを開始する
-					if (last_attack == attack_state)
-					{
-						if (ComboSet())
-							{
-								return;
-							}
-							//attack_state = attack_list[real].next_attack;
-							//next = scastI(attack_list[list].next_attack);
-					}
-					
-					
-
-					//攻撃を決定する
-					//現在攻撃判定が出ているなら全て消去する
-					AllAttackClear();
-					//この攻撃をキャンセルするための条件を保存する
-					atk_result = attack_list[real].conditions_hit;
-					//攻撃を保存する
-					last_attack = attack_state;
-					//攻撃の結果を初期化
-					hit_result = HitResult::NONE;
-					//攻撃中フラグをオンに
-					attack = true;
-					//移動フラグをオフに
-					moveflag = false;
-					//行動ステートを攻撃に
-					act_state = ActState::ATTACK;
-					//発生フレームを決定
-					fream = attack_list[real].attack_single[0].fream;
-					//アニメーション速度を指定
-					anim_ccodinate = ac_attack[real].fream;
-					//攻撃番号を初期化
-					attack_list[real].now_attack_num = 0;
-					//攻撃発生前の前進距離を設定する
-					speed_X.Set(attack_list[real].advance_speed);
-					//後隙を初期化
-					later = non_target;
-					//カメラ処理用変数を初期化
-					production_time = 0.0f;
-					//描画をセット
-					anim->NodeChange(model_motion.model_R[real], scastI(AnimAtk::FREAM));
-					//攻撃ごとに個別の設定を行う
-					AttackDetailsSet(attack_list[real].combo);
+				}
+				//実際の攻撃内容
+				int real = scastI(attack_list[list].real_attack);
+				if (last_attack == AttackState::COMBO_X && attack_list[real].combo == last_attack)
+				{
+					//コンボ状態に入っている場合はコンボ関数で攻撃のステートを決定する
+					ComboUpdate();
 					return;
 				}
+
+				
+				//int next = scastI(attack_list[list].real_attack);
+				if (attack_list[real].need_gauge <= gauge)
+				{
+					//ゲージの必要量を確認する
+					//通常の攻撃の場合、実際の攻撃内容は入れずに攻撃名をそのまま入れる
+					attack_state = static_cast<AttackState>(list);
+				}
+				else
+				{
+					//ゲージが足りない場合指定した技を出す
+					attack_state = attack_list[real].aid_attack_name;
+				}
+
+				//最後に行った攻撃が同じだった場合、コンボを確認して存在するならコンボを開始する
+				if (last_attack == attack_state)
+				{
+					if (ComboSet())
+					{
+						return;
+					}
+					//attack_state = attack_list[real].next_attack;
+					//next = scastI(attack_list[list].next_attack);
+				}
+
+
+
+				//攻撃を決定する
+				//現在攻撃判定が出ているなら全て消去する
+				AllAttackClear();
+				//この攻撃をキャンセルするための条件を保存する
+				atk_result = attack_list[real].conditions_hit;
+				//攻撃を保存する
+				last_attack = attack_state;
+				//攻撃の結果を初期化
+				hit_result = HitResult::NOT_OCCURRENCE;
+				//攻撃中フラグをオンに
+				attack = true;
+				//移動フラグをオフに
+				moveflag = false;
+				//行動ステートを攻撃に
+				act_state = ActState::ATTACK;
+				//発生フレームを決定
+				fream = attack_list[real].attack_single[0].fream;
+				//アニメーション速度を指定
+				anim_ccodinate = ac_attack[real].fream;
+				//攻撃番号を初期化
+				attack_list[real].now_attack_num = 0;
+				//攻撃発生前の前進距離を設定する(地上攻撃のみ)
+				if (attack_list[real].ground_on == Ground_C::GROUND)
+				{
+					speed_X.Set(attack_list[real].advance_speed);
+				}
+				if (!ground)
+				{
+					//ジャンプフラグも設定しておく
+					jumpflag = true;
+					max_jump_flag = true;
+				}
+				//後隙を初期化
+				later = non_target;
+				//カメラ処理用変数を初期化
+				production_time = 0.0f;
+				//描画をセット
+				anim->NodeChange(model_motion.model_R[real], scastI(AnimAtk::FREAM));
+				//攻撃ごとに個別の設定を行う
+				AttackDetailsSet(attack_list[real].combo);
+				return;
 			}
 		}
 	}
-
-			//	//弱攻撃
-			//	if (pad->x_input[scastI(PAD::X)] == 1)
-			//	{
-			//		pad->que.back().timer = 0;
-			//		attack = TRUE;
-			//		moveflag = false;
-			//		act_state = ActState::ATTACK;
-			//		//コマンド判定
-			//		Command command = pad->com_list.CommandCheack(scastI(PAD::X), pad->input_history.data(), rightOrleft);
-			//		if (command == Command::RHURF)
-			//		{
-			//			//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-			//			//描画をセット
-			//			attack_state = AttackState::JAKU_RHURF;
-			//			//pos.x += Getapply(50.0f);
-			//			specialfream = 0;
-			//		}
-			//		else if (command == Command::LHURF)
-			//		{
-			//			//描画をセット
-
-			//			attack_state = AttackState::JAKU_LHURF;
-			//			specialfream = 0;
-			//		}
-			//		else
-			//		{
-			//			//描画をセット
-
-			//			//attack_state = AttackState::JAKU;
-			//			//fream = attack_list[scastI(attack_state)].attack_single[0].fream;
-			//			//motion.MeshSet(jaku_r_f);
-			//			//motion.AnimReset();
-			//			//anim_ccodinate = ac_attack[scastI(attack_state)].fream;
-			//			//anim->NodeChange(model_motion.jaku_R_f);
-			//			//attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft);
-			//		}
-			//	}
-
-			//	//下段中攻撃
-			//	if (pad->x_input[scastI(PAD::Y)] == 1)
-			//	{
-			//		pad->que.back().timer = 0;
-			//		//attack = TRUE;
-			//		//moveflag = false;
-			//		//act_state = ActState::ATTACK;
-			//		//コマンド判定
-			//		Command command = pad->com_list.CommandCheack(scastI(PAD::Y), pad->input_history.data(), rightOrleft);
-			//		if (command == Command::RHURF)
-			//		{
-			//			//描画をセット
-
-			//			attack_state = AttackState::THU_RHURF;
-			//			specialfream = 0;
-			//		}
-			//		else if (command == Command::LHURF)
-			//		{
-			//			//描画をセット
-
-			//			attack_state = AttackState::THU_LHURF;
-			//			specialfream = 0;
-			//		}
-			//		else
-			//		{
-			//			//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-			//			//描画をセット
-
-			//			//attack_state = AttackState::D_THU;
-			//			//pos.x += Getapply(50.0f);
-			//			ChangeFace(FaceAnim::Damage);
-			//		}
-			//	}
-
-			//	//上段強攻撃
-			//	if (pad->x_input[scastI(PAD::B)] == 1)
-			//	{
-			//		pad->que.back().timer = 0;
-			//		attack = TRUE;
-			//		moveflag = false;
-			//		act_state = ActState::ATTACK;
-			//		//コマンド判定
-			//		Command command = pad->com_list.CommandCheack(scastI(PAD::B), pad->input_history.data(), rightOrleft);
-			//		if (command == Command::LHURF)
-			//		{
-			//			if (power > 0)
-			//			{
-			//				//描画をセット
-
-			//				FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-			//				attack_state = AttackState::KYO_LHURF;
-			//				//エフェクトセット
-
-			//				pos.x = tracking.rival_Pos.x - Getapply(100.0f);
-			//				pos.y = tracking.rival_Pos.y - 100.0f;
-			//				power--;
-			//			}
-			//			else
-			//			{
-			//				//描画をセット
-
-			//				attack_state = AttackState::THU_LHURF;
-			//				specialfream = 0;
-			//			}
-			//		}
-			//		else if (command == Command::RHURF)
-			//		{
-			//			if (power > 0)
-			//			{
-			//				//エフェクトセット
-			//				//描画をセット
-
-			//				attack_state = AttackState::KYO_RHURF;
-			//				specialfream = 0;
-			//				power--;
-			//			}
-			//			else
-			//			{
-			//				//描画をセット
-
-			//				attack_state = AttackState::THU_RHURF;
-			//				specialfream = 0;
-			//			}
-			//		}
-			//		else
-			//		{
-			//			//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-			//			//描画をセット
-
-			//			//attack_state = AttackState::U_KYO;
-			//			//pos.x += Getapply(50.0f);
-			//			//pad->que.back().timer = 0;
-			//			//attack = TRUE;
-			//			//later = non_target;
-			//			//moveflag = false;
-			//			//act_state = ActState::ATTACK;
-			//			if (ground)
-			//			{
-			//				//描画をセット
-			//			}
-			//			else
-			//			{
-			//				//描画をセット
-			//			}
-			//			//attack_state = AttackState::SPECIAL_ATTACK;
-			//			//fream = attack_list[scastI(attack_state)].attack_single[0].fream;
-			//			//YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
-			//			//production_time = 0.0f;
-			//			//anim->PlayAnimation(0, true);
-			//			//anim->NodeChange(model_motion.special_R_f);
-			//			//anim_ccodinate = ac_attack[scastI(attack_state)].fream;
-			//			//ChangeFace(FaceAnim::KOUHUN);
-			//		}
-			//	}
-
-			//	//投げ
-			//	if (pad->x_input[scastI(PAD::A)] == 1)
-			//	{
-			//		pad->que.back().timer = 0;
-			//		attack = TRUE;
-			//		moveflag = false;
-			//		act_state = ActState::ATTACK;
-			//		//描画をセット
-
-			//		attack_state = AttackState::STEAL;
-			//	}
-
-
-
-
-			//}
-			//else
-			//{
-			//	//空中弱
-			//	if (pad->x_input[scastI(PAD::X)] == 1)
-			//	{
-			//		pad->que.back().timer = 0;
-			//		attack = TRUE;
-			//		moveflag = false;
-			//		act_state = ActState::ATTACK;
-			//		//描画をセット
-
-			//		attack_state = AttackState::JAKU;
-
-			//		//pad->com_list.Reset();
-			//	}
-
-			//	//空中中
-			//	if (pad->x_input[static_cast<int>(PAD::Y)] == 1)
-			//	{
-			//		pad->que.back().timer = 0;
-			//		FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-			//		attack = TRUE;
-			//		moveflag = false;
-			//		act_state = ActState::ATTACK;
-			//		//描画をセット
-
-			//		attack_state = AttackState::THU;
-			//		pos.x += Getapply(50.0f);
-			//		specialfream = 0;
-			//	}
-
-			//	//空中強
-			//	if (pad->x_input[static_cast<int>(PAD::B)] == 1)
-			//	{
-			//		pad->que.back().timer = 0;
-			//		FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-			//		attack = TRUE;
-			//		moveflag = false;
-			//		act_state = ActState::ATTACK;
-			//		//描画をセット
-
-			//		attack_state = AttackState::U_KYO;
-			//		pos.x += Getapply(50.0f);
-			//		specialfream = 0;
-			//		return;
-			//	}
-			//}
-
-			////無敵攻撃
-			//if (pad->x_input[scastI(PAD::L_TRIGGER)] == 1)
-			//{
-			//	pad->que.back().timer = 0;
-			//	attack = TRUE;
-			//	moveflag = false;
-			//	speed.x = Getapply(5.0f);
-			//	speed_Y.Set(70.0f);
-			//	act_state = ActState::ATTACK;
-			//	//描画をセット
-
-			//	attack_state = AttackState::EXTENDATK;
-			//}
-
-
-
-
-			////ホーミングダッシュ
-			//if (pad->x_input[scastI(PAD::R_TRIGGER)] == 1)
-			//{
-			//	if (trackgauge > 0)
-			//	{
-			//		pad->que.back().timer = 0;
-			//		attack = true;
-			//		tracking.Init();
-			//		act_state = ActState::ATTACK;
-			//		//描画をセット
-
-			//		attack_state = AttackState::TRACK_DASH;
-			//		moveflag = false;
-			//		pos.y += 5.0f;
-			//		speed.x = 0.0f;
-			//		speed.y = 0.0f;
-			//		hightrigger = false;
-			//		jumpflag = false;
-			//		max_jump_flag = false;
-			//		speed_Y.Set(0.0f);
-			//		trackgauge--;
-			//	}
-	//しゃがみ攻撃
-	//if (act_state == ActState::SQUAT)
-	//{
-	//	if (pad->x_input[scastI(PAD::X)] == 1)
-	//	{
-	//		pad->que.back().timer = 0;
-	//		attack = TRUE;
-	//		moveflag = false;
-	//		act_state = ActState::ATTACK;
-	//		//描画をセット
-
-	//		attack_state = AttackState::D_JAKU;
-	//		//pad->com_list.Reset();
-	//	}
-	//	if (pad->x_input[scastI(PAD::Y)] == 1)
-	//	{
-	//		pad->que.back().timer = 0;
-	//		attack = TRUE;
-	//		moveflag = false;
-	//		act_state = ActState::ATTACK;
-	//		//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-	//		//描画をセット
-
-	//		attack_state = AttackState::D_THU;
-	//		pos.x += Getapply(50.0f);
-	//	}
-	//	if (pad->x_input[static_cast<int>(PAD::B)] == 1)
-	//	{
-	//		pad->que.back().timer = 0;
-	//		//FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-	//		attack = TRUE;
-	//		moveflag = false;
-	//		act_state = ActState::ATTACK;
-	//		//描画をセット
-
-	//		attack_state = AttackState::KYO;
-	//		pos.x += Getapply(50.0f);
-	//		specialfream = 0;
-	//	}
-	//}
 }
 
 void Knight::AttackSwitch(float decision, float elapsed_time)
@@ -1178,6 +905,12 @@ void Knight::Attack(float decision, float elapsed_time)
 			pos.y = POS_Y;
 		}
 	}
+	//空中時
+	if (pos.y > POS_Y && speed_Y.speed == 0.0f)
+	{
+		//上方向への力がない場合、重力を付与する
+		pos.y -= gravity * elapsed_time;
+	}
 	HitBoxTransition(HitBoxState::NOGUARD);
 
 	AttackSwitch(decision, elapsed_time);
@@ -1204,7 +937,7 @@ void Knight::Attack(float decision, float elapsed_time)
 		later = non_target;
 		attack = false;
 		//結果を初期化する
-		hit_result = HitResult::NONE;
+		hit_result = HitResult::NOT_OCCURRENCE;
 		//キャンセル条件を初期化する
 		atk_result = HitResult::NONE;
 		//最終入力内容を初期化する
@@ -1238,7 +971,7 @@ void Knight::Attack(float decision, float elapsed_time)
 			//描画をセット
 			anim_ccodinate = ac_act[scastI(ActState::JUMP)].timer;
 			anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::TIMER));
-			max_jump_flag = true;
+			//max_jump_flag = true;
 		}
 	}
 }
@@ -1445,6 +1178,13 @@ void Knight::Draw(
 		anim->Draw(parallel_shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], material_color);
 	}
 	if (YRCamera.GetRequest() == Camera::Request::WEAKEN)
+	{
+		anim->UpdateAnimation(elapsed_time * anim_ccodinate);
+		anim->CalculateLocalTransform();
+		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
+		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], material_color);
+	}
+	if (YRCamera.camera_state == Camera::CAMERA_STATE::ZOOM_CAMERA)
 	{
 		anim->UpdateAnimation(elapsed_time * anim_ccodinate);
 		anim->CalculateLocalTransform();
@@ -2097,7 +1837,7 @@ void Knight::Jump()
 			//現在攻撃判定が出ているなら全て消去する
 			AllAttackClear();
 			//攻撃の結果を初期化
-			hit_result = HitResult::NONE;
+			hit_result = HitResult::NOT_OCCURRENCE;
 			//キャンセルの条件を初期化
 			atk_result = HitResult::NONE;
 			//後隙を初期化
@@ -2157,7 +1897,7 @@ void Knight::Jump()
 			//現在攻撃判定が出ているなら全て消去する
 			AllAttackClear();
 			//攻撃の結果を初期化
-			hit_result = HitResult::NONE;
+			hit_result = HitResult::NOT_OCCURRENCE;
 			//後隙を初期化
 			later = non_target;
 			//攻撃フラグをオフに
@@ -2214,7 +1954,7 @@ void Knight::Jump()
 				//現在攻撃判定が出ているなら全て消去する
 				AllAttackClear();
 				//攻撃の結果を初期化
-				hit_result = HitResult::NONE;
+				hit_result = HitResult::NOT_OCCURRENCE;
 				//キャンセルの条件を初期化
 				atk_result = HitResult::NONE;
 				//後隙を初期化
@@ -2301,7 +2041,10 @@ void Knight::JumpUpdate(float elapsed_time)
 
 	if (max_jump_flag)
 	{
-		speed.y -= (down_force * elapsed_time);
+		if (speed_Y.speed == 0.0f)
+		{
+			speed.y -= (down_force * elapsed_time);
+		}
 		if (hightrigger)
 		{
 			if (speed.y - (gravity*elapsed_time) < 0.0f)
@@ -2317,7 +2060,7 @@ void Knight::JumpUpdate(float elapsed_time)
 	}
 	if (pos.y < POS_Y)
 	{
-		if (max_jump_flag)
+		if (1)
 		{
 			jumpcount = 2;
 			max_jump_flag = false;
@@ -2377,7 +2120,7 @@ void Knight::DamageCheck()
 			speed_X.Set(0.0f);
 			speed_Y.Set(0.0f);
 			AllAttackClear();
-			hit_result = HitResult::NONE;
+			hit_result = HitResult::NOT_OCCURRENCE;
 			//キャンセルの条件を初期化
 			atk_result = HitResult::NONE;
 			act_state = ActState::KNOCK;
@@ -2412,7 +2155,7 @@ void Knight::DamageCheck()
 			step = false;
 			//キャンセルの条件を初期化
 			atk_result = HitResult::NONE;
-			hit_result = HitResult::NONE;
+			hit_result = HitResult::NOT_OCCURRENCE;
 			pad->dash_trigger = false;
 			pad->high_trigger = false;
 			hightrigger = false;
@@ -2988,9 +2731,8 @@ void Knight::TrackDash(float decision,float elapsed_time)
 		return;
 	}
 
-	jumpflag = false;
-	max_jump_flag = false;
-	speed.y = 0.0f;
+	//max_jump_flag = false;
+	/*speed.y = 0.0f;*/
 	rightOrleft = decision;
 
 	//正規化された相手に向かうベクトル
@@ -3002,6 +2744,10 @@ void Knight::TrackDash(float decision,float elapsed_time)
 	{
 		return;
 	}
+	jumpflag = false;
+
+	//重力の逆数を付与する
+	pos.y += gravity * elapsed_time;
 
 	//発生フレームになるまで回す
 	if (fream < target_max)
@@ -3073,7 +2819,8 @@ void Knight::TrackDash(float decision,float elapsed_time)
 			//ホーミングダッシュは当たった時点で攻撃が終了するので後隙を入力する
 			//上方向への速度を入力する(ちょっとホップさせる)
 			speed_X.Set(0.0f);
-			speed_Y.Set(30.0f);
+			speed_Y.Set(attack_list[now_at_list].advance_speed);
+			speed.y = 0.0f;
 			//攻撃をすべて消去する
 			AllAttackClear();
 			//攻撃番号を初期化
@@ -3088,6 +2835,11 @@ void Knight::TrackDash(float decision,float elapsed_time)
 			finish = true;
 			//角度を戻す
 			angle.z = 0.0f;
+			//ジャンプ回数を減らす
+			jumpcount--;
+			//ジャンプ状態にする
+			jumpflag = true;
+			max_jump_flag = true;
 		}
 	}
 

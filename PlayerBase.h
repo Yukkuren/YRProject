@@ -45,6 +45,21 @@ enum class AnimAtk :int
 	TIMER,		//持続
 };
 
+
+
+//--------------------------------------
+//	**攻撃時のプレイヤーの地面判定列挙
+//--------------------------------------
+enum class Ground_C :int
+{
+	AIR = 0,	//空中
+	GROUND,		//地上
+	EITHER,		//どちらでも
+	END,
+};
+
+
+
 //---------------------------------------------
 // **スピードクラス**
 //・プレイヤーに加算するX,Y軸方向の力を処理する
@@ -191,7 +206,7 @@ public:
 	int								now_attack_num;	//現在実行している攻撃番号は何番かを示す(attack_maxまで回ったらlaterをプレイヤーに)
 	PAD								linkage_button;	//どのボタンで攻撃を発生させるか
 	Command							linkage_command;//どのコマンドで攻撃を発生させるか
-	bool							ground_on;		//攻撃は空中、地上どちらで発生させるか(trueで地上発生)
+	Ground_C						ground_on;		//攻撃は空中、地上、どちらでも発生させるか
 	bool							squat_on;		//しゃがみ攻撃がどうか(trueでしゃがみ攻撃)
 	float							need_gauge;		//攻撃を行うのに必要なゲージ量(1.0単位で記述)
 	PAD								linkage_stick;	//どの方向への入力で攻撃を発生させるか
@@ -204,7 +219,7 @@ public:
 	HitResult						conditions_hit;	//キャンセルするための攻撃ヒット条件
 public:
 	AttackList() : now_attack_num(0), attack_name(AttackState::NONE), later(0.0f),
-		attack_max(0), linkage_button(PAD::BUTTOM_END), linkage_command(Command::NOCOMMAND), ground_on(true), squat_on(false),
+		attack_max(0), linkage_button(PAD::BUTTOM_END), linkage_command(Command::NOCOMMAND), ground_on(Ground_C::GROUND), squat_on(false),
 		need_gauge(0.0f), linkage_stick(PAD::BUTTOM_END), aid_attack_name(AttackState::NONE), real_attack(attack_name),
 		speed_on(false), speed(0.0f, 0.0f, 0.0f), advance_speed(0.0f), combo(AttackState::NONE), conditions_hit(HitResult::HIT) {};
 	//攻撃当たり判定を生成する

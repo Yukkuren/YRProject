@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "YR_VectorMaster.h"
+#include "camera.h"
 //#include "Music.h"
 
 const float guard_gauge_get = 3.0f;
@@ -118,21 +119,6 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 							hit[hitnum].timer = attack[atknum].parameter.HB_timer;
 							hit[hitnum].hitback = attack[atknum].parameter.hitback;
 							//Hitcheak::timer = ((attack[atknum].parameter.damege*0.1f) / hitstop_adjust);
-							switch (attack[atknum].parameter.HS_timer)
-							{
-							case HitStopTime::SHORT:
-								Hitcheak::timer = 0.05f;
-								break;
-							case HitStopTime::NORMAL:
-								Hitcheak::timer = 0.15f;
-								break;
-							case HitStopTime::LONG:
-								Hitcheak::timer = 0.25f;
-								break;
-							default:
-								Hitcheak::timer = 0.05f;
-								break;
-							}
 							if (player == 1)
 							{
 								Hitcheak::stop1p = true;
@@ -145,14 +131,14 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 							if (attack[atknum].parameter.distance.x >= hit[atknum].center.x)
 							{
 								float dis = attack[atknum].parameter.distance.x - hit[hitnum].center.x;
-								dis /= 2;
+								dis /= 2.0f;
 								effectpos.x = hit[hitnum].center.x + dis;
 								effecttimer = 10;
 							}
 							if (hit[hitnum].center.x > attack[atknum].parameter.distance.x)
 							{
 								float dis = hit[hitnum].center.x - attack[atknum].parameter.distance.x;
-								dis /= 2;
+								dis /= 2.0f;
 								effectpos.x = attack[atknum].parameter.distance.x + dis;
 								effecttimer = 10;
 							}
@@ -160,16 +146,35 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 							if (attack[atknum].parameter.distance.y >= hit[hitnum].center.y)
 							{
 								float dis = attack[atknum].parameter.distance.y - hit[hitnum].center.y;
-								dis /= 2;
+								dis /= 2.0f;
 								effectpos.y = hit[hitnum].center.y + dis;
 								effecttimer = 10;
 							}
 							if (hit[hitnum].center.y > attack[atknum].parameter.distance.y)
 							{
 								float dis = hit[hitnum].center.y - attack[atknum].parameter.distance.y;
-								dis /= 2;
+								dis /= 2.0f;
 								effectpos.y = attack[atknum].parameter.distance.y + dis;
 								effecttimer = 10;
+							}
+							switch (attack[atknum].parameter.HS_timer)
+							{
+							case HitStopTime::SHORT:
+								Hitcheak::timer = 0.05f;
+								break;
+							case HitStopTime::NORMAL:
+								Hitcheak::timer = 0.15f;
+								break;
+							case HitStopTime::LONG:
+								Hitcheak::timer = 0.25f;
+								break;
+							case HitStopTime::ZOOM:
+								Hitcheak::timer = 0.35f;
+								YRCamera.RequestCamera(player);
+								break;
+							default:
+								Hitcheak::timer = 0.05f;
+								break;
 							}
 
 							for (int n = 0; n < attack.size(); n++)

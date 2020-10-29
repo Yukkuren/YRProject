@@ -125,6 +125,13 @@ void Camera::RequestCamera(Request request, int now_player)
 	this->request_player = now_player;
 }
 
+void Camera::RequestCamera(int damage_player)
+{
+	damage_pl_num = damage_player;
+	camera_Request = Request::ZOOM;
+	request_player = 0;
+}
+
 const Camera::Request& Camera::GetRequest()const
 {
 	return camera_Request;

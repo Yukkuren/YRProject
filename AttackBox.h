@@ -9,9 +9,11 @@
 //--------------------------------------------------
 enum class HitStopTime : int
 {
-	SHORT,
+	SHORT=0,
 	NORMAL,
 	LONG,
+	ZOOM,
+	END
 };
 
 //--------------------------------------------------
@@ -20,10 +22,12 @@ enum class HitStopTime : int
 //--------------------------------------------------
 enum class HitResult : int
 {
-	NONE = 0,	//当たっていない
-	GUARD,		//ガードされた
-	HIT,		//当たった
-	NO_CANCEL,	//キャンセルできない
+
+	NOT_OCCURRENCE = 0,	//攻撃がまだ出ていない
+	NONE,				//当たっていない
+	GUARD,				//ガードされた
+	HIT,				//当たった
+	NO_CANCEL,			//キャンセルできない
 	END,
 };
 

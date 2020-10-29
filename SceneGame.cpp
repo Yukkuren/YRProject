@@ -619,6 +619,7 @@ void SceneGame::Update(float elapsed_time)
 						hit_stop_elapsed += elapsed_time;
 						if (Hitcheak::timer < 0.0f)
 						{
+							//ヒットストップ終了
 							Hitcheak::clash = false;
 							Hitcheak::hit = false;
 							Hitcheak::timer = 0.0f;
@@ -628,6 +629,7 @@ void SceneGame::Update(float elapsed_time)
 							Hitcheak::stop2p = false;
 							player1p->stop_state = 0;
 							player2p->stop_state = 0;
+							YRCamera.RequestCamera(Camera::Request::RELEASE, 0);
 						}
 						if (Hitcheak::timer != 0.0f)
 						{
@@ -635,6 +637,7 @@ void SceneGame::Update(float elapsed_time)
 							PlayerALL::player2p->StopUpdate();*/
 							if (hit_stop_elapsed > 0.01f)
 							{
+								//ヒットストップ中
 								if (Hitcheak::stop1p)
 								{
 									player1p->StopUpdate();
@@ -741,6 +744,8 @@ void SceneGame::Update(float elapsed_time)
 							player2p->Update(pl2_rightorleft, game_speed * p2_elapsed_time);
 							break;
 						default:
+							player1p->Update(pl1_rightorleft, game_speed * p1_elapsed_time);
+							player2p->Update(pl2_rightorleft, game_speed * p2_elapsed_time);
 							break;
 						}
 
@@ -1444,6 +1449,9 @@ void SceneGame::CameraUpdate()
 	case Camera::CAMERA_STATE::PLAYER2P:
 		//2Pがカメラを持っている
 		break;
+	case Camera::CAMERA_STATE::ZOOM_CAMERA:
+		//2Pがカメラを持っている
+		break;
 	default:
 		break;
 	}
@@ -1475,6 +1483,10 @@ void SceneGame::CameraRequest(float elapsed_time)
 	case Camera::Request::RELEASE:
 	{
 		int req_player = YRCamera.GetRequestPlayer();
+		if (req_player == 0)
+		{
+			YRCamera.camera_state = Camera::CAMERA_STATE::MAIN;
+		}
 		if (req_player == 1)
 		{
 			YRCamera.camera_state = Camera::CAMERA_STATE::MAIN;
@@ -1517,6 +1529,58 @@ void SceneGame::CameraRequest(float elapsed_time)
 
 	}
 		break;
+	case Camera::Request::ZOOM:
+	{
+		//一度しか入らないようにする
+		if (YRCamera.camera_state == Camera::CAMERA_STATE::ZOOM_CAMERA)
+		{
+			return;
+		}
+		YRCamera.camera_state = Camera::CAMERA_STATE::ZOOM_CAMERA;
+
+		YR_Vector3 p_pos = { 0.0f,0.0f,0.0f };
+		YR_Vector3 damage_pos = { 0.0f,0.0f,0.0f };
+
+		if (YRCamera.damage_pl_num > 1)
+		{
+			//ダメージを受けたのは2P
+			p_pos = player1p->pos;
+			damage_pos = player2p->pos;
+		}
+		else
+		{
+			//ダメージを受けたのは1P
+			p_pos = player2p->pos;
+			damage_pos = player1p->pos;
+		}
+
+		//距離を算出する
+		YR_Vector3 dis = damage_pos - p_pos;
+		dis.x /= 2.0f;
+		dis.y /= 2.0f;
+		YR_Vector3 camerapos = p_pos + dis;
+
+		//カメラの座標を算出する
+		DirectX::XMFLOAT3 focus = camerapos.GetDXFLOAT3();
+		DirectX::XMFLOAT3 eye = camerapos.GetDXFLOAT3();
+
+		if (YRCamera.damage_pl_num > 1)
+		{
+			//ダメージを受けたのは2P
+			eye.x -= 50.0f;
+		}
+		else
+		{
+			//ダメージを受けたのは1P
+			eye.x += 50.0f;
+		}
+		
+		eye.z = focus.z - 100.0f;
+
+		YRCamera.SetEye(eye);
+		YRCamera.SetFocus(focus);
+		YRCamera.Active();
+	}
 	default:
 		break;
 	}

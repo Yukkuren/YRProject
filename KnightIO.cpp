@@ -128,10 +128,18 @@ std::array<std::string, scastI(HitBoxState::END)> hitstate_name_list =
 
 std::array<std::string, scastI(HitResult::END)> result_name_list =
 {
+	u8"まだ発生してない",
 	u8"当たってない",
 	u8"ガードされた",
 	u8"当たった",
 	u8"キャンセルできない",
+};
+
+std::array<std::string, scastI(Ground_C::END)> ground_name_list =
+{
+	u8"空中",
+	u8"地上",
+	u8"どちらでも",
 };
 #endif // USE_IMGUI
 
@@ -150,7 +158,7 @@ bool Knight::DEBUGAttackLoad()
 	ac_attack[scastI(AttackState::JAKU)].later = 1.5f;
 	attack_list[scastI(AttackState::JAKU)].linkage_button = PAD::X;
 	attack_list[scastI(AttackState::JAKU)].linkage_command = Command::NOCOMMAND;
-	attack_list[scastI(AttackState::JAKU)].ground_on = true;
+	attack_list[scastI(AttackState::JAKU)].ground_on = Ground_C::GROUND;
 	attack_list[scastI(AttackState::JAKU)].squat_on = false;
 	attack_list[scastI(AttackState::JAKU)].linkage_stick = PAD::BUTTOM_END;
 	attack_list[scastI(AttackState::JAKU)].need_gauge = 0.0f;
@@ -190,7 +198,7 @@ bool Knight::DEBUGAttackLoad()
 	ac_attack[scastI(AttackState::SPECIAL_ATTACK)].later = 0.8f;
 	attack_list[scastI(AttackState::SPECIAL_ATTACK)].linkage_button = PAD::B;
 	attack_list[scastI(AttackState::SPECIAL_ATTACK)].linkage_command = Command::NOCOMMAND;
-	attack_list[scastI(AttackState::SPECIAL_ATTACK)].ground_on = true;
+	attack_list[scastI(AttackState::SPECIAL_ATTACK)].ground_on = Ground_C::GROUND;
 	attack_list[scastI(AttackState::SPECIAL_ATTACK)].squat_on = false;
 	attack_list[scastI(AttackState::SPECIAL_ATTACK)].linkage_stick = PAD::BUTTOM_END;
 	attack_list[scastI(AttackState::SPECIAL_ATTACK)].need_gauge = 0.0f;
@@ -258,12 +266,13 @@ bool Knight::AttackLoad()
 	{
 		ifs >> attack_list[list].later;
 		ifs >> attack_list[list].attack_max;
-		int pad,com,stick,aid,real,next,result;
+		int pad,com,stick,aid,real,next,result,ground;
 		ifs >> pad;
 		ifs >> com;
 		attack_list[list].linkage_button = static_cast<PAD>(pad);
 		attack_list[list].linkage_command = static_cast<Command>(com);
-		ifs >> attack_list[list].ground_on;
+		ifs >> ground;
+		attack_list[list].ground_on = static_cast<Ground_C>(ground);
 		ifs >> attack_list[list].squat_on;
 		ifs >> attack_list[list].need_gauge;
 		ifs >> stick;
@@ -380,13 +389,21 @@ bool Knight::AttackLoad()
 
 	//Xボタンコンボリストを読み込む
 	std::ifstream combo_X_ifs("./Data/CharaParameter/Knight/Combo_X.txt");
-	int size, com;
+	int size = -1;
+	int  com = 0;
 	combo_X_ifs >> size;
-	combolist_X.combolist.resize(size);
-	for (int list = 0; list < combolist_X.combolist.size(); list++)
+	if (size > 0)
 	{
-		combo_X_ifs >> com;
-		combolist_X.combolist[list] = static_cast<AttackState>(com);
+		combolist_X.combolist.resize(size);
+
+		if (!combolist_X.combolist.empty())
+		{
+			for (int list = 0; list < combolist_X.combolist.size(); list++)
+			{
+				combo_X_ifs >> com;
+				combolist_X.combolist[list] = static_cast<AttackState>(com);
+			}
+		}
 	}
 	//もし落ちたらエラーを出す
 	if (combo_X_ifs.fail())
@@ -464,7 +481,7 @@ bool Knight::AttackClean()
 		attack_list[list].now_attack_num = 0;
 		attack_list[list].linkage_button = PAD::BUTTOM_END;
 		attack_list[list].linkage_command = Command::NOCOMMAND;
-		attack_list[list].ground_on = true;
+		attack_list[list].ground_on = attack_list[list].ground_on;
 		attack_list[list].squat_on = false;
 		attack_list[list].need_gauge = 0.0f;
 		attack_list[list].linkage_stick = PAD::BUTTOM_END;
@@ -551,7 +568,7 @@ bool Knight::AttackWrite()
 		outputfile << attack_list[list].attack_max << std::endl;
 		outputfile << scastI(attack_list[list].linkage_button) << std::endl;
 		outputfile << scastI(attack_list[list].linkage_command) << std::endl;
-		outputfile << attack_list[list].ground_on << std::endl;
+		outputfile << scastI(attack_list[list].ground_on) << std::endl;
 		outputfile << attack_list[list].squat_on << std::endl;
 		outputfile << attack_list[list].need_gauge << std::endl;
 		outputfile << scastI(attack_list[list].linkage_stick) << std::endl;
@@ -790,7 +807,25 @@ void Knight::DrawDEBUG(
 		}
 		if (ImGui::TreeNode("JumpParameter"))
 		{
-			ImGui::SliderFloat("speed.y", &speed.y, -100.0f, -100.0f);
+			static float s = 0.0f;
+
+
+			if (jumpflag)
+			{
+				if (!max_jump_flag)
+				{
+					s = 0.0f;
+				}
+				s = min(speed.y, s);
+			}
+
+			ImGui::Checkbox("jump_flug", &jumpflag);
+			ImGui::Checkbox("max_jump_flug", &max_jump_flag);
+			ImGui::Text("speed.y:%f", speed.y);
+			ImGui::Text("speed_X:%f", speed_X.speed);
+			ImGui::Text("speed_Y:%f", speed_Y.speed);
+			ImGui::Text("down_force:%f", down_force);
+			ImGui::Text("s:%f", s);
 			/*ImGui::SliderFloat("jump_max", &jump_max, 0.0f, 500.0f);
 			ImGui::SliderFloat("down_force", &down_force, 0.0f, 1000.0f);
 			ImGui::SliderFloat("high_jump_max", &high_jump_max, 0.0f, 1000.0f);
@@ -904,13 +939,22 @@ void Knight::DrawDEBUG(
 				ImGui::SliderInt(u8"コマンド", &com, 0, scastI(Command::LHURF));
 				attack_list[list].linkage_command = static_cast<Command>(com);
 				ImGui::Text(command_name_list[com].c_str());
-				ImGui::Checkbox(u8"地上技", &attack_list[list].ground_on);
+				int ground = scastI(attack_list[list].ground_on);
+				ImGui::SliderInt(u8"攻撃はどこで出せるか", &ground, 0, scastI(Ground_C::END) - 1);
+				attack_list[list].ground_on = static_cast<Ground_C>(ground);
+				ImGui::Text(ground_name_list[ground].c_str());
 				ImGui::Checkbox(u8"しゃがみ攻撃", &attack_list[list].squat_on);
+
+				if (attack_list[list].linkage_stick != PAD::BUTTOM_END)
+				{
+					linkage_stick_on[list] = true;
+				}
+
 				ImGui::Checkbox(u8"スティックの入力を必要とする", &linkage_stick_on[list]);
 				if (linkage_stick_on[list])
 				{
 					int stick = scastI(attack_list[list].linkage_stick);
-					ImGui::SliderInt(u8"スティック", &stick, 17, 20);
+					ImGui::SliderInt(u8"スティック", &stick, scastI(PAD::STICK_R), scastI(PAD::STICK_D));
 					ImGui::Text(pad_name_list[stick].c_str());
 					attack_list[list].linkage_stick = static_cast<PAD>(stick);
 				}
@@ -1001,8 +1045,8 @@ void Knight::DrawDEBUG(
 											ImGui::Checkbox(u8"ゲージを獲得しない", &attack_list[list].attack_single[sin].parameter[para].gaugeout);
 											ImGui::InputFloat(u8"つかみ抜けされる時間", &attack_list[list].attack_single[sin].parameter[para].stealtimer, 0.01f, 0.1f);
 											int hit_stop_time = scastI(attack_list[list].attack_single[sin].parameter[para].HS_timer);
-											ImGui::SliderInt(u8"ヒットストップ時間", &hit_stop_time, 0, scastI(HitStopTime::LONG));
-											ImGui::Text(u8"0:短い。1:普通。2:長い。3以降:短い");
+											ImGui::SliderInt(u8"ヒットストップ時間", &hit_stop_time, 0, scastI(HitStopTime::END)-1);
+											ImGui::Text(u8"0:短い。1:普通。2:長い。3:ズームストップ");
 											attack_list[list].attack_single[sin].parameter[para].HS_timer = static_cast<HitStopTime>(hit_stop_time);
 											if (!attack_list[list].attack_single[sin].parameter[para].gaugeout)
 											{

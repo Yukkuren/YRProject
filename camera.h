@@ -2,6 +2,7 @@
 
 #include <DirectXMath.h>
 #include "YRShader.h"
+//#include "YR_VectorMaster.h"
 
 class Camera
 {
@@ -34,11 +35,14 @@ private:
 	Camera() {};
 public:
 
+	int damage_pl_num = 0;
+
 	enum CAMERA_STATE
 	{
 		MAIN = 0,
 		PLAYER1P,
 		PLAYER2P,
+		ZOOM_CAMERA,
 	};
 	CAMERA_STATE camera_state = CAMERA_STATE::MAIN;
 
@@ -48,6 +52,7 @@ public:
 		HOLD,		//カメラをつかむ(自分のステートにする)
 		RELEASE,	//カメラを離す(ステートをMAINに即座に戻す)
 		WEAKEN,		//カメラを持つ手を弱める(ステートは戻さず、位置を少しずつMAINに戻す)
+		ZOOM,		//カメラをズームさせる
 	};
 private:
 	Request		camera_Request = Request::NONE;
@@ -55,6 +60,7 @@ private:
 public:
 
 	void RequestCamera(Request request, int now_player);
+	void RequestCamera(int damage_player);
 	const Request& GetRequest()const;
 	const int& GetRequestPlayer()const;
 

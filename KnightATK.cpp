@@ -25,14 +25,20 @@ void Knight::AttackDefault(float elapsed_time)
 	//発生フレームになるまで回す
 	if (fream < target_max)
 	{
+		//speed_Y.Set(0.0f);
+		//攻撃発生の結果を保存する
+		hit_result = HitResult::NOT_OCCURRENCE;
 		fream -= elapsed_time;
 	}
 	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
 	//発生フレームになったら攻撃判定を生成する
 	if (fream < 0.0f)
 	{
+		//攻撃発生の結果を保存する
+		hit_result = HitResult::NONE;
 		//前進しないようにする
 		speed_X.Set(0.0f);
+
 		//int attack_num = attack_list[real].now_attack_num;
 		anim_ccodinate = ac_attack[now_at_list].timer;
 		if (attack_list[now_at_list].now_attack_num == 0)
@@ -65,12 +71,20 @@ void Knight::AttackDefault(float elapsed_time)
 			if (knock)
 			{
 				a.parameter.knockback = 0.0f;
+				a.knock_start = false;
 			}
 			if (a.knock_start)
 			{
 				pos.x -= a.parameter.knockback * rightOrleft;
 				a.parameter.knockback = 0.0f;
 				knock = true;
+				a.knock_start = false;
+				//上方向への力を設定する
+				if (attack_list[now_at_list].ground_on == Ground_C::AIR)
+				{
+					speed_Y.Set(attack_list[now_at_list].advance_speed);
+					speed.y = 0.0f;
+				}
 			}
 		}
 	}
@@ -129,12 +143,16 @@ void Knight::Kyo(float elapsed_time)
 	//発生フレームになるまで回す
 	if (fream < target_max)
 	{
+		//攻撃発生の結果を保存する
+		hit_result = HitResult::NOT_OCCURRENCE;
 		fream -= elapsed_time;
 	}
 	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
 	//発生フレームになったら攻撃判定を生成する
 	if (fream < 0.0f)
 	{
+		//攻撃発生の結果を保存する
+		hit_result = HitResult::NONE;
 		//前進しないようにする
 		speed_X.Set(0.0f);
 		//int attack_num = attack_list[real].now_attack_num;
@@ -174,10 +192,6 @@ void Knight::Kyo(float elapsed_time)
 			{
 				pos.x -= a.parameter.knockback * rightOrleft;
 				a.parameter.knockback = 0.0f;
-				if (!ground)
-				{
-					speed_Y.Set(60.0f);
-				}
 				knock = true;
 			}
 		}
@@ -238,6 +252,8 @@ void Knight::U_Kyo(float elapsed_time)
 	//発生フレームになるまで回す
 	if (fream < target_max)
 	{
+		//攻撃発生の結果を保存する
+		hit_result = HitResult::NOT_OCCURRENCE;
 		//少し浮かす
 		pos.y += up_gravity * elapsed_time;
 		fream -= elapsed_time;
@@ -247,6 +263,8 @@ void Knight::U_Kyo(float elapsed_time)
 	//発生フレームになったら攻撃判定を生成する
 	if (fream < 0.0f)
 	{
+		//攻撃発生の結果を保存する
+		hit_result = HitResult::NONE;
 		//前進しないようにする
 		speed_X.Set(0.0f);
 		int attack_num = attack_list[scastI(attack_state)].now_attack_num;
@@ -393,6 +411,8 @@ void Knight::SpecialAttack(float elapsed_time)
 
 	if (fream < target_max)
 	{
+		//攻撃発生の結果を保存する
+		hit_result = HitResult::NOT_OCCURRENCE;
 		fream -= elapsed_time;
 
 		//YR_Vector3	origin_focus;
@@ -492,6 +512,8 @@ void Knight::SpecialAttack(float elapsed_time)
 
 	if (fream < 0.0f)
 	{
+		//攻撃発生の結果を保存する
+		hit_result = HitResult::NONE;
 		//前進しないようにする
 		speed_X.Set(0.0f);
 		int attack_num = attack_list[scastI(attack_state)].now_attack_num;
@@ -616,7 +638,7 @@ bool Knight::ComboSet()
 	//攻撃内容をコンボに
 	attack_state = combo;
 	//攻撃の結果を初期化
-	hit_result = HitResult::NONE;
+	hit_result = HitResult::NOT_OCCURRENCE;
 	//攻撃中フラグをオンに
 	attack = true;
 	//移動フラグをオフに
@@ -629,8 +651,17 @@ bool Knight::ComboSet()
 	anim_ccodinate = ac_attack[real_num].fream;
 	//攻撃番号を初期化
 	attack_list[real_num].now_attack_num = 0;
-	//攻撃発生前の前進距離を設定する
-	speed_X.Set(attack_list[real_num].advance_speed);
+	//攻撃発生前の前進距離を設定する(地上攻撃のみ)
+	if (attack_list[real_num].ground_on == Ground_C::GROUND)
+	{
+		speed_X.Set(attack_list[real_num].advance_speed);
+	}
+	if (!ground)
+	{
+		//ジャンプフラグも設定しておく
+		jumpflag = true;
+		max_jump_flag = true;
+	}
 	//後隙を初期化
 	later = non_target;
 	//カメラ処理用変数を初期化
@@ -665,6 +696,8 @@ void Knight::ComboUpdate()
 		}
 		if (combolist_X.now_pos >= combolist_X.combolist.size())
 		{
+			//コンボの最終地点だった場合
+
 			return;
 		}
 		//次の攻撃を設定する
@@ -689,7 +722,7 @@ void Knight::ComboUpdate()
 	//攻撃内容をコンボに
 	attack_state = combo;
 	//攻撃の結果を初期化
-	hit_result = HitResult::NONE;
+	hit_result = HitResult::NOT_OCCURRENCE;
 	//攻撃中フラグをオンに
 	attack = true;
 	//移動フラグをオフに
@@ -702,8 +735,17 @@ void Knight::ComboUpdate()
 	anim_ccodinate = ac_attack[real_num].fream;
 	//攻撃番号を初期化
 	attack_list[real_num].now_attack_num = 0;
-	//攻撃発生前の前進距離を設定する
-	speed_X.Set(attack_list[real_num].advance_speed);
+	//攻撃発生前の前進距離を設定する(地上攻撃のみ)
+	if (attack_list[real_num].ground_on == Ground_C::GROUND)
+	{
+		speed_X.Set(attack_list[real_num].advance_speed);
+	}
+	if (!ground)
+	{
+		//ジャンプフラグも設定しておく
+		jumpflag = true;
+		max_jump_flag = true;
+	}
 	//後隙を初期化
 	later = non_target;
 	//カメラ処理用変数を初期化
