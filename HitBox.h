@@ -53,6 +53,7 @@ public:
 		const DirectX::XMFLOAT4& ambient_color);		//DEBUG_MODEがtrueの時のみ描画
 	//毎回座標とサイズを受け取って更新
 	void Update(YR_Vector3 pl_pos,HitParameter& param,float elapsed_time);
+	void Update(YR_Vector3 pl_pos, YR_Vector3& distance, YR_Vector3& size , float elapsed_time);
 
 };
 

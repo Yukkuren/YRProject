@@ -808,6 +808,7 @@ void Knight::DrawDEBUG(
 		}
 		if (ImGui::TreeNode("StepParameter"))
 		{
+			ImGui::Text("speed.x:%f", speed.x);
 			ImGui::SliderFloat("speed", &backstepS, 0.0f, 500.0f);
 			ImGui::SliderFloat("down", &backstepD, 0.0f, 500.0f);
 			ImGui::TreePop();

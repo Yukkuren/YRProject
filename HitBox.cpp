@@ -63,6 +63,55 @@ void HitBox::Update(YR_Vector3 pl_pos, HitParameter& param, float elapsed_time)
 	}
 }
 
+void HitBox::Update(YR_Vector3 pl_pos, YR_Vector3& distance, YR_Vector3& size, float elapsed_time)
+{
+	parameter.size = size;
+	parameter.distance = distance;
+	center = pl_pos + parameter.distance;
+	//size = range;
+	//if (DEBUG_MODE)Draw();
+	if (timer > 0.0f)
+	{
+		timer -= elapsed_time;
+		if (hitback.x > 0.0f)
+		{
+			hitback.x -= (elapsed_time * hitback_Adjustment);
+			if (hitback.x < 0.0f)
+			{
+				hitback.x = 0.0f;
+			}
+		}
+		if (hitback.x < 0.0f)
+		{
+			hitback.x += (elapsed_time * hitback_Adjustment);
+			if (hitback.x > 0.0f)
+			{
+				hitback.x = 0.0f;
+			}
+		}
+		if (hitback.y > 0.0f)
+		{
+			hitback.y -= (elapsed_time * hitback_Adjustment);
+			if (hitback.y < 0.0f)
+			{
+				hitback.y = 0.0f;
+			}
+		}
+		if (timer < 0.0f)
+		{
+			timer = 0.0f;
+		}
+	}
+	if (damege > 0)
+	{
+
+	}
+	else
+	{
+		hit = false;
+	}
+}
+
 void HitBox::Draw(
 	YRShader *shader, 
 	const DirectX::XMMATRIX& view,

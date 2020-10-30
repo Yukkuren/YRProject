@@ -583,6 +583,11 @@ void Knight::Update(float decision, float elapsed_time)
 		{
 			hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(attack_state)], elapsed_time);
 		}
+		else if(act_state == ActState::BACK)
+		{
+			//バックステップ中
+			hit[list].Update(pos, hitparam_list[list].act_parameter[scastI(act_state)].distance, hitparam_list[list].act_parameter[scastI(act_state)].size, elapsed_time);
+		}
 		else
 		{
 			hit[list].Update(pos, hitparam_list[list].act_parameter[scastI(act_state)], elapsed_time);
@@ -595,7 +600,7 @@ void Knight::Update(float decision, float elapsed_time)
 
 	if (!attack)
 	{
-		if (act_state == ActState::DASH)
+		if (act_state == ActState::DASH || act_state == ActState::BACK)
 		{
 			//特定の行動時は指定した値を入れる為なにも処理をしない
 		}
@@ -1102,12 +1107,19 @@ void Knight::Draw(
 
 	if (attack_state == AttackState::EXTENDATK)
 	{
-		for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
+		/*for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
 		{
 			if (hit[i].parameter.state == HitBoxState::INVINCIBLE)
 			{
 				invincible = true;
 			}
+		}*/
+	}
+	for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
+	{
+		if (hit[i].parameter.state == HitBoxState::INVINCIBLE)
+		{
+			invincible = true;
 		}
 	}
 
@@ -1123,13 +1135,12 @@ void Knight::Draw(
 
 	DirectX::XMFLOAT4 material_color = { 1.0f,1.0f,1.0f,1.0f };
 
-	if (fream < target_max && fream>0.0f)
+	for (int i = 0; i < hit.size(); i++)
 	{
-		//material_color = { 0.0f,0.0f,1.0f,1.0f };
-	}
-	if (later < target_max && later>0.0f)
-	{
-		//material_color = { 1.0f,0.0f,0.0f,1.0f };
+		if (hit[i].parameter.state == HitBoxState::INVINCIBLE)
+		{
+			material_color = { 0.0f,1.0f,0.0f,1.0f };
+		}
 	}
 
 	//左向き
@@ -1423,24 +1434,32 @@ bool Knight::Step(float elapsed_time)
 				pad->x_input[scastI(PAD::R_DASH)] = 0;
 				pad->x_input[scastI(PAD::L_DASH)] = 0;
 				moveflag = false;
-				anim->NodeChange(model_motion.backstep_R, scastI(AnimAtk::LATER));
-				anim_ccodinate = ac_act[scastI(act_state)].later;
 				act_state = ActState::NONE;
 				return true;
 			}
-			if (speed.x < -stepspeed / 2.0f)
+			if (speed.x < (-backstepS / 5.0f))
 			{
 				HitBoxTransition(HitBoxState::INVINCIBLE);
 			}
 
 			if (!anim->GetLoopAnim())
 			{
-				//現在のアニメーションがダッシュの開始アニメーションだった場合
+				//現在のアニメーションがバックステップの開始アニメーションだった場合
 				if (anim->GetEndAnim() == -1)
 				{
 					//アニメーションが終了したら持続アニメーションに切り替える
 					anim->NodeChange(model_motion.backstep_R, scastI(AnimAtk::TIMER));
 					anim_ccodinate = ac_act[scastI(act_state)].timer;
+				}
+			}
+			else
+			{
+				//現在のアニメーションがバックステップの持続アニメーションだった場合
+				if (speed.x > -backstepS)
+				{
+					anim->NodeChange(model_motion.backstep_R, scastI(AnimAtk::LATER));
+					anim->PlayAnimation(scastI(AnimAtk::LATER), false);
+					anim_ccodinate = ac_act[scastI(act_state)].later;
 				}
 			}
 			//描画をセットはしないけど移動範囲のセット
