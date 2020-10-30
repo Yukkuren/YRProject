@@ -391,7 +391,7 @@ public:
 	//çsìÆånä÷êî
 	
 	virtual void Move(float decision) = 0;
-	virtual bool Step() = 0;
+	virtual bool Step(float elapsed_time) = 0;
 	virtual void Jump() = 0;
 	virtual void JumpUpdate(float elapsed_time) = 0;
 	virtual void DamageCheck() = 0;

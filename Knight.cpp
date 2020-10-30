@@ -5,6 +5,7 @@
 #include "camera.h"
 #include "framework.h"
 #include <algorithm>
+#include "World.h"
 //#define _CRTDBG_MAP_ALLOC						// mallocによるメモリリーク検出でCPPファイル名と行数出力指定
 //#define DBG_NEW new( _NORMAL_BLOCK , __FILE__ , __LINE__)	// new によるメモリリーク検出でCPPファイル名と行数出力指定
 //#include <stdio.h>
@@ -524,7 +525,7 @@ void Knight::Update(float decision, float elapsed_time)
 			//ガードでない時
 			if (act_state != ActState::GUARD)
 			{
-				Step();
+				Step(elapsed_time);
 				if (step)
 				{
 					//ステップ中は処理しない
@@ -677,9 +678,20 @@ void Knight::AttackInput()
 				if (attack_list[list].linkage_stick != PAD::BUTTOM_END)
 				{
 					//スティックの入力が指定されている場合確認する
-					if (pad->x_input[scastI(attack_list[list].linkage_stick)] == 0)
+					if (attack_list[list].linkage_stick == PAD::STICK_D)
 					{
-						continue;
+						//下スティック入力の場合は別の判定もとる
+						if (pad->x_input[scastI(PAD::STICK_D)] == 0&& pad->x_input[scastI(PAD::STICK_RDown)] == 0&& pad->x_input[scastI(PAD::STICK_LDown)] == 0)
+						{
+							continue;
+						}
+					}
+					else
+					{
+						if (pad->x_input[scastI(attack_list[list].linkage_stick)] == 0)
+						{
+							continue;
+						}
 					}
 				}
 				//実際の攻撃内容
@@ -716,7 +728,10 @@ void Knight::AttackInput()
 					//next = scastI(attack_list[list].next_attack);
 				}
 
-
+				if (attack_state == AttackState::TRACK_DASH && trackgauge < 1)
+				{
+					continue;
+				}
 
 				//攻撃を決定する
 				//現在攻撃判定が出ているなら全て消去する
@@ -1318,9 +1333,8 @@ void Knight::FastSet(YR_Vector3 position)
 //-----------------------------------------------------------------
 // *概要*
 //・空中地上それぞれに前後のステップが存在するため全て個別に処理している
-//・正直もうちょいいいやり方あったと思う
 //-----------------------------------------------------------------
-bool Knight::Step()
+bool Knight::Step(float elapsed_time)
 {
 	//空中
 	if (!ground)
@@ -1409,6 +1423,8 @@ bool Knight::Step()
 				pad->x_input[scastI(PAD::R_DASH)] = 0;
 				pad->x_input[scastI(PAD::L_DASH)] = 0;
 				moveflag = false;
+				anim->NodeChange(model_motion.backstep_R, scastI(AnimAtk::LATER));
+				anim_ccodinate = ac_act[scastI(act_state)].later;
 				act_state = ActState::NONE;
 				return true;
 			}
@@ -1417,12 +1433,22 @@ bool Knight::Step()
 				HitBoxTransition(HitBoxState::INVINCIBLE);
 			}
 
+			if (!anim->GetLoopAnim())
+			{
+				//現在のアニメーションがダッシュの開始アニメーションだった場合
+				if (anim->GetEndAnim() == -1)
+				{
+					//アニメーションが終了したら持続アニメーションに切り替える
+					anim->NodeChange(model_motion.backstep_R, scastI(AnimAtk::TIMER));
+					anim_ccodinate = ac_act[scastI(act_state)].timer;
+				}
+			}
 			//描画をセットはしないけど移動範囲のセット
-			/*if (pos.x < Limit::Left_max)
+			if (pos.x < Limit::Left_max)
 			{
 				pos.x = Limit::Left_max;
-			}*/
-			speed.x++;
+			}
+			speed.x += (backstepD * elapsed_time);
 			return false;
 		}
 		if (rightOrleft < 0)
@@ -1444,10 +1470,10 @@ bool Knight::Step()
 				HitBoxTransition(HitBoxState::INVINCIBLE);
 			}
 			//描画をセットはしないけど移動範囲のセット
-			/*if (pos.x < Limit::Left_max)
+			if (pos.x > Limit::Right_max)
 			{
-				pos.x = Limit::Left_max;
-			}*/
+				pos.x = Limit::Right_max;
+			}
 			speed.x--;
 			return false;
 		}
@@ -1556,8 +1582,6 @@ void Knight::Move(float decision)
 		if (ground)
 		{
 
-			//描画をセット
-
 			if (rightOrleft > 0)
 			{
 				//バックステップ
@@ -1565,7 +1589,9 @@ void Knight::Move(float decision)
 				act_state = ActState::BACK;
 				moveflag = false;
 				//描画をセット
-
+				anim->NodeChange(model_motion.backstep_R, scastI(AnimAtk::FREAM));
+				anim->PlayAnimation(scastI(AnimAtk::FREAM), false);
+				anim_ccodinate = ac_act[scastI(ActState::BACK)].fream;
 				speed.x = -backstepS;
 			}
 			else
@@ -2060,23 +2086,22 @@ void Knight::JumpUpdate(float elapsed_time)
 	}
 	if (pos.y < POS_Y)
 	{
-		if (1)
-		{
-			jumpcount = 2;
-			max_jump_flag = false;
-			hightrigger = false;
-			speed.y = 0.0f;
-			//act_state = ActState::NONE;
-			pos.y = POS_Y;
-			jumpflag = false;
-			//ジャンプの着地隙を発生する
-			act_state = ActState::ATTACK;
-			attack_state = AttackState::NONE;
-			attack = true;
-			later = jump_later;
-			anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::LATER));
-			anim->PlayAnimation(scastI(AnimAtk::LATER), false);
-		}
+		jumpcount = 2;
+		max_jump_flag = false;
+		hightrigger = false;
+		speed.y = 0.0f;
+		//act_state = ActState::NONE;
+		pos.y = POS_Y;
+		jumpflag = false;
+		//ジャンプの着地隙を発生する
+		act_state = ActState::ATTACK;
+		attack_state = AttackState::NONE;
+		attack = true;
+		later = jump_later;
+		anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::LATER));
+		anim->PlayAnimation(scastI(AnimAtk::LATER), false);
+		//攻撃判定をすべて消去する
+		AllAttackClear();
 	}
 }
 
@@ -2737,7 +2762,7 @@ void Knight::TrackDash(float decision,float elapsed_time)
 
 	//正規化された相手に向かうベクトル
 	YR_Vector3	plusVec = { 0.0f,0.0f,0.0f };
-	plusVec = tracking.Veccalculate(pos);
+	plusVec = tracking.Veccalculate(hit[scastI(KNIGHTHIT::BODY)].center);
 
 	//後隙が設定された後はこの関数には入らない
 	if (later > -1 && later < target_max)
@@ -2748,6 +2773,10 @@ void Knight::TrackDash(float decision,float elapsed_time)
 
 	//重力の逆数を付与する
 	pos.y += gravity * elapsed_time;
+
+	//スピードをすべて0にする
+	speed.x = 0.0f;
+	speed.y = 0.0f;
 
 	//発生フレームになるまで回す
 	if (fream < target_max)
@@ -2796,7 +2825,8 @@ void Knight::TrackDash(float decision,float elapsed_time)
 		DirectX::XMVECTOR dot_vec = DirectX::XMVector2Dot(no_vec, pf_vec);
 		float dot = 0.0f;
 		DirectX::XMStoreFloat(&dot, dot_vec);
-		angle.z = -dot + 0.9f;
+		//angle.z = -dot + 0.9f;
+		angle.z -= 50.0f * elapsed_time;
 
 		pos.x += ((plusVec.x * track_speed) * elapsed_time);
 		pos.y += ((plusVec.y * track_speed) * elapsed_time);
@@ -2835,8 +2865,14 @@ void Knight::TrackDash(float decision,float elapsed_time)
 			finish = true;
 			//角度を戻す
 			angle.z = 0.0f;
+			angle.x = 0.0f;
 			//ジャンプ回数を減らす
-			jumpcount--;
+			if (jumpcount != 0)
+			{
+				jumpcount = 1;
+			}
+			//ホーミングダッシュ回数を減らす
+			trackgauge--;
 			//ジャンプ状態にする
 			jumpflag = true;
 			max_jump_flag = true;
@@ -2860,6 +2896,9 @@ void Knight::TrackDash(float decision,float elapsed_time)
 		else
 		{
 			//ない場合は後隙に移行する
+			//上方向への速度を入力する(ちょっとホップさせる)
+			speed_X.Set(0.0f);
+			speed.y = 0.0f;
 			//攻撃番号を初期化
 			attack_list[now_at_list].now_attack_num = 0;
 			//後隙を設定
@@ -2872,6 +2911,17 @@ void Knight::TrackDash(float decision,float elapsed_time)
 			finish = true;
 			//角度を戻す
 			angle.z = 0.0f;
+			angle.x = 0.0f;
+			//ジャンプ回数を減らす
+			if (jumpcount != 0)
+			{
+				jumpcount = 1;
+			}
+			//ホーミングダッシュ回数を減らす
+			trackgauge--;
+			//ジャンプ状態にする
+			jumpflag = true;
+			max_jump_flag = true;
 		}
 	}
 
@@ -3491,6 +3541,8 @@ void Knight::AttackDetailsSet(const AttackState& attack_state)
 	case AttackState::A_KYO:
 		break;
 	case AttackState::A_UKYO:
+		//speed.y = 0.0f;
+		//speed_Y.Set(attack_list[scastI(attack_state)].advance_speed);
 		break;
 	case AttackState::STEAL:
 		break;

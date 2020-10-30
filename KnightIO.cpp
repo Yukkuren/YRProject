@@ -795,6 +795,7 @@ void Knight::DrawDEBUG(
 		ImGui::InputFloat("mouse_offset.y", &mouth_offset.y, 0.01f, 0.01f);
 		ImGui::Text("player.x:%f", pos.x);
 		ImGui::Text("player.y:%f", pos.y);
+		ImGui::Text("track:%d", trackgauge);
 		if (ImGui::TreeNode("ModelParameter"))
 		{
 			ImGui::SliderFloat("scale_x", &scale.x, -10.0f, 10.0f);
@@ -803,6 +804,12 @@ void Knight::DrawDEBUG(
 			ImGui::SliderFloat("angle_x", &angle.x, -10.0f, 10.0f);
 			ImGui::SliderFloat("angle_y", &angle.y, -10.0f, 10.0f);
 			ImGui::SliderFloat("angle_z", &angle.z, -10.0f, 10.0f);
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("StepParameter"))
+		{
+			ImGui::SliderFloat("speed", &backstepS, 0.0f, 500.0f);
+			ImGui::SliderFloat("down", &backstepD, 0.0f, 500.0f);
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("JumpParameter"))
@@ -863,6 +870,10 @@ void Knight::DrawDEBUG(
 			}
 			ImGui::EndPopup();
 		}
+		if (pad->x_input[scastI(PAD::SELECT)] == 1)
+		{
+			ImGui::OpenPopup("Load");
+		}
 
 		if (ImGui::Button(u8"ロード"))
 		{
@@ -871,7 +882,7 @@ void Knight::DrawDEBUG(
 		if (ImGui::BeginPopup("Load"))
 		{
 			ImGui::Text(u8"ロードしますか？");
-			if (ImGui::Button(u8"はい"))
+			if (ImGui::Button(u8"はい") || pad->x_input[scastI(PAD::X)] == 1)
 			{
 				if (AttackLoad())
 				{
