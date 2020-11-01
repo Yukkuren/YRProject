@@ -809,8 +809,8 @@ void Knight::DrawDEBUG(
 		if (ImGui::TreeNode("StepParameter"))
 		{
 			ImGui::Text("speed.x:%f", speed.x);
-			ImGui::SliderFloat("speed", &backstepS, 0.0f, 500.0f);
-			ImGui::SliderFloat("down", &backstepD, 0.0f, 500.0f);
+			//ImGui::SliderFloat("speed", &backstepS, 0.0f, 500.0f);
+			//ImGui::SliderFloat("down", &backstepD, 0.0f, 500.0f);
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("JumpParameter"))
@@ -834,11 +834,11 @@ void Knight::DrawDEBUG(
 			ImGui::Text("speed_Y:%f", speed_Y.speed);
 			ImGui::Text("down_force:%f", down_force);
 			ImGui::Text("s:%f", s);
-			/*ImGui::SliderFloat("jump_max", &jump_max, 0.0f, 500.0f);
+			ImGui::SliderFloat("jump_max", &jump_max, 0.0f, 500.0f);
 			ImGui::SliderFloat("down_force", &down_force, 0.0f, 1000.0f);
 			ImGui::SliderFloat("high_jump_max", &high_jump_max, 0.0f, 1000.0f);
 			ImGui::SliderFloat("jump_speed", &jump_speed, 0.0f, 5000.0f);
-			ImGui::SliderFloat("high_jump_speed", &high_jump_speed, 0.0f, 5000.0f);*/
+			ImGui::SliderFloat("high_jump_speed", &high_jump_speed, 0.0f, 5000.0f);
 			ImGui::TreePop();
 		}
 

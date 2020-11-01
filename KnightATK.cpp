@@ -82,7 +82,7 @@ void Knight::AttackDefault(float elapsed_time)
 				//ã•ûŒü‚Ö‚Ì—Í‚ğİ’è‚·‚é
 				if (attack_list[now_at_list].ground_on == Ground_C::AIR)
 				{
-					speed.y = 0.0f;
+					//speed.y = 0.0f;
 				}
 			}
 		}
@@ -420,7 +420,7 @@ void Knight::A_UKyo(float elapsed_time)
 				//ã•ûŒü‚Ö‚Ì—Í‚ğİ’è‚·‚é
 				if (attack_list[now_at_list].ground_on == Ground_C::AIR)
 				{
-					speed.y = 0.0f;
+					//speed.y = 0.0f;
 				}
 			}
 		}
@@ -642,10 +642,6 @@ void Knight::SpecialAttack(float elapsed_time)
 			{
 				pos.x -= a.parameter.knockback;
 				a.parameter.knockback = 0.0f;
-				if (!ground)
-				{
-					speed_Y.Set(60.0f);
-				}
 				knock = true;
 			}
 		}

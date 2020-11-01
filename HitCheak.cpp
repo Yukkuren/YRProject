@@ -163,13 +163,13 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 								Hitcheak::timer = 0.05f;
 								break;
 							case HitStopTime::NORMAL:
-								Hitcheak::timer = 0.15f;
-								break;
-							case HitStopTime::LONG:
 								Hitcheak::timer = 0.25f;
 								break;
-							case HitStopTime::ZOOM:
+							case HitStopTime::LONG:
 								Hitcheak::timer = 0.35f;
+								break;
+							case HitStopTime::ZOOM:
+								Hitcheak::timer = 0.45f;
 								YRCamera.RequestCamera(player);
 								break;
 							default:
@@ -266,7 +266,7 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 //	}
 //}
 
-void Hitcheak::HitPlayer(HitBox* pl1, float& pos1, HitBox* pl2, float& pos2)
+void Hitcheak::HitPlayer(HitBox* pl1, float& pos1, HitBox* pl2, float& pos2,float elapsed_time)
 {
 	//0‚ª•K‚¸‘Ì‚Ì“–‚½‚è”»’è‚É‚È‚éˆ×0‚¾‚¯‚Å”»’è‚µ‚Ä‚¢‚é
 	if (pl1[0].center.x - pl1[0].parameter.size.x<pl2[0].center.x + pl2[0].parameter.size.x &&
@@ -298,8 +298,8 @@ void Hitcheak::HitPlayer(HitBox* pl1, float& pos1, HitBox* pl2, float& pos2)
 				while (1)
 				{
 					float distance = pos2 - pos1;
-					pos1 -= 10;
-					pos2 += 10;
+					pos1 -= correction_value * elapsed_time;
+					pos2 += correction_value * elapsed_time;
 					if (distance > moving_correction)
 					{
 						break;
@@ -311,8 +311,8 @@ void Hitcheak::HitPlayer(HitBox* pl1, float& pos1, HitBox* pl2, float& pos2)
 				while (1)
 				{
 					float distance = pos1 - pos2;
-					pos1 += 10;
-					pos2 -= 10;
+					pos1 += correction_value * elapsed_time;
+					pos2 -= correction_value * elapsed_time;
 					if (distance > moving_correction)
 					{
 						break;
@@ -329,8 +329,8 @@ void Hitcheak::HitPlayer(HitBox* pl1, float& pos1, HitBox* pl2, float& pos2)
 					while (1)
 					{
 						float distance = pos2 - pos1;
-						pos1 -= 10;
-						pos2 += 10;
+						pos1 -= correction_value * elapsed_time;
+						pos2 += correction_value * elapsed_time;
 						if (distance > moving_correction)
 						{
 							break;
@@ -342,8 +342,8 @@ void Hitcheak::HitPlayer(HitBox* pl1, float& pos1, HitBox* pl2, float& pos2)
 					while (1)
 					{
 						float distance = pos1 - pos2;
-						pos1 += 10;
-						pos2 -= 10;
+						pos1 += correction_value * elapsed_time;
+						pos2 -= correction_value * elapsed_time;
 						if (distance > moving_correction)
 						{
 							break;

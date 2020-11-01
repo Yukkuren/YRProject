@@ -77,13 +77,13 @@ class Knight : public Player
 private:
 	const float walkspeed = 10.1f;		//歩く速度(代入)
 	const float dashspeed = 40.1f;		//ダッシュ速度
-	//const float backstepS = 100.0f;		//バックステップの速度
-	//const float backstepD = 50.0f;		//バックステップの減少速度
+	const float backstepS = 116.0f;		//バックステップの速度
+	const float backstepD = 500.0f;		//バックステップの減少速度
 	const float stepspeed = 0.5f;
-	const float jump_max = 108.0f;		//ジャンプの最大速度(超えると減速し始め落ちる)
-	const float high_jump_max = 47.0f;	//ハイジャンプの最大速度(超えると減速し始め落ちる)
-	const float jump_speed = 108.0f;		//毎フレームジャンプの速度に加算する数値
-	const float high_jump_speed = 139.0f;	//毎フレームハイジャンプの速度に加算する数値
+	//const float jump_max = 108.0f;		//ジャンプの最大速度(超えると減速し始め落ちる)
+	//const float high_jump_max = 47.0f;	//ハイジャンプの最大速度(超えると減速し始め落ちる)
+	//const float jump_speed = 108.0f;		//毎フレームジャンプの速度に加算する数値
+	//const float high_jump_speed = 139.0f;	//毎フレームハイジャンプの速度に加算する数値
 	const float brake_speed =10000.0f;		//停止時にかかるブレーキ(基本ピタッと止まるので数値は大きめ)
 	const float track_speed = 100.0f;		//ホーミングダッシュの速度
 
@@ -97,8 +97,11 @@ private:
 
 public:
 
-	float backstepS = 116.0f;		//バックステップの速度
-	float backstepD = 500.0f;		//バックステップの減少速度
+	float jump_max = 108.0f;		//ジャンプの最大速度(超えると減速し始め落ちる)
+	float high_jump_max = 47.0f;	//ハイジャンプの最大速度(超えると減速し始め落ちる)
+	float jump_speed = 108.0f;		//毎フレームジャンプの速度に加算する数値
+	float high_jump_speed = 139.0f;	//毎フレームハイジャンプの速度に加算する数値
+
 
 	bool fast;
 	YR_Vector3 FastPos;

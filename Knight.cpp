@@ -479,7 +479,7 @@ void Knight::Update(float decision, float elapsed_time)
 		if (ground)
 		{
 			//地面設置時
-			pos.y = POS_Y;	//地面に設置しているときは高さを固定する
+			//pos.y = POS_Y;	//地面に設置しているときは高さを固定する
 			trackgauge = Track_max;	//ホーミングダッシュ回数を戻す
 			if (act_state == ActState::JUMP)
 			{
@@ -573,9 +573,12 @@ void Knight::Update(float decision, float elapsed_time)
 
 	JumpUpdate(elapsed_time);
 
-	pos.x += (speed.x * elapsed_time);
+	
 	pos.x += ((speed_X.Update(elapsed_time) * elapsed_time) * rightOrleft);
-	pos.y += (speed_Y.Update(elapsed_time) * elapsed_time);
+	pos.x += (speed.x * elapsed_time);
+
+	speed.y += (speed_Y.Update(elapsed_time) * elapsed_time);
+	pos.y += (speed.y * elapsed_time);
 
 	for (int list = 0; list < hit.size(); list++)
 	{
@@ -919,10 +922,6 @@ void Knight::Attack(float decision, float elapsed_time)
 			{
 				speed.x = 0.0f;
 			}
-		}
-		if (pos.y <= POS_Y)
-		{
-			pos.y = POS_Y;
 		}
 	}
 	//空中時
@@ -2054,10 +2053,10 @@ void Knight::JumpUpdate(float elapsed_time)
 		{
 			jump_can_timer -= elapsed_time;
 		}
-		if (speed_Y.speed == 0.0f)
+		/*if (speed_Y.speed == 0.0f)
 		{
 			pos.y += (speed.y * elapsed_time);
-		}
+		}*/
 		if (!max_jump_flag)
 		{
 			if (hightrigger)
@@ -2086,9 +2085,20 @@ void Knight::JumpUpdate(float elapsed_time)
 
 	if (max_jump_flag)
 	{
-		if (speed_Y.speed == 0.0f)
+		if (!ground)
 		{
-			speed.y -= (down_force * elapsed_time);
+			if (attack)
+			{
+				if (hit_result <= HitResult::HIT && combo_count == 0)
+				{
+					speed.y -= (down_force * elapsed_time);
+				}
+			}
+			else
+			{
+				speed.y -= (down_force * elapsed_time);
+			}
+			
 		}
 		if (hightrigger)
 		{
@@ -2109,6 +2119,7 @@ void Knight::JumpUpdate(float elapsed_time)
 		max_jump_flag = false;
 		hightrigger = false;
 		speed.y = 0.0f;
+		speed_Y.Set(0.0f);
 		//act_state = ActState::NONE;
 		pos.y = POS_Y;
 		jumpflag = false;
@@ -2781,7 +2792,7 @@ void Knight::TrackDash(float decision,float elapsed_time)
 
 	//正規化された相手に向かうベクトル
 	YR_Vector3	plusVec = { 0.0f,0.0f,0.0f };
-	plusVec = tracking.Veccalculate(hit[scastI(KNIGHTHIT::BODY)].center);
+	plusVec = tracking.Veccalculate(hit[scastI(KNIGHTHIT::BODY)].center,decision);
 
 	//後隙が設定された後はこの関数には入らない
 	if (later > -1 && later < target_max)
@@ -2836,15 +2847,7 @@ void Knight::TrackDash(float decision,float elapsed_time)
 	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
 	if (!atk.empty())
 	{
-		//内積を利用して角度を変える
-		DirectX::XMFLOAT2 normal_float2 = { 1.0f,0.0f };
-		DirectX::XMFLOAT2 plus_float2 = { plusVec.x,plusVec.y };
-		DirectX::XMVECTOR pf_vec = DirectX::XMLoadFloat2(&plus_float2);
-		DirectX::XMVECTOR no_vec = DirectX::XMLoadFloat2(&normal_float2);
-		DirectX::XMVECTOR dot_vec = DirectX::XMVector2Dot(no_vec, pf_vec);
-		float dot = 0.0f;
-		DirectX::XMStoreFloat(&dot, dot_vec);
-		//angle.z = -dot + 0.9f;
+		//常に回転させる
 		angle.z -= 50.0f * elapsed_time;
 
 		pos.x += ((plusVec.x * track_speed) * elapsed_time);
@@ -2868,8 +2871,8 @@ void Knight::TrackDash(float decision,float elapsed_time)
 			//ホーミングダッシュは当たった時点で攻撃が終了するので後隙を入力する
 			//上方向への速度を入力する(ちょっとホップさせる)
 			speed_X.Set(0.0f);
-			speed_Y.Set(attack_list[now_at_list].advance_speed);
-			speed.y = 0.0f;
+			//speed_Y.Set(attack_list[now_at_list].advance_speed);
+			speed.y = attack_list[now_at_list].advance_speed;
 			//攻撃をすべて消去する
 			AllAttackClear();
 			//攻撃番号を初期化

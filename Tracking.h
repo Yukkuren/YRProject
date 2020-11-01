@@ -5,6 +5,7 @@
 
 constexpr float track_wait_time = 0.8f;
 constexpr float track_adjust_up = 5.0f;
+constexpr float track_adjust_x = 2.0f;
 
 class Tracking
 {
@@ -16,11 +17,12 @@ public:
 		rival_Pos = YR_Vector3(0.0f, 0.0f, 0.0f);
 	};
 
-	YR_Vector3	Veccalculate(YR_Vector3 pl_Pos)
+	YR_Vector3	Veccalculate(YR_Vector3 pl_Pos, float decision)
 	{
 		YR_Vector3	track_vec;
 		YR_Vector3 rival = rival_Pos;
 		rival.y += track_adjust_up;
+		rival.x += (track_adjust_x * (-decision));
 		track_vec = rival - pl_Pos;
 		track_vec.Normalize();
 

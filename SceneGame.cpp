@@ -593,11 +593,11 @@ void SceneGame::Update(float elapsed_time)
 					//カメラの挙動をステートごとに処理
 					CameraUpdate();
 
-					//※要変更。ステートの[2]なんて見ただけじゃ何かわからない
+					//プレイヤー押出し
 					if (player1p->act_state != ActState::STATENONE && player2p->act_state != ActState::STATENONE)
 					{
 						//プレイヤーのステートが奪われた状態以外は押し出しを行う
-						//Hitcheak::HitPlayer(player1p->GetHit(), player1p->pos.x, player2p->GetHit(), player2p->pos.x);
+						Hitcheak::HitPlayer(player1p->GetHit(), player1p->pos.x, player2p->GetHit(), player2p->pos.x, game_speed);
 					}
 
 					//攻撃同士の判定
