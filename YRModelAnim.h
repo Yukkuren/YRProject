@@ -70,6 +70,7 @@ private:
 	DirectX::XMMATRIX				world_matrix;
 
 	static const int MaxBones = 128;
+	//static const int MaxBones = 300;
 
 	/*struct CbScene
 	{

@@ -31,6 +31,10 @@ enum class KNIGHTATK :int
 struct Model_MotionData
 {
 	std::shared_ptr<Model>			wait_R = nullptr;
+	std::shared_ptr<Model>			slid_R = nullptr;
+	std::shared_ptr<Model>			air_back_R = nullptr;
+	std::shared_ptr<Model>			air_dash_R = nullptr;
+	std::shared_ptr<Model>			passive_R = nullptr;
 	std::shared_ptr<Model>			squat_R = nullptr;
 	std::shared_ptr<Model>			walk_R = nullptr;
 	std::shared_ptr<Model>			back_R = nullptr;
@@ -79,11 +83,12 @@ private:
 	const float dashspeed = 40.1f;		//ダッシュ速度
 	const float backstepS = 116.0f;		//バックステップの速度
 	const float backstepD = 500.0f;		//バックステップの減少速度
-	const float stepspeed = 0.5f;
-	//const float jump_max = 108.0f;		//ジャンプの最大速度(超えると減速し始め落ちる)
-	//const float high_jump_max = 47.0f;	//ハイジャンプの最大速度(超えると減速し始め落ちる)
-	//const float jump_speed = 108.0f;		//毎フレームジャンプの速度に加算する数値
-	//const float high_jump_speed = 139.0f;	//毎フレームハイジャンプの速度に加算する数値
+	//const float stepspeed = 0.5f;		//空中ステップの速度
+	//const float stepD = 0.5f;			//空中ステップの減少速度
+	const float jump_max = 108.0f;		//ジャンプの最大速度(超えると減速し始め落ちる)
+	const float high_jump_max = 47.0f;	//ハイジャンプの最大速度(超えると減速し始め落ちる)
+	const float jump_speed = 108.0f;		//毎フレームジャンプの速度に加算する数値
+	const float high_jump_speed = 139.0f;	//毎フレームハイジャンプの速度に加算する数値
 	const float brake_speed =10000.0f;		//停止時にかかるブレーキ(基本ピタッと止まるので数値は大きめ)
 	const float track_speed = 100.0f;		//ホーミングダッシュの速度
 
@@ -97,11 +102,8 @@ private:
 
 public:
 
-	float jump_max = 108.0f;		//ジャンプの最大速度(超えると減速し始め落ちる)
-	float high_jump_max = 47.0f;	//ハイジャンプの最大速度(超えると減速し始め落ちる)
-	float jump_speed = 108.0f;		//毎フレームジャンプの速度に加算する数値
-	float high_jump_speed = 139.0f;	//毎フレームハイジャンプの速度に加算する数値
-
+	float stepspeed = 100.0f;		//空中ステップの速度
+	float stepD = 500.0f;			//空中ステップの減少速度
 
 	bool fast;
 	YR_Vector3 FastPos;
@@ -148,6 +150,7 @@ public:
 	void JumpUpdate(float elapsed_time);
 	void DamageCheck();
 	void KnockUpdate(float elapsed_time);
+	void SlamUpdate(float elapsed_time);
 	void Guard(float decision);
 	void GuardBack(float elapsed_time);
 	void Squat();
@@ -200,7 +203,7 @@ public:
 
 	void ExtendATK(float elapsed_time);
 
-	void StateNone();
+	void StateNone(float elapsed_time);
 
 
 	void DrawFastMove(YR_Vector3 position);

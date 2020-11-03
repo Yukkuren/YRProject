@@ -11,7 +11,8 @@ void HitBox::Init()
 	timer = 0.0f;
 	hitback = { 0.0f, 0.0f };
 	guard_ok = false;
-	steal = false;
+	//steal = false;
+	hit_state = HitStateKind::NORMAL;
 	steal_timer = 0.0f;
 }
 

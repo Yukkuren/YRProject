@@ -64,6 +64,7 @@ std::array<std::string, scastI(ActState::ACT_END)> act_name_list =
 	u8"ダウン",
 	u8"空中ダウン",
 	u8"のけぞり",
+	u8"叩きつけられ中",
 	u8"攻撃中",
 };
 
@@ -141,6 +142,16 @@ std::array<std::string, scastI(Ground_C::END)> ground_name_list =
 	u8"地上",
 	u8"どちらでも",
 };
+
+std::array<std::string, scastI(AttackKind::END)> attack_kind_name_list =
+{
+	u8"上段",
+	u8"中段",
+	u8"下段",
+	u8"つかみ",
+	u8"たたきつけ(高さが一定なら滑り状態にする)",
+	u8"ロック技",
+};
 #endif // USE_IMGUI
 
 bool Knight::DEBUGAttackLoad()
@@ -183,7 +194,7 @@ bool Knight::DEBUGAttackLoad()
 			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].size.y = 1.0f;
 			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].stealtimer = 0.0f;
 			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].timer = 0.15f;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].type = AttackBox::MIDDLE;
+			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].type = AttackKind::MIDDLE;
 			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].HS_timer = HitStopTime::SHORT;
 			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].gauge_get = 1.0f;
 		}
@@ -224,7 +235,7 @@ bool Knight::DEBUGAttackLoad()
 			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].size.y = 5.0f;
 			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].stealtimer = 0.0f;
 			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].timer = 0.3f;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].type = AttackBox::MIDDLE;
+			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].type = AttackKind::MIDDLE;
 		}
 	}
 
@@ -316,7 +327,9 @@ bool Knight::AttackLoad()
 						ifs >> attack_list[list].attack_single[sin].parameter[para].HB_timer;
 						ifs >> attack_list[list].attack_single[sin].parameter[para].hitback.x;
 						ifs >> attack_list[list].attack_single[sin].parameter[para].hitback.y;
-						ifs >> attack_list[list].attack_single[sin].parameter[para].type;
+						int type = 0;
+						ifs >> type;
+						attack_list[list].attack_single[sin].parameter[para].type = static_cast<AttackKind>(type);
 						ifs >> attack_list[list].attack_single[sin].parameter[para].knockback;
 						ifs >> attack_list[list].attack_single[sin].parameter[para].gaugeout;
 						ifs >> attack_list[list].attack_single[sin].parameter[para].stealtimer;
@@ -511,7 +524,7 @@ bool Knight::AttackClean()
 				attack_list[list].attack_single[sin].parameter[para].HB_timer = 0.1f;
 				attack_list[list].attack_single[sin].parameter[para].hitback.x = 0.1f;
 				attack_list[list].attack_single[sin].parameter[para].hitback.y = 0.1f;
-				attack_list[list].attack_single[sin].parameter[para].type = 1;
+				attack_list[list].attack_single[sin].parameter[para].type = AttackKind::MIDDLE;
 				attack_list[list].attack_single[sin].parameter[para].knockback = 0.1f;
 				attack_list[list].attack_single[sin].parameter[para].gaugeout = false;
 				attack_list[list].attack_single[sin].parameter[para].stealtimer = 0.1f;
@@ -603,7 +616,7 @@ bool Knight::AttackWrite()
 						outputfile << attack_list[list].attack_single[sin].parameter[para].HB_timer << std::endl;
 						outputfile << attack_list[list].attack_single[sin].parameter[para].hitback.x << std::endl;
 						outputfile << attack_list[list].attack_single[sin].parameter[para].hitback.y << std::endl;
-						outputfile << attack_list[list].attack_single[sin].parameter[para].type << std::endl;
+						outputfile << scastI(attack_list[list].attack_single[sin].parameter[para].type) << std::endl;
 						outputfile << attack_list[list].attack_single[sin].parameter[para].knockback << std::endl;
 						outputfile << attack_list[list].attack_single[sin].parameter[para].gaugeout << std::endl;
 						outputfile << attack_list[list].attack_single[sin].parameter[para].stealtimer << std::endl;
@@ -756,7 +769,7 @@ void Knight::DrawDEBUG(
 								ImGui::Text(hitstate_name_list[state].c_str());
 								ImGui::InputFloat(u8"モーション速度 : 発生", &ac_act[act].fream, 0.01f, 0.1f);
 								ImGui::InputFloat(u8"モーション速度 : 持続", &ac_act[act].timer, 0.01f, 0.1f);
-								ImGui::InputFloat(u8"モーション速度 : 後隙", &ac_act[act].later, 0.01f, 0.1f);
+								ImGui::InputFloat(u8"モーション速度 : 後スキ", &ac_act[act].later, 0.01f, 0.1f);
 								ImGui::Text(u8"ものによってはfreamしか使用しないものもあるので注意");
 								ImGui::TreePop();
 							}
@@ -811,6 +824,8 @@ void Knight::DrawDEBUG(
 			ImGui::Text("speed.x:%f", speed.x);
 			//ImGui::SliderFloat("speed", &backstepS, 0.0f, 500.0f);
 			//ImGui::SliderFloat("down", &backstepD, 0.0f, 500.0f);
+			ImGui::SliderFloat("air_speed", &stepspeed, 0.0f, 500.0f);
+			ImGui::SliderFloat("air_down", &stepD, 0.0f, 500.0f);
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("JumpParameter"))
@@ -834,11 +849,11 @@ void Knight::DrawDEBUG(
 			ImGui::Text("speed_Y:%f", speed_Y.speed);
 			ImGui::Text("down_force:%f", down_force);
 			ImGui::Text("s:%f", s);
-			ImGui::SliderFloat("jump_max", &jump_max, 0.0f, 500.0f);
+			//ImGui::SliderFloat("jump_max", &jump_max, 0.0f, 500.0f);
 			ImGui::SliderFloat("down_force", &down_force, 0.0f, 1000.0f);
-			ImGui::SliderFloat("high_jump_max", &high_jump_max, 0.0f, 1000.0f);
-			ImGui::SliderFloat("jump_speed", &jump_speed, 0.0f, 5000.0f);
-			ImGui::SliderFloat("high_jump_speed", &high_jump_speed, 0.0f, 5000.0f);
+			//ImGui::SliderFloat("high_jump_max", &high_jump_max, 0.0f, 1000.0f);
+			//ImGui::SliderFloat("jump_speed", &jump_speed, 0.0f, 5000.0f);
+			//ImGui::SliderFloat("high_jump_speed", &high_jump_speed, 0.0f, 5000.0f);
 			ImGui::TreePop();
 		}
 
@@ -1051,8 +1066,10 @@ void Knight::DrawDEBUG(
 											ImGui::InputFloat(u8"のけぞり時間", &attack_list[list].attack_single[sin].parameter[para].HB_timer, 0.01f, 0.1f);
 											ImGui::InputFloat(u8"吹っ飛びX", &attack_list[list].attack_single[sin].parameter[para].hitback.x, 0.01f, 0.1f);
 											ImGui::InputFloat(u8"吹っ飛びY", &attack_list[list].attack_single[sin].parameter[para].hitback.y, 0.01f, 0.1f);
-											ImGui::SliderInt(u8"攻撃タイプ", &attack_list[list].attack_single[sin].parameter[para].type, 0, 3);
-											ImGui::Text(u8"0:上段。1:中段。2:下段。3:つかみ");
+											int type = scastI(attack_list[list].attack_single[sin].parameter[para].type);
+											ImGui::SliderInt(u8"攻撃タイプ", &type, 0, scastI(AttackKind::END)-1);
+											attack_list[list].attack_single[sin].parameter[para].type = static_cast<AttackKind>(type);
+											ImGui::Text(attack_kind_name_list[type].c_str());
 											ImGui::InputFloat(u8"ノックバック(Xのみ)", &attack_list[list].attack_single[sin].parameter[para].knockback, 0.01f, 0.1f);
 											ImGui::Checkbox(u8"ゲージを獲得しない", &attack_list[list].attack_single[sin].parameter[para].gaugeout);
 											ImGui::InputFloat(u8"つかみ抜けされる時間", &attack_list[list].attack_single[sin].parameter[para].stealtimer, 0.01f, 0.1f);

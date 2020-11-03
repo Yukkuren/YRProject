@@ -16,11 +16,12 @@
 #include <string>
 
 
-constexpr float POS_Y = 0.0f;		//最低の高さ
-constexpr float GAUGE_MAX = 100.0f;	//ゲージ最大量
-constexpr int	Track_max = 2;		//ホーミングダッシュ最大数
-constexpr float	non_target = 110.0f;//この値を入れられたフレームは条件から外れるようにする
-constexpr float target_max = 100.0f;//条件式でこの値以上は外れるようにする
+constexpr float POS_Y = 0.0f;			//最低の高さ
+constexpr float GAUGE_MAX = 100.0f;		//ゲージ最大量
+constexpr int	Track_max = 2;			//ホーミングダッシュ最大数
+constexpr float	non_target = 110.0f;	//この値を入れられたフレームは条件から外れるようにする
+constexpr float target_max = 100.0f;	//条件式でこの値以上は外れるようにする
+constexpr float attenuation_slam = 8.0f;//滑り中速度の減衰率
 
 //--------------------------------------
 //	**キャラ名設定
@@ -116,6 +117,7 @@ enum class ActState : int
 	DOWN,			//ダウン状態
 	FALL,			//空中でダウンしている状態
 	KNOCK,			//攻撃を受けてのけぞる
+	SLAM,			//叩きつけられ状態
 	ATTACK,			//攻撃中
 	ACT_END,		//(終点)
 };
@@ -404,8 +406,9 @@ public:
 	virtual void WakeUp() = 0;
 	virtual void GaugeUp(float add) = 0;
 	virtual void CancelList() = 0;
-	virtual void StateNone() = 0;
+	virtual void StateNone(float elapsed_time) = 0;
 	virtual void KnockUpdate(float elapsed_time) = 0;
+	virtual void SlamUpdate(float elapsed_time) = 0;
 
 	virtual void HitBoxTransition(HitBoxState state) = 0;
 

@@ -31,6 +31,23 @@ enum class HitResult : int
 	END,
 };
 
+//--------------------------------------------------
+// **攻撃内容列挙**
+//・攻撃の内容
+//--------------------------------------------------
+enum class AttackKind : int
+{
+	UP = 0,		//上段
+	MIDDLE,		//中段
+	DOWN,		//下段
+	STEAL,		//掴み
+	SLAM,		//叩きつけ(高さが一定なら滑り状態にする)
+	LOCK,		//ロック技
+	END,
+};
+
+
+
 struct AttackParameter
 {
 public:
@@ -40,7 +57,7 @@ public:
 	float		damege;		//この攻撃で与えるダメージ
 	float		HB_timer;	//攻撃を当てた時の相手ののけぞり時間
 	YR_Vector3	hitback;	//攻撃を当てた時の相手の吹っ飛びベクトル
-	int			type;		//攻撃の属性(上段・中段・下段)
+	AttackKind	type;		//攻撃の属性(上段・中段・下段)
 	float		knockback;	//ノックバック(Xベクトルのみ)
 	bool		gaugeout;	//falseならゲージ獲得攻撃
 	float		stealtimer; //掴みぬけされる時間
@@ -91,14 +108,6 @@ public:
 
 	////位置、大きさ、持続、威力、のけぞり時間、吹っ飛ばしベクトル、段、ゲージを獲得しない
 	//void Update(YR_Vector3 cent, YR_Vector3 range, float time, float frm, float late, float dage, float hitbackT, YR_Vector3 divhitback, int kind, float knock, int gauge, float elapsed_time);
-
-	enum
-	{
-		UP=0,
-		MIDDLE,
-		DOWN,
-		STEAL,
-	};
 };
 #endif // !_ATTACKBOX_H_
 

@@ -6,6 +6,18 @@
 
 constexpr float guard_damege_adj = 2.0f;	//ガードされた時のダメージ補正値
 constexpr float correction_value = 10.0f;	//プレイヤー同士の押出し補正値
+constexpr float slam_up_line = 40.0f;		//叩きつけ状態になる高さ
+constexpr float slam_zoom_line = 20.0f;		//叩きつけ攻撃を受けてカメラズームになる高さ
+
+enum class HitResultState : int
+{
+	GUARD_OK = 0,	//ガード成功
+	HIT,			//被弾
+	AVOIDANCE,		//無敵で回避
+	STATE_NONE,		//掴まれた
+	SLAM,			//叩きつけ
+};
+
 class Hitcheak
 {
 public:

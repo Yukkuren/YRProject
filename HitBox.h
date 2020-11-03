@@ -17,6 +17,18 @@ enum class HitBoxState : int
 	END,
 };
 
+//-------------------------------------------------
+//		ヒットした攻撃の属性列挙
+//-------------------------------------------------
+//	・ヒットした攻撃の属性を保存する
+//-------------------------------------------------
+enum class HitStateKind : int
+{
+	NORMAL = 0,		//通常ヒット
+	STEAL,			//掴みヒット
+	SLAM,			//叩きつけヒット
+};
+
 struct HitParameter
 {
 	YR_Vector3	distance = { 0.0f,0.0f };		//プレイヤーの中心座標からどれだけ離れているか
@@ -36,7 +48,8 @@ public:
 	YR_Vector3	hitback;		//攻撃を受けた時の吹っ飛びベクトル
 	//int			guard;			//ガードしている場合対応した数値が入る
 	bool		guard_ok;		//ガード成功ならtrue
-	bool		steal;			//掴まれたらtrue
+	//bool		steal;			//掴まれたらtrue
+	HitStateKind hit_state;		//ヒットした攻撃の属性を保存する
 	float		steal_timer;	//投げ抜け可能時間
 
 	//常に変動する変数

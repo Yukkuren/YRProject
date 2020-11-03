@@ -36,75 +36,123 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 					if (attack[atknum].pos.y - attack[atknum].parameter.size.y<hit[hitnum].center.y + hit[hitnum].parameter.size.y &&
 						attack[atknum].pos.y + attack[atknum].parameter.size.y>hit[hitnum].center.y - hit[hitnum].parameter.size.y)
 					{
-						int flag = 0;
+						HitResultState flag = HitResultState::GUARD_OK;
 						//0:ƒK[ƒh¬Œ÷
 						//1:”í’e
 						//2:–³“G‚Å‰ñ”ğ
 						//3:’Í‚Ü‚ê‚½
+						//4:’@‚«‚Â‚¯
 
 						switch (attack[atknum].parameter.type)
 						{
-						case AttackBox::UP:
+						case AttackKind::UP:
+							//ã’iUŒ‚
 							if (hit[hitnum].parameter.state == HitBoxState::NOGUARD)
 							{
-								flag = 1;
+								flag = HitResultState::HIT;
 							}
 							if (hit[hitnum].parameter.state == HitBoxState::DOWN)
 							{
-								flag = 1;
+								flag = HitResultState::HIT;
 							}
 							if (hit[hitnum].parameter.state == HitBoxState::INVINCIBLE)
 							{
-								flag = 2;
+								flag = HitResultState::AVOIDANCE;
 							}
 							break;
-						case AttackBox::MIDDLE:
+						case AttackKind::MIDDLE:
+							//’†’iUŒ‚
 							if (hit[hitnum].parameter.state == HitBoxState::NOGUARD)
 							{
-								flag = 1;
+								flag = HitResultState::HIT;
 							}
 							if (hit[hitnum].parameter.state == HitBoxState::INVINCIBLE)
 							{
-								flag = 2;
+								flag = HitResultState::AVOIDANCE;
 							}
 							break;
-						case AttackBox::DOWN:
+						case AttackKind::DOWN:
+							//‰º’iUŒ‚
 							if (hit[hitnum].parameter.state == HitBoxState::NOGUARD)
 							{
-								flag = 1;
+								flag = HitResultState::HIT;
 							}
 							if (hit[hitnum].parameter.state == HitBoxState::MIDDLE)
 							{
-								flag = 1;
+								flag = HitResultState::HIT;
 							}
 							if (hit[hitnum].parameter.state == HitBoxState::INVINCIBLE)
 							{
-								flag = 2;
+								flag = HitResultState::AVOIDANCE;
 							}
 							break;
-						case AttackBox::STEAL:
+						case AttackKind::STEAL:
+							//“Š‚°UŒ‚
 							if (hit[hitnum].parameter.state == HitBoxState::NOGUARD)
 							{
-								flag = 3;
+								flag = HitResultState::STATE_NONE;
 							}
 							if (hit[hitnum].parameter.state == HitBoxState::MIDDLE)
 							{
-								flag = 3;
+								flag = HitResultState::STATE_NONE;
 							}
 							if (hit[hitnum].parameter.state == HitBoxState::DOWN)
 							{
-								flag = 3;
+								flag = HitResultState::STATE_NONE;
 							}
 							if (hit[hitnum].parameter.state == HitBoxState::INVINCIBLE)
 							{
-								flag = 2;
+								flag = HitResultState::AVOIDANCE;
+							}
+							break;
+						case AttackKind::SLAM:
+							//’@‚«‚Â‚¯UŒ‚
+							if (hit[hitnum].parameter.state == HitBoxState::NOGUARD)
+							{
+								flag = HitResultState::SLAM;
+							}
+							if (hit[hitnum].parameter.state == HitBoxState::DOWN)
+							{
+								flag = HitResultState::SLAM;
+							}
+							if (hit[hitnum].parameter.state == HitBoxState::INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
 							}
 							break;
 						}
 
 
-
-						if (flag == 1)
+						switch (flag)
+						{
+						case HitResultState::GUARD_OK:
+						{
+							//ƒK[ƒh‚ª¬Œ÷‚µ‚½
+							float add = 0.0f;
+							if (!attack[atknum].parameter.gaugeout)
+							{
+								add = attack[atknum].parameter.gauge_get / guard_gauge_get;
+							}
+							hit[hitnum].guard_ok = true;
+							attack[atknum].hit_ok = false;
+							attack[atknum].knock_start = true;
+							hit[hitnum].damege = attack[atknum].parameter.damege / guard_damege_adj;
+							hit[hitnum].timer = attack[atknum].parameter.HB_timer;
+							hit[hitnum].hitback.x = attack[atknum].parameter.hitback.x / guard_damege_adj;
+							hit[hitnum].hitback.y = attack[atknum].parameter.hitback.y / guard_damege_adj;
+							for (int n = 0; n < attack.size(); n++)
+							{
+								attack[n].parameter.damege = 0;
+								//attack[n].HB_timer = 0;
+								attack[n].parameter.hitback = YR_Vector3(0.0f, 0.0f);
+								attack[n].hit_ok = false;
+							}
+							//UŒ‚‚ªƒK[ƒh‚³‚ê‚½‚±‚Æ‚ğ•Û‘¶‚·‚é
+							attack[atknum].hit_result = HitResult::GUARD;
+							return add;
+						}
+						break;
+						case HitResultState::HIT:
 						{
 							//”í’e‚µ‚½
 							float add = 0.0f;
@@ -186,24 +234,81 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 							}
 							//UŒ‚‚ª“–‚½‚Á‚½‚±‚Æ‚ğ•Û‘¶‚·‚é
 							attack[atknum].hit_result = HitResult::HIT;
+							hit[hitnum].hit_state = HitStateKind::NORMAL;
 							//PlaySE(SE_HIT);
 							return add;
 						}
-						if (flag == 0)
+						break;
+						case HitResultState::AVOIDANCE:
 						{
-							//ƒK[ƒh‚ª¬Œ÷‚µ‚½
+							//–³“G‚Å‰ñ”ğ‚µ‚½
+							return 0.0f;
+						}
+						break;
+						case HitResultState::STATE_NONE:
+						{
+							//’Í‚Ü‚ê‚½
+							hit[hitnum].hit_state = HitStateKind::STEAL;
+							hit[hitnum].steal_timer = 20;
+							//UŒ‚‚ª“–‚½‚Á‚½‚±‚Æ‚ğ•Û‘¶‚·‚é
+							attack[atknum].hit_result = HitResult::HIT;
+							return 0.0f;
+						}
+						break;
+						case HitResultState::SLAM:
+						{
+							//’@‚«—‚³‚ê‚½
 							float add = 0.0f;
 							if (!attack[atknum].parameter.gaugeout)
 							{
-								add = attack[atknum].parameter.gauge_get / guard_gauge_get;
+								add = attack[atknum].parameter.gauge_get;
 							}
-							hit[hitnum].guard_ok = true;
+							hit[hitnum].hit = true;
 							attack[atknum].hit_ok = false;
 							attack[atknum].knock_start = true;
-							hit[hitnum].damege = attack[atknum].parameter.damege / guard_damege_adj;
+							hit[hitnum].damege = attack[atknum].parameter.damege;
 							hit[hitnum].timer = attack[atknum].parameter.HB_timer;
-							hit[hitnum].hitback.x = attack[atknum].parameter.hitback.x / guard_damege_adj;
-							hit[hitnum].hitback.y = attack[atknum].parameter.hitback.y / guard_damege_adj;
+							hit[hitnum].hitback = attack[atknum].parameter.hitback;
+							//Hitcheak::timer = ((attack[atknum].parameter.damege*0.1f) / hitstop_adjust);
+							if (player == 1)
+							{
+								Hitcheak::stop1p = true;
+							}
+							if (player == 2)
+							{
+								Hitcheak::stop2p = true;
+							}
+
+							if (attack[atknum].parameter.distance.x >= hit[atknum].center.x)
+							{
+								float dis = attack[atknum].parameter.distance.x - hit[hitnum].center.x;
+								dis /= 2.0f;
+								effectpos.x = hit[hitnum].center.x + dis;
+								effecttimer = 10;
+							}
+							if (hit[hitnum].center.x > attack[atknum].parameter.distance.x)
+							{
+								float dis = hit[hitnum].center.x - attack[atknum].parameter.distance.x;
+								dis /= 2.0f;
+								effectpos.x = attack[atknum].parameter.distance.x + dis;
+								effecttimer = 10;
+							}
+
+							if (attack[atknum].parameter.distance.y >= hit[hitnum].center.y)
+							{
+								float dis = attack[atknum].parameter.distance.y - hit[hitnum].center.y;
+								dis /= 2.0f;
+								effectpos.y = hit[hitnum].center.y + dis;
+								effecttimer = 10;
+							}
+							if (hit[hitnum].center.y > attack[atknum].parameter.distance.y)
+							{
+								float dis = hit[hitnum].center.y - attack[atknum].parameter.distance.y;
+								dis /= 2.0f;
+								effectpos.y = attack[atknum].parameter.distance.y + dis;
+								effecttimer = 10;
+							}
+
 							for (int n = 0; n < attack.size(); n++)
 							{
 								attack[n].parameter.damege = 0;
@@ -211,24 +316,34 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 								attack[n].parameter.hitback = YR_Vector3(0.0f, 0.0f);
 								attack[n].hit_ok = false;
 							}
-							//UŒ‚‚ªƒK[ƒh‚³‚ê‚½‚±‚Æ‚ğ•Û‘¶‚·‚é
-							attack[atknum].hit_result = HitResult::GUARD;
+							//UŒ‚‚ª“–‚½‚Á‚½‚±‚Æ‚ğ•Û‘¶‚·‚é
+
+							if (attack[atknum].pos.y > slam_up_line)
+							{
+								//‚‚³‚ªˆê’èˆÈã‚¾‚Á‚½ê‡A’@‚«‚Â‚¯UŒ‚‚ÉˆÚs‚µƒJƒƒ‰ƒY[ƒ€‚ğs‚¤
+								hit[hitnum].hit_state = HitStateKind::SLAM;
+								Hitcheak::timer = 0.45f;
+								YRCamera.RequestCamera(player);
+							}
+							else if (attack[atknum].pos.y > slam_zoom_line)
+							{
+								//‚‚³‚ªˆê’èˆÈã‚¾‚Á‚½ê‡A’Êí‚ÌUŒ‚‚ÅƒJƒƒ‰ƒY[ƒ€‚ğs‚¤
+								hit[hitnum].hit_state = HitStateKind::NORMAL;
+								Hitcheak::timer = 0.45f;
+								YRCamera.RequestCamera(player);
+							}
+							else
+							{
+								hit[hitnum].hit_state = HitStateKind::NORMAL;
+								Hitcheak::timer = 0.35f;
+							}
+							attack[atknum].hit_result = HitResult::HIT;
+							//PlaySE(SE_HIT);
 							return add;
 						}
-						if (flag == 2)
-						{
-							//–³“G‚Å‰ñ”ğ‚µ‚½
-							return 0.0f;
-						}
-
-						if (flag == 3)
-						{
-							//’Í‚Ü‚ê‚½
-							hit[hitnum].steal = true;
-							hit[hitnum].steal_timer = 20;
-							//UŒ‚‚ª“–‚½‚Á‚½‚±‚Æ‚ğ•Û‘¶‚·‚é
-							attack[atknum].hit_result = HitResult::HIT;
-							return 0.0f;
+						break;
+						default:
+							break;
 						}
 					}
 				}

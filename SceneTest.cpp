@@ -100,6 +100,7 @@ void SceneTest::Init()
 	{
 		//box = std::make_unique<Skinned_mesh>("./Data/FBX/Knight.fbx");
 		knight = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
+		//knight = std::make_shared<Model>("./Data/FBX/Paimon/paimon.fbx");
 	}
 	if (wait_R == nullptr)
 	{
