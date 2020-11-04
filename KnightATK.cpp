@@ -44,7 +44,14 @@ void Knight::AttackDefault(float elapsed_time)
 		if (attack_list[now_at_list].now_attack_num == 0)
 		{
 			//初回の攻撃のみアニメーションを変える
-			anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+			}
+			else
+			{
+				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::TIMER));
+			}
 		}
 		if (attack_list[now_at_list].speed_on)
 		{
@@ -112,7 +119,14 @@ void Knight::AttackDefault(float elapsed_time)
 			//アニメーション速度を指定
 			anim_ccodinate = ac_attack[now_at_list].later;
 			//描画をセット
-			anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+			}
+			else
+			{
+				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+			}
 			//行動終了フラグをオンに
 			finish = true;
 		}
@@ -159,7 +173,14 @@ void Knight::Kyo(float elapsed_time)
 		if (attack_list[now_at_list].now_attack_num == 0)
 		{
 			//初回の攻撃のみアニメーションを変える
-			anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+			}
+			else
+			{
+				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::TIMER));
+			}
 		}
 		if (attack_list[now_at_list].speed_on)
 		{
@@ -220,7 +241,14 @@ void Knight::Kyo(float elapsed_time)
 			//アニメーション速度を指定
 			anim_ccodinate = ac_attack[now_at_list].later;
 			//描画をセット
-			anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+			}
+			else
+			{
+				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+			}
 		}
 	}
 }
@@ -271,8 +299,14 @@ void Knight::U_Kyo(float elapsed_time)
 		anim_ccodinate = ac_attack[scastI(attack_state)].timer;
 		attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft,pos);
 		fream = non_target;
-		anim->NodeChange(model_motion.u_kyo_R, scastI(AnimAtk::TIMER));
-
+		if (rightOrleft > 0)
+		{
+			anim->NodeChange(model_motion.u_kyo_R, scastI(AnimAtk::TIMER));
+		}
+		else
+		{
+			anim->NodeChange(model_motion.u_kyo_L, scastI(AnimAtk::TIMER));
+		}
 	}
 
 	int now_at_list = scastI(attack_state);
@@ -321,7 +355,14 @@ void Knight::U_Kyo(float elapsed_time)
 			//アニメーション速度を指定
 			anim_ccodinate = ac_attack[now_at_list].later;
 			//描画をセット
-			anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+			}
+			else
+			{
+				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+			}
 		}
 	}
 }
@@ -382,7 +423,14 @@ void Knight::A_UKyo(float elapsed_time)
 		if (attack_list[now_at_list].now_attack_num == 0)
 		{
 			//初回の攻撃のみアニメーションを変える
-			anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+			}
+			else
+			{
+				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::TIMER));
+			}
 		}
 		if (attack_list[now_at_list].speed_on)
 		{
@@ -450,7 +498,14 @@ void Knight::A_UKyo(float elapsed_time)
 			//アニメーション速度を指定
 			anim_ccodinate = ac_attack[now_at_list].later;
 			//描画をセット
-			anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+			}
+			else
+			{
+				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+			}
 			//行動終了フラグをオンに
 			finish = true;
 		}
@@ -623,7 +678,14 @@ void Knight::SpecialAttack(float elapsed_time)
 		anim_ccodinate = ac_attack[scastI(attack_state)].timer;
 		attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft,pos);
 		fream = non_target;
-		anim->NodeChange(model_motion.special_R,scastI(AnimAtk::TIMER));
+		if (rightOrleft > 0)
+		{
+			anim->NodeChange(model_motion.special_R, scastI(AnimAtk::TIMER));
+		}
+		else
+		{
+			anim->NodeChange(model_motion.special_L, scastI(AnimAtk::TIMER));
+		}
 		YRCamera.RequestCamera(Camera::Request::RELEASE, now_player);
 	}
 
@@ -671,7 +733,14 @@ void Knight::SpecialAttack(float elapsed_time)
 			//アニメーション速度を指定
 			anim_ccodinate = ac_attack[now_at_list].later;
 			//描画をセット
-			anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+			}
+			else
+			{
+				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+			}
 		}
 	}
 }
@@ -766,7 +835,14 @@ bool Knight::ComboSet()
 	//カメラ処理用変数を初期化
 	production_time = 0.0f;
 	//描画をセット
-	anim->NodeChange(model_motion.model_R[real_num], scastI(AnimAtk::FREAM));
+	if (rightOrleft > 0)
+	{
+		anim->NodeChange(model_motion.model_R[real_num], scastI(AnimAtk::FREAM));
+	}
+	else
+	{
+		anim->NodeChange(model_motion.model_L[real_num], scastI(AnimAtk::FREAM));
+	}
 	//攻撃ごとに個別の設定を行う
 	AttackDetailsSet(attack_list[real_num].combo);
 
@@ -850,7 +926,14 @@ void Knight::ComboUpdate()
 	//カメラ処理用変数を初期化
 	production_time = 0.0f;
 	//描画をセット
-	anim->NodeChange(model_motion.model_R[real_num], scastI(AnimAtk::FREAM));
+	if (rightOrleft > 0)
+	{
+		anim->NodeChange(model_motion.model_R[real_num], scastI(AnimAtk::FREAM));
+	}
+	else
+	{
+		anim->NodeChange(model_motion.model_L[real_num], scastI(AnimAtk::FREAM));
+	}
 	//攻撃ごとに個別の設定を行う
 	AttackDetailsSet(attack_list[real_num].combo);
 }

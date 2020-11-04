@@ -246,6 +246,9 @@
     <ClCompile Include="Stage.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="KnightLoad.cpp">
+      <Filter>Chara\Knight</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimBoard.h">
