@@ -57,6 +57,7 @@ void Knight::Init(YR_Vector3 InitPos)
 	anim_ccodinate = 2.0f;
 
 	stop_state = 0;
+	air_dash_state = AirDashState::NONE;
 #pragma region HITBOXINIT
 	for (int act = 0; act < hit.size(); act++)
 	{
@@ -485,7 +486,7 @@ void Knight::Update(float decision, float elapsed_time)
 		break;
 	case ActState::PASSIVE:
 		//受け身をとる
-		PassiveUpdate();
+		PassiveUpdate(elapsed_time);
 		break;
 	case ActState::DOWN:
 		//ダウン状態
@@ -608,6 +609,7 @@ void Knight::Update(float decision, float elapsed_time)
 
 
 	JumpUpdate(elapsed_time);
+	AirDash(elapsed_time);
 
 	
 	pos.x += ((speed_X.Update(elapsed_time) * elapsed_time) * rightOrleft);
@@ -1383,7 +1385,8 @@ void Knight::FastSet(YR_Vector3 position)
 //移動関係(ステップなど)
 //-----------------------------------------------------------------
 // *概要*
-//・空中地上それぞれに前後のステップが存在するため全て個別に処理している
+//・地上の場合、バックステップの処理を行う(前方へはダッシュだけの為)
+//・空中の場合は空中ダッシュの設定を行い、処理は別関数で行う
 //-----------------------------------------------------------------
 bool Knight::Step(float elapsed_time)
 {
@@ -1396,7 +1399,7 @@ bool Knight::Step(float elapsed_time)
 			if (jumpcount > 0)
 			{
 				//ジャンプが残っている場合は空中ダッシュを行う
-				step = true;
+				//step = true;
 				moveflag = false;
 				jumpflag = false;
 				jumpcount = 0;
@@ -1406,6 +1409,7 @@ bool Knight::Step(float elapsed_time)
 				{
 					//空中バックダッシュ
 					act_state = ActState::AIR_B;
+					air_dash_state = AirDashState::AIR_B;
 					//描画をセット
 					anim->NodeChange(model_motion.air_back_R, scastI(AnimAtk::FREAM));
 					anim->PlayAnimation(scastI(AnimAtk::FREAM), false);
@@ -1415,6 +1419,7 @@ bool Knight::Step(float elapsed_time)
 				{
 					//空中前ダッシュ
 					act_state = ActState::AIR_F;
+					air_dash_state = AirDashState::AIR_F;
 					//描画をセット
 					anim->NodeChange(model_motion.air_dash_R, scastI(AnimAtk::FREAM));
 					anim->PlayAnimation(scastI(AnimAtk::FREAM), false);
@@ -1434,7 +1439,7 @@ bool Knight::Step(float elapsed_time)
 			if (jumpcount > 0)
 			{
 				//ジャンプが残っている場合は空中ダッシュを行う
-				step = true;
+				//step = true;
 				moveflag = false;
 				jumpflag = false;
 				jumpcount = 0;
@@ -1444,6 +1449,7 @@ bool Knight::Step(float elapsed_time)
 				{
 					//空中前ダッシュ
 					act_state = ActState::AIR_F;
+					air_dash_state = AirDashState::AIR_F;
 					//描画をセット
 					anim->NodeChange(model_motion.air_dash_R, scastI(AnimAtk::FREAM));
 					anim->PlayAnimation(scastI(AnimAtk::FREAM), false);
@@ -1453,6 +1459,7 @@ bool Knight::Step(float elapsed_time)
 				{
 					//空中バックダッシュ
 					act_state = ActState::AIR_B;
+					air_dash_state = AirDashState::AIR_B;
 					//描画をセット
 					anim->NodeChange(model_motion.air_back_R, scastI(AnimAtk::FREAM));
 					anim->PlayAnimation(scastI(AnimAtk::FREAM), false);
@@ -1572,9 +1579,142 @@ bool Knight::Step(float elapsed_time)
 		}
 	}
 
-	//空中バックステップ
-	if (act_state == ActState::AIR_B)
+	return false;
+}
+
+
+//空中ダッシュ処理
+//-----------------------------------------------------------------
+// *概要*
+//・空中ダッシュの処理を行う
+//・AirDashStateによって処理を変える
+//-----------------------------------------------------------------
+void Knight::AirDash(float elapsed_time)
+{
+	switch (air_dash_state)
 	{
+	case AirDashState::NONE:
+		//何もしない
+		break;
+	case AirDashState::AIR_F:
+	{
+		//空中ダッシュ
+		speed.y = 0.0f;
+		speed_X.Set(0.0f);
+		speed_Y.Set(0.0f);
+		//重力の逆数を付与する
+		pos.y += gravity * elapsed_time;
+		if (rightOrleft > 0)
+		{
+			if (speed.x < dashspeed)
+			{
+				step = false;
+				pad->dash_trigger = false;
+				pad->x_input[scastI(PAD::R_DASH)] = 0;
+				pad->x_input[scastI(PAD::L_DASH)] = 0;
+				moveflag = false;
+				air_dash_state = AirDashState::NONE;
+				if (!attack)
+				{
+					//描画をセット
+					act_state = ActState::JUMP;
+					anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::TIMER));
+					anim_ccodinate = ac_act[scastI(act_state)].timer;
+				}
+				return;
+			}
+			//移動範囲のセット
+			if (pos.x > Limit::Right_max)
+			{
+				pos.x = Limit::Right_max;
+			}
+
+			if (!attack)
+			{
+				//攻撃中はアニメーションの変更を行わない
+				if (!anim->GetLoopAnim())
+				{
+					//現在のアニメーションが空中ダッシュの開始アニメーションだった場合
+					if (anim->GetEndAnim() == -1)
+					{
+						//アニメーションが終了したら持続アニメーションに切り替える
+						anim->NodeChange(model_motion.air_dash_R, scastI(AnimAtk::TIMER));
+						anim_ccodinate = ac_act[scastI(act_state)].timer;
+					}
+				}
+				else
+				{
+					//現在のアニメーションが空中ダッシュの持続アニメーションだった場合
+					if (speed.x < stepspeed)
+					{
+						anim->NodeChange(model_motion.air_dash_R, scastI(AnimAtk::LATER));
+						anim->PlayAnimation(scastI(AnimAtk::LATER), false);
+						anim_ccodinate = ac_act[scastI(act_state)].later;
+					}
+				}
+			}
+
+			speed.x -= (stepD * elapsed_time);
+			return;
+		}
+		if (rightOrleft < 0)
+		{
+			if (speed.x > -dashspeed)
+			{
+				step = false;
+				pad->dash_trigger = false;
+				pad->x_input[scastI(PAD::R_DASH)] = 0;
+				pad->x_input[scastI(PAD::L_DASH)] = 0;
+				air_dash_state = AirDashState::NONE;
+				moveflag = false;
+				if (!attack)
+				{
+					//描画をセット
+					act_state = ActState::JUMP;
+					anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::TIMER));
+					anim_ccodinate = ac_act[scastI(act_state)].timer;
+				}
+				return;
+			}
+			//移動範囲のセット
+			if (pos.x < Limit::Left_max)
+			{
+				pos.x = Limit::Left_max;
+			}
+
+			if (!attack)
+			{
+				//攻撃中はアニメーションの変更を行わない
+				if (!anim->GetLoopAnim())
+				{
+					//現在のアニメーションが空中ダッシュの開始アニメーションだった場合
+					if (anim->GetEndAnim() == -1)
+					{
+						//アニメーションが終了したら持続アニメーションに切り替える
+						anim->NodeChange(model_motion.air_dash_R, scastI(AnimAtk::TIMER));
+						anim_ccodinate = ac_act[scastI(act_state)].timer;
+					}
+				}
+				else
+				{
+					//現在のアニメーションが空中ダッシュの持続アニメーションだった場合
+					if (speed.x > -stepspeed)
+					{
+						anim->NodeChange(model_motion.air_dash_R, scastI(AnimAtk::LATER));
+						anim->PlayAnimation(scastI(AnimAtk::LATER), false);
+						anim_ccodinate = ac_act[scastI(act_state)].later;
+					}
+				}
+			}
+
+			speed.x += (stepD * elapsed_time);
+			return;
+		}
+	}
+		break;
+	case AirDashState::AIR_B:
+	{
+		//空中バックステップ
 		speed.y = 0.0f;
 		speed_X.Set(0.0f);
 		speed_Y.Set(0.0f);
@@ -1588,14 +1728,18 @@ bool Knight::Step(float elapsed_time)
 			{
 				step = false;
 				pad->dash_trigger = false;
-				act_state = ActState::JUMP;
 				pad->x_input[scastI(PAD::R_DASH)] = 0;
 				pad->x_input[scastI(PAD::L_DASH)] = 0;
+				air_dash_state = AirDashState::NONE;
 				moveflag = false;
 				//描画をセット
-				anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::TIMER));
-				anim_ccodinate = ac_act[scastI(act_state)].timer;
-				return true;
+				if (!attack)
+				{
+					act_state = ActState::JUMP;
+					anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::TIMER));
+					anim_ccodinate = ac_act[scastI(act_state)].timer;
+				}
+				return;
 			}
 			//移動範囲のセット
 			if (pos.x < Limit::Left_max)
@@ -1603,30 +1747,34 @@ bool Knight::Step(float elapsed_time)
 				pos.x = Limit::Left_max;
 			}
 
-			if (!anim->GetLoopAnim())
+			if (!attack)
 			{
-				//現在のアニメーションが空中バックステップの開始アニメーションだった場合
-				if (anim->GetEndAnim() == -1)
+				//攻撃中はアニメーションの変更を行わない
+				if (!anim->GetLoopAnim())
 				{
-					//アニメーションが終了したら持続アニメーションに切り替える
-					anim->NodeChange(model_motion.air_back_R, scastI(AnimAtk::TIMER));
-					anim_ccodinate = ac_act[scastI(act_state)].timer;
+					//現在のアニメーションが空中バックステップの開始アニメーションだった場合
+					if (anim->GetEndAnim() == -1)
+					{
+						//アニメーションが終了したら持続アニメーションに切り替える
+						anim->NodeChange(model_motion.air_back_R, scastI(AnimAtk::TIMER));
+						anim_ccodinate = ac_act[scastI(act_state)].timer;
+					}
 				}
-			}
-			else
-			{
-				//現在のアニメーションが空中バックステップの持続アニメーションだった場合
-				if (speed.x > -stepspeed)
+				else
 				{
-					anim->NodeChange(model_motion.air_back_R, scastI(AnimAtk::LATER));
-					anim->PlayAnimation(scastI(AnimAtk::LATER), false);
-					anim_ccodinate = ac_act[scastI(act_state)].later;
+					//現在のアニメーションが空中バックステップの持続アニメーションだった場合
+					if (speed.x > -stepspeed)
+					{
+						anim->NodeChange(model_motion.air_back_R, scastI(AnimAtk::LATER));
+						anim->PlayAnimation(scastI(AnimAtk::LATER), false);
+						anim_ccodinate = ac_act[scastI(act_state)].later;
+					}
 				}
 			}
 
 			speed.x += (stepD * elapsed_time);
 
-			return false;
+			return;
 		}
 		if (rightOrleft < 0)
 		{
@@ -1636,146 +1784,61 @@ bool Knight::Step(float elapsed_time)
 			{
 				step = false;
 				pad->dash_trigger = false;
-				act_state = ActState::JUMP;
 				pad->x_input[scastI(PAD::R_DASH)] = 0;
 				pad->x_input[scastI(PAD::L_DASH)] = 0;
+				air_dash_state = AirDashState::NONE;
 				moveflag = false;
 				//描画をセット
-				anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::TIMER));
-				anim_ccodinate = ac_act[scastI(act_state)].timer;
-				return true;
+				if (!attack)
+				{
+					act_state = ActState::JUMP;
+					anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::TIMER));
+					anim_ccodinate = ac_act[scastI(act_state)].timer;
+				}
+				return;
 			}
 			//移動範囲のセット
 			if (pos.x > Limit::Right_max)
 			{
 				pos.x = Limit::Right_max;
 			}
-			//アニメーション遷移
-			if (!anim->GetLoopAnim())
+
+			if (!attack)
 			{
-				//現在のアニメーションが空中バックステップの開始アニメーションだった場合
-				if (anim->GetEndAnim() == -1)
+				//アニメーション遷移
+				//攻撃中はアニメーションの変更を行わない
+				if (!anim->GetLoopAnim())
 				{
-					//アニメーションが終了したら持続アニメーションに切り替える
-					anim->NodeChange(model_motion.air_back_R, scastI(AnimAtk::TIMER));
-					anim_ccodinate = ac_act[scastI(act_state)].timer;
+					//現在のアニメーションが空中バックステップの開始アニメーションだった場合
+					if (anim->GetEndAnim() == -1)
+					{
+						//アニメーションが終了したら持続アニメーションに切り替える
+						anim->NodeChange(model_motion.air_back_R, scastI(AnimAtk::TIMER));
+						anim_ccodinate = ac_act[scastI(act_state)].timer;
+					}
 				}
-			}
-			else
-			{
-				//現在のアニメーションが空中バックステップの持続アニメーションだった場合
-				if (speed.x < stepspeed)
+				else
 				{
-					anim->NodeChange(model_motion.air_back_R, scastI(AnimAtk::LATER));
-					anim->PlayAnimation(scastI(AnimAtk::LATER), false);
-					anim_ccodinate = ac_act[scastI(act_state)].later;
+					//現在のアニメーションが空中バックステップの持続アニメーションだった場合
+					if (speed.x < stepspeed)
+					{
+						anim->NodeChange(model_motion.air_back_R, scastI(AnimAtk::LATER));
+						anim->PlayAnimation(scastI(AnimAtk::LATER), false);
+						anim_ccodinate = ac_act[scastI(act_state)].later;
+					}
 				}
 			}
 
 			speed.x -= (stepD * elapsed_time);
-			return false;
+			return;
 		}
 	}
-
-	//空中ダッシュ
-	if (act_state == ActState::AIR_F)
-	{
-		speed.y = 0.0f;
-		speed_X.Set(0.0f);
-		speed_Y.Set(0.0f);
-		//重力の逆数を付与する
-		pos.y += gravity * elapsed_time;
-		if (rightOrleft > 0)
-		{
-			if (speed.x < dashspeed)
-			{
-				step = false;
-				pad->dash_trigger = false;
-				act_state = ActState::JUMP;
-				pad->x_input[scastI(PAD::R_DASH)] = 0;
-				pad->x_input[scastI(PAD::L_DASH)] = 0;
-				moveflag = false;
-				//描画をセット
-				anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::TIMER));
-				anim_ccodinate = ac_act[scastI(act_state)].timer;
-				return true;
-			}
-			//移動範囲のセット
-			if (pos.x > Limit::Right_max)
-			{
-				pos.x = Limit::Right_max;
-			}
-			if (!anim->GetLoopAnim())
-			{
-				//現在のアニメーションが空中ダッシュの開始アニメーションだった場合
-				if (anim->GetEndAnim() == -1)
-				{
-					//アニメーションが終了したら持続アニメーションに切り替える
-					anim->NodeChange(model_motion.air_dash_R, scastI(AnimAtk::TIMER));
-					anim_ccodinate = ac_act[scastI(act_state)].timer;
-				}
-			}
-			else
-			{
-				//現在のアニメーションが空中ダッシュの持続アニメーションだった場合
-				if (speed.x < stepspeed)
-				{
-					anim->NodeChange(model_motion.air_dash_R, scastI(AnimAtk::LATER));
-					anim->PlayAnimation(scastI(AnimAtk::LATER), false);
-					anim_ccodinate = ac_act[scastI(act_state)].later;
-				}
-			}
-
-			speed.x -= (stepD * elapsed_time);
-			return false;
-		}
-		if (rightOrleft < 0)
-		{
-			if (speed.x > -dashspeed)
-			{
-				step = false;
-				pad->dash_trigger = false;
-				act_state = ActState::JUMP;
-				pad->x_input[scastI(PAD::R_DASH)] = 0;
-				pad->x_input[scastI(PAD::L_DASH)] = 0;
-				moveflag = false;
-				//描画をセット
-				anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::TIMER));
-				anim_ccodinate = ac_act[scastI(act_state)].timer;
-				return true;
-			}
-			//移動範囲のセット
-			if (pos.x < Limit::Left_max)
-			{
-				pos.x = Limit::Left_max;
-			}
-			if (!anim->GetLoopAnim())
-			{
-				//現在のアニメーションが空中ダッシュの開始アニメーションだった場合
-				if (anim->GetEndAnim() == -1)
-				{
-					//アニメーションが終了したら持続アニメーションに切り替える
-					anim->NodeChange(model_motion.air_dash_R, scastI(AnimAtk::TIMER));
-					anim_ccodinate = ac_act[scastI(act_state)].timer;
-				}
-			}
-			else
-			{
-				//現在のアニメーションが空中ダッシュの持続アニメーションだった場合
-				if (speed.x > -stepspeed)
-				{
-					anim->NodeChange(model_motion.air_dash_R, scastI(AnimAtk::LATER));
-					anim->PlayAnimation(scastI(AnimAtk::LATER), false);
-					anim_ccodinate = ac_act[scastI(act_state)].later;
-				}
-			}
-
-			speed.x += (stepD * elapsed_time);
-			return false;
-		}
+		break;
+	case AirDashState::ACT_END:
+		break;
+	default:
+		break;
 	}
-
-	return false;
 }
 
 //移動関係(こちらはステップ以外)
@@ -2414,10 +2477,6 @@ void Knight::KnockUpdate(float elapsed_time)
 		{
 			pos.y += hit[i].hitback.y*elapsed_time;
 			pflag = true;
-			if (pos.y < POS_Y)
-			{
-				pos.y = POS_Y;
-			}
 		}
 		if (pflag)
 		{
@@ -2427,20 +2486,106 @@ void Knight::KnockUpdate(float elapsed_time)
 	//角度を戻す
 	angle.z = 0.0f;
 	knocktimer -= elapsed_time;
+
+	if (pos.y<POS_Y)
+	{
+		pos.y = POS_Y;
+		//のけぞり中に地面についた場合
+		knocktimer = 0.0f;
+		combo_count = 0;
+		for (int i = 0; i < hit.size(); i++)
+		{
+			hit[i].timer = 0.0f;
+			hit[i].hitback = YR_Vector3(0.0f, 0.0f);
+		}
+		if (pad->x_input[scastI(PAD::STICK_D)] > 0 ||
+			pad->x_input[scastI(PAD::STICK_LDown)] > 0 ||
+			pad->x_input[scastI(PAD::STICK_RDown)] > 0)
+		{
+			//スティックの下入力がある場合は落下状態にする
+			act_state = ActState::DOWN;
+			speed.y = 0.0f;
+		}
+		else
+		{
+			speed.x = 0.0f;
+			speed.y = 0.0f;
+			//何も入力していない場合は自動的に受け身を取る
+			speed.x = Getapply(-passive_speed.x);
+			speed.y = passive_speed.y;
+			act_state = ActState::PASSIVE;
+			//描画をセット
+			anim->NodeChange(model_motion.passive_R);
+			HitBoxTransition(HitBoxState::INVINCIBLE);
+		}
+
+		if (hp == 0.0f)
+		{
+			//体力がなくなったら落下状態にする
+			act_state = ActState::FALL;
+		}
+		return;
+	}
+
 	if (knocktimer < 0.0f)
 	{
 		combo_count = 0;
-		if (act_state != ActState::WAIT)
+		if (ground)
 		{
-			act_state = ActState::NONE;
-			anim->NodeChange(model_motion.wait_R);
-			ChangeFace(FaceAnim::NORMAL);
-			anim_ccodinate = 0.0f;
+			if (act_state != ActState::WAIT)
+			{
+				act_state = ActState::NONE;
+				anim->NodeChange(model_motion.wait_R);
+				ChangeFace(FaceAnim::NORMAL);
+				anim_ccodinate = 0.0f;
+			}
 		}
-		if (!ground)
+		else
 		{
-			act_state = ActState::FALL;
-			speed.y = 0.0f;
+			//空中でのけぞり状態が解除された
+			//if (pad->x_input[scastI(PAD::STICK_D)] > 0 ||
+			//	pad->x_input[scastI(PAD::STICK_LDown)] > 0 ||
+			//	pad->x_input[scastI(PAD::STICK_RDown)] > 0)
+			//{
+			//	//スティックの下入力がある場合は落下状態にする
+			//	act_state = ActState::FALL;
+			//	speed.y = 0.0f;
+			//}
+			//else
+			{
+				//入力が何もない場合は受け身を自動で取る
+				speed.x = 0.0f;
+				speed.y = 0.0f;
+				act_state = ActState::PASSIVE;
+				//描画をセット
+				anim->NodeChange(model_motion.passive_R);
+				HitBoxTransition(HitBoxState::INVINCIBLE);
+				if (pad->x_input[scastI(PAD::STICK_R)] > 0)
+				{
+					speed.x = passive_speed.x;
+					speed.y = passive_speed.y;
+				}
+				if (pad->x_input[scastI(PAD::STICK_L)] > 0)
+				{
+					speed.x = -passive_speed.x;
+					speed.y = passive_speed.y;
+				}
+				if (pad->x_input[scastI(PAD::STICK_U)] > 0)
+				{
+					speed.y = passive_speed.y;
+				}
+				if (pad->x_input[scastI(PAD::STICK_D)] > 0)
+				{
+					speed.y = -passive_speed.y;
+				}
+
+				if (pad->x_input[scastI(PAD::STICK_R)] == 0 && pad->x_input[scastI(PAD::STICK_L)] == 0 &&
+					pad->x_input[scastI(PAD::STICK_U)] == 0 && pad->x_input[scastI(PAD::STICK_D)] == 0)
+				{
+					speed.x = Getapply(-passive_speed.x);
+					speed.y = passive_speed.y;
+				}
+			}
 			//描画をセット
 
 			if (trackgauge < 2)
@@ -2451,10 +2596,11 @@ void Knight::KnockUpdate(float elapsed_time)
 		}
 		if (hp == 0.0f)
 		{
+			//体力がなくなったら落下状態にする
 			act_state = ActState::FALL;
 		}
 		knocktimer = 0.0f;
-		for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
+		for (int i = 0; i < hit.size(); i++)
 		{
 			hit[i].timer = 0.0f;
 			hit[i].hitback = YR_Vector3(0.0f, 0.0f);
@@ -2575,9 +2721,9 @@ void Knight::SlamUpdate(float elapsed_time)
 void Knight::Guard(float decision)
 {
 	
-	if (step || attack)
+	if (step || attack || act_state == ActState::PASSIVE)
 	{
-		//攻撃中、またはステップ中なら入らない
+		//攻撃中、またはステップ中、受け身中なら入らない
 		return;
 	}
 
@@ -2652,7 +2798,7 @@ void Knight::Guard(float decision)
 		}
 	}
 
-	for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
+	for (int i = 0; i < hit.size(); i++)
 	{
 		if (hit[i].guard_ok)
 		{
@@ -2942,33 +3088,61 @@ void Knight::WakeUp()
 }
 
 
-void Knight::PassiveUpdate()
+void Knight::PassiveUpdate(float elapsed_time)
 {
 
-	pos += speed;
-	if (pos.y > POS_Y)
+	if (rightOrleft > 0)
+	{
+		//右向き
+		angle.z += 20.0f * elapsed_time;
+	}
+	if (rightOrleft < 0)
+	{
+		//左向き
+		angle.z -= 20.0f * elapsed_time;
+	}
+	
+	if (pos.y < POS_Y)
 	{
 		pos.y = POS_Y;
 	}
+
 	if (speed.x > 0)
 	{
-		speed.x--;
+		speed.x -= (passive_brake * elapsed_time);
+		if (speed.x < 0.0f)
+		{
+			speed.x = 0.0f;
+		}
 	}
 	if (speed.x < 0)
 	{
-		speed.x++;
+		speed.x+= (passive_brake * elapsed_time);
+		if (speed.x > 0.0f)
+		{
+			speed.x = 0.0f;
+		}
 	}
 	if (speed.y > 0)
 	{
-		speed.y--;
+		speed.y-= (passive_brake * elapsed_time);
+		if (speed.y < 0.0f)
+		{
+			speed.y = 0.0f;
+		}
 	}
 	if (speed.y < 0)
 	{
-		speed.y++;
+		speed.y+= (passive_brake * elapsed_time);
+		if (speed.y > 0.0f)
+		{
+			speed.y = 0.0f;
+		}
 	}
 	if (speed.x == 0.0f && speed.y == 0)
 	{
 		HitBoxTransition(HitBoxState::NOGUARD);
+		angle.z = 0.0f;
 		if (ground)
 		{
 			act_state = ActState::NONE;
@@ -2976,8 +3150,11 @@ void Knight::PassiveUpdate()
 		else
 		{
 			act_state = ActState::JUMP;
+			max_jump_flag = true;
+			jumpflag = true;
 			//描画をセット
-
+			anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::TIMER));
+			anim_ccodinate = ac_act[scastI(act_state)].timer;
 		}
 	}
 }

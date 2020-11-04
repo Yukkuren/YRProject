@@ -83,14 +83,16 @@ private:
 	const float dashspeed = 40.1f;		//ダッシュ速度
 	const float backstepS = 116.0f;		//バックステップの速度
 	const float backstepD = 500.0f;		//バックステップの減少速度
-	//const float stepspeed = 0.5f;		//空中ステップの速度
-	//const float stepD = 0.5f;			//空中ステップの減少速度
+	const float stepspeed = 100.0f;		//空中ステップの速度
+	const float stepD = 500.0f;			//空中ステップの減少速度
 	const float jump_max = 108.0f;		//ジャンプの最大速度(超えると減速し始め落ちる)
 	const float high_jump_max = 47.0f;	//ハイジャンプの最大速度(超えると減速し始め落ちる)
 	const float jump_speed = 108.0f;		//毎フレームジャンプの速度に加算する数値
 	const float high_jump_speed = 139.0f;	//毎フレームハイジャンプの速度に加算する数値
 	const float brake_speed =10000.0f;		//停止時にかかるブレーキ(基本ピタッと止まるので数値は大きめ)
 	const float track_speed = 100.0f;		//ホーミングダッシュの速度
+	const YR_Vector3 passive_speed = { 40.0f,20.0f };	//受け身状態にスピードに代入する速度
+	const float passive_brake = 100.0f;		//受け身中に減速する速度
 
 	float		production_time = 0.0f;	//カメラ演出に使う変数
 	
@@ -101,9 +103,6 @@ private:
 	Model_MotionData				model_motion;
 
 public:
-
-	float stepspeed = 100.0f;		//空中ステップの速度
-	float stepD = 500.0f;			//空中ステップの減少速度
 
 	bool fast;
 	YR_Vector3 FastPos;
@@ -145,6 +144,7 @@ public:
 
 	void Move(float decision);
 	bool Step(float elapsed_time);
+	void AirDash(float elapsed_time);
 	void MoveAnimSet();
 	void Jump();
 	void JumpUpdate(float elapsed_time);
@@ -156,7 +156,7 @@ public:
 	void Squat();
 	void FallUpdate(float elapsed_time);
 	void DownUpdate();
-	void PassiveUpdate();
+	void PassiveUpdate(float elapsed_time);
 	void WakeUp();
 	void GaugeUp(float add);
 	void CancelList();

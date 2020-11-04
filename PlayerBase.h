@@ -166,6 +166,20 @@ enum class AttackState : int
 
 //Desire(欲望、望み)とCrystal(結晶)
 
+
+//---------------------------------------------
+// **空中ダッシュステート列挙**
+//・NONE以外の場合はそれぞれ適用した挙動を行う
+//----------------------------------------------
+enum class AirDashState : int
+{
+	NONE = 0,		//何もない
+	AIR_F,			//空中ダッシュ
+	AIR_B,			//空中バックダッシュ
+	ACT_END,		//(終点)
+};
+
+
 //---------------------------------------------------------------
 // **攻撃内容保存構造体**
 //・攻撃の発生フレーム、内部パラメータ変数、その生成数を保存する構造体
@@ -309,6 +323,7 @@ public:
 	ActState			act_state;		//今行動可能か。また行動不可ならどういう状態か
 	AttackState			attack_state;	//今何の攻撃をしているか
 	AttackState			last_attack;	//最後になんの攻撃をしたか
+	AirDashState		air_dash_state;	//空中ダッシュステート
 	float				rightOrleft;	//右向きなら*1左向きなら*-1
 	bool				moveflag;		//TRUEなら動いている
 	float				fream;			//発生フレーム
@@ -394,6 +409,7 @@ public:
 	
 	virtual void Move(float decision) = 0;
 	virtual bool Step(float elapsed_time) = 0;
+	virtual void AirDash(float elapsed_time) = 0;
 	virtual void Jump() = 0;
 	virtual void JumpUpdate(float elapsed_time) = 0;
 	virtual void DamageCheck() = 0;
@@ -402,7 +418,7 @@ public:
 	virtual void GuardBack(float elapsed_time) = 0;
 	virtual void FallUpdate(float elapsed_time) = 0;
 	virtual void DownUpdate() = 0;
-	virtual void PassiveUpdate() = 0;
+	virtual void PassiveUpdate(float elapsed_time) = 0;
 	virtual void WakeUp() = 0;
 	virtual void GaugeUp(float add) = 0;
 	virtual void CancelList() = 0;

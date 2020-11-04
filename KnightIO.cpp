@@ -764,7 +764,7 @@ void Knight::DrawDEBUG(
 								ImGui::SliderFloat(u8"‘å‚«‚³X", &hitparam_list[list].act_parameter[act].size.x, 0.0f, 500.0f);
 								ImGui::SliderFloat(u8"‘å‚«‚³Y", &hitparam_list[list].act_parameter[act].size.y, 0.0f, 500.0f);
 								int state = scastI(hitparam_list[list].act_parameter[act].state);
-								ImGui::SliderInt(u8"ó‘Ô", &state, 0, scastI(HitBoxState::END));
+								ImGui::SliderInt(u8"ó‘Ô", &state, 0, scastI(HitBoxState::END)-1);
 								hitparam_list[list].act_parameter[act].state = static_cast<HitBoxState>(state);
 								ImGui::Text(hitstate_name_list[state].c_str());
 								ImGui::InputFloat(u8"ƒ‚[ƒVƒ‡ƒ“‘¬“x : ”­¶", &ac_act[act].fream, 0.01f, 0.1f);
@@ -824,8 +824,11 @@ void Knight::DrawDEBUG(
 			ImGui::Text("speed.x:%f", speed.x);
 			//ImGui::SliderFloat("speed", &backstepS, 0.0f, 500.0f);
 			//ImGui::SliderFloat("down", &backstepD, 0.0f, 500.0f);
-			ImGui::SliderFloat("air_speed", &stepspeed, 0.0f, 500.0f);
-			ImGui::SliderFloat("air_down", &stepD, 0.0f, 500.0f);
+			//ImGui::SliderFloat("air_speed", &stepspeed, 0.0f, 500.0f);
+			//ImGui::SliderFloat("air_down", &stepD, 0.0f, 500.0f);
+			//ImGui::SliderFloat("passive_speed_X", &passive_speed.x, 0.0f, 500.0f);
+			//ImGui::SliderFloat("passive_speed_Y", &passive_speed.y, 0.0f, 500.0f);
+			//ImGui::SliderFloat("passive_break", &passive_brake, 0.0f, 500.0f);
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("JumpParameter"))
