@@ -89,7 +89,7 @@ void SceneGame::Init()
 	camera_move_debug = false;
 	hit_stop_elapsed = 0.0f;
 	game_speed = 0.0f;
-	blur_on = false;
+	blur_on = true;
 
 	//2Pの動き
 	pl2_con = Player2PControl::SUSPENSION;
@@ -526,6 +526,10 @@ void SceneGame::Update(float elapsed_time)
 			{
 				game_speed = 0.0f;
 			}*/
+			if (fado_alpha > 0.0f)
+			{
+				game_speed = 0.0f;
+			}
 			if (player1p->Intro(game_speed))
 			{
 				main_loop = MAIN_LOOP::INTRO1P;
@@ -848,7 +852,7 @@ void SceneGame::Update(float elapsed_time)
 		//フェードアウトがスタートしてない場合は画面を映す
 		if (fado_alpha > 0.0f)
 		{
-			fado_alpha -= (game_speed * mix_fado);
+			fado_alpha -= (elapsed_time * mix_fado);
 		}
 	}
 }
@@ -985,18 +989,29 @@ void SceneGame::Draw(float elapsed_time)
 	case SceneGame::INTRO1P:
 		//1Pのイントロ
 		//プレイヤー描画
-		player1p->Draw(ParallelToonShader.get(),ToonShader.get(),V, P, light_direction, lightColor, ambient_color, game_speed);
+		player1p->Draw(ParallelToonShader.get(),ToonShader.get(),V, P, lightColor, ambient_color, game_speed);
 		player1p->IntroDEBUG();
 		break;
 	case SceneGame::INTRO2P:
 		//2Pのイントロ
 		//プレイヤー描画
-		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed);
+		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, lightColor, ambient_color, game_speed);
 		break;
 	case SceneGame::READY:
 	case SceneGame::MAIN:
 	case SceneGame::FINISH:
 		//内部処理ではフェードをしているだけで画面に変化はない為一括
+
+
+		//必殺技などの時は周りを暗くする
+		switch (YRCamera.GetRequest())
+		{
+		case Camera::Request::HOLD:
+			FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.8f));
+			break;
+		default:
+			break;
+		}
 
 		//カウント表示
 		if (!start)
@@ -1123,8 +1138,8 @@ void SceneGame::Draw(float elapsed_time)
 		}
 
 		//プレイヤー描画
-		player1p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed*p1_elapsed_time);
-		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed*p2_elapsed_time);
+		player1p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, lightColor, ambient_color, game_speed*p1_elapsed_time);
+		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, lightColor, ambient_color, game_speed*p2_elapsed_time);
 		
 		/*skin->Render(
 			skinShader.get(), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
@@ -1186,11 +1201,11 @@ void SceneGame::Draw(float elapsed_time)
 		break;
 	case SceneGame::WIN1P:
 		//プレイヤー描画
-		player1p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed);
+		player1p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, lightColor, ambient_color, game_speed);
 		break;
 	case SceneGame::WIN2P:
 		//プレイヤー描画
-		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed);
+		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, lightColor, ambient_color, game_speed);
 		break;
 	case SceneGame::GAME_FIN:
 		break;

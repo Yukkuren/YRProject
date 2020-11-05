@@ -354,6 +354,7 @@ void ModelAnim::Draw(
 	const DirectX::XMFLOAT4&	ambient_color,
 	const DirectX::XMFLOAT2&	off_set_eye,
 	const DirectX::XMFLOAT2&	off_set_mouse,
+	const Model::Material_Attribute&	blur_material,
 	const DirectX::XMFLOAT4		material_color
 )
 {
@@ -455,12 +456,28 @@ void ModelAnim::Draw(
 			cb.dummy00 = 0.0f;
 			cb.dummy01 = 0.0f;
 
+			//ƒuƒ‹[ƒ€‚ÅŒõ‚ç‚¹‚éêŠ‚ğw’è‚·‚é
+			switch (blur_material)
+			{
+			case Model::Material_Attribute::NONE:
+				cb.lumi_factor = 0.0f;
+				break;
+			case Model::Material_Attribute::ALL:
+				cb.lumi_factor = 1.0f;
+				break;
+			default:
+				if (subset.material_index == blur_material)
+				{
+					cb.lumi_factor = 1.0f;
+				}
+				break;
+			}
+
 			switch (subset.material_index)
 			{
 			case Model::Material_Attribute::EYE:
 				cb.Offset_X = off_set_eye.x;
 				cb.Offset_Y = off_set_eye.y;
-				cb.lumi_factor = 0.0f;
 				if (m_model_resource->color_texture_face)
 				{
 					m_model_resource->color_texture_face->Set(0);
@@ -469,14 +486,12 @@ void ModelAnim::Draw(
 			case Model::Material_Attribute::MOUSE:
 				cb.Offset_X = off_set_mouse.x;
 				cb.Offset_Y = off_set_mouse.y;
-				cb.lumi_factor = 0.0f;
 				if (m_model_resource->color_texture_face)
 				{
 					m_model_resource->color_texture_face->Set(0);
 				}
 				break;
 			case Model::Material_Attribute::SWORD:
-				cb.lumi_factor = 1.0f;
 				cb.Offset_X = 0.0f;
 				cb.Offset_Y = 0.0f;
 				if (m_model_resource->color_texture_main)
@@ -487,7 +502,6 @@ void ModelAnim::Draw(
 			default:
 				cb.Offset_X = 0.0f;
 				cb.Offset_Y = 0.0f;
-				cb.lumi_factor = 0.0f;
 				if (m_model_resource->color_texture_main)
 				{
 					m_model_resource->color_texture_main->Set(0);

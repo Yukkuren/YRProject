@@ -374,6 +374,12 @@
     <ClInclude Include="YR_VectorMaster.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="EXlib\DX11\EffekseerRendererDX11.h">
+      <Filter>EXlib\Effekseer</Filter>
+    </ClInclude>
+    <ClInclude Include="EXlib\Effekseer\Effekseer.h">
+      <Filter>EXlib\Effekseer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="AnimShader.hlsli">
@@ -497,6 +503,12 @@
     </Filter>
     <Filter Include="Shader\SkyMapShader">
       <UniqueIdentifier>{6ed5c030-8a72-4171-bd4b-c31649de38b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EXlib">
+      <UniqueIdentifier>{3f10e88f-5ea3-44c2-ab72-97435f2d3caa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EXlib\Effekseer">
+      <UniqueIdentifier>{e044e26b-8ef0-4875-aa46-33e2ff468618}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -14,7 +14,8 @@ void Knight::LoadData(int color_number)
 #if USE_IMGUI
 	DEBUGAttackLoad();
 	AttackClean();
-	DEBUGAttackLoad();
+	AttackLoad();
+	//DEBUGAttackLoad();
 #endif // 0
 	//AttackLoad();
 

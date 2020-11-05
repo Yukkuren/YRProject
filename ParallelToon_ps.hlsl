@@ -72,7 +72,7 @@ PSOutput main(PSInput input) : SV_TARGET
 	Out.Color = color;
 	//Out.wNormal = float4(N, 1.0f);
 	//Out.wPosition = float4(input.wPos, 1.0f);
-	float4 lumi = float4(lumi_factor, lumi_factor, lumi_factor, 1.0f);
+	float4 lumi = float4(lumi_factor, lumi_factor, lumi_factor, 0.5f);
 	Out.Luminance = lumi;
 
 	return Out;

@@ -725,6 +725,7 @@ void Knight::SpecialAttack(float elapsed_time)
 		}
 		else
 		{
+			lumi_material = Model::Material_Attribute::NONE;
 			//‚È‚¢ê‡‚ÍŒãŒ„‚ÉˆÚs‚·‚é
 			//UŒ‚”Ô†‚ğ‰Šú‰»
 			attack_list[now_at_list].now_attack_num = 0;

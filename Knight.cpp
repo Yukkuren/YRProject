@@ -26,6 +26,7 @@ void Knight::Init(YR_Vector3 InitPos)
 	speed.x = 0;
 	speed.y = 0.0f;
 	jumpcount = 2;
+	air_dash_count = 1;
 	max_jump_flag = false;
 	hp = 1000;
 	gravity = 40.0f;
@@ -58,6 +59,8 @@ void Knight::Init(YR_Vector3 InitPos)
 
 	stop_state = 0;
 	air_dash_state = AirDashState::NONE;
+
+	light_direction = DirectX::XMFLOAT4(-1.0f, -0.1, 1.0f, 0.0f);
 #pragma region HITBOXINIT
 	for (int act = 0; act < hit.size(); act++)
 	{
@@ -94,6 +97,8 @@ void Knight::Init(YR_Vector3 InitPos)
 
 	text_on = false;
 	hit_state_n_set = false;
+
+	lumi_material = Model::Material_Attribute::NONE;
 
 	if (now_player == 1)
 	{
@@ -264,6 +269,7 @@ void Knight::Update(float decision, float elapsed_time)
 			if (ground && !step)
 			{
 				jumpcount = 2;
+				air_dash_count = 1;
 				if (rightOrleft != decision)
 				{
 					//前回フレームと今回の向きが異なった場合
@@ -757,6 +763,7 @@ void Knight::Attack(float decision, float elapsed_time)
 	//後隙消費後元のステートに戻す
 	if (later < 0.0f)
 	{
+		lumi_material = Model::Material_Attribute::NONE;
 		finish = true;
 		later = non_target;
 		attack = false;
@@ -917,11 +924,13 @@ void Knight::Draw(
 	YRShader				*shader,
 	const DirectX::XMMATRIX& view,
 	const DirectX::XMMATRIX& projection,
-	const DirectX::XMFLOAT4& light_direction,
 	const DirectX::XMFLOAT4& light_color,
 	const DirectX::XMFLOAT4& ambient_color,
 	float						elapsed_time)
 {
+
+	light_direction.x = -rightOrleft;
+
 	DrawFastMove(FastPos);
 	drawset = false;
 
@@ -965,7 +974,8 @@ void Knight::Draw(
 	{
 		if (hit[i].parameter.state == HitBoxState::INVINCIBLE)
 		{
-			material_color = { 0.0f,1.0f,0.0f,1.0f };
+			//material_color = { 0.0f,1.0f,0.0f,1.0f };
+			lumi_material = Model::Material_Attribute::ALL;
 		}
 	}
 
@@ -1020,28 +1030,28 @@ void Knight::Draw(
 		anim->UpdateAnimation(elapsed_time * anim_ccodinate);
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
-		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], material_color);
+		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
 	}
 	if (YRCamera.camera_state == Camera::CAMERA_STATE::MAIN)
 	{
 		anim->UpdateAnimation(elapsed_time * anim_ccodinate);
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
-		anim->Draw(parallel_shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], material_color);
+		anim->Draw(parallel_shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
 	}
 	if (YRCamera.GetRequest() == Camera::Request::WEAKEN)
 	{
 		anim->UpdateAnimation(elapsed_time * anim_ccodinate);
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
-		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], material_color);
+		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
 	}
 	if (YRCamera.camera_state == Camera::CAMERA_STATE::ZOOM_CAMERA)
 	{
 		anim->UpdateAnimation(elapsed_time * anim_ccodinate);
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
-		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], material_color);
+		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
 	}
 
 	/*motion.DrawContinue(
@@ -1180,13 +1190,14 @@ bool Knight::Step(float elapsed_time)
 		//空中左ステップ
 		if (pad->x_input[static_cast<int>(PAD::L_DASH)] == 1)
 		{
-			if (jumpcount > 0)
+			if (air_dash_count > 0)
 			{
 				//ジャンプが残っている場合は空中ダッシュを行う
 				//step = true;
 				moveflag = false;
 				jumpflag = false;
 				jumpcount = 0;
+				air_dash_count = 0;
 				//スピードはどっちも同じ
 				speed.x = -stepspeed;
 				if (rightOrleft > 0)
@@ -1220,13 +1231,14 @@ bool Knight::Step(float elapsed_time)
 		//空中右ステップ
 		if (pad->x_input[static_cast<int>(PAD::R_DASH)] == 1)
 		{
-			if (jumpcount > 0)
+			if (air_dash_count > 0)
 			{
 				//ジャンプが残っている場合は空中ダッシュを行う
 				//step = true;
 				moveflag = false;
 				jumpflag = false;
 				jumpcount = 0;
+				air_dash_count = 1;
 				//スピードはどっちも同じ
 				speed.x = stepspeed;
 				if (rightOrleft > 0)
@@ -1983,6 +1995,7 @@ void Knight::WaitAnimSet()
 		//描画をセット
 
 		act_state = ActState::WAIT;
+		lumi_material = Model::Material_Attribute::NONE;
 		if (rightOrleft > 0)
 		{
 			//右向きの時
@@ -2142,12 +2155,14 @@ void Knight::Jump()
 		{
 			if (pad->x_input[scastI(PAD::STICK_U)] == 1)
 			{
+				//空中ジャンプする
 				//later = -1;
 				attack = FALSE;
 				speed_X.Set(0.0f);
 				speed_Y.Set(0.0f);
 				pad->que.back().timer = 0;
 				jumpcount = 0;
+				air_dash_count = 0;
 				hightrigger = false;
 				speed.y = jump_speed;
 				max_jump_flag = false;
@@ -2293,6 +2308,7 @@ void Knight::JumpUpdate(float elapsed_time)
 	if (pos.y < POS_Y)
 	{
 		jumpcount = 2;
+		air_dash_count = 1;
 		max_jump_flag = false;
 		hightrigger = false;
 		speed.y = 0.0f;
@@ -2350,6 +2366,7 @@ void Knight::DamageCheck()
 			{
 				jumpcount = 1;
 			}
+			air_dash_count = 1;
 			jumpflag = false;
 			max_jump_flag = false;
 			knocktimer = hit[i].timer;
@@ -2363,6 +2380,7 @@ void Knight::DamageCheck()
 			speed_Y.Set(0.0f);
 			AllAttackClear();
 			hit_result = HitResult::NOT_OCCURRENCE;
+			lumi_material = Model::Material_Attribute::NONE;
 			//キャンセルの条件を初期化
 			atk_result = HitResult::NONE;
 			attack_state = AttackState::NONE;
@@ -3263,6 +3281,7 @@ void Knight::PassiveUpdate(float elapsed_time)
 			act_state = ActState::JUMP;
 			max_jump_flag = true;
 			jumpflag = true;
+			lumi_material = Model::Material_Attribute::NONE;
 			//描画をセット
 			if (rightOrleft > 0)
 			{
@@ -4191,6 +4210,7 @@ void Knight::AttackDetailsSet(const AttackState& attack_state)
 		YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
 		camera_state_knight = CAMERA_STATE_KNIGHT::FIRST;
 		ChangeFace(FaceAnim::KOUHUN);
+		lumi_material= Model::Material_Attribute::SWORD;
 		break;
 	case AttackState::DESIRE_SPECIAL:
 		break;

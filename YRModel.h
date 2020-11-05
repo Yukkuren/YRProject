@@ -226,6 +226,8 @@ public:
 		EYE,
 		MOUSE,
 		SWORD,
+		NONE,
+		ALL,
 	};	//このenumでどのテクスチャを使っているかを判別し、必要によってoffset値を入力する
 
 	struct Material

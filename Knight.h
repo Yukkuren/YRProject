@@ -147,6 +147,8 @@ public:
 	YR_Vector3 FastPos;
 	YR_Vector3 hadou;
 	float hadouspeed;
+
+	Model::Material_Attribute		lumi_material;
 	
 	std::array< HitBox, static_cast<int>(KNIGHTHIT::END)> hit;
 	//std::array<YR_Vector3, scastI(KNIGHTHIT::END)> Hitplus;
@@ -166,7 +168,6 @@ public:
 		YRShader				*shader,
 		const DirectX::XMMATRIX& view,
 		const DirectX::XMMATRIX& projection,
-		const DirectX::XMFLOAT4& light_direction,
 		const DirectX::XMFLOAT4& light_color,
 		const DirectX::XMFLOAT4& ambient_color,
 		float						elapsed_time);

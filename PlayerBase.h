@@ -314,6 +314,7 @@ public:
 	//ゲーム内処理用変数
 	float				hp = 0;
 	int					jumpcount;		//ジャンプの回数保持
+	int					air_dash_count;	//空中ダッシュの回数保持
 	bool				jumpflag;		//ジャンプしている
 	bool				max_jump_flag;	//ジャンプの最大値を超えた
 	float				jump_can_timer;	//ジャンプ可能になるまでの時間を測定する(0.0以下になればジャンプ可能)
@@ -346,6 +347,7 @@ public:
 	float				anim_ccodinate;	//アニメーション速度を調整する変数
 	int					stop_state;		//ヒットストップ中の処理で使用
 	bool				hit_state_n_set;//当たり判定のパラメータをセットしたくないときはtrue	
+	DirectX::XMFLOAT4	light_direction;//ライトの進む方向
 	HitResult			hit_result;		//攻撃が当たった場合の結果を保存する
 	HitResult			atk_result;		//攻撃決定時にキャンセル用の条件を保存するための変数
 	std::vector<AttackBox> atk;			//当たり判定
@@ -389,7 +391,6 @@ public:
 		YRShader				*shader,
 		const DirectX::XMMATRIX& view,
 		const DirectX::XMMATRIX& projection,
-		const DirectX::XMFLOAT4& light_direction,
 		const DirectX::XMFLOAT4& light_color,
 		const DirectX::XMFLOAT4& ambient_color,
 		float						elapsed_time ) = 0;

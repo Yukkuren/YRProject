@@ -859,6 +859,14 @@ void Knight::DrawDEBUG(
 			//ImGui::SliderFloat("high_jump_speed", &high_jump_speed, 0.0f, 5000.0f);
 			ImGui::TreePop();
 		}
+		if (ImGui::TreeNode("Light"))
+		{
+			ImGui::SliderFloat("light_direction.x", &this->light_direction.x, -1.0f, 1.0f);
+			ImGui::SliderFloat("light_direction.y", &this->light_direction.y, -1.0f, 1.0f);
+			ImGui::SliderFloat("light_direction.z", &this->light_direction.z, -1.0f, 1.0f);
+			ImGui::SliderFloat("light_direction.w", &this->light_direction.w, -1.0f, 1.0f);
+			ImGui::TreePop();
+		}
 
 
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);

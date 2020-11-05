@@ -180,10 +180,10 @@ add r1.xyz, r1.xyzx, r2.xyzx
 mov r1.w, l(1.000000)
 mul r0.xyzw, r0.xyzw, r1.xyzw  // r0.x <- Out.Color.x; r0.y <- Out.Color.y; r0.z <- Out.Color.z; r0.w <- Out.Color.w
 
-#line 65
-mov r1.xyzw, l(1.000000,1.000000,1.000000,1.000000)  // r1.x <- Out.Luminance.x; r1.y <- Out.Luminance.y; r1.z <- Out.Luminance.z; r1.w <- Out.Luminance.w
-
 #line 67
+mov r1.xyzw, l(0,0,0,0)  // r1.x <- Out.Luminance.x; r1.y <- Out.Luminance.y; r1.z <- Out.Luminance.z; r1.w <- Out.Luminance.w
+
+#line 69
 mov o0.xyzw, r0.xyzw
 mov o1.xyzw, r1.xyzw
 ret 
