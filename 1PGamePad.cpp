@@ -273,7 +273,7 @@ void GamePad1::Update(float elapsed_time)
 	}
 	else
 	{
-		
+		//キーボード入力(コントローラーなしのみ)
 
 		if (pKeyState.hflg > 0)
 		{
@@ -415,6 +415,15 @@ void GamePad1::Update(float elapsed_time)
 			x_input[static_cast<int>(PAD::START)] = 0;
 		}
 
+		if (pKeyState.yflg > 0)
+		{
+			x_input[static_cast<int>(PAD::SELECT)]++;
+		}
+		else
+		{
+			x_input[static_cast<int>(PAD::SELECT)] = 0;
+		}
+
 
 
 		if (pKeyState.wflg > 0)
@@ -424,6 +433,33 @@ void GamePad1::Update(float elapsed_time)
 		else
 		{
 			x_input[scastI(PAD::STICK_U)] = 0;
+		}
+		if (x_input[scastI(PAD::STICK_U)] == 1)
+		{
+			if (!que.empty())
+			{
+				if (que.back().timer > 0)
+				{
+					if (que.back().kind == scastI(PAD::STICK_D) || que.back().kind == scastI(PAD::STICK_RDown) || que.back().kind == scastI(PAD::STICK_LDown))
+					{
+						high_trigger = true;
+						x_input[scastI(PAD::STICK_U)] = 0;
+					}
+				}
+			}
+		}
+		else
+		{
+			high_trigger = false;
+		}
+
+		if (high_trigger)
+		{
+			x_input[scastI(PAD::HIGH_UP)]++;
+		}
+		else
+		{
+			x_input[scastI(PAD::HIGH_UP)] = 0;
 		}
 
 
@@ -440,10 +476,10 @@ void GamePad1::Update(float elapsed_time)
 
 		if (pKeyState.wflg == 1 && pKeyState.dflg > 0)
 		{
-			x_input[scastI(PAD::STICK_U)] = 0;
+			/*x_input[scastI(PAD::STICK_U)] = 0;
 			x_input[scastI(PAD::STICK_R)] = 0;
 			x_input[scastI(PAD::DOWN)] = 0;
-			x_input[scastI(PAD::RIGHT)] = 0;
+			x_input[scastI(PAD::RIGHT)] = 0;*/
 			x_input[scastI(PAD::STICK_RUp)]++;
 		}
 		else
@@ -454,10 +490,10 @@ void GamePad1::Update(float elapsed_time)
 
 		if (pKeyState.wflg == 1 && pKeyState.aflg > 0)
 		{
-			x_input[scastI(PAD::STICK_U)] = 0;
+			/*x_input[scastI(PAD::STICK_U)] = 0;
 			x_input[scastI(PAD::STICK_L)] = 0;
 			x_input[scastI(PAD::DOWN)] = 0;
-			x_input[scastI(PAD::LEFT)] = 0;
+			x_input[scastI(PAD::LEFT)] = 0;*/
 			x_input[scastI(PAD::STICK_LUp)]++;
 		}
 		else

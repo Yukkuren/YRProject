@@ -137,9 +137,9 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 							attack[atknum].hit_ok = false;
 							attack[atknum].knock_start = true;
 							hit[hitnum].damege = attack[atknum].parameter.damege / guard_damege_adj;
-							hit[hitnum].timer = attack[atknum].parameter.HB_timer;
-							hit[hitnum].hitback.x = attack[atknum].parameter.hitback.x / guard_damege_adj;
-							hit[hitnum].hitback.y = attack[atknum].parameter.hitback.y / guard_damege_adj;
+							hit[hitnum].timer = attack[atknum].parameter.HB_timer / guard_stop_adj;
+							hit[hitnum].hitback.x = attack[atknum].parameter.hitback.x / guard_back_adj;
+							hit[hitnum].hitback.y = attack[atknum].parameter.hitback.y / guard_back_adj;
 							for (int n = 0; n < attack.size(); n++)
 							{
 								attack[n].parameter.damege = 0;

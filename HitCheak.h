@@ -4,7 +4,9 @@
 #include"HitBox.h"
 #include"AttackBox.h"
 
-constexpr float guard_damege_adj = 2.0f;	//ガードされた時のダメージ補正値
+constexpr float guard_damege_adj = 3.0f;	//ガードされた時のダメージ補正値
+constexpr float guard_back_adj = 1.5f;	//ガードされた時の押出補正値
+constexpr float guard_stop_adj = 2.5f;	//ガードされた時のガード硬直補正値
 constexpr float correction_value = 10.0f;	//プレイヤー同士の押出し補正値
 constexpr float slam_up_line = 40.0f;		//叩きつけ状態になる高さ
 constexpr float slam_zoom_line = 20.0f;		//叩きつけ攻撃を受けてカメラズームになる高さ

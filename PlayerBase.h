@@ -345,6 +345,7 @@ public:
 	int					now_player;		//どのプレイヤーがこのキャラを操作しているか(1:1P、2:2P)
 	float				anim_ccodinate;	//アニメーション速度を調整する変数
 	int					stop_state;		//ヒットストップ中の処理で使用
+	bool				hit_state_n_set;//当たり判定のパラメータをセットしたくないときはtrue	
 	HitResult			hit_result;		//攻撃が当たった場合の結果を保存する
 	HitResult			atk_result;		//攻撃決定時にキャンセル用の条件を保存するための変数
 	std::vector<AttackBox> atk;			//当たり判定

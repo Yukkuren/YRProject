@@ -65,6 +65,16 @@ void Knight::LoadData(int color_number)
 		model_motion.wait_L = std::make_shared<Model>("./Data/FBX/Knight/AnimationL/knight_wait_L.fbx");
 	}
 
+	//ガードモーション
+	if (model_motion.guard_R == nullptr)
+	{
+		model_motion.guard_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_guard_R.fbx");
+	}
+	if (model_motion.guard_L == nullptr)
+	{
+		model_motion.guard_L = std::make_shared<Model>("./Data/FBX/Knight/AnimationL/knight_guard_L.fbx");
+	}
+
 	//スライドモーション
 	if (model_motion.slid_R == nullptr)
 	{

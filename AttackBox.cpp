@@ -16,7 +16,7 @@ void AttackBox::Init(AttackParameter& param, float rightOrleft,YR_Vector3 pl_pos
 	this->plus_speed = YR_Vector3(0.0f, 0.0f, 0.0f);
 	parameter = param;
 	parameter.hitback.x *= rightOrleft;
-	parameter.knockback *= (-rightOrleft);
+	//parameter.knockback *= (rightOrleft);
 	hit_result = HitResult::NONE;
 	if (parameter.damege != 0.0f)
 	{
@@ -41,7 +41,7 @@ void AttackBox::Init(AttackParameter& param, float rightOrleft, YR_Vector3 pl_po
 	hit_result = HitResult::NONE;
 	parameter = param;
 	parameter.hitback.x *= rightOrleft;
-	parameter.knockback *= (-rightOrleft);
+	//parameter.knockback *= (rightOrleft);
 	if (parameter.damege != 0.0f)
 	{
 		hit_ok = true;

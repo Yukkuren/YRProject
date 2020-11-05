@@ -93,6 +93,7 @@ void Knight::Init(YR_Vector3 InitPos)
 	ChangeFace(FaceAnim::NORMAL_LIP_SYNC);
 
 	text_on = false;
+	hit_state_n_set = false;
 
 	if (now_player == 1)
 	{
@@ -227,6 +228,11 @@ void Knight::Update(float decision, float elapsed_time)
 		//攻撃中
 		Attack(decision, elapsed_time);
 		break;
+	case ActState::GUARD:
+		Guard(decision);
+		GuardBack(elapsed_time);
+		Squat();
+		break;
 	default:
 		//その他個別処理
 
@@ -297,6 +303,7 @@ void Knight::Update(float decision, float elapsed_time)
 			}
 			//しゃがみやガードなどを先に判定
 			Squat();
+			Guard(decision);
 			//ガードでない時
 			if (act_state != ActState::GUARD)
 			{
@@ -374,12 +381,17 @@ void Knight::Update(float decision, float elapsed_time)
 		}
 		else
 		{
-			hit[list].Update(pos, hitparam_list[list].act_parameter[scastI(act_state)], elapsed_time);
+			if (hit_state_n_set)
+			{
+				hit[list].Update(pos, hitparam_list[list].act_parameter[scastI(act_state)].distance, hitparam_list[list].act_parameter[scastI(act_state)].size, elapsed_time);
+			}
+			else
+			{
+				hit[list].Update(pos, hitparam_list[list].act_parameter[scastI(act_state)], elapsed_time);
+			}
 		}
 	}
 
-	Guard(decision);
-	GuardBack(elapsed_time);
 	GuardAnimSet();
 
 	if (!attack)
@@ -1823,6 +1835,7 @@ void Knight::Move(float decision)
 			attack_state = AttackState::NONE;
 			attack = true;
 			later = dash_later;
+			atk_result = HitResult::NOT_OCCURRENCE;
 			if (rightOrleft > 0)
 			{
 				anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::LATER));
@@ -1850,6 +1863,7 @@ void Knight::Move(float decision)
 			attack_state = AttackState::NONE;
 			attack = true;
 			later = dash_later;
+			atk_result = HitResult::NOT_OCCURRENCE;
 			if (rightOrleft > 0)
 			{
 				anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::LATER));
@@ -1916,15 +1930,47 @@ void Knight::GuardAnimSet()
 {
 	if (act_state == ActState::GUARD)
 	{
-		if (pad->x_input[static_cast<int>(PAD::STICK_RDown)] > 0 || pad->x_input[static_cast<int>(PAD::STICK_LDown)] > 0)
+		if (ground)
 		{
-			//描画をセット
-
+			if (pad->x_input[static_cast<int>(PAD::STICK_RDown)] > 0 || pad->x_input[static_cast<int>(PAD::STICK_LDown)] > 0)
+			{
+				//描画をセット
+				if (rightOrleft > 0)
+				{
+					anim->NodeChange(model_motion.guard_R, 2);
+				}
+				else
+				{
+					anim->NodeChange(model_motion.guard_L, 2);
+				}
+				anim_ccodinate = ac_act[scastI(act_state)].timer;
+			}
+			else
+			{
+				//描画をセット
+				if (rightOrleft > 0)
+				{
+					anim->NodeChange(model_motion.guard_R);
+				}
+				else
+				{
+					anim->NodeChange(model_motion.guard_L);
+				}
+				anim_ccodinate = ac_act[scastI(act_state)].timer;
+			}
 		}
 		else
 		{
 			//描画をセット
-
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.guard_R,1);
+			}
+			else
+			{
+				anim->NodeChange(model_motion.guard_L,1);
+			}
+			anim_ccodinate = ac_act[scastI(act_state)].timer;
 		}
 	}
 
@@ -2259,6 +2305,8 @@ void Knight::JumpUpdate(float elapsed_time)
 		attack_state = AttackState::NONE;
 		attack = true;
 		later = jump_later;
+		//攻撃でキャンセルできるように
+		atk_result = HitResult::NOT_OCCURRENCE;
 		if (rightOrleft > 0)
 		{
 			anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::LATER));
@@ -2333,6 +2381,7 @@ void Knight::DamageCheck()
 			//最終入力内容を初期化する
 			last_attack = AttackState::NONE;
 			hit[i].steal_timer = 0.0f;
+			hit_state_n_set = false;
 			switch (hit[i].hit_state)
 			{
 			case HitStateKind::NORMAL:
@@ -2719,10 +2768,12 @@ void Knight::Guard(float decision)
 			if (!ground)
 			{
 				HitBoxTransition(HitBoxState::ALL);
+				hit_state_n_set = true;
 			}
 			else
 			{
 				HitBoxTransition(HitBoxState::DOWN);
+				hit_state_n_set = true;
 			}
 		}
 		else
@@ -2732,10 +2783,12 @@ void Knight::Guard(float decision)
 				if (!ground)
 				{
 					HitBoxTransition(HitBoxState::ALL);
+					hit_state_n_set = true;
 				}
 				else
 				{
 					HitBoxTransition(HitBoxState::MIDDLE);
+					hit_state_n_set = true;
 				}
 			}
 		}
@@ -2747,10 +2800,12 @@ void Knight::Guard(float decision)
 			if (!ground)
 			{
 				HitBoxTransition(HitBoxState::ALL);
+				hit_state_n_set = true;
 			}
 			else
 			{
 				HitBoxTransition(HitBoxState::DOWN);
+				hit_state_n_set = true;
 			}
 		}
 		else
@@ -2760,10 +2815,12 @@ void Knight::Guard(float decision)
 				if (!ground)
 				{
 					HitBoxTransition(HitBoxState::ALL);
+					hit_state_n_set = true;
 				}
 				else
 				{
 					HitBoxTransition(HitBoxState::MIDDLE);
+					hit_state_n_set = true;
 				}
 			}
 		}
@@ -2777,6 +2834,7 @@ void Knight::Guard(float decision)
 				|| pad->x_input[scastI(PAD::STICK_L)] > 0 || pad->x_input[scastI(PAD::STICK_LDown)] > 0)
 			{
 				HitBoxTransition(HitBoxState::ALL);
+				hit_state_n_set = true;
 			}
 		}
 	}
@@ -2785,7 +2843,7 @@ void Knight::Guard(float decision)
 	{
 		if (hit[i].guard_ok)
 		{
-			GaugeUp(hit[i].damege / 4);
+			GaugeUp(hit[i].damege / 4.0f);
 			speed_X.Set(0.0f);
 			speed_Y.Set(0.0f);
 			hp -= hit[i].damege;
@@ -2800,7 +2858,7 @@ void Knight::Guard(float decision)
 			hit[i].damege = 0;
 			hit[i].guard_ok = false;
 			moveflag = false;
-			knocktimer = hit[i].timer / 2;
+			knocktimer = hit[i].timer;
 			pad->high_trigger = false;
 			hightrigger = false;
 			act_state = ActState::GUARD;
@@ -2815,22 +2873,31 @@ void Knight::GuardBack(float elapsed_time)
 	{
 		return;
 	}
-	for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
+
+	bool hit_on = false;
+
+	for (int i = 0; i < hit.size(); i++)
 	{
-		if (hit[i].hitback.y != 0)
+		if (hit[i].hitback.y != 0.0f)
 		{
 			if (!ground)
 			{
-				pos.y -= hit[i].hitback.y;
+				pos.y += (hit[i].hitback.y * elapsed_time);
+				hit_on = true;
 			}
-			if (hit[i].hitback.x != 0)
-			{
-				pos.x += hit[i].hitback.x;
-			}
+		}
+		if (hit[i].hitback.x != 0.0f)
+		{
+			pos.x += (hit[i].hitback.x * elapsed_time);
+			hit_on = true;
+		}
+
+		if (hit_on)
+		{
 			break;
 		}
 	}
-	if (knocktimer > 0)
+	if (knocktimer > 0.0f)
 	{
 		knocktimer -= elapsed_time;
 		if (knocktimer == 0)
@@ -2838,14 +2905,15 @@ void Knight::GuardBack(float elapsed_time)
 			knocktimer -= elapsed_time;
 		}
 	}
-	if (knocktimer < 0)
+	if (knocktimer < 0.0f)
 	{
-		if (act_state != ActState::WAIT)
-		{
-			act_state = ActState::NONE;
-		}
 		if (ground)
 		{
+			if (act_state != ActState::WAIT)
+			{
+				act_state = ActState::NONE;
+				hit_state_n_set = false;
+			}
 			if (pad->x_input[scastI(PAD::STICK_D)] > 0)
 			{
 				act_state = ActState::SQUAT;
@@ -2858,20 +2926,43 @@ void Knight::GuardBack(float elapsed_time)
 			{
 				act_state = ActState::SQUAT;
 			}
+			if (act_state == ActState::SQUAT)
+			{
+				//描画をセット
+				if (rightOrleft > 0)
+				{
+					anim->NodeChange(model_motion.squat_R);
+				}
+				else
+				{
+					anim->NodeChange(model_motion.squat_L);
+				}
+				anim_ccodinate = ac_act[scastI(act_state)].fream;
+			}
 		}
 		else
 		{
-			max_jump_flag = false;
-			jumpflag = false;
 			act_state = ActState::JUMP;
+			hit_state_n_set = false;
 			//描画をセット
-
+			max_jump_flag = true;
+			jumpflag = true;
+			//描画をセット
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::TIMER));
+			}
+			else
+			{
+				anim->NodeChange(model_motion.jump_L, scastI(AnimAtk::TIMER));
+			}
+			anim_ccodinate = ac_act[scastI(act_state)].timer;
 		}
 
 		knocktimer = 0;
-		for (int hitnum = 0; hitnum < scastI(KNIGHTHIT::END); hitnum++)
+		for (int hitnum = 0; hitnum < hit.size(); hitnum++)
 		{
-			hit[hitnum].timer = 0;
+			hit[hitnum].timer = 0.0f;
 			hit[hitnum].hitback = YR_Vector3(0.0f, 0.0f);
 		}
 	}
@@ -2915,7 +3006,15 @@ void Knight::Squat()
 		moveflag = false;
 		act_state = ActState::SQUAT;
 		//描画をセット
-
+		if (rightOrleft > 0)
+		{
+			anim->NodeChange(model_motion.squat_R);
+		}
+		else
+		{
+			anim->NodeChange(model_motion.squat_L);
+		}
+		anim_ccodinate = ac_act[scastI(act_state)].fream;
 	}
 	if (pad->x_input[scastI(PAD::STICK_D)] == 0 && pad->x_input[scastI(PAD::STICK_RDown)] == 0 && pad->x_input[scastI(PAD::STICK_LDown)] == 0)
 	{

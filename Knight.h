@@ -32,6 +32,8 @@ struct Model_MotionData
 {
 	std::shared_ptr<Model>			wait_R = nullptr;
 	std::shared_ptr<Model>			wait_L = nullptr;
+	std::shared_ptr<Model>			guard_R = nullptr;
+	std::shared_ptr<Model>			guard_L = nullptr;
 	std::shared_ptr<Model>			slid_R = nullptr;
 	std::shared_ptr<Model>			slid_L = nullptr;
 	std::shared_ptr<Model>			air_back_R = nullptr;
