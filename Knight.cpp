@@ -182,7 +182,7 @@ void Knight::Update(float decision, float elapsed_time)
 		return;
 	}
 	finish = false;
-	DamageCheck();
+	DamageCheck(decision);
 	WaitAnimSet();
 	if (pos.y <= POS_Y)
 	{
@@ -359,7 +359,7 @@ void Knight::Update(float decision, float elapsed_time)
 	}
 
 
-	JumpUpdate(elapsed_time);
+	JumpUpdate(decision,elapsed_time);
 	AirDash(elapsed_time);
 
 	
@@ -950,7 +950,7 @@ void Knight::Draw(
 			}
 		}*/
 	}
-	for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
+	for (int i = 0; i < hit.size(); i++)
 	{
 		if (hit[i].parameter.state == HitBoxState::INVINCIBLE)
 		{
@@ -970,14 +970,6 @@ void Knight::Draw(
 
 	DirectX::XMFLOAT4 material_color = { 1.0f,1.0f,1.0f,1.0f };
 
-	for (int i = 0; i < hit.size(); i++)
-	{
-		if (hit[i].parameter.state == HitBoxState::INVINCIBLE)
-		{
-			//material_color = { 0.0f,1.0f,0.0f,1.0f };
-			lumi_material = Model::Material_Attribute::ALL;
-		}
-	}
 
 	//¶Œü‚«
 	if (rightOrleft < 0)
@@ -987,6 +979,12 @@ void Knight::Draw(
 		if (invincible)
 		{
 			//–³“Gó‘Ô
+			lumi_material = Model::Material_Attribute::ALL;
+		}
+		else if (lumi_material == Model::Material_Attribute::ALL)
+		{
+			//–³“G‚¶‚á‚È‚¢
+			lumi_material = Model::Material_Attribute::NONE;
 		}
 
 	}
@@ -1014,6 +1012,11 @@ void Knight::Draw(
 		if (invincible)
 		{
 			//–³“GI
+			lumi_material = Model::Material_Attribute::ALL;
+		}
+		else if (lumi_material == Model::Material_Attribute::ALL)
+		{
+			lumi_material = Model::Material_Attribute::NONE;
 		}
 	}
 
@@ -1292,6 +1295,7 @@ bool Knight::Step(float elapsed_time)
 				pad->x_input[scastI(PAD::L_DASH)] = 0;
 				moveflag = false;
 				act_state = ActState::NONE;
+				lumi_material = Model::Material_Attribute::NONE;
 				return true;
 			}
 			if (speed.x < (-backstepS / 5.0f))
@@ -2220,7 +2224,7 @@ void Knight::Jump()
 
 }
 
-void Knight::JumpUpdate(float elapsed_time)
+void Knight::JumpUpdate(float decision, float elapsed_time)
 {
 	if (jumpcount < 2 && jumpflag)
 	{
@@ -2323,6 +2327,7 @@ void Knight::JumpUpdate(float elapsed_time)
 		later = jump_later;
 		//UŒ‚‚ÅƒLƒƒƒ“ƒZƒ‹‚Å‚«‚é‚æ‚¤‚É
 		atk_result = HitResult::NOT_OCCURRENCE;
+		rightOrleft = decision;
 		if (rightOrleft > 0)
 		{
 			anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::LATER));
@@ -2338,7 +2343,7 @@ void Knight::JumpUpdate(float elapsed_time)
 }
 
 
-void Knight::DamageCheck()
+void Knight::DamageCheck(float decision)
 {
 	for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
 	{
@@ -2357,6 +2362,7 @@ void Knight::DamageCheck()
 			GaugeUp(hit[i].damege / 5.0f);
 			hit[i].damege = 0.0f;
 			hit[i].hit = false;
+			rightOrleft = decision;
 
 			//ƒvƒŒƒCƒ„[‚ð‚â‚ç‚êó‘Ô‚É‚·‚é
 			attack = false;
@@ -2864,6 +2870,7 @@ void Knight::Guard(float decision)
 			GaugeUp(hit[i].damege / 4.0f);
 			speed_X.Set(0.0f);
 			speed_Y.Set(0.0f);
+			speed.x = 0.0f;
 			hp -= hit[i].damege;
 			if (hp < 0)
 			{
@@ -3274,10 +3281,12 @@ void Knight::PassiveUpdate(float elapsed_time)
 		angle.z = 0.0f;
 		if (ground)
 		{
+			ChangeFace(FaceAnim::NORMAL);
 			act_state = ActState::NONE;
 		}
 		else
 		{
+			ChangeFace(FaceAnim::NORMAL);
 			act_state = ActState::JUMP;
 			max_jump_flag = true;
 			jumpflag = true;
@@ -3303,10 +3312,10 @@ void Knight::StateNone(float elapsed_time)
 	{
 		//•`‰æ‚ðƒZƒbƒg
 
-		if (pad->x_input[scastI(PAD::A)] == 1)
+		if (pad->x_input[scastI(PAD::RB)] == 1)
 		{
 			steal_escape = 0;
-			pos.x -= Getapply(150.0f);
+			pos.x -= Getapply(15.0f);
 			act_state = ActState::NONE;
 			return;
 		}

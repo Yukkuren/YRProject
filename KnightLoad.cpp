@@ -11,6 +11,7 @@
 void Knight::LoadData(int color_number)
 {
 	attack_list.resize(1);
+	hit.resize(scastI(KNIGHTHIT::END));
 #if USE_IMGUI
 	DEBUGAttackLoad();
 	AttackClean();

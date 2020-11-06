@@ -150,7 +150,7 @@ public:
 
 	Model::Material_Attribute		lumi_material;
 	
-	std::array< HitBox, static_cast<int>(KNIGHTHIT::END)> hit;
+	//std::array< HitBox, static_cast<int>(KNIGHTHIT::END)> hit;
 	//std::array<YR_Vector3, scastI(KNIGHTHIT::END)> Hitplus;
 	//std::array<YR_Vector3, scastI(KNIGHTHIT::END)> HitSize;
 	
@@ -187,8 +187,8 @@ public:
 	void AirDash(float elapsed_time);
 	void MoveAnimSet();
 	void Jump();
-	void JumpUpdate(float elapsed_time);
-	void DamageCheck();
+	void JumpUpdate(float decision, float elapsed_time);
+	void DamageCheck(float decision);
 	void KnockUpdate(float elapsed_time);
 	void SlamUpdate(float elapsed_time);
 	void Guard(float decision);

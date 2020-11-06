@@ -809,6 +809,8 @@ void Knight::DrawDEBUG(
 		ImGui::Text("player.x:%f", pos.x);
 		ImGui::Text("player.y:%f", pos.y);
 		ImGui::Text("track:%d", trackgauge);
+		ImGui::Text("hitState : "); ImGui::SameLine();
+		ImGui::Text(hitstate_name_list[scastI(hit[0].parameter.state)].c_str());
 		if (ImGui::TreeNode("ModelParameter"))
 		{
 			ImGui::SliderFloat("scale_x", &scale.x, -10.0f, 10.0f);

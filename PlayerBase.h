@@ -350,7 +350,8 @@ public:
 	DirectX::XMFLOAT4	light_direction;//ライトの進む方向
 	HitResult			hit_result;		//攻撃が当たった場合の結果を保存する
 	HitResult			atk_result;		//攻撃決定時にキャンセル用の条件を保存するための変数
-	std::vector<AttackBox> atk;			//当たり判定
+	std::vector<AttackBox> atk;			//攻撃当たり判定
+	std::vector<HitBox>	hit;			//当たり判定
 	
 	std::array<Animation_Coordinate, scastI(AttackState::ATTACK_END)>	ac_attack;	//攻撃ごとのアニメーション調整値
 	std::array<Animation_Coordinate, scastI(ActState::ACT_END)>			ac_act;		//行動ごとのアニメーション調整値
@@ -413,8 +414,8 @@ public:
 	virtual bool Step(float elapsed_time) = 0;
 	virtual void AirDash(float elapsed_time) = 0;
 	virtual void Jump() = 0;
-	virtual void JumpUpdate(float elapsed_time) = 0;
-	virtual void DamageCheck() = 0;
+	virtual void JumpUpdate(float decision, float elapsed_time) = 0;
+	virtual void DamageCheck(float decision) = 0;
 	virtual void Guard(float decision) = 0;
 	virtual void Squat() = 0;
 	virtual void GuardBack(float elapsed_time) = 0;
