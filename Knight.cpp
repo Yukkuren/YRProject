@@ -358,11 +358,9 @@ void Knight::Update(float decision, float elapsed_time)
 		pad->pre_input = false;
 	}
 
-
 	JumpUpdate(decision,elapsed_time);
 	AirDash(elapsed_time);
 
-	
 	pos.x += ((speed_X.Update(elapsed_time) * elapsed_time) * rightOrleft);
 	pos.x += (speed.x * elapsed_time);
 
@@ -375,26 +373,9 @@ void Knight::Update(float decision, float elapsed_time)
 		{
 			hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(attack_state)], elapsed_time);
 		}
-		else if(act_state == ActState::BACK)
-		{
-			//バックステップ中
-			hit[list].Update(pos, hitparam_list[list].act_parameter[scastI(act_state)].distance, hitparam_list[list].act_parameter[scastI(act_state)].size, elapsed_time);
-		}
-		else if (act_state == ActState::WAKE)
-		{
-			//起き上がり中
-			hit[list].Update(pos, hitparam_list[list].act_parameter[scastI(act_state)].distance, hitparam_list[list].act_parameter[scastI(act_state)].size, elapsed_time);
-		}
 		else
 		{
-			if (hit_state_n_set)
-			{
-				hit[list].Update(pos, hitparam_list[list].act_parameter[scastI(act_state)].distance, hitparam_list[list].act_parameter[scastI(act_state)].size, elapsed_time);
-			}
-			else
-			{
-				hit[list].Update(pos, hitparam_list[list].act_parameter[scastI(act_state)], elapsed_time);
-			}
+			hit[list].Update(pos, hitparam_list[list].act_parameter[scastI(act_state)], elapsed_time);
 		}
 	}
 
@@ -603,22 +584,6 @@ void Knight::AttackSwitch(float decision, float elapsed_time)
 	{
 	case AttackState::NONE:
 		break;
-		//case AttackState::WAIT:
-		//	//待機
-		//	finish = true;
-		//	later = -1;
-		//	attack = FALSE;
-		//	if (state != WAIT)
-		//	{
-		//		state = NONE;
-		//	}
-		//	for (int i = 0; i < scastI(KNIGHTATK::END); i++)
-		//	{
-		//		atk[i].Init();
-		//	}
-		//	break;
-		//case MOVER://移動系は別で処理しているのでbreakしていない
-		//case MOVEL://,,
 	case AttackState::SLOW:
 		//投げ
 		Slow(elapsed_time);
@@ -929,6 +894,13 @@ void Knight::Draw(
 	float						elapsed_time)
 {
 
+	float game_speed = elapsed_time;
+
+	if (steal_escape > 0.0f && steal_escape < target_max)
+	{
+		game_speed = 0.0f;
+	}
+
 	light_direction.x = -rightOrleft;
 
 	DrawFastMove(FastPos);
@@ -1030,28 +1002,28 @@ void Knight::Draw(
 
 	if (scastI(YRCamera.camera_state) == now_player)
 	{
-		anim->UpdateAnimation(elapsed_time * anim_ccodinate);
+		anim->UpdateAnimation(game_speed * anim_ccodinate);
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
 		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
 	}
 	if (YRCamera.camera_state == Camera::CAMERA_STATE::MAIN)
 	{
-		anim->UpdateAnimation(elapsed_time * anim_ccodinate);
+		anim->UpdateAnimation(game_speed * anim_ccodinate);
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
 		anim->Draw(parallel_shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
 	}
 	if (YRCamera.GetRequest() == Camera::Request::WEAKEN)
 	{
-		anim->UpdateAnimation(elapsed_time * anim_ccodinate);
+		anim->UpdateAnimation(game_speed* anim_ccodinate);
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
 		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
 	}
 	if (YRCamera.camera_state == Camera::CAMERA_STATE::ZOOM_CAMERA)
 	{
-		anim->UpdateAnimation(elapsed_time * anim_ccodinate);
+		anim->UpdateAnimation(game_speed * anim_ccodinate);
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
 		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
@@ -2404,7 +2376,6 @@ void Knight::DamageCheck(float decision)
 			angle.z = 0.0f;
 			//最終入力内容を初期化する
 			last_attack = AttackState::NONE;
-			hit[i].steal_timer = 0.0f;
 			hit_state_n_set = false;
 			switch (hit[i].hit_state)
 			{
@@ -2418,6 +2389,8 @@ void Knight::DamageCheck(float decision)
 				//掴み攻撃
 				act_state = ActState::STATENONE;
 				steal_escape = hit[i].steal_timer;
+				hit[i].hit_state = HitStateKind::STEAL;
+				hit[i].steal_timer = 0.0f;
 				break;
 			case HitStateKind::SLAM:
 				//叩きつけ攻撃
@@ -3315,69 +3288,13 @@ void Knight::StateNone(float elapsed_time)
 
 		if (pad->x_input[scastI(PAD::RB)] == 1)
 		{
-			steal_escape = 0;
+			steal_escape = 0.0f;
 			pos.x -= Getapply(15.0f);
 			act_state = ActState::NONE;
 			return;
 		}
 		steal_escape -= elapsed_time;
 	}
-}
-
-//掴み攻撃
-void Knight::Steal(float elapsed_time)
-{
-	AttackDefault(elapsed_time);
-	//YR_Vector3 cent{ pos.x + Getapply(100.0f),pos.y };
-	//YR_Vector3 range{ 50.0f,50.0f };
-	//atk[scastI(KNIGHTATK::ONE)].Update(cent, range, 10, 10, 15, 20, 13, YR_Vector3(Getapply(0.0f), 0.0f), AttackBox::STEAL, Getapply(0.0f), true,elapsed_time);
-	
-	//--------------------------------
-	//			※要変更
-	//--------------------------------
-	//if (rival_state != STATENONE)
-	//{
-	//	if (atk[scastI(KNIGHTATK::ONE)].timer == 0)
-	//	{
-	//		atk[scastI(KNIGHTATK::ONE)].fin = TRUE;
-	//	}
-	//}
-	//if (rival_state == STATENONE)
-	//{
-	//	if (atk[scastI(KNIGHTATK::ONE)].stealtimer > 0)
-	//	{
-	//		atk[scastI(KNIGHTATK::ONE)].stealtimer--;
-	//	}
-	//	else
-	//	{
-	//		later = -1;
-	//		for (int i = 0; i < scastI(KNIGHTATK::END); i++)
-	//		{
-	//			atk[i].Init();
-	//		}
-	//		attack_state = AttackState::SLOW;
-	//		//描画をセット
-
-	//		if (rightOrleft > 0)
-	//		{
-	//			if (pad->x_input[scastI(PAD::STICK_L)] > 0)
-	//			{
-	//				FastSet(pos);
-	//				rightOrleft = -rightOrleft;
-	//				pos.x = tracking.rival_Pos.x + 150.0f;
-	//			}
-	//		}
-	//		else
-	//		{
-	//			if (pad->x_input[scastI(PAD::STICK_R)] > 0)
-	//			{
-	//				FastSet(pos);
-	//				rightOrleft = -rightOrleft;
-	//				pos.x = tracking.rival_Pos.x - 150.0f;
-	//			}
-	//		}
-	//	}
-	//}
 }
 
 
@@ -3480,6 +3397,7 @@ void Knight::TrackDash(float decision,float elapsed_time)
 			//ホーミングダッシュは当たった時点で攻撃が終了するので後隙を入力する
 			//攻撃側のY座標を相手の座標に固定する
 			pos.y = tracking.rival_Pos.y;
+			//X座標も追撃可能な位置に固定する
 			pos.x = tracking.rival_Pos.x + (track_adjust_x * (-decision));
 			//上方向への速度を入力する(ちょっとホップさせる)
 			speed_X.Set(0.0f);

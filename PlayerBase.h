@@ -321,7 +321,8 @@ public:
 	bool				ground;			//TRUEなら地面についている
 	bool				drawset;		//特定の画像を描画したときにtrueにして通常の画像を描画しない
 	bool				attack;			//TRUEなら攻撃中
-	ActState			act_state;		//今行動可能か。また行動不可ならどういう状態か
+	ActState			act_state;		//今の行動。また行動不可ならどういう状態か
+	ActState			rival_state;	//相手の今の行動。SceneGameで代入する
 	AttackState			attack_state;	//今何の攻撃をしているか
 	AttackState			last_attack;	//最後になんの攻撃をしたか
 	AirDashState		air_dash_state;	//空中ダッシュステート
@@ -340,7 +341,6 @@ public:
 	int					trackgauge;		//追尾ダッシュの残り回数
 	float				gauge;			//ゲージ
 	int					power;			//ゲージが最大になると1増える。特殊技はこっちを消費する
-	int					rival_state;	//相手のステート
 	float				steal_escape;	//投げ抜け可能時間
 	int					combo_count;	//コンボカウント
 	int					now_player;		//どのプレイヤーがこのキャラを操作しているか(1:1P、2:2P)

@@ -1432,6 +1432,9 @@ void SceneGame::TrackSet()
 	//ホーミングダッシュ用の値を変更する
 	player1p->tracking.rival_Pos = player2p->pos;
 	player2p->tracking.rival_Pos = player1p->pos;
+	//相手のステートも送る
+	player1p->rival_state = player2p->act_state;
+	player2p->rival_state = player1p->act_state;
 }
 
 
@@ -1582,12 +1585,32 @@ void SceneGame::CameraRequest(float elapsed_time)
 		if (YRCamera.damage_pl_num > 1)
 		{
 			//ダメージを受けたのは2P
-			eye.x -= 50.0f;
+
+			if (player1p->pos.x < player2p->pos.x)
+			{
+				//1Pが左の場合
+				eye.x -= 50.0f;
+			}
+			else
+			{
+				//1Pが右の場合
+				eye.x += 50.0f;
+			}
 		}
 		else
 		{
+
 			//ダメージを受けたのは1P
-			eye.x += 50.0f;
+			if (player1p->pos.x < player2p->pos.x)
+			{
+				//2Pが右の場合
+				eye.x += 50.0f;
+			}
+			else
+			{
+				//2Pが左の場合
+				eye.x -= 50.0f;
+			}
 		}
 		
 		eye.z = focus.z - 100.0f;

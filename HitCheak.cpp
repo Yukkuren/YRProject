@@ -249,8 +249,16 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 						{
 							//’Í‚Ü‚ê‚½
 							hit[hitnum].hit_state = HitStateKind::STEAL;
-							hit[hitnum].steal_timer = 20;
+							hit[hitnum].steal_timer = attack[atknum].parameter.stealtimer;
+							hit[hitnum].hit = true;
 							//UŒ‚‚ª“–‚½‚Á‚½‚±‚Æ‚ğ•Û‘¶‚·‚é
+							for (int n = 0; n < attack.size(); n++)
+							{
+								attack[n].parameter.damege = 0;
+								attack[n].parameter.hitback = YR_Vector3(0.0f, 0.0f);
+								attack[n].hit_ok = false;
+							}
+							attack[atknum].knock_start = true;
 							attack[atknum].hit_result = HitResult::HIT;
 							return 0.0f;
 						}
