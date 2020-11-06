@@ -33,7 +33,6 @@ struct HitParameter
 {
 	YR_Vector3	distance = { 0.0f,0.0f };		//プレイヤーの中心座標からどれだけ離れているか
 	YR_Vector3	size = { 0.0f,0.0f };			//当たり判定のサイズ
-	HitBoxState	state = HitBoxState::NOGUARD;	//現在の当たり判定の状態
 };
 
 class HitBox
@@ -51,7 +50,7 @@ public:
 	//bool		steal;			//掴まれたらtrue
 	HitStateKind hit_state;		//ヒットした攻撃の属性を保存する
 	float		steal_timer;	//投げ抜け可能時間
-
+	HitBoxState	state = HitBoxState::NOGUARD;	//現在の当たり判定の状態
 	//常に変動する変数
 	HitParameter	parameter;		//当たり判定のパラメータ
 

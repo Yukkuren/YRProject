@@ -952,7 +952,7 @@ void Knight::Draw(
 	}
 	for (int i = 0; i < hit.size(); i++)
 	{
-		if (hit[i].parameter.state == HitBoxState::INVINCIBLE)
+		if (hit[i].state == HitBoxState::INVINCIBLE)
 		{
 			invincible = true;
 		}
@@ -2899,6 +2899,7 @@ void Knight::GuardBack(float elapsed_time)
 		return;
 	}
 
+	hit_state_n_set = true;
 	bool hit_on = false;
 
 	for (int i = 0; i < hit.size(); i++)
@@ -2934,10 +2935,10 @@ void Knight::GuardBack(float elapsed_time)
 	{
 		if (ground)
 		{
+			hit_state_n_set = false;
 			if (act_state != ActState::WAIT)
 			{
 				act_state = ActState::NONE;
-				hit_state_n_set = false;
 			}
 			if (pad->x_input[scastI(PAD::STICK_D)] > 0)
 			{
@@ -3479,6 +3480,7 @@ void Knight::TrackDash(float decision,float elapsed_time)
 			//ホーミングダッシュは当たった時点で攻撃が終了するので後隙を入力する
 			//攻撃側のY座標を相手の座標に固定する
 			pos.y = tracking.rival_Pos.y;
+			pos.x = tracking.rival_Pos.x + (track_adjust_x * (-decision));
 			//上方向への速度を入力する(ちょっとホップさせる)
 			speed_X.Set(0.0f);
 			//speed_Y.Set(attack_list[now_at_list].advance_speed);
@@ -4279,6 +4281,6 @@ void Knight::HitBoxTransition(HitBoxState state)
 {
 	for (int h = 0; h < hit.size(); h++)
 	{
-		hit[h].parameter.state = state;
+		hit[h].state = state;
 	}
 }

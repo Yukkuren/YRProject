@@ -7,7 +7,7 @@
 
 const float guard_gauge_get = 3.0f;
 
-float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max, int player, YR_Vector3 pos)
+float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hit, int player, YR_Vector3 pos)
 {
 	if (attack.empty())
 	{
@@ -19,7 +19,7 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 	{
 		if (attack[atknum].hit_ok)
 		{
-			for (int hitnum = 0; hitnum < h_max; hitnum++)
+			for (int hitnum = 0; hitnum < hit.size(); hitnum++)
 			{
 				//float a = (pos.x + attack[atknum].parameter.distance.x) - attack[atknum].parameter.size.x;
 				//float b = hit[hitnum].center.x + hit[hitnum].parameter.size.x;
@@ -47,75 +47,75 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 						{
 						case AttackKind::UP:
 							//è„íiçUåÇ
-							if (hit[hitnum].parameter.state == HitBoxState::NOGUARD)
+							if (hit[hitnum].state == HitBoxState::NOGUARD)
 							{
 								flag = HitResultState::HIT;
 							}
-							if (hit[hitnum].parameter.state == HitBoxState::DOWN)
+							if (hit[hitnum].state == HitBoxState::DOWN)
 							{
 								flag = HitResultState::HIT;
 							}
-							if (hit[hitnum].parameter.state == HitBoxState::INVINCIBLE)
+							if (hit[hitnum].state == HitBoxState::INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
 							break;
 						case AttackKind::MIDDLE:
 							//íÜíiçUåÇ
-							if (hit[hitnum].parameter.state == HitBoxState::NOGUARD)
+							if (hit[hitnum].state == HitBoxState::NOGUARD)
 							{
 								flag = HitResultState::HIT;
 							}
-							if (hit[hitnum].parameter.state == HitBoxState::INVINCIBLE)
+							if (hit[hitnum].state == HitBoxState::INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
 							break;
 						case AttackKind::DOWN:
 							//â∫íiçUåÇ
-							if (hit[hitnum].parameter.state == HitBoxState::NOGUARD)
+							if (hit[hitnum].state == HitBoxState::NOGUARD)
 							{
 								flag = HitResultState::HIT;
 							}
-							if (hit[hitnum].parameter.state == HitBoxState::MIDDLE)
+							if (hit[hitnum].state == HitBoxState::MIDDLE)
 							{
 								flag = HitResultState::HIT;
 							}
-							if (hit[hitnum].parameter.state == HitBoxState::INVINCIBLE)
+							if (hit[hitnum].state == HitBoxState::INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
 							break;
 						case AttackKind::STEAL:
 							//ìäÇ∞çUåÇ
-							if (hit[hitnum].parameter.state == HitBoxState::NOGUARD)
+							if (hit[hitnum].state == HitBoxState::NOGUARD)
 							{
 								flag = HitResultState::STATE_NONE;
 							}
-							if (hit[hitnum].parameter.state == HitBoxState::MIDDLE)
+							if (hit[hitnum].state == HitBoxState::MIDDLE)
 							{
 								flag = HitResultState::STATE_NONE;
 							}
-							if (hit[hitnum].parameter.state == HitBoxState::DOWN)
+							if (hit[hitnum].state == HitBoxState::DOWN)
 							{
 								flag = HitResultState::STATE_NONE;
 							}
-							if (hit[hitnum].parameter.state == HitBoxState::INVINCIBLE)
+							if (hit[hitnum].state == HitBoxState::INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
 							break;
 						case AttackKind::SLAM:
 							//í@Ç´Ç¬ÇØçUåÇ
-							if (hit[hitnum].parameter.state == HitBoxState::NOGUARD)
+							if (hit[hitnum].state == HitBoxState::NOGUARD)
 							{
 								flag = HitResultState::SLAM;
 							}
-							if (hit[hitnum].parameter.state == HitBoxState::DOWN)
+							if (hit[hitnum].state == HitBoxState::DOWN)
 							{
 								flag = HitResultState::SLAM;
 							}
-							if (hit[hitnum].parameter.state == HitBoxState::INVINCIBLE)
+							if (hit[hitnum].state == HitBoxState::INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
@@ -176,7 +176,7 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 								Hitcheak::stop2p = true;
 							}
 
-							if (attack[atknum].parameter.distance.x >= hit[atknum].center.x)
+							if (attack[atknum].parameter.distance.x >= hit[hitnum].center.x)
 							{
 								float dis = attack[atknum].parameter.distance.x - hit[hitnum].center.x;
 								dis /= 2.0f;
@@ -279,7 +279,7 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, HitBox* hit, int h_max,
 								Hitcheak::stop2p = true;
 							}
 
-							if (attack[atknum].parameter.distance.x >= hit[atknum].center.x)
+							if (attack[atknum].parameter.distance.x >= hit[hitnum].center.x)
 							{
 								float dis = attack[atknum].parameter.distance.x - hit[hitnum].center.x;
 								dis /= 2.0f;
@@ -495,11 +495,11 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 			{
 				if (attack2p[hitnum].hit_ok)
 				{
-					if (attack1p[atknum].parameter.distance.x - attack1p[atknum].parameter.size.x<attack2p[hitnum].parameter.distance.x + attack2p[hitnum].parameter.size.x &&
-						attack1p[atknum].parameter.distance.x + attack1p[atknum].parameter.size.x>attack2p[hitnum].parameter.distance.x - attack2p[hitnum].parameter.size.x)
+					if (attack1p[atknum].pos.x - attack1p[atknum].parameter.size.x<attack2p[hitnum].pos.x + attack2p[hitnum].parameter.size.x &&
+						attack1p[atknum].pos.x + attack1p[atknum].parameter.size.x>attack2p[hitnum].pos.x - attack2p[hitnum].parameter.size.x)
 					{
-						if (attack1p[atknum].parameter.distance.y - attack1p[atknum].parameter.size.y<attack2p[hitnum].parameter.distance.y + attack2p[hitnum].parameter.size.y &&
-							attack1p[atknum].parameter.distance.y + attack1p[atknum].parameter.size.y>attack2p[hitnum].parameter.distance.y - attack2p[hitnum].parameter.size.y)
+						if (attack1p[atknum].pos.y - attack1p[atknum].parameter.size.y<attack2p[hitnum].pos.y + attack2p[hitnum].parameter.size.y &&
+							attack1p[atknum].pos.y + attack1p[atknum].parameter.size.y>attack2p[hitnum].pos.y - attack2p[hitnum].parameter.size.y)
 						{
 							if (attack1p[atknum].parameter.gaugeout && !attack2p[hitnum].parameter.gaugeout)
 							{
@@ -515,11 +515,46 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 							}
 
 							clash = true;
-							Hitcheak::timer = ((attack1p[atknum].parameter.damege + attack2p[hitnum].parameter.damege) / 4);
-							if (Hitcheak::timer > 40)
+							Hitcheak::timer = 0.0f;
+
+							switch (attack1p[atknum].parameter.HS_timer)
 							{
-								Hitcheak::timer = 40;
+							case HitStopTime::SHORT:
+								Hitcheak::timer += 0.05f;
+								break;
+							case HitStopTime::NORMAL:
+								Hitcheak::timer += 0.10f;
+								break;
+							case HitStopTime::LONG:
+								Hitcheak::timer += 0.15f;
+								break;
+							case HitStopTime::ZOOM:
+								Hitcheak::timer += 0.20f;
+								break;
+							default:
+								Hitcheak::timer += 0.05f;
+								break;
 							}
+
+							switch (attack2p[atknum].parameter.HS_timer)
+							{
+							case HitStopTime::SHORT:
+								Hitcheak::timer += 0.05f;
+								break;
+							case HitStopTime::NORMAL:
+								Hitcheak::timer += 0.10f;
+								break;
+							case HitStopTime::LONG:
+								Hitcheak::timer += 0.15f;
+								break;
+							case HitStopTime::ZOOM:
+								Hitcheak::timer += 0.20f;
+								break;
+							default:
+								Hitcheak::timer += 0.05f;
+								break;
+							}
+
 							add1P = attack1p[atknum].parameter.damege;
 							add2P = attack2p[hitnum].parameter.damege;
 							if (attack1p[atknum].parameter.distance.x >= attack2p[hitnum].parameter.distance.x)
@@ -550,8 +585,10 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 
 							attack2p[hitnum].parameter.damege = 0;
 							attack2p[hitnum].hit_ok = false;
+							attack2p[atknum].knock_start = true;
 							attack1p[atknum].parameter.damege = 0;
 							attack1p[atknum].hit_ok = false;
+							attack1p[atknum].knock_start = true;
 							for (int n = 0; n < attack1p.size(); n++)
 							{
 								attack1p[n].parameter.damege = 0;
@@ -566,6 +603,8 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 								attack2p[n].parameter.hitback = YR_Vector3(0.0f, 0.0f);
 								attack2p[n].hit_ok = false;
 							}
+							attack1p[atknum].hit_result = HitResult::GUARD;
+							attack2p[atknum].hit_result = HitResult::GUARD;
 						}
 					}
 				}

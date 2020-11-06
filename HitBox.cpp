@@ -121,7 +121,7 @@ void HitBox::Draw(
 	const DirectX::XMFLOAT4& light_color,
 	const DirectX::XMFLOAT4& ambient_color)
 {
-	if (parameter.state == HitBoxState::INVINCIBLE)
+	if (state == HitBoxState::INVINCIBLE)
 	{
 		//–³“G
 		FRAMEWORK.scenegame.geo->render(

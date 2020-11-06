@@ -251,13 +251,13 @@ bool Knight::DEBUGAttackLoad()
 	{
 		hitparam_list[scastI(KNIGHTHIT::BODY)].act_parameter[list].distance = YR_Vector3(0.0f, 0.0f);
 		hitparam_list[scastI(KNIGHTHIT::BODY)].act_parameter[list].size = YR_Vector3(2.0f, 2.9f);
-		hitparam_list[scastI(KNIGHTHIT::BODY)].act_parameter[list].state = HitBoxState::NOGUARD;
+		//hitparam_list[scastI(KNIGHTHIT::BODY)].act_parameter[list].state = HitBoxState::NOGUARD;
 	}
 	for (int list = 0; list < hitparam_list[scastI(KNIGHTHIT::LEG)].act_parameter.size(); list++)
 	{
 		hitparam_list[scastI(KNIGHTHIT::LEG)].act_parameter[list].distance = YR_Vector3(0.0f, 0.0f);
 		hitparam_list[scastI(KNIGHTHIT::LEG)].act_parameter[list].size = YR_Vector3(1.4f, 0.8f);
-		hitparam_list[scastI(KNIGHTHIT::LEG)].act_parameter[list].state = HitBoxState::NOGUARD;
+		//hitparam_list[scastI(KNIGHTHIT::LEG)].act_parameter[list].state = HitBoxState::NOGUARD;
 	}
 
 	return true;
@@ -444,9 +444,9 @@ bool Knight::AttackLoad()
 			hit_ifs >> hitparam_list[list].act_parameter[act].distance.y;
 			hit_ifs >> hitparam_list[list].act_parameter[act].size.x;
 			hit_ifs >> hitparam_list[list].act_parameter[act].size.y;
-			int state;
-			hit_ifs >> state;
-			hitparam_list[list].act_parameter[act].state = static_cast<HitBoxState>(state);
+			/*int state;
+			hit_ifs >> state;*/
+			//hitparam_list[list].act_parameter[act].state = static_cast<HitBoxState>(state);
 		}
 		for (int atk = 0; atk < hitparam_list[list].attack_parameter.size(); atk++)
 		{
@@ -455,9 +455,9 @@ bool Knight::AttackLoad()
 			hit_ifs >> hitparam_list[list].attack_parameter[atk].distance.y;
 			hit_ifs >> hitparam_list[list].attack_parameter[atk].size.x;
 			hit_ifs >> hitparam_list[list].attack_parameter[atk].size.y;
-			int state;
-			hit_ifs >> state;
-			hitparam_list[list].attack_parameter[atk].state = static_cast<HitBoxState>(state);
+			/*int state;
+			hit_ifs >> state;*/
+			//hitparam_list[list].attack_parameter[atk].state = static_cast<HitBoxState>(state);
 		}
 	}
 	//もし落ちたらエラーを出す
@@ -555,13 +555,13 @@ bool Knight::AttackClean()
 		{
 			hitparam_list[list].act_parameter[act].distance = YR_Vector3(0.0f, 0.0f);
 			hitparam_list[list].act_parameter[act].size = YR_Vector3(1.0f, 1.0f);
-			hitparam_list[list].act_parameter[act].state = HitBoxState::NOGUARD;
+			//hitparam_list[list].act_parameter[act].state = HitBoxState::NOGUARD;
 		}
 		for (int atk = 0; atk < hitparam_list[list].attack_parameter.size(); atk++)
 		{
 			hitparam_list[list].attack_parameter[atk].distance = YR_Vector3(0.0f, 0.0f);
 			hitparam_list[list].attack_parameter[atk].size = YR_Vector3(1.0f, 1.0f);
-			hitparam_list[list].attack_parameter[atk].state = HitBoxState::NOGUARD;
+			//hitparam_list[list].attack_parameter[atk].state = HitBoxState::NOGUARD;
 		}
 	}
 	return true;
@@ -669,7 +669,7 @@ bool Knight::AttackWrite()
 			hitout << hitparam_list[list].act_parameter[act].distance.y << std::endl;
 			hitout << hitparam_list[list].act_parameter[act].size.x << std::endl;
 			hitout << hitparam_list[list].act_parameter[act].size.y << std::endl;
-			hitout << scastI(hitparam_list[list].act_parameter[act].state) << std::endl;
+			//hitout << scastI(hitparam_list[list].act_parameter[act].state) << std::endl;
 		}
 		for (int atk = 0; atk < hitparam_list[list].attack_parameter.size(); atk++)
 		{
@@ -678,7 +678,7 @@ bool Knight::AttackWrite()
 			hitout << hitparam_list[list].attack_parameter[atk].distance.y << std::endl;
 			hitout << hitparam_list[list].attack_parameter[atk].size.x << std::endl;
 			hitout << hitparam_list[list].attack_parameter[atk].size.y << std::endl;
-			hitout << scastI(hitparam_list[list].attack_parameter[atk].state) << std::endl;
+			//hitout << scastI(hitparam_list[list].attack_parameter[atk].state) << std::endl;
 		}
 	}
 	hitout.close();
@@ -763,10 +763,10 @@ void Knight::DrawDEBUG(
 								ImGui::SliderFloat(u8"プレイヤーとの距離Y", &hitparam_list[list].act_parameter[act].distance.y, -200.0f, 200.0f);
 								ImGui::SliderFloat(u8"大きさX", &hitparam_list[list].act_parameter[act].size.x, 0.0f, 500.0f);
 								ImGui::SliderFloat(u8"大きさY", &hitparam_list[list].act_parameter[act].size.y, 0.0f, 500.0f);
-								int state = scastI(hitparam_list[list].act_parameter[act].state);
-								ImGui::SliderInt(u8"状態", &state, 0, scastI(HitBoxState::END)-1);
-								hitparam_list[list].act_parameter[act].state = static_cast<HitBoxState>(state);
-								ImGui::Text(hitstate_name_list[state].c_str());
+								//int state = scastI(hitparam_list[list].act_parameter[act].state);
+								//ImGui::SliderInt(u8"状態", &state, 0, scastI(HitBoxState::END)-1);
+								//hitparam_list[list].act_parameter[act].state = static_cast<HitBoxState>(state);
+								//ImGui::Text(hitstate_name_list[state].c_str());
 								ImGui::InputFloat(u8"モーション速度 : 発生", &ac_act[act].fream, 0.01f, 0.1f);
 								ImGui::InputFloat(u8"モーション速度 : 持続", &ac_act[act].timer, 0.01f, 0.1f);
 								ImGui::InputFloat(u8"モーション速度 : 後スキ", &ac_act[act].later, 0.01f, 0.1f);
@@ -787,10 +787,10 @@ void Knight::DrawDEBUG(
 								ImGui::SliderFloat(u8"プレイヤーとの距離Y", &hitparam_list[list].attack_parameter[atk].distance.y, -200.0f, 200.0f);
 								ImGui::SliderFloat(u8"大きさX", &hitparam_list[list].attack_parameter[atk].size.x, 0.0f, 500.0f);
 								ImGui::SliderFloat(u8"大きさY", &hitparam_list[list].attack_parameter[atk].size.y, 0.0f, 500.0f);
-								int state = scastI(hitparam_list[list].attack_parameter[atk].state);
-								ImGui::SliderInt(u8"状態", &state, 0, scastI(HitBoxState::END));
-								hitparam_list[list].attack_parameter[atk].state = static_cast<HitBoxState>(state);
-								ImGui::Text(hitstate_name_list[state].c_str());
+								//int state = scastI(hitparam_list[list].attack_parameter[atk].state);
+								//ImGui::SliderInt(u8"状態", &state, 0, scastI(HitBoxState::END));
+								//hitparam_list[list].attack_parameter[atk].state = static_cast<HitBoxState>(state);
+								//ImGui::Text(hitstate_name_list[state].c_str());
 								ImGui::TreePop();
 							}
 						}
@@ -810,7 +810,7 @@ void Knight::DrawDEBUG(
 		ImGui::Text("player.y:%f", pos.y);
 		ImGui::Text("track:%d", trackgauge);
 		ImGui::Text("hitState : "); ImGui::SameLine();
-		ImGui::Text(hitstate_name_list[scastI(hit[0].parameter.state)].c_str());
+		ImGui::Text(hitstate_name_list[scastI(hit[0].state)].c_str());
 		if (ImGui::TreeNode("ModelParameter"))
 		{
 			ImGui::SliderFloat("scale_x", &scale.x, -10.0f, 10.0f);
