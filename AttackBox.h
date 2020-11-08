@@ -43,6 +43,7 @@ enum class AttackKind : int
 	STEAL,		//掴み
 	SLAM,		//叩きつけ(高さが一定なら滑り状態にする)
 	LOCK,		//ロック技
+	PROJECTILE,	//飛び道具
 	END,
 };
 
@@ -77,14 +78,15 @@ public:
 	bool				plus;		//trueなら飛び道具。speedにplusを足していく
 	float				rightOrleft;//右向きなら*1左向きなら*-1
 	HitResult			hit_result;	//攻撃ヒット時の結果を保存する
+	int					attack_name;//攻撃番号
 	
 	AttackParameter		parameter;	//パラメーター
 	YR_Vector3			pos;		//攻撃の実際の中心
 	YR_Vector3			speed;		//攻撃の移動速度
 	YR_Vector3			plus_speed;	//飛び道具用の常に付与するスピード
 
-	void Init(AttackParameter& param, float rightOrleft, YR_Vector3 pl_pos);
-	void Init(AttackParameter& param, float rightOrleft, YR_Vector3 pl_pos, YR_Vector3 plus_speed);
+	void Init(int attack_name, AttackParameter& param, float rightOrleft, YR_Vector3 pl_pos);
+	void Init(int attack_name, AttackParameter& param, float rightOrleft, YR_Vector3 pl_pos, YR_Vector3 plus_speed);
 	void Update(YR_Vector3 pl_pos, float elapsed_time);
 	void Draw(YRShader* shader,
 		const DirectX::XMMATRIX& view,

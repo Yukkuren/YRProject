@@ -249,6 +249,9 @@
     <ClCompile Include="KnightLoad.cpp">
       <Filter>Chara\Knight</Filter>
     </ClCompile>
+    <ClCompile Include="Effect.cpp">
+      <Filter>Souce</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimBoard.h">
@@ -374,10 +377,13 @@
     <ClInclude Include="YR_VectorMaster.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="EXlib\DX11\EffekseerRendererDX11.h">
+    <ClInclude Include="Effect.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="EXlib\Effekseer.h">
       <Filter>EXlib\Effekseer</Filter>
     </ClInclude>
-    <ClInclude Include="EXlib\Effekseer\Effekseer.h">
+    <ClInclude Include="EXlib\EffekseerRendererDX11.h">
       <Filter>EXlib\Effekseer</Filter>
     </ClInclude>
   </ItemGroup>

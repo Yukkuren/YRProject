@@ -85,6 +85,7 @@ public:
 	const DirectX::XMFLOAT4X4& GetProjection()const;
 	const DirectX::XMFLOAT3& GetEye()const;
 	const DirectX::XMFLOAT3& GetFocus()const;
+	const DirectX::XMFLOAT3& GetUp()const;
 	const float& GetFov()const;
 	const float& GetAspect()const;
 	const float& GetNear()const;

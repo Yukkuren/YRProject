@@ -347,6 +347,26 @@ void Knight::LoadData(int color_number)
 		model_motion.track_L = std::make_shared<Model>("./Data/FBX/Knight/AnimationL/knight_track_L.fbx");
 	}
 
+	//‘OŽã•KŽE‹Z
+	if (model_motion.jaku_rh_R == nullptr)
+	{
+		model_motion.jaku_rh_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_Rhurf_R.fbx");
+	}
+	if (model_motion.jaku_rh_L == nullptr)
+	{
+		model_motion.jaku_rh_L = std::make_shared<Model>("./Data/FBX/Knight/AnimationL/knight_Rhurf_L.fbx");
+	}
+
+	//ŒãŽã•KŽE‹Z
+	if (model_motion.jaku_lh_R == nullptr)
+	{
+		model_motion.jaku_lh_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_Lhurf_R.fbx");
+	}
+	if (model_motion.jaku_lh_L == nullptr)
+	{
+		model_motion.jaku_lh_L = std::make_shared<Model>("./Data/FBX/Knight/AnimationL/knight_Lhurf_L.fbx");
+	}
+
 	//’´•KŽE‹Z
 	if (model_motion.special_R == nullptr)
 	{

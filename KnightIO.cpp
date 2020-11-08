@@ -151,6 +151,7 @@ std::array<std::string, scastI(AttackKind::END)> attack_kind_name_list =
 	u8"つかみ",
 	u8"たたきつけ(高さが一定なら滑り状態にする)",
 	u8"ロック技",
+	u8"飛び道具",
 };
 #endif // USE_IMGUI
 
@@ -302,6 +303,7 @@ bool Knight::AttackLoad()
 		ifs >> result;
 		attack_list[list].combo = static_cast<AttackState>(next);
 		attack_list[list].conditions_hit = static_cast<HitResult>(result);
+		ifs >> attack_list[list].timer;
 
 
 
@@ -506,6 +508,7 @@ bool Knight::AttackClean()
 		attack_list[list].advance_speed = 0.0f;
 		attack_list[list].combo = attack_list[list].attack_name;
 		attack_list[list].conditions_hit = HitResult::HIT;
+		attack_list[list].timer = 0.0f;
 		//攻撃回数ごとのパラメータ初期化
 		for (int sin = 0; sin < attack_list[list].attack_single.size(); sin++)
 		{
@@ -594,6 +597,7 @@ bool Knight::AttackWrite()
 		outputfile << attack_list[list].advance_speed << std::endl;
 		outputfile << scastI(attack_list[list].combo) << std::endl;
 		outputfile << scastI(attack_list[list].conditions_hit) << std::endl;
+		outputfile << attack_list[list].timer << std::endl;
 
 		//攻撃回数ごとのパラメータ書き出し
 		if (!attack_list[list].attack_single.empty())
@@ -714,18 +718,15 @@ void Knight::DrawDEBUG(
 		hit[i].Draw(geoshader, view, projection, light_direction, light_color, ambient_color);
 	}
 
-	if (attack)
+	if (!atk.empty())
 	{
-		if (!atk.empty())
+		for (auto& a : atk)
 		{
-			for (auto& a : atk)
+			if (a.attack)
 			{
-				if (a.attack)
+				if (a.hit_ok)
 				{
-					if (a.hit_ok)
-					{
-						a.Draw(geoshader, view, projection, light_direction, light_color, ambient_color);
-					}
+					a.Draw(geoshader, view, projection, light_direction, light_color, ambient_color);
 				}
 			}
 		}
@@ -1029,10 +1030,12 @@ void Knight::DrawDEBUG(
 					{
 						ImGui::InputFloat(u8"加算スピードX", &attack_list[list].speed.x, 0.01f, 0.1f);
 						ImGui::InputFloat(u8"加算スピードY", &attack_list[list].speed.y, 0.01f, 0.1f);
+						ImGui::InputFloat(u8"プレイヤーの持続フレーム", &attack_list[list].timer, 0.01f, 0.1f);
 					}
 					else
 					{
 						attack_list[list].speed = YR_Vector3(0.0f, 0.0f);
+						attack_list[list].timer = 0.0f;
 					}
 					ImGui::InputFloat(u8"必要なゲージ量", &attack_list[list].need_gauge, 1.0f, 10.0f);
 					if (attack_list[list].need_gauge >= 1.0f)

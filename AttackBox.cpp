@@ -4,7 +4,7 @@
 #include "PlayerBase.h"
 #include "framework.h"
 
-void AttackBox::Init(AttackParameter& param, float rightOrleft,YR_Vector3 pl_pos)
+void AttackBox::Init(int attack_name, AttackParameter& param, float rightOrleft,YR_Vector3 pl_pos)
 {
 	attack = true;
 	fin = false;
@@ -18,6 +18,7 @@ void AttackBox::Init(AttackParameter& param, float rightOrleft,YR_Vector3 pl_pos
 	parameter.hitback.x *= rightOrleft;
 	//parameter.knockback *= (rightOrleft);
 	hit_result = HitResult::NONE;
+	this->attack_name = attack_name;
 	if (parameter.damege != 0.0f)
 	{
 		hit_ok = true;
@@ -27,7 +28,7 @@ void AttackBox::Init(AttackParameter& param, float rightOrleft,YR_Vector3 pl_pos
 	pos.y = pl_pos.y + ((parameter.distance.y));	//YÀ•WXV
 }
 
-void AttackBox::Init(AttackParameter& param, float rightOrleft, YR_Vector3 pl_pos, YR_Vector3 plus_speed)
+void AttackBox::Init(int attack_name, AttackParameter& param, float rightOrleft, YR_Vector3 pl_pos, YR_Vector3 plus_speed)
 {
 	attack = true;
 	fin = false;
@@ -41,6 +42,7 @@ void AttackBox::Init(AttackParameter& param, float rightOrleft, YR_Vector3 pl_po
 	hit_result = HitResult::NONE;
 	parameter = param;
 	parameter.hitback.x *= rightOrleft;
+	this->attack_name = attack_name;
 	//parameter.knockback *= (rightOrleft);
 	if (parameter.damege != 0.0f)
 	{

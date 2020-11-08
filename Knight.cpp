@@ -6,6 +6,8 @@
 #include "framework.h"
 #include <algorithm>
 #include "World.h"
+#include "Effect.h"
+
 //#define _CRTDBG_MAP_ALLOC						// mallocによるメモリリーク検出でCPPファイル名と行数出力指定
 //#define DBG_NEW new( _NORMAL_BLOCK , __FILE__ , __LINE__)	// new によるメモリリーク検出でCPPファイル名と行数出力指定
 //#include <stdio.h>
@@ -22,6 +24,10 @@ void Knight::Init(YR_Vector3 InitPos)
 	//scale = YR_Vector3( 0.05f,0.05f,0.05f );
 	//angle = YR_Vector3(DirectX::XMConvertToRadians(-90.0f), 0.0f, 0.0f);
 	angle = YR_Vector3(0.0f, 0.0f, 0.0f);
+
+	fream = non_target;
+	timer = non_target;
+	later = non_target;
 
 	speed.x = 0;
 	speed.y = 0.0f;
@@ -193,6 +199,8 @@ void Knight::Update(float decision, float elapsed_time)
 	{
 		ground = false;
 	}
+
+	AttackUpdate(elapsed_time);	//攻撃判定の更新
 
 	//-----------------------------------------------------
 	// *概要*
@@ -633,13 +641,13 @@ void Knight::AttackSwitch(float decision, float elapsed_time)
 		A_UKyo(elapsed_time);
 		break;
 	case AttackState::JAKU_RHURF:
-		Hadouken(elapsed_time);
+		Jaku_Rhurf(elapsed_time);
 		break;
 	case AttackState::THU_RHURF:
-		Thu_Hadouken(elapsed_time);
+		Thu_Rhurf(elapsed_time);
 		break;
 	case AttackState::KYO_RHURF:
-		Kyo_Hadouken(elapsed_time);
+		Kyo_Rhurf(elapsed_time);
 		break;
 	case AttackState::TRACK_DASH:
 		//ホーミングダッシュ
@@ -680,7 +688,6 @@ void Knight::AttackSwitch(float decision, float elapsed_time)
 
 void Knight::Attack(float decision, float elapsed_time)
 {
-	AttackUpdate(elapsed_time);	//攻撃判定の更新
 	if (ground)
 	{
 		if (speed.x > 0.0f)
@@ -905,6 +912,11 @@ void Knight::Draw(
 
 	DrawFastMove(FastPos);
 	drawset = false;
+
+	//エフェクト
+	//GetEffect().CameraSet();
+	//GetEffect().PlayEffect(EffectKind::GUARD, pos.GetDXFLOAT3(), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f), 0.0f);
+	//GetEffect().Draw();
 
 	//Trackの時は回す
 	//angle.x += elapsed_time * 10.0f;
@@ -3381,11 +3393,11 @@ void Knight::TrackDash(float decision,float elapsed_time)
 
 		for (auto& a : atk)
 		{
-			if (knock)
+			if (knock && a.attack_name == scastI(attack_state))
 			{
 				a.parameter.knockback = 0.0f;
 			}
-			if (a.knock_start)
+			if (a.knock_start && a.attack_name == scastI(attack_state))
 			{
 				pos.x -= a.parameter.knockback * rightOrleft;
 				a.parameter.knockback = 0.0f;
@@ -3867,7 +3879,19 @@ void Knight::EndAttackErase()
 			{
 				return a.fin;
 			});
-		atk.erase(result, atk.end());
+
+		bool fin = false;
+		for (int i = 0; i < atk.size(); i++)
+		{
+			if (atk[i].fin)
+			{
+				fin = true;
+			}
+		}
+		if (fin)
+		{
+			atk.erase(result, atk.end());
+		}
 		/*for (std::vector<AttackBox>::iterator& a = atk.begin(); a != atk.end();)
 		{
 			if (a->fin)
@@ -3889,7 +3913,11 @@ void Knight::AllAttackClear()
 	{
 		for (int a = 0; a < atk.size(); a++)
 		{
-			atk[a].fin = true;
+			if (atk[a].parameter.type != AttackKind::PROJECTILE)
+			{
+				//飛び道具は削除しない
+				atk[a].fin = true;
+			}
 		}
 
 		EndAttackErase();

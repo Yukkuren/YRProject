@@ -120,6 +120,17 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 								flag = HitResultState::AVOIDANCE;
 							}
 							break;
+						case AttackKind::PROJECTILE:
+							//îÚÇ—ìπãÔçUåÇ
+							if (hit[hitnum].state == HitBoxState::NOGUARD)
+							{
+								flag = HitResultState::HIT;
+							}
+							if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
+							break;
 						}
 
 

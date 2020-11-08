@@ -90,7 +90,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.\DirectXTK-master\Inc;.\FBX SDK\2016.1.2\include;.\cereal-master\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\DirectXTK-master\Inc;.\FBX SDK\2016.1.2\include;.\cereal-master\include;.\EXlib\Effekseer\Debug;.\EXlib\DX11\Debug</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
@@ -126,7 +126,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.\DirectXTK-master\Inc;.\FBX SDK\2016.1.2\include;.\cereal-master\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\DirectXTK-master\Inc;.\FBX SDK\2016.1.2\include;.\cereal-master\include;.\EXlib\Effekseer\Release;.\EXlib\DX11\Release</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -167,6 +167,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="CoList.cpp" />
     <ClCompile Include="1PGamePad.cpp" />
+    <ClCompile Include="Effect.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="framebuffer.cpp" />
     <ClCompile Include="Geometric_primitive.cpp" />
@@ -214,8 +215,9 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="CoList.h" />
     <ClInclude Include="collision.h" />
-    <ClInclude Include="EXlib\DX11\EffekseerRendererDX11.h" />
-    <ClInclude Include="EXlib\Effekseer\Effekseer.h" />
+    <ClInclude Include="Effect.h" />
+    <ClInclude Include="EXlib\Effekseer.h" />
+    <ClInclude Include="EXlib\EffekseerRendererDX11.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="framebuffer.h" />
     <ClInclude Include="framework.h" />

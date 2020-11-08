@@ -214,6 +214,7 @@ public:
 	void Attack(float decision, float elapsed_time);		//以下の関数を制御する
 	void AttackSwitch(float decision, float elapsed_time);	//attack_stateによってそれぞれ異なる関数を動かす
 	void AttackDefault(float elapsed_time);//特殊な記述のある攻撃以外はこの関数を使用する
+	void AttackProjectileDefault(float elapsed_time);//特殊な記述のある飛び道具攻撃以外はこの関数を使用する
 
 
 	//----------------------------------//
@@ -229,9 +230,9 @@ public:
 	void A_Thu(float elapsed_time);
 	void A_Kyo(float elapsed_time);
 	void A_UKyo(float elapsed_time);
-	void Hadouken(float elapsed_time);
-	void Thu_Hadouken(float elapsed_time);
-	void Kyo_Hadouken(float elapsed_time);
+	void Jaku_Rhurf(float elapsed_time);
+	void Thu_Rhurf(float elapsed_time);
+	void Kyo_Rhurf(float elapsed_time);
 	void P_Kyo(float elapsed_time);
 	void TrackDash(float decision, float elapsed_time);
 	void Steal(float elapsed_time);
