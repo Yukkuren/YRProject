@@ -106,6 +106,8 @@ void Knight::Init(YR_Vector3 InitPos)
 
 	lumi_material = Model::Material_Attribute::NONE;
 
+	effect_timer = 0.0f;
+
 	if (now_player == 1)
 	{
 		anim->NodeChange(model_motion.intro_R);
@@ -914,35 +916,6 @@ void Knight::Draw(
 	DrawFastMove(FastPos);
 	drawset = false;
 
-	//エフェクト
-	GetEffect().CameraSet();
-	static DirectX::XMFLOAT3 sc = { 10.0f,10.0f,10.0f };
-	static DirectX::XMFLOAT3 po = { 0.0f,0.0f,0.0f };
-	static DirectX::XMFLOAT3 an = { 10.0f,10.0f,10.0f };
-	static float ann = 0.0f;
-	GetEffect().PlayEffect(EffectKind::GUARD, po, sc, an, ann);
-
-
-	std::string now_com = std::to_string(now_player);
-	now_com += std::string(":time");
-	ImGui::Begin(now_com.c_str());
-
-	float ss = sc.x;
-	ImGui::SliderFloat("scale", &ss, 0.0f, 100.0f);
-	sc = { ss,ss,ss };
-	ImGui::SliderFloat("pos_x", &po.x, -100.0f, 100.0f);
-	ImGui::SliderFloat("pos_y", &po.y, -100.0f, 100.0f);
-	ImGui::SliderFloat("pos_z", &po.z, -100.0f, 100.0f);
-	ImGui::SliderFloat("angle_x", &an.x, 0.0f, 360.0f);
-	ImGui::SliderFloat("angle_y", &an.y, 0.0f, 360.0f);
-	ImGui::SliderFloat("angle_z", &an.z, 0.0f, 360.0f);
-	ImGui::SliderFloat("angle", &ann, 0.0f, 100.0f);
-
-	ImGui::End();
-
-	//エフェクト描画
-	GetEffect().Draw();
-
 	bool invincible = false;
 
 	if (attack_state == AttackState::EXTENDATK)
@@ -1087,6 +1060,12 @@ void Knight::Draw(
 	//}
 
 	TextDraw();
+
+	//エフェクト
+	GetEffect().CameraSet();
+
+	//エフェクト描画
+	GetEffect().Draw();
 
 //デバッグ状態なら
 #if USE_IMGUI
@@ -1959,10 +1938,20 @@ void Knight::GuardAnimSet()
 				if (rightOrleft > 0)
 				{
 					anim->NodeChange(model_motion.guard_R, 2);
+					if (effect_timer > draw_guard_effect_interval)
+					{
+						GetEffect().PlayEffect(EffectKind::GUARD, DirectX::XMFLOAT3(pos.x + draw_guarf_effect_add_pos_x, pos.y, pos.z), DirectX::XMFLOAT3(0.7f,0.7f,0.7f), DirectX::XMFLOAT3(0.0f,1.0f,0.0f), 5.5f);
+						effect_timer = 0.0f;
+					}
 				}
 				else
 				{
 					anim->NodeChange(model_motion.guard_L, 2);
+					if (effect_timer > draw_guard_effect_interval)
+					{
+						GetEffect().PlayEffect(EffectKind::GUARD, DirectX::XMFLOAT3(pos.x - draw_guarf_effect_add_pos_x, pos.y, pos.z), DirectX::XMFLOAT3(0.7f, 0.7f, 0.7f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -5.5f);
+						effect_timer = 0.0f;
+					}
 				}
 				anim_ccodinate = ac_act[scastI(act_state)].timer;
 			}
@@ -1972,10 +1961,20 @@ void Knight::GuardAnimSet()
 				if (rightOrleft > 0)
 				{
 					anim->NodeChange(model_motion.guard_R);
+					if (effect_timer > draw_guard_effect_interval)
+					{
+						GetEffect().PlayEffect(EffectKind::GUARD, DirectX::XMFLOAT3(pos.x + draw_guarf_effect_add_pos_x, pos.y, pos.z), DirectX::XMFLOAT3(0.7f, 0.7f, 0.7f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), 5.5f);
+						effect_timer = 0.0f;
+					}
 				}
 				else
 				{
 					anim->NodeChange(model_motion.guard_L);
+					if (effect_timer > draw_guard_effect_interval)
+					{
+						GetEffect().PlayEffect(EffectKind::GUARD, DirectX::XMFLOAT3(pos.x - draw_guarf_effect_add_pos_x, pos.y, pos.z), DirectX::XMFLOAT3(0.7f, 0.7f, 0.7f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -5.5f);
+						effect_timer = 0.0f;
+					}
 				}
 				anim_ccodinate = ac_act[scastI(act_state)].timer;
 			}
@@ -1986,10 +1985,20 @@ void Knight::GuardAnimSet()
 			if (rightOrleft > 0)
 			{
 				anim->NodeChange(model_motion.guard_R,1);
+				if (effect_timer > draw_guard_effect_interval)
+				{
+					GetEffect().PlayEffect(EffectKind::GUARD, DirectX::XMFLOAT3(pos.x + draw_guarf_effect_add_pos_x, pos.y, pos.z), DirectX::XMFLOAT3(0.7f, 0.7f, 0.7f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), 5.5f);
+					effect_timer = 0.0f;
+				}
 			}
 			else
 			{
 				anim->NodeChange(model_motion.guard_L,1);
+				if (effect_timer > draw_guard_effect_interval)
+				{
+					GetEffect().PlayEffect(EffectKind::GUARD, DirectX::XMFLOAT3(pos.x - draw_guarf_effect_add_pos_x, pos.y, pos.z), DirectX::XMFLOAT3(0.7f, 0.7f, 0.7f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -5.5f);
+					effect_timer = 0.0f;
+				}
 			}
 			anim_ccodinate = ac_act[scastI(act_state)].timer;
 		}
@@ -2907,6 +2916,9 @@ void Knight::GuardBack(float elapsed_time)
 
 	hit_state_n_set = true;
 	bool hit_on = false;
+
+	//ガードエフェクト描画更新
+	effect_timer += elapsed_time;
 
 	for (int i = 0; i < hit.size(); i++)
 	{
@@ -3915,7 +3927,7 @@ void Knight::EndAttackErase()
 		}
 	}
 
-	if (!projectile_atk.empty())
+	/*if (!projectile_atk.empty())
 	{
 		auto result = std::remove_if(projectile_atk.begin(), projectile_atk.end(),
 			[](AttackBox& a)
@@ -3935,6 +3947,21 @@ void Knight::EndAttackErase()
 		{
 			projectile_atk.erase(result, projectile_atk.end());
 		}
+	}*/
+
+	if (!projectile_atk.empty())
+	{
+		for (std::vector<AttackBox>::iterator& m = projectile_atk.begin(); m != projectile_atk.end();)
+		{
+			if (m->fin)
+			{
+				m = projectile_atk.erase(m);
+			}
+			else
+			{
+				m++;
+			}
+		}
 	}
 }
 
@@ -3945,11 +3972,7 @@ void Knight::AllAttackClear()
 	{
 		for (int a = 0; a < atk.size(); a++)
 		{
-			if (atk[a].parameter.type != AttackKind::PROJECTILE)
-			{
-				//飛び道具は削除しない
-				atk[a].fin = true;
-			}
+			atk[a].fin = true;
 		}
 
 		EndAttackErase();

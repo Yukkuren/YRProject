@@ -27,8 +27,7 @@ YR_Effect::YR_Effect()
 	effects.resize(scastI(EffectKind::END));
 
 	//エフェクトの読み込み
-	EFK_CHAR efk_char = EFK_CHAR("./Data/Effect/guard.efk");
-	effects[scastI(EffectKind::GUARD)] = Effekseer::Effect::Create(manager, &efk_char);
+	effects[scastI(EffectKind::GUARD)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/guard.efk");
 
 	//ハンドルの初期化
 	for (int i = 0; i < handles.size(); i++)
@@ -121,18 +120,18 @@ void YR_Effect::PlayEffect(
 	// エフェクトの移動
 	//manager->AddLocation(handles[scastI(kind)], ::Effekseer::Vector3D(pos.x, pos.y, pos.z));
 
+	// エフェクトの再生
+	handles[scastI(kind)] = manager->Play(effects[scastI(kind)], 0, 0, 0);
+	//handles[scastI(kind)] = manager->Play(effects[scastI(kind)], pos.x,pos.y,pos.z);
+
 	// エフェクトの移動
 	manager->SetLocation(handles[scastI(kind)], ::Effekseer::Vector3D(pos.x, pos.y, pos.z));
 
 	// エフェクトの回転
-	manager->SetRotation(handles[scastI(kind)], ::Effekseer::Vector3D(axis.x, axis.y, axis.z),angle);
+	manager->SetRotation(handles[scastI(kind)], ::Effekseer::Vector3D(axis.x, axis.y, axis.z), angle);
 
 	// エフェクトの拡大縮小
-	manager->SetScale(handles[scastI(kind)], scale.x,scale.y,scale.z);
-
-	// エフェクトの再生
-	//handles[scastI(kind)] = manager->Play(effects[scastI(kind)], 0, 0, 0);
-	handles[scastI(kind)] = manager->Play(effects[scastI(kind)], pos.x,pos.y,pos.z);
+	manager->SetScale(handles[scastI(kind)], scale.x, scale.y, scale.z);
 }
 
 //アニメーション再生の停止

@@ -1175,20 +1175,25 @@ void Knight::DrawDEBUG(
 		
 
 		ImGui::End();
-	}
-	/*{
-		std::string now = std::to_string(now_player);
-		now += std::string("KnightAtkList");
-		ImGui::Begin(now.c_str());
 
-		ImGui::Text(u8"0:攻撃無し\n1:弱\n2:中\n3:強(対空&下強)\n4:下弱");
-		ImGui::Text(u8"5:下中\n6:上強\n7:空弱攻撃\n8:空中攻撃");
-		ImGui::Text(u8"9:空強攻撃\n10:空上強攻撃(打ち上げ攻撃)");
-		ImGui::Text(u8"11:つかみ\n12:投げ\n13:ホーミングダッシュ");
-		ImGui::Text(u8"14:前弱必殺\n15:前中必殺\n16:前強必殺\n17:後弱必殺\n18:後中必殺");
-		ImGui::Text(u8"19:後強必殺\n20:前超必殺\n21:後超必殺\n22:即死技\n23:無敵攻撃");
+		std::string now_pro = std::to_string(now_player);
+		now_pro += std::string(u8"：飛び道具判定");
+		ImGui::Begin(now_pro.c_str());
+
+		ImGui::BeginChild(ImGui::GetID((void*)0), ImVec2(500, 500), ImGuiWindowFlags_NoTitleBar);
+		
+		if (!projectile_atk.empty())
+		{
+			for (int i = 0; i < projectile_atk.size(); i++)
+			{
+				ImGui::Text("pro[%d]:", i); ImGui::SameLine();
+				ImGui::Text("pos_X : %f", projectile_atk[i].pos.x);
+			}
+		}
+
+		ImGui::EndChild();
 		ImGui::End();
-	}*/
+	}
 
 #endif // USE_IMGUI
 }

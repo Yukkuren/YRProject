@@ -49,6 +49,12 @@ void AttackBox::Init(int attack_name, AttackParameter& param, float rightOrleft,
 		hit_ok = true;
 	}
 
+	if (parameter.type == AttackKind::PROJECTILE)
+	{
+		//属性が遠距離攻撃ならスピードを付与する
+		speed = plus_speed;
+	}
+
 	pos.x = pl_pos.x + (parameter.distance.x * rightOrleft);	//X座標更新
 	pos.y = pl_pos.y + (parameter.distance.y);	//Y座標更新
 }
@@ -65,11 +71,11 @@ void AttackBox::Update(YR_Vector3 pl_pos, float elapsed_time)
 	{
 		pos.x = pl_pos.x + ((parameter.distance.x + speed.x) * rightOrleft);	//X座標更新
 		pos.y = pl_pos.y + ((parameter.distance.y + speed.y));	//Y座標更新
-	}
 
-	if (plus)
-	{
-		speed += plus_speed * elapsed_time;
+		if (plus)
+		{
+			speed += plus_speed * elapsed_time;
+		}
 	}
 
 	parameter.timer -= elapsed_time;			//持続を減らしていく
@@ -80,6 +86,7 @@ void AttackBox::Update(YR_Vector3 pl_pos, float elapsed_time)
 		parameter.damege = 0.0f;
 		parameter.HB_timer = 0.0f;
 		parameter.hitback = YR_Vector3(0.0f, 0.0f);
+		parameter.timer = -1.0f;
 	}
 
 	if (parameter.timer < 0.0f)
