@@ -263,12 +263,12 @@ void GamePad1::Update(float elapsed_time)
 		if (x_input[scastI(PAD::STICK_RDown)] == 1 || x_input[scastI(PAD::STICK_LDown)] == 1)
 		{
 			com_list.trigger = true;
-			com_list.command_timer = 0;
+			com_list.command_timer = 0.0f;
 		}
 
-		if (com_list.trigger)
+		if (com_list.trigger && com_list.command_timer < timer_max_command)
 		{
-			com_list.command_timer+=elapsed_time;
+			com_list.command_timer += elapsed_time;
 		}
 	}
 	else
@@ -537,7 +537,7 @@ void GamePad1::Update(float elapsed_time)
 			com_list.command_timer = 0;
 		}
 
-		if (com_list.trigger)
+		if (com_list.trigger && com_list.command_timer < timer_max_command)
 		{
 			com_list.command_timer += elapsed_time;
 		}

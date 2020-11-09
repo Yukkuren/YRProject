@@ -534,6 +534,7 @@ void Knight::AttackInput()
 				}
 
 				//攻撃を決定する
+				//pad->com_list.Reset();
 				//現在攻撃判定が出ているなら全て消去する
 				AllAttackClear();
 				//この攻撃をキャンセルするための条件を保存する
@@ -914,14 +915,34 @@ void Knight::Draw(
 	drawset = false;
 
 	//エフェクト
-	//GetEffect().CameraSet();
-	//GetEffect().PlayEffect(EffectKind::GUARD, pos.GetDXFLOAT3(), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f), 0.0f);
-	//GetEffect().Draw();
+	GetEffect().CameraSet();
+	static DirectX::XMFLOAT3 sc = { 10.0f,10.0f,10.0f };
+	static DirectX::XMFLOAT3 po = { 0.0f,0.0f,0.0f };
+	static DirectX::XMFLOAT3 an = { 10.0f,10.0f,10.0f };
+	static float ann = 0.0f;
+	GetEffect().PlayEffect(EffectKind::GUARD, po, sc, an, ann);
 
-	//Trackの時は回す
-	//angle.x += elapsed_time * 10.0f;
+
+	std::string now_com = std::to_string(now_player);
+	now_com += std::string(":time");
+	ImGui::Begin(now_com.c_str());
+
+	float ss = sc.x;
+	ImGui::SliderFloat("scale", &ss, 0.0f, 100.0f);
+	sc = { ss,ss,ss };
+	ImGui::SliderFloat("pos_x", &po.x, -100.0f, 100.0f);
+	ImGui::SliderFloat("pos_y", &po.y, -100.0f, 100.0f);
+	ImGui::SliderFloat("pos_z", &po.z, -100.0f, 100.0f);
+	ImGui::SliderFloat("angle_x", &an.x, 0.0f, 360.0f);
+	ImGui::SliderFloat("angle_y", &an.y, 0.0f, 360.0f);
+	ImGui::SliderFloat("angle_z", &an.z, 0.0f, 360.0f);
+	ImGui::SliderFloat("angle", &ann, 0.0f, 100.0f);
+
+	ImGui::End();
+
 	//エフェクト描画
-	
+	GetEffect().Draw();
+
 	bool invincible = false;
 
 	if (attack_state == AttackState::EXTENDATK)
@@ -3858,7 +3879,7 @@ bool Knight::AttackEndCheck()
 	{
 		for (auto& a : atk)
 		{
-			if (!a.fin)
+			if (!a.fin && a.attack_name == scastI(attack_state))
 			{
 				return false;
 			}
@@ -3892,17 +3913,28 @@ void Knight::EndAttackErase()
 		{
 			atk.erase(result, atk.end());
 		}
-		/*for (std::vector<AttackBox>::iterator& a = atk.begin(); a != atk.end();)
+	}
+
+	if (!projectile_atk.empty())
+	{
+		auto result = std::remove_if(projectile_atk.begin(), projectile_atk.end(),
+			[](AttackBox& a)
+			{
+				return a.fin;
+			});
+
+		bool fin = false;
+		for (int i = 0; i < projectile_atk.size(); i++)
 		{
-			if (a->fin)
+			if (projectile_atk[i].fin)
 			{
-
+				fin = true;
 			}
-			else
-			{
-
-			}
-		}*/
+		}
+		if (fin)
+		{
+			projectile_atk.erase(result, projectile_atk.end());
+		}
 	}
 }
 
@@ -3939,6 +3971,14 @@ void Knight::AttackUpdate(float elapsed_time)
 				//行動終了フラグをオンに
 				finish = true;
 			}
+		}
+	}
+
+	if (!projectile_atk.empty())
+	{
+		for (int i = 0; i < projectile_atk.size(); i++)
+		{
+			projectile_atk[i].Update(pos, elapsed_time);
 		}
 	}
 }

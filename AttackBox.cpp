@@ -56,8 +56,16 @@ void AttackBox::Init(int attack_name, AttackParameter& param, float rightOrleft,
 
 void AttackBox::Update(YR_Vector3 pl_pos, float elapsed_time)
 {
-	pos.x = pl_pos.x + ((parameter.distance.x + speed.x) * rightOrleft);	//X座標更新
-	pos.y = pl_pos.y + ((parameter.distance.y + speed.y));	//Y座標更新
+	if (parameter.type == AttackKind::PROJECTILE)
+	{
+		pos.x += ((speed.x * rightOrleft) * elapsed_time);	//X座標更新
+		pos.y += (speed.y * elapsed_time);	//Y座標更新
+	}
+	else
+	{
+		pos.x = pl_pos.x + ((parameter.distance.x + speed.x) * rightOrleft);	//X座標更新
+		pos.y = pl_pos.y + ((parameter.distance.y + speed.y));	//Y座標更新
+	}
 
 	if (plus)
 	{

@@ -4,7 +4,8 @@
 #include<array>
 //#include"Common.h"
 
-#define TIMER_LIMIT		(0.5)
+constexpr float TIMER_LIMIT = 0.5;
+constexpr float timer_max_command = 1.0f;		//この数以下ならコマンドタイマーを増やす
 #define		scastI				static_cast<int>
 
 enum class Command : int
@@ -25,7 +26,7 @@ private:
 	int						numI;
 public:
 	bool trigger = false;
-	float command_timer = 0;
+	float command_timer = 0.0f;
 
 	Command CommandCheack(int last, int* hist, float distans);
 	void Reset();

@@ -353,6 +353,7 @@ public:
 	HitResult			hit_result;		//攻撃が当たった場合の結果を保存する
 	HitResult			atk_result;		//攻撃決定時にキャンセル用の条件を保存するための変数
 	std::vector<AttackBox> atk;			//攻撃当たり判定
+	std::vector<AttackBox> projectile_atk;//飛び道具当たり判定
 	std::vector<HitBox>	hit;			//当たり判定
 	
 	std::array<Animation_Coordinate, scastI(AttackState::ATTACK_END)>	ac_attack;	//攻撃ごとのアニメーション調整値

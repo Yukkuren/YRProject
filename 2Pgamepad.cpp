@@ -259,7 +259,7 @@ void GamePad2::Update(float elapsed_time)
 			com_list.command_timer = 0;
 		}
 
-		if (com_list.trigger)
+		if (com_list.trigger && com_list.command_timer < timer_max_command)
 		{
 			com_list.command_timer += elapsed_time;
 		}
@@ -529,7 +529,7 @@ void GamePad2::Update(float elapsed_time)
 			com_list.command_timer = 0;
 		}
 
-		if (com_list.trigger)
+		if (com_list.trigger && com_list.command_timer < timer_max_command)
 		{
 			com_list.command_timer++;
 		}

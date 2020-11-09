@@ -609,9 +609,26 @@ void SceneGame::Update(float elapsed_time)
 					player1p->GaugeUp(Hitcheak::add1P);
 					player2p->GaugeUp(Hitcheak::add2P);
 
+					Hitcheak::HitCheakAttack(player1p->projectile_atk, player2p->atk);
+					player1p->GaugeUp(Hitcheak::add1P);
+					player2p->GaugeUp(Hitcheak::add2P);
+
+					Hitcheak::HitCheakAttack(player1p->atk, player2p->projectile_atk);
+					player1p->GaugeUp(Hitcheak::add1P);
+					player2p->GaugeUp(Hitcheak::add2P);
+
+					Hitcheak::HitCheakAttack(player1p->projectile_atk, player2p->projectile_atk);
+					player1p->GaugeUp(Hitcheak::add1P);
+					player2p->GaugeUp(Hitcheak::add2P);
+
 					//攻撃と当たり判定の判定
 					Hitcheak::add1P = Hitcheak::HitCheak(player1p->atk, player2p->hit, 2,player1p->pos);
 					Hitcheak::add2P = Hitcheak::HitCheak(player2p->atk, player1p->hit, 1,player2p->pos);
+					player1p->GaugeUp(Hitcheak::add1P);
+					player2p->GaugeUp(Hitcheak::add2P);
+
+					Hitcheak::add1P = Hitcheak::HitCheak(player1p->projectile_atk, player2p->hit, 2, player1p->pos);
+					Hitcheak::add2P = Hitcheak::HitCheak(player2p->projectile_atk, player1p->hit, 1, player2p->pos);
 					player1p->GaugeUp(Hitcheak::add1P);
 					player2p->GaugeUp(Hitcheak::add2P);
 
@@ -1215,7 +1232,6 @@ void SceneGame::Draw(float elapsed_time)
 
 	//フェード用画像描画
 	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
-
 	NullSetRenderTexture();
 	RenderTexture();
 	RenderBlur();

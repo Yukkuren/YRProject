@@ -732,6 +732,20 @@ void Knight::DrawDEBUG(
 		}
 	}
 
+	if (!projectile_atk.empty())
+	{
+		for (int i = 0; i < projectile_atk.size(); i++)
+		{
+			if (projectile_atk[i].attack)
+			{
+				if (projectile_atk[i].hit_ok)
+				{
+					projectile_atk[i].Draw(geoshader, view, projection, light_direction, light_color, ambient_color);
+				}
+			}
+		}
+	}
+
 	//UŒ‚ƒŠƒXƒgì¬—pˆ—
 #if USE_IMGUI
 	{
@@ -809,6 +823,7 @@ void Knight::DrawDEBUG(
 		ImGui::InputFloat("mouse_offset.y", &mouth_offset.y, 0.01f, 0.01f);
 		ImGui::Text("player.x:%f", pos.x);
 		ImGui::Text("player.y:%f", pos.y);
+		ImGui::Text("command_timer:%f", pad->com_list.command_timer);
 		ImGui::Text("track:%d", trackgauge);
 		ImGui::Text("hitState : "); ImGui::SameLine();
 		ImGui::Text(hitstate_name_list[scastI(hit[0].state)].c_str());

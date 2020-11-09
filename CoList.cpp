@@ -15,12 +15,14 @@ Command CommandList::CommandCheack(int last, int* hist, float distans)
 	trigger = false;
 	state = Command::NOCOMMAND;
 	numI = 0;
-	if (command_timer > TIMER_LIMIT || command_timer < 0.0f)
+
+	if (command_timer > TIMER_LIMIT || command_timer <= 0.0f)
 	{
+		trigger = true;
 		return Command::NOCOMMAND;
 	}
 
-	command_timer = 0;
+	//command_timer = 0;
 	for (int i = 0; i < 10; i++)
 	{
 		histry[i] = hist[i];
@@ -67,10 +69,12 @@ Command CommandList::CommandCheack(int last, int* hist, float distans)
 			{
 				if (distans > 0)
 				{
+					trigger = true;
 					return Command::RHURF;
 				}
 				if (distans < 0)
 				{
+					trigger = true;
 					return Command::LHURF;
 				}
 			}
@@ -87,10 +91,12 @@ Command CommandList::CommandCheack(int last, int* hist, float distans)
 			{
 				if (distans < 0)
 				{
+					trigger = true;
 					return Command::RHURF;
 				}
 				if (distans > 0)
 				{
+					trigger = true;
 					return Command::LHURF;
 				}
 			}
@@ -99,11 +105,11 @@ Command CommandList::CommandCheack(int last, int* hist, float distans)
 	default:
 		break;
 	}
-
+	trigger = true;
 	return Command::NOCOMMAND;
 }
 
 void CommandList::Reset()
 {
-	command_timer = 0;
+	command_timer = 0.0f;
 }

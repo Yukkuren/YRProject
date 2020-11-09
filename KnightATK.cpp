@@ -64,10 +64,15 @@ void Knight::AttackDefault(float elapsed_time)
 	
 
 	bool knock = false;	//ˆê“x‚Å‚àknock_start‚É“ü‚Á‚½‚çc‚è‚Ì“–‚½‚è”»’è‚Ìknockback‚ğ‘S‚Ä0.0f‚É‚·‚é
+	bool now_atk_isbox = false;//Œ»İo‚Ä‚éUŒ‚”»’è‚ªŒ»İ‚ÌUŒ‚‚Æ“¯‚¶‚È‚çtrue
 	if (!atk.empty())
 	{
 		for (auto& a : atk)
 		{
+			if (a.attack_name == scastI(attack_state))
+			{
+				now_atk_isbox = true;
+			}
 			if (knock && a.attack_name == scastI(attack_state))
 			{
 				a.parameter.knockback = 0.0f;
@@ -87,6 +92,12 @@ void Knight::AttackDefault(float elapsed_time)
 	if (atk.empty())
 	{
 		//‚à‚µUŒ‚‚ª‚Ü‚¾o‚Ä‚¢‚È‚¢‚È‚ç‚±‚±‚Åreturn‚µ‚ÄŸ‚ÌUŒ‚‚ÉˆÚ‚ç‚È‚¢‚æ‚¤‚É‚·‚é
+		return;
+	}
+
+	if (!now_atk_isbox)
+	{
+		//UŒ‚”»’è‚ªo‚Ä‚¢‚Ä‚à‚»‚ê‚ª¡‚ÌUŒ‚‚Ì‚à‚Ì‚Å‚Í‚È‚¢ê‡‚ÍŸ‚ÌUŒ‚‚É‚ÍˆÚ‚ç‚È‚¢
 		return;
 	}
 
@@ -168,12 +179,12 @@ void Knight::AttackProjectileDefault(float elapsed_time)
 		if (attack_list[now_at_list].speed_on)
 		{
 			//UŒ‚‚É‘¬“x‚ğ•t—^‚·‚éê‡
-			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos, attack_list[now_at_list].speed);
+			attack_list[now_at_list].SetAttack(&projectile_atk, rightOrleft, pos, attack_list[now_at_list].speed);
 		}
 		else
 		{
 			//•t—^‚µ‚È‚¢ê‡
-			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos);
+			attack_list[now_at_list].SetAttack(&projectile_atk, rightOrleft, pos);
 		}
 		//”­¶ƒtƒŒ[ƒ€‚ğ‰Šú‰»
 		fream = non_target;
@@ -186,31 +197,41 @@ void Knight::AttackProjectileDefault(float elapsed_time)
 
 
 
-	bool knock = false;	//ˆê“x‚Å‚àknock_start‚É“ü‚Á‚½‚çc‚è‚Ì“–‚½‚è”»’è‚Ìknockback‚ğ‘S‚Ä0.0f‚É‚·‚é
-	if (!atk.empty())
-	{
-		for (auto& a : atk)
-		{
-			if (knock && a.attack_name == scastI(attack_state))
-			{
-				a.parameter.knockback = 0.0f;
-				a.knock_start = false;
-			}
-			if (a.knock_start && a.attack_name == scastI(attack_state))
-			{
-				//pos.x -= a.parameter.knockback * rightOrleft;
-				a.parameter.knockback = 0.0f;
-				knock = true;
-				a.knock_start = false;
-			}
-		}
-	}
+	//bool knock = false;	//ˆê“x‚Å‚àknock_start‚É“ü‚Á‚½‚çc‚è‚Ì“–‚½‚è”»’è‚Ìknockback‚ğ‘S‚Ä0.0f‚É‚·‚é
+	//bool now_atk_isbox = false;//Œ»İo‚Ä‚éUŒ‚”»’è‚ªŒ»İ‚ÌUŒ‚‚Æ“¯‚¶‚È‚çtrue
+	//if (!projectile_atk.empty())
+	//{
+	//	for (auto& a : projectile_atk)
+	//	{
+	//		if (a.attack_name == scastI(attack_state))
+	//		{
+	//			now_atk_isbox = true;
+	//		}
+	//		if (knock && a.attack_name == scastI(attack_state))
+	//		{
+	//			a.parameter.knockback = 0.0f;
+	//			a.knock_start = false;
+	//		}
+	//		if (a.knock_start && a.attack_name == scastI(attack_state))
+	//		{
+	//			//pos.x -= a.parameter.knockback * rightOrleft;
+	//			a.parameter.knockback = 0.0f;
+	//			knock = true;
+	//			a.knock_start = false;
+	//		}
+	//	}
+	//}
 
-	if (atk.empty())
+	if (projectile_atk.empty())
 	{
 		//‚à‚µUŒ‚‚ª‚Ü‚¾o‚Ä‚¢‚È‚¢‚È‚ç‚±‚±‚Åreturn‚µ‚ÄŸ‚ÌUŒ‚‚ÉˆÚ‚ç‚È‚¢‚æ‚¤‚É‚·‚é
 		return;
 	}
+	//if (!now_atk_isbox)
+	//{
+	//	//UŒ‚”»’è‚ªo‚Ä‚¢‚Ä‚à‚»‚ê‚ª¡‚ÌUŒ‚‚Ì‚à‚Ì‚Å‚Í‚È‚¢ê‡‚ÍŸ‚ÌUŒ‚‚É‚ÍˆÚ‚ç‚È‚¢
+	//	return;
+	//}
 
 	if (timer < target_max)
 	{
@@ -321,10 +342,15 @@ void Knight::Kyo(float elapsed_time)
 
 
 	bool knock = false;	//ˆê“x‚Å‚àknock_start‚É“ü‚Á‚½‚çc‚è‚Ì“–‚½‚è”»’è‚Ìknockback‚ğ‘S‚Ä0.0f‚É‚·‚é
+	bool now_atk_isbox = false;//Œ»İo‚Ä‚éUŒ‚”»’è‚ªŒ»İ‚ÌUŒ‚‚Æ“¯‚¶‚È‚çtrue
 	if (!atk.empty())
 	{
 		for (auto& a : atk)
 		{
+			if (a.attack_name == scastI(attack_state))
+			{
+				now_atk_isbox = true;
+			}
 			if (knock && a.attack_name == scastI(attack_state))
 			{
 				a.parameter.knockback = 0.0f;
@@ -341,6 +367,11 @@ void Knight::Kyo(float elapsed_time)
 	if (atk.empty())
 	{
 		//‚à‚µUŒ‚‚ª‚Ü‚¾o‚Ä‚¢‚È‚¢‚È‚ç‚±‚±‚Åreturn‚µ‚ÄŸ‚ÌUŒ‚‚ÉˆÚ‚ç‚È‚¢‚æ‚¤‚É‚·‚é
+		return;
+	}
+	if (!now_atk_isbox)
+	{
+		//UŒ‚”»’è‚ªo‚Ä‚¢‚Ä‚à‚»‚ê‚ª¡‚ÌUŒ‚‚Ì‚à‚Ì‚Å‚Í‚È‚¢ê‡‚ÍŸ‚ÌUŒ‚‚É‚ÍˆÚ‚ç‚È‚¢
 		return;
 	}
 
@@ -433,12 +464,17 @@ void Knight::U_Kyo(float elapsed_time)
 	int now_at_list = scastI(attack_state);
 
 	bool knock = false;	//ˆê“x‚Å‚àknock_start‚É“ü‚Á‚½‚çc‚è‚Ì“–‚½‚è”»’è‚Ìknockback‚ğ‘S‚Ä0.0f‚É‚·‚é
+	bool now_atk_isbox = false;//Œ»İo‚Ä‚éUŒ‚”»’è‚ªŒ»İ‚ÌUŒ‚‚Æ“¯‚¶‚È‚çtrue
 	if (!atk.empty())
 	{
 		//d—Í‚ğ•t—^‚·‚é
 		pos.y -= up_gravity * elapsed_time;
 		for (auto& a : atk)
 		{
+			if (a.attack_name == scastI(attack_state))
+			{
+				now_atk_isbox = true;
+			}
 			if (knock && a.attack_name == scastI(attack_state))
 			{
 				a.parameter.knockback = 0.0f;
@@ -455,6 +491,11 @@ void Knight::U_Kyo(float elapsed_time)
 	if (atk.empty())
 	{
 		//‚à‚µUŒ‚‚ª‚Ü‚¾o‚Ä‚¢‚È‚¢‚È‚ç‚±‚±‚Åreturn‚µ‚ÄŸ‚ÌUŒ‚‚ÉˆÚ‚ç‚È‚¢‚æ‚¤‚É‚·‚é
+		return;
+	}
+	if (!now_atk_isbox)
+	{
+		//UŒ‚”»’è‚ªo‚Ä‚¢‚Ä‚à‚»‚ê‚ª¡‚ÌUŒ‚‚Ì‚à‚Ì‚Å‚Í‚È‚¢ê‡‚ÍŸ‚ÌUŒ‚‚É‚ÍˆÚ‚ç‚È‚¢
 		return;
 	}
 
@@ -571,10 +612,15 @@ void Knight::A_UKyo(float elapsed_time)
 
 
 	bool knock = false;	//ˆê“x‚Å‚àknock_start‚É“ü‚Á‚½‚çc‚è‚Ì“–‚½‚è”»’è‚Ìknockback‚ğ‘S‚Ä0.0f‚É‚·‚é
+	bool now_atk_isbox = false;//Œ»İo‚Ä‚éUŒ‚”»’è‚ªŒ»İ‚ÌUŒ‚‚Æ“¯‚¶‚È‚çtrue
 	if (!atk.empty())
 	{
 		for (auto& a : atk)
 		{
+			if (a.attack_name == scastI(attack_state))
+			{
+				now_atk_isbox = true;
+			}
 			if (knock && a.attack_name == scastI(attack_state))
 			{
 				a.parameter.knockback = 0.0f;
@@ -598,6 +644,11 @@ void Knight::A_UKyo(float elapsed_time)
 	if (atk.empty())
 	{
 		//‚à‚µUŒ‚‚ª‚Ü‚¾o‚Ä‚¢‚È‚¢‚È‚ç‚±‚±‚Åreturn‚µ‚ÄŸ‚ÌUŒ‚‚ÉˆÚ‚ç‚È‚¢‚æ‚¤‚É‚·‚é
+		return;
+	}
+	if (!now_atk_isbox)
+	{
+		//UŒ‚”»’è‚ªo‚Ä‚¢‚Ä‚à‚»‚ê‚ª¡‚ÌUŒ‚‚Ì‚à‚Ì‚Å‚Í‚È‚¢ê‡‚ÍŸ‚ÌUŒ‚‚É‚ÍˆÚ‚ç‚È‚¢
 		return;
 	}
 
@@ -695,10 +746,15 @@ void Knight::Steal(float elapsed_time)
 
 
 	bool knock = false;	//ˆê“x‚Å‚àknock_start‚É“ü‚Á‚½‚çc‚è‚Ì“–‚½‚è”»’è‚Ìknockback‚ğ‘S‚Ä0.0f‚É‚·‚é
+	bool now_atk_isbox = false;//Œ»İo‚Ä‚éUŒ‚”»’è‚ªŒ»İ‚ÌUŒ‚‚Æ“¯‚¶‚È‚çtrue
 	if (!atk.empty())
 	{
 		for (auto& a : atk)
 		{
+			if (a.attack_name == scastI(attack_state))
+			{
+				now_atk_isbox = true;
+			}
 			if (knock && a.attack_name == scastI(attack_state))
 			{
 				a.parameter.knockback = 0.0f;
@@ -751,6 +807,11 @@ void Knight::Steal(float elapsed_time)
 	if (atk.empty())
 	{
 		//‚à‚µUŒ‚‚ª‚Ü‚¾o‚Ä‚¢‚È‚¢‚È‚ç‚±‚±‚Åreturn‚µ‚ÄŸ‚ÌUŒ‚‚ÉˆÚ‚ç‚È‚¢‚æ‚¤‚É‚·‚é
+		return;
+	}
+	if (!now_atk_isbox)
+	{
+		//UŒ‚”»’è‚ªo‚Ä‚¢‚Ä‚à‚»‚ê‚ª¡‚ÌUŒ‚‚Ì‚à‚Ì‚Å‚Í‚È‚¢ê‡‚ÍŸ‚ÌUŒ‚‚É‚ÍˆÚ‚ç‚È‚¢
 		return;
 	}
 
@@ -872,10 +933,15 @@ void Knight::Slow(float elapsed_time)
 
 
 	bool knock = false;	//ˆê“x‚Å‚àknock_start‚É“ü‚Á‚½‚çc‚è‚Ì“–‚½‚è”»’è‚Ìknockback‚ğ‘S‚Ä0.0f‚É‚·‚é
+	bool now_atk_isbox = false;//Œ»İo‚Ä‚éUŒ‚”»’è‚ªŒ»İ‚ÌUŒ‚‚Æ“¯‚¶‚È‚çtrue
 	if (!atk.empty())
 	{
 		for (auto& a : atk)
 		{
+			if (a.attack_name == scastI(attack_state))
+			{
+				now_atk_isbox = true;
+			}
 			if (knock && a.attack_name == scastI(attack_state))
 			{
 				a.parameter.knockback = 0.0f;
@@ -899,6 +965,11 @@ void Knight::Slow(float elapsed_time)
 	if (atk.empty())
 	{
 		//‚à‚µUŒ‚‚ª‚Ü‚¾o‚Ä‚¢‚È‚¢‚È‚ç‚±‚±‚Åreturn‚µ‚ÄŸ‚ÌUŒ‚‚ÉˆÚ‚ç‚È‚¢‚æ‚¤‚É‚·‚é
+		return;
+	}
+	if (!now_atk_isbox)
+	{
+		//UŒ‚”»’è‚ªo‚Ä‚¢‚Ä‚à‚»‚ê‚ª¡‚ÌUŒ‚‚Ì‚à‚Ì‚Å‚Í‚È‚¢ê‡‚ÍŸ‚ÌUŒ‚‚É‚ÍˆÚ‚ç‚È‚¢
 		return;
 	}
 
@@ -1113,10 +1184,15 @@ void Knight::SpecialAttack(float elapsed_time)
 	int now_at_list = scastI(attack_state);
 
 	bool knock = false;	//ˆê“x‚Å‚àknock_start‚É“ü‚Á‚½‚çc‚è‚Ì“–‚½‚è”»’è‚Ìknockback‚ğ‘S‚Ä0.0f‚É‚·‚é
+	bool now_atk_isbox = false;//Œ»İo‚Ä‚éUŒ‚”»’è‚ªŒ»İ‚ÌUŒ‚‚Æ“¯‚¶‚È‚çtrue
 	if (!atk.empty())
 	{
 		for (auto& a : atk)
 		{
+			if (a.attack_name == scastI(attack_state))
+			{
+				now_atk_isbox = true;
+			}
 			if (knock && a.attack_name == scastI(attack_state))
 			{
 				a.parameter.knockback = 0.0f;
@@ -1135,6 +1211,11 @@ void Knight::SpecialAttack(float elapsed_time)
 	if (atk.empty())
 	{
 		//‚à‚µUŒ‚‚ª‚Ü‚¾o‚Ä‚¢‚È‚¢‚È‚ç‚±‚±‚Åreturn‚µ‚ÄŸ‚ÌUŒ‚‚ÉˆÚ‚ç‚È‚¢‚æ‚¤‚É‚·‚é
+		return;
+	}
+	if (!now_atk_isbox)
+	{
+		//UŒ‚”»’è‚ªo‚Ä‚¢‚Ä‚à‚»‚ê‚ª¡‚ÌUŒ‚‚Ì‚à‚Ì‚Å‚Í‚È‚¢ê‡‚ÍŸ‚ÌUŒ‚‚É‚ÍˆÚ‚ç‚È‚¢
 		return;
 	}
 
