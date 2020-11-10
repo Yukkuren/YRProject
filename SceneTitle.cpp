@@ -90,7 +90,12 @@ void SceneTitle::Update(float elapsed_time)
 	{
 		if (pKeyState.aflg == 1)
 		{
+			GetSound().BGMStop(BGMKind::TITLE);
 			GetSound().SEPlay(SEKind::SELECT_ENTER);
+		}
+		if (pKeyState.sflg == 1)
+		{
+			GetSound().BGMPlay(BGMKind::TITLE);
 		}
 
 		if (pKeyState.nflg == 1 || g1.x_input[scastI(PAD::START)] == 1)

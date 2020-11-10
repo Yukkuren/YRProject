@@ -2,6 +2,24 @@
 #include <stdio.h>
 #include <assert.h>
 #include "CoList.h"
+#include <string>
+#include <array>
+
+#include"./imgui/imgui.h"
+#include"./imgui/imgui_impl_win32.h"
+#include"./imgui/imgui_impl_dx11.h"
+
+#ifdef  _DEBUG
+std::array<std::string, scastI(BGMKind::END)> bgm_name_list =
+{
+	u8"タイトル",
+};
+
+std::array<std::string, scastI(SEKind::END)> se_name_list =
+{
+	u8"決定音",
+};
+#endif // 
 
 //コンストラクタ
 void YRSound::Init()
@@ -28,7 +46,7 @@ void YRSound::Init()
 	pBGM.resize(scastI(BGMKind::END));
 	pSE.resize(scastI(SEKind::END));
 
-	BGMLoad("./Data/Sound/BGM/megalovania.wav", BGMKind::TITLE);
+	BGMLoad("./Data/Sound/BGM/Title.wav", BGMKind::TITLE, XAUDIO2_LOOP_INFINITE, 0.5f);
 	SELoad("./Data/Sound/SE/enter.wav", SEKind::SELECT_ENTER);
 }
 
@@ -79,7 +97,7 @@ YRSound::~YRSound()
 }
 
 //音声BGMデータの読み込み(Wave)
-bool YRSound::BGMLoad(const char* filename, const BGMKind& kind)
+bool YRSound::BGMLoad(const char* filename, const BGMKind& kind, UINT32 loop_count, float volume)
 {
 	FILE* file = NULL;
 	if (fopen_s(&file, filename, "rb") != 0) {
@@ -116,15 +134,23 @@ bool YRSound::BGMLoad(const char* filename, const BGMKind& kind)
 	pBGM[scastI(kind)].buf.pAudioData = (BYTE*)pBuffer;
 	pBGM[scastI(kind)].buf.Flags = XAUDIO2_END_OF_STREAM;
 	pBGM[scastI(kind)].buf.AudioBytes = pBGM[scastI(kind)].data.size;
+	pBGM[scastI(kind)].buf.LoopCount = loop_count;
+	if (loop_count == 0)
+	{
+		pBGM[scastI(kind)].buf.LoopBegin = 0;
+		pBGM[scastI(kind)].buf.LoopLength = 0;
+	}
+	pBGM[scastI(kind)].volume = volume;
 
 	//波形データをバッファに設定
 	pBGM[scastI(kind)].pSourceVoice->SubmitSourceBuffer(&pBGM[scastI(kind)].buf);
+	BGMSetVolume(kind);
 
 	return pBGM[scastI(kind)].pSourceVoice;
 }
 
 //音声BGMデータの読み込み(Wave)
-bool YRSound::SELoad(const char* filename, const SEKind& kind)
+bool YRSound::SELoad(const char* filename, const SEKind& kind, UINT32 loop_count, float volume)
 {
 	FILE* file = NULL;
 	if (fopen_s(&file, filename, "rb") != 0) {
@@ -161,9 +187,17 @@ bool YRSound::SELoad(const char* filename, const SEKind& kind)
 	pSE[scastI(kind)].buf.pAudioData = (BYTE*)pBuffer;
 	pSE[scastI(kind)].buf.Flags = XAUDIO2_END_OF_STREAM;
 	pSE[scastI(kind)].buf.AudioBytes = pSE[scastI(kind)].data.size;
+	pSE[scastI(kind)].buf.LoopCount = loop_count;
+	if (loop_count == 0)
+	{
+		pSE[scastI(kind)].buf.LoopBegin = 0;
+		pSE[scastI(kind)].buf.LoopLength = 0;
+	}
+	pSE[scastI(kind)].volume = volume;
 
 	//波形データをバッファに設定
 	pSE[scastI(kind)].pSourceVoice->SubmitSourceBuffer(&pSE[scastI(kind)].buf);
+	SESetVolume(kind);
 
 	return pSE[scastI(kind)].pSourceVoice;
 }
@@ -180,6 +214,18 @@ void YRSound::SEPlay(const SEKind& kind)
 	pSE[scastI(kind)].pSourceVoice->Start();
 }
 
+//音声BGMデータの音量設定(wave)
+void YRSound::BGMSetVolume(const BGMKind& kind)
+{
+	pBGM[scastI(kind)].pSourceVoice->SetVolume(pBGM[scastI(kind)].volume);
+}
+
+//音声SEデータの音量設定(wave)
+void YRSound::SESetVolume(const SEKind& kind)
+{
+	pSE[scastI(kind)].pSourceVoice->SetVolume(pSE[scastI(kind)].volume);
+}
+
 //音声BGMデータの停止(wave)
 void YRSound::BGMStop(const BGMKind& kind)
 {
@@ -190,4 +236,32 @@ void YRSound::BGMStop(const BGMKind& kind)
 void YRSound::SEStop(const SEKind& kind)
 {
 	pSE[scastI(kind)].pSourceVoice->Stop();
+}
+
+
+void YRSound::SoundDebugDrow()
+{
+#ifdef  _DEBUG
+	ImGui::Begin("SoundVolume");
+
+	if (!pBGM.empty())
+	{
+		for (int b = 0; b < pBGM.size(); b++)
+		{
+			ImGui::SliderFloat(bgm_name_list[b].c_str(), &pBGM[b].volume, 0.0f, 1.0f);
+			BGMSetVolume(static_cast<BGMKind>(b));
+		}
+	}
+
+	if (!pSE.empty())
+	{
+		for (int s = 0; s < pSE.size(); s++)
+		{
+			ImGui::SliderFloat(se_name_list[s].c_str(), &pSE[s].volume, 0.0f, 1.0f);
+			SESetVolume(static_cast<SEKind>(s));
+		}
+	}
+
+	ImGui::End();
+#endif // 
 }

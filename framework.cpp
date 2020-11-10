@@ -807,6 +807,9 @@ void framework::render(float elapsed_time/*Elapsed seconds from last frame*/)
 		}*/
 	BlendSet(Blend::ALPHA);
 	scene->Draw(elapsed_time);
+
+	GetSound().SoundDebugDrow();
+
 #if USE_IMGUI
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

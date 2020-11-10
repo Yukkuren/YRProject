@@ -44,6 +44,7 @@ struct AudioSource
 	IXAudio2SourceVoice*	pSourceVoice = nullptr;	//ソースボイスのポインタ
 	XAUDIO2_BUFFER			buf;					//バッファ
 	Chunk					data;					//チャンクデータ
+	float					volume = 1.0f;			//ボリューム値
 };
 
 
@@ -66,16 +67,22 @@ public:
 	void Init();
 
 	//音声データの読み込み(Wave)
-	bool BGMLoad(const char* filename, const BGMKind& kind);
-	bool SELoad(const char* filename, const SEKind& kind);
+	bool BGMLoad(const char* filename, const BGMKind& kind, UINT32 loop_count = XAUDIO2_LOOP_INFINITE,float volume = 1.0f);
+	bool SELoad(const char* filename, const SEKind& kind, UINT32 loop_count = 0, float volume = 1.0f);
 
 	//音声データの再生(wave)
 	void BGMPlay(const BGMKind& kind);
 	void SEPlay(const SEKind& kind);
 
+	//音声データの音量設定(wave)
+	void BGMSetVolume(const BGMKind& kind);
+	void SESetVolume(const SEKind& kind);
+
 	//音声データの停止(wave)
 	void BGMStop(const BGMKind& kind);
 	void SEStop(const SEKind& kind);
+
+	void SoundDebugDrow();
 
 	static YRSound& getInstance()
 	{
