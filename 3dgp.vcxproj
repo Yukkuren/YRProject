@@ -136,7 +136,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;d3d11.lib;dxgi.lib;DirectXTK.lib;libfbxsdk-md.lib;EffekseerRendererDX11.lib;Effekseer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;d3d11.lib;dxgi.lib;DirectXTK.lib;libfbxsdk-md.lib;EffekseerRendererDX11.lib;Effekseer.lib;xaudio2.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.\FBX SDK\2016.1.2\lib\vs2015\x86\release;.\DirectXTK-master\Bin\Desktop_2015\Win32\Release;.\cereal-master\include;.\EXlib\Effekseer\Release;.\EXlib\DX11\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -204,6 +204,7 @@
     <ClCompile Include="YRModelAnim.cpp" />
     <ClCompile Include="YRMotion.cpp" />
     <ClCompile Include="YRShader.cpp" />
+    <ClCompile Include="YRSound.cpp" />
     <ClCompile Include="YR_VECTOR3.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -250,6 +251,7 @@
     <ClInclude Include="YRModelAnim.h" />
     <ClInclude Include="YRMouse.h" />
     <ClInclude Include="YRShader.h" />
+    <ClInclude Include="YRSound.h" />
     <ClInclude Include="YR_VectorMaster.h" />
   </ItemGroup>
   <ItemGroup>

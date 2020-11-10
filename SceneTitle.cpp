@@ -1,5 +1,6 @@
 ﻿#include "Scene.h"
 #include "framework.h"
+#include "YRSound.h"
 
 //-------------------------------------------------------------
 // **シーン概要**
@@ -38,6 +39,8 @@ void SceneTitle::Init()
 		spriteShader = std::make_unique<YRShader>(ShaderType::SPRITE);
 		spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
 	}
+
+	GetSound().BGMPlay(BGMKind::TITLE);
 }
 
 void SceneTitle::LoadData()
@@ -85,6 +88,11 @@ void SceneTitle::Update(float elapsed_time)
 	//ロード終了
 	if (load_fin)
 	{
+		if (pKeyState.aflg == 1)
+		{
+			GetSound().SEPlay(SEKind::SELECT_ENTER);
+		}
+
 		if (pKeyState.nflg == 1 || g1.x_input[scastI(PAD::START)] == 1)
 		{
 			select_p1 = scastI(INPUT_PLAYER::P1);

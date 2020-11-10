@@ -3912,44 +3912,20 @@ void Knight::EndAttackErase()
 			{
 				return a.fin;
 			});
-
-		bool fin = false;
-		for (int i = 0; i < atk.size(); i++)
-		{
-			if (atk[i].fin)
-			{
-				fin = true;
-			}
-		}
-		if (fin)
-		{
-			atk.erase(result, atk.end());
-		}
+		atk.erase(result, atk.end());
 	}
 
-	/*if (!projectile_atk.empty())
+	if (!projectile_atk.empty())
 	{
 		auto result = std::remove_if(projectile_atk.begin(), projectile_atk.end(),
 			[](AttackBox& a)
 			{
 				return a.fin;
 			});
+		projectile_atk.erase(result, projectile_atk.end());
+	}
 
-		bool fin = false;
-		for (int i = 0; i < projectile_atk.size(); i++)
-		{
-			if (projectile_atk[i].fin)
-			{
-				fin = true;
-			}
-		}
-		if (fin)
-		{
-			projectile_atk.erase(result, projectile_atk.end());
-		}
-	}*/
-
-	if (!projectile_atk.empty())
+	/*if (!projectile_atk.empty())
 	{
 		for (std::vector<AttackBox>::iterator& m = projectile_atk.begin(); m != projectile_atk.end();)
 		{
@@ -3962,7 +3938,7 @@ void Knight::EndAttackErase()
 				m++;
 			}
 		}
-	}
+	}*/
 }
 
 //‘S‚Ä‚ÌUŒ‚“–‚½‚è”»’è‚ğÁ‹‚·‚é

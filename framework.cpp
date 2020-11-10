@@ -5,6 +5,7 @@
 #include"Geometric_primitive.h"
 #include"static_mesh.h"
 #include "collision.h"
+#include "YRSound.h"
 
 void BlendCreate(ID3D11Device *device, ID3D11BlendState **blendstate)
 {
@@ -495,6 +496,9 @@ bool framework::initialize()
 	/*sprite[0] = new Sprite(device, L"Assets/Image/ECC.png");
 	sprite[1] = new Sprite(device, L"Assets/Image/fire.png");
 	sprite[2] = new Sprite(device, L"Assets/Image/fire2.png");*/
+
+	//ƒTƒEƒ“ƒh‰Šú‰»
+	GetSound().Init();
 
 	SetScene(SCENE_TABLE::SCENE_TITLE);
 	scene->Init();

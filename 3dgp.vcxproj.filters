@@ -252,6 +252,9 @@
     <ClCompile Include="Effect.cpp">
       <Filter>Souce</Filter>
     </ClCompile>
+    <ClCompile Include="YRSound.cpp">
+      <Filter>Souce</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimBoard.h">
@@ -385,6 +388,9 @@
     </ClInclude>
     <ClInclude Include="EXlib\EffekseerRendererDX11.h">
       <Filter>EXlib\Effekseer</Filter>
+    </ClInclude>
+    <ClInclude Include="YRSound.h">
+      <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
