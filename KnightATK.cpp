@@ -914,7 +914,7 @@ void Knight::Slow(float elapsed_time)
 }
 
 
-void Knight::P_Kyo(float elapsed_time)
+void Knight::Kyo_Lhurf(float elapsed_time)
 {
 	AttackDefault(elapsed_time);
 }
@@ -940,14 +940,131 @@ void Knight::Kyo_Rhurf(float elapsed_time)
 
 
 
-void Knight::Panish_N(float elapsed_time)
+void Knight::Jaku_Lhurf(float elapsed_time)
 {
-	AttackDefault(elapsed_time);
+	//後隙が設定された後はこの関数には入らない
+	if (later > -1 && later < target_max)
+	{
+		return;
+	}
+	speed_X.Set(0.0f);
+	//発生フレームになるまで回す
+	if (fream < target_max)
+	{
+		//speed_Y.Set(0.0f);
+		//攻撃発生の結果を保存する
+		hit_result = HitResult::NOT_OCCURRENCE;
+		fream -= elapsed_time;
+	}
+	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
+	//発生フレームになったら攻撃判定を生成する
+	if (fream < 0.0f)
+	{
+		//攻撃発生の結果を保存する
+		hit_result = HitResult::NONE;
+		//前進しないようにする
+		speed_X.Set(0.0f);
+
+		//int attack_num = attack_list[real].now_attack_num;
+		anim_ccodinate = ac_attack[now_at_list].timer;
+		if (attack_list[now_at_list].now_attack_num == 0)
+		{
+			//初回の攻撃のみアニメーションを変える
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+			}
+			else
+			{
+				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::TIMER));
+			}
+		}
+		if (attack_list[now_at_list].speed_on)
+		{
+			//攻撃に速度を付与する場合
+			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos, attack_list[now_at_list].speed);
+		}
+		else
+		{
+			//付与しない場合
+			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos);
+		}
+		fream = non_target;
+
+		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+	}
+
+
+
+	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
+	if (!atk.empty())
+	{
+		speed.x = attack_list[now_at_list].advance_speed * rightOrleft;
+		angle.y += elapsed_time * 30.0f;
+		for (auto& a : atk)
+		{
+			if (knock)
+			{
+				a.parameter.knockback = 0.0f;
+				a.knock_start = false;
+			}
+			if (a.knock_start)
+			{
+				pos.x -= a.parameter.knockback * rightOrleft;
+				a.parameter.knockback = 0.0f;
+				knock = true;
+				a.knock_start = false;
+				//上方向への力を設定する
+			}
+		}
+	}
+
+	if (atk.empty())
+	{
+		//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
+		return;
+	}
+
+
+	//攻撃が全て終了したことを確認する
+	if (AttackEndCheck())
+	{
+		//まだ攻撃が残っていれば次の攻撃に移る
+		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
+		{
+			fream = attack_list[now_at_list].attack_single[attack_list[now_at_list].now_attack_num].fream;
+		}
+		else
+		{
+			//ない場合は後隙に移行する
+			//攻撃番号を初期化
+			attack_list[now_at_list].now_attack_num = 0;
+			//後隙を設定
+			later = attack_list[now_at_list].later;
+			//アニメーション速度を指定
+			anim_ccodinate = ac_attack[now_at_list].later;
+			//角度を戻す
+			angle.y = 0.0f;
+			//速度を戻す
+			speed.x = 0.0f;
+			//描画をセット
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+			}
+			else
+			{
+				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+			}
+			//行動終了フラグをオンに
+			finish = true;
+		}
+	}
 }
 
 
 
-void Knight::Panish_H(float elapsed_time)
+void Knight::Thu_Lhurf(float elapsed_time)
 {
 	AttackDefault(elapsed_time);
 }

@@ -233,15 +233,15 @@ public:
 	void Jaku_Rhurf(float elapsed_time);
 	void Thu_Rhurf(float elapsed_time);
 	void Kyo_Rhurf(float elapsed_time);
-	void P_Kyo(float elapsed_time);
+	
 	void TrackDash(float decision, float elapsed_time);
 	void Steal(float elapsed_time);
 	void Slow(float elapsed_time);
 	void SpecialAttack(float elapsed_time);
 
-	void Panish_N(float elapsed_time);
-	void Panish_H(float elapsed_time);
-
+	void Jaku_Lhurf(float elapsed_time);
+	void Thu_Lhurf(float elapsed_time);
+	void Kyo_Lhurf(float elapsed_time);
 	void ExtendATK(float elapsed_time);
 
 	void StateNone(float elapsed_time);

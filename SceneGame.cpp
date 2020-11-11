@@ -7,6 +7,7 @@
 #include "HitCheak.h"
 #include "World.h"
 #include "Blur.h"
+#include "YRSound.h"
 
 //キャラクターインクルード
 #include "Knight.h"
@@ -93,6 +94,8 @@ void SceneGame::Init()
 
 	//2Pの動き
 	pl2_con = Player2PControl::SUSPENSION;
+
+	GetSound().BGMPlay(BGMKind::GAME);
 }
 
 

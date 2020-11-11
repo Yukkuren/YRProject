@@ -29,6 +29,7 @@ struct FormatChunk
 enum class BGMKind : int
 {
 	TITLE = 0,			//ƒ^ƒCƒgƒ‹
+	GAME,
 	END,
 };
 

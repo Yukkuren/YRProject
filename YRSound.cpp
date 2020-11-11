@@ -13,6 +13,7 @@
 std::array<std::string, scastI(BGMKind::END)> bgm_name_list =
 {
 	u8"タイトル",
+	u8"ゲームメイン",
 };
 
 std::array<std::string, scastI(SEKind::END)> se_name_list =
@@ -48,7 +49,11 @@ void YRSound::Init()
 	pBGM.resize(scastI(BGMKind::END));
 	pSE.resize(scastI(SEKind::END));
 
+	//BGM読み込み
 	BGMLoad("./Data/Sound/BGM/Title.wav", BGMKind::TITLE, XAUDIO2_LOOP_INFINITE, 0.5f);
+	BGMLoad("./Data/Sound/BGM/Stage_castle.wav", BGMKind::GAME, XAUDIO2_LOOP_INFINITE, 0.5f);
+
+	//SE読み込み
 	SELoad("./Data/Sound/SE/enter.wav", SEKind::SELECT_ENTER);
 }
 

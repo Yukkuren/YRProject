@@ -657,16 +657,16 @@ void Knight::AttackSwitch(float decision, float elapsed_time)
 		TrackDash(decision, elapsed_time);
 		break;
 	case AttackState::KYO_LHURF:
-		P_Kyo(elapsed_time);
+		Kyo_Lhurf(elapsed_time);
 		break;
 	case AttackState::EXTENDATK:
 		ExtendATK(elapsed_time);
 		break;
 	case AttackState::JAKU_LHURF:
-		Panish_N(elapsed_time);
+		Jaku_Lhurf(elapsed_time);
 		break;
 	case AttackState::THU_LHURF:
-		Panish_H(elapsed_time);
+		Thu_Lhurf(elapsed_time);
 		break;
 	case AttackState::SPECIAL_ATTACK:
 		SpecialAttack(elapsed_time);

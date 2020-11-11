@@ -88,7 +88,7 @@ void SceneTitle::Update(float elapsed_time)
 	//ロード終了
 	if (load_fin)
 	{
-		if (pKeyState.aflg > 0)
+		/*if (pKeyState.aflg > 0)
 		{
 			GetSound().BGMPause(BGMKind::TITLE);
 			GetSound().SEPlay(SEKind::SELECT_ENTER);
@@ -96,9 +96,9 @@ void SceneTitle::Update(float elapsed_time)
 		else
 		{
 			GetSound().BGMPlay(BGMKind::TITLE);
-		}
+		}*/
 
-		static bool flgo = false;
+		/*static bool flgo = false;
 		if (pKeyState.dflg == 1)
 		{
 			flgo = true;
@@ -124,12 +124,13 @@ void SceneTitle::Update(float elapsed_time)
 			{
 				flgi = false;
 			}
-		}
+		}*/
 
 
 
 		if (pKeyState.nflg == 1 || g1.x_input[scastI(PAD::START)] == 1)
 		{
+			GetSound().BGMStop(BGMKind::TITLE);
 			select_p1 = scastI(INPUT_PLAYER::P1);
 			select_p2 = scastI(INPUT_PLAYER::P2);
 			FRAMEWORK.scenegame.PadSet(select_p1);
@@ -142,6 +143,7 @@ void SceneTitle::Update(float elapsed_time)
 
 		if (pKeyState.tflg == 1)
 		{
+			GetSound().BGMStop(BGMKind::TITLE);
 			select_p1 = scastI(INPUT_PLAYER::P1);
 			select_p2 = scastI(INPUT_PLAYER::P2);
 			FRAMEWORK.scenegame.PadSet(select_p1);
@@ -259,6 +261,7 @@ void SceneTitle::Update(float elapsed_time)
 				//フェードアウトが終わったらセレクト画面へ
 				//ここで入力を保存する
 				//関数にする
+				GetSound().BGMStop(BGMKind::TITLE);
 				FRAMEWORK.scenegame.PadSet(select_p1);
 				FRAMEWORK.SetScene(SCENE_SELECT);
 				UnInit();
