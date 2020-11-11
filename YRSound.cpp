@@ -42,6 +42,8 @@ void YRSound::Init()
 		assert("MasterVoiceCreate error");
 	}
 
+	fado_volume = 1.0f;
+
 	//ソースボイスの作成
 	pBGM.resize(scastI(BGMKind::END));
 	pSE.resize(scastI(SEKind::END));
@@ -264,13 +266,13 @@ void YRSound::SEFinCheack()
 //音声BGMデータの音量設定(wave)
 void YRSound::BGMSetVolume(const BGMKind& kind)
 {
-	pBGM[scastI(kind)].pSourceVoice->SetVolume(pBGM[scastI(kind)].volume * bgm_all_volume);
+	pBGM[scastI(kind)].pSourceVoice->SetVolume(pBGM[scastI(kind)].volume * bgm_all_volume * fado_volume);
 }
 
 //音声SEデータの音量設定(wave)
 void YRSound::SESetVolume(const SEKind& kind)
 {
-	pSE[scastI(kind)].pSourceVoice->SetVolume(pSE[scastI(kind)].volume * se_all_volume);
+	pSE[scastI(kind)].pSourceVoice->SetVolume(pSE[scastI(kind)].volume * se_all_volume * fado_volume);
 }
 
 //音声BGMデータの停止(wave)
@@ -353,4 +355,33 @@ void YRSound::Update()
 			SESetVolume(static_cast<SEKind>(s));
 		}
 	}
+}
+
+
+//フェードイン(elapsed_time, 速度)
+bool YRSound::FadoIn(float elapsed_time, float adjust_time)
+{
+	fado_volume += (elapsed_time * adjust_time);
+
+	if (fado_volume > 1.0f)
+	{
+		fado_volume = 1.0f;
+		return true;
+	}
+
+	return false;
+}
+
+//フェードアウト(elapsed_time, 速度)
+bool YRSound::FadoOut(float elapsed_time, float adjust_time)
+{
+	fado_volume -= (elapsed_time * adjust_time);
+
+	if (fado_volume < 0.0f)
+	{
+		fado_volume = 0.0f;
+		return true;
+	}
+
+	return false;
 }

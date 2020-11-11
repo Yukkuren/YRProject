@@ -98,6 +98,36 @@ void SceneTitle::Update(float elapsed_time)
 			GetSound().BGMPlay(BGMKind::TITLE);
 		}
 
+		static bool flgo = false;
+		if (pKeyState.dflg == 1)
+		{
+			flgo = true;
+		}
+
+		if (flgo)
+		{
+			if (GetSound().FadoOut(elapsed_time))
+			{
+				flgo = false;
+			}
+		}
+
+		static bool flgi = false;
+		if (pKeyState.wflg == 1)
+		{
+			flgi = true;
+		}
+
+		if (flgi)
+		{
+			if (GetSound().FadoIn(elapsed_time))
+			{
+				flgi = false;
+			}
+		}
+
+
+
 		if (pKeyState.nflg == 1 || g1.x_input[scastI(PAD::START)] == 1)
 		{
 			select_p1 = scastI(INPUT_PLAYER::P1);

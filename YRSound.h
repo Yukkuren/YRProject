@@ -58,6 +58,8 @@ private:
 public:
 	float								bgm_all_volume = 1.0f;		//BGM全体に与えるボリューム値のしきい値
 	float								se_all_volume = 1.0f;		//SE全体に与えるボリューム値のしきい値
+
+	float								fado_volume = 1.0f;			//音声のフェードに使用するボリューム
 private:
 	//コンストラクタ
 	YRSound() {};
@@ -98,7 +100,13 @@ public:
 	void BGMPause(const BGMKind& kind);
 	void SEPause(const SEKind& kind);
 
+	//サウンドデバッグ表示
 	void SoundDebugDrow();
+
+	//フェードイン(elapsed_time, 速度)
+	bool FadoIn(float elapsed_time, float adjust_time = 1.0f);
+	//フェードアウト(elapsed_time, 速度)
+	bool FadoOut(float elapsed_time, float adjust_time = 1.0f);
 
 	static YRSound& getInstance()
 	{
