@@ -88,12 +88,12 @@ void SceneTitle::Update(float elapsed_time)
 	//ロード終了
 	if (load_fin)
 	{
-		if (pKeyState.aflg == 1)
+		if (pKeyState.aflg > 0)
 		{
-			GetSound().BGMStop(BGMKind::TITLE);
+			GetSound().BGMPause(BGMKind::TITLE);
 			GetSound().SEPlay(SEKind::SELECT_ENTER);
 		}
-		if (pKeyState.sflg == 1)
+		else
 		{
 			GetSound().BGMPlay(BGMKind::TITLE);
 		}

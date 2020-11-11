@@ -533,8 +533,8 @@ void framework::update(float elapsed_time/*Elapsed seconds from last frame*/)
 {
 	YRCamera.Active();
 	pMouse.Update();
+	GetSound().Update();
 	scene->Update(elapsed_time);
-
 }
 void framework::render(float elapsed_time/*Elapsed seconds from last frame*/)
 {
@@ -807,6 +807,7 @@ void framework::render(float elapsed_time/*Elapsed seconds from last frame*/)
 		}*/
 	BlendSet(Blend::ALPHA);
 	scene->Draw(elapsed_time);
+	GetSound().SEFinCheack();
 
 	GetSound().SoundDebugDrow();
 

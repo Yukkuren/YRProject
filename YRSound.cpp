@@ -21,7 +21,7 @@ std::array<std::string, scastI(SEKind::END)> se_name_list =
 };
 #endif // 
 
-//コンストラクタ
+//初期化
 void YRSound::Init()
 {
 	//Comコンポーネントの初期化
@@ -214,42 +214,111 @@ void YRSound::SEPlay(const SEKind& kind)
 	pSE[scastI(kind)].pSourceVoice->Start();
 }
 
+//音声SEデータの単発再生(wave)[再生中なら最初から再生しなおす]
+void YRSound::SESinglePlay(const SEKind& kind)
+{
+	//現在再生中か確認する
+	XAUDIO2_VOICE_STATE xa2state;
+	pSE[scastI(kind)].pSourceVoice->GetState(&xa2state);
+
+	if (xa2state.BuffersQueued != 0)
+	{
+		//再生中だった
+		//再生を停止
+		pSE[scastI(kind)].pSourceVoice->Stop();
+		//バッファを一度削除する
+		pSE[scastI(kind)].pSourceVoice->FlushSourceBuffers();
+		//波形データをバッファに設定
+		pSE[scastI(kind)].pSourceVoice->SubmitSourceBuffer(&pSE[scastI(kind)].buf);
+	}
+	//SEの再生
+	pSE[scastI(kind)].pSourceVoice->Start();
+}
+
+
+//音声データの再生を確認し、
+void YRSound::SEFinCheack()
+{
+	if (!pSE.empty())
+	{
+		for (int i = 0; i < pSE.size(); i++)
+		{
+			//現在再生中か確認する
+			XAUDIO2_VOICE_STATE xa2state;
+			pSE[i].pSourceVoice->GetState(&xa2state);
+
+			if (xa2state.BuffersQueued == 0)
+			{
+				//再生が終わっていた
+				//再生を停止
+				pSE[i].pSourceVoice->Stop();
+				//バッファを一度削除する
+				pSE[i].pSourceVoice->FlushSourceBuffers();
+				//波形データをバッファに設定
+				pSE[i].pSourceVoice->SubmitSourceBuffer(&pSE[i].buf);
+			}
+		}
+	}
+}
+
 //音声BGMデータの音量設定(wave)
 void YRSound::BGMSetVolume(const BGMKind& kind)
 {
-	pBGM[scastI(kind)].pSourceVoice->SetVolume(pBGM[scastI(kind)].volume);
+	pBGM[scastI(kind)].pSourceVoice->SetVolume(pBGM[scastI(kind)].volume * bgm_all_volume);
 }
 
 //音声SEデータの音量設定(wave)
 void YRSound::SESetVolume(const SEKind& kind)
 {
-	pSE[scastI(kind)].pSourceVoice->SetVolume(pSE[scastI(kind)].volume);
+	pSE[scastI(kind)].pSourceVoice->SetVolume(pSE[scastI(kind)].volume * se_all_volume);
 }
 
 //音声BGMデータの停止(wave)
 void YRSound::BGMStop(const BGMKind& kind)
 {
 	pBGM[scastI(kind)].pSourceVoice->Stop();
+	//バッファを一度削除する
+	pBGM[scastI(kind)].pSourceVoice->FlushSourceBuffers();
+	//波形データをバッファに設定
+	pBGM[scastI(kind)].pSourceVoice->SubmitSourceBuffer(&pBGM[scastI(kind)].buf);
 }
 
 //音声SEデータの停止(wave)
 void YRSound::SEStop(const SEKind& kind)
 {
 	pSE[scastI(kind)].pSourceVoice->Stop();
+	//バッファを一度削除する
+	pSE[scastI(kind)].pSourceVoice->FlushSourceBuffers();
+	//波形データをバッファに設定
+	pSE[scastI(kind)].pSourceVoice->SubmitSourceBuffer(&pSE[scastI(kind)].buf);
 }
 
+//音声BGMデータの一時停止(wave)
+void YRSound::BGMPause(const BGMKind& kind)
+{
+	pBGM[scastI(kind)].pSourceVoice->Stop();
+}
 
+//音声SEデータの一時停止(wave)
+void YRSound::SEPause(const SEKind& kind)
+{
+	pSE[scastI(kind)].pSourceVoice->Stop();
+}
+
+//デバッグ描画
 void YRSound::SoundDebugDrow()
 {
 #ifdef  _DEBUG
 	ImGui::Begin("SoundVolume");
 
+	ImGui::SliderFloat("BGM_All_volume", &bgm_all_volume, 0.0f, 1.0f);
+	ImGui::SliderFloat("SE_All_volume", &se_all_volume, 0.0f, 1.0f);
 	if (!pBGM.empty())
 	{
 		for (int b = 0; b < pBGM.size(); b++)
 		{
 			ImGui::SliderFloat(bgm_name_list[b].c_str(), &pBGM[b].volume, 0.0f, 1.0f);
-			BGMSetVolume(static_cast<BGMKind>(b));
+			
 		}
 	}
 
@@ -258,10 +327,30 @@ void YRSound::SoundDebugDrow()
 		for (int s = 0; s < pSE.size(); s++)
 		{
 			ImGui::SliderFloat(se_name_list[s].c_str(), &pSE[s].volume, 0.0f, 1.0f);
-			SESetVolume(static_cast<SEKind>(s));
+			//SESetVolume(static_cast<SEKind>(s));
 		}
 	}
 
 	ImGui::End();
 #endif // 
+}
+
+//更新処理
+void YRSound::Update()
+{
+	if (!pBGM.empty())
+	{
+		for (int b = 0; b < pBGM.size(); b++)
+		{
+			BGMSetVolume(static_cast<BGMKind>(b));
+		}
+	}
+
+	if (!pSE.empty())
+	{
+		for (int s = 0; s < pSE.size(); s++)
+		{
+			SESetVolume(static_cast<SEKind>(s));
+		}
+	}
 }

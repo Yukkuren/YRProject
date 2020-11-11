@@ -56,23 +56,35 @@ private:
 	std::vector<AudioSource>			pBGM;						//BGMソースボイスのポインタ
 	std::vector<AudioSource>			pSE;						//SEソースボイスのポインタ
 public:
-
+	float								bgm_all_volume = 1.0f;		//BGM全体に与えるボリューム値のしきい値
+	float								se_all_volume = 1.0f;		//SE全体に与えるボリューム値のしきい値
+private:
 	//コンストラクタ
 	YRSound() {};
 
 	//デストラクタ
 	~YRSound();
 
-	//初期化
-	void Init();
-
 	//音声データの読み込み(Wave)
 	bool BGMLoad(const char* filename, const BGMKind& kind, UINT32 loop_count = XAUDIO2_LOOP_INFINITE,float volume = 1.0f);
 	bool SELoad(const char* filename, const SEKind& kind, UINT32 loop_count = 0, float volume = 1.0f);
 
+public:
+	//初期化
+	void Init();
+
+	//更新
+	void Update();
+
 	//音声データの再生(wave)
 	void BGMPlay(const BGMKind& kind);
 	void SEPlay(const SEKind& kind);
+
+	//音声データの単発再生(wave)[再生中なら最初から再生しなおす]
+	void SESinglePlay(const SEKind& kind);
+
+	//音声データの終了確認(wave)[終了していた場合最初に戻す]
+	void SEFinCheack();
 
 	//音声データの音量設定(wave)
 	void BGMSetVolume(const BGMKind& kind);
@@ -81,6 +93,10 @@ public:
 	//音声データの停止(wave)
 	void BGMStop(const BGMKind& kind);
 	void SEStop(const SEKind& kind);
+
+	//音声データの停止(wave)
+	void BGMPause(const BGMKind& kind);
+	void SEPause(const SEKind& kind);
 
 	void SoundDebugDrow();
 
