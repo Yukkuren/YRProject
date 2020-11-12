@@ -8,7 +8,7 @@
 class ModelAnim
 {
 public:
-	ModelAnim(std::shared_ptr<Model>& resource);
+	ModelAnim(const std::shared_ptr<Model>& resource);
 	~ModelAnim() {
 		m_model_resource.reset();
 		model_resource_anim.reset();
@@ -54,8 +54,8 @@ public:
 		const DirectX::XMFLOAT4		material_color = { 1.0f,1.0f,1.0f,1.0f }
 		);
 
-	void NodeChange(std::shared_ptr<Model>& resource);
-	void NodeChange(std::shared_ptr<Model>& resource,int anim_num);
+	void NodeChange(const std::shared_ptr<Model>& resource);
+	void NodeChange(const std::shared_ptr<Model>& resource,int anim_num);
 
 	const bool &GetLoopAnim()const  { return m_loop_animation; };	//再生中のアニメーションがループするかを返す
 	const int& GetEndAnim()const { return m_current_animation; };	//再生中のアニメーションが終了したかを返す(-1なら終了)

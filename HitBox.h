@@ -9,11 +9,13 @@ constexpr float hitback_Adjustment = 300.0f;
 
 enum class HitBoxState : int
 {
-	NOGUARD = 0,	//ガードしない
-	MIDDLE,			//中段ガード
-	DOWN,			//下段ガード
-	INVINCIBLE,		//無敵
-	ALL,			//空中ガード(掴み、ガード不可以外を全てガードできる)
+	NOGUARD = 0,		//ガードしない
+	MIDDLE,				//中段ガード
+	DOWN,				//下段ガード
+	INVINCIBLE,			//無敵
+	ALL,				//空中ガード(掴み、ガード不可以外を全てガードできる)
+	UP_INVINCIBLE,		//上段攻撃に対して無敵
+	PROJECTILE_ARMOR,	//飛び道具に対してアーマー
 	END,
 };
 
@@ -27,6 +29,7 @@ enum class HitStateKind : int
 	NORMAL = 0,		//通常ヒット
 	STEAL,			//掴みヒット
 	SLAM,			//叩きつけヒット
+	ARMOR,			//アーマーが発生した
 };
 
 struct HitParameter

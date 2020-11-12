@@ -37,13 +37,16 @@ enum class HitResult : int
 //--------------------------------------------------
 enum class AttackKind : int
 {
-	UP = 0,		//上段
-	MIDDLE,		//中段
-	DOWN,		//下段
-	STEAL,		//掴み
-	SLAM,		//叩きつけ(高さが一定なら滑り状態にする)
-	LOCK,		//ロック技
-	PROJECTILE,	//飛び道具
+	UP = 0,			//上段
+	MIDDLE,			//中段
+	DOWN,			//下段
+	STEAL,			//掴み
+	SLAM,			//叩きつけ(高さが一定なら滑り状態にする)
+	LOCK,			//ロック技
+	PROJECTILE,		//飛び道具
+	TRACK,			//ホーミングダッシュ
+	NO_TO_OFFSET,	//相殺しない攻撃
+	NO_TO_OFFSET_UP,//上段攻撃と相殺しない
 	END,
 };
 

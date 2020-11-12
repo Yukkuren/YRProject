@@ -88,7 +88,11 @@ void SceneTitle::Update(float elapsed_time)
 	//ロード終了
 	if (load_fin)
 	{
-		/*if (pKeyState.aflg > 0)
+		if (pKeyState.sflg == 1)
+		{
+			GetSound().SESinglePlay(SEKind::SELECT_ENTER);
+		}
+		if (pKeyState.aflg > 0)
 		{
 			GetSound().BGMPause(BGMKind::TITLE);
 			GetSound().SEPlay(SEKind::SELECT_ENTER);
@@ -96,9 +100,9 @@ void SceneTitle::Update(float elapsed_time)
 		else
 		{
 			GetSound().BGMPlay(BGMKind::TITLE);
-		}*/
+		}
 
-		/*static bool flgo = false;
+		static bool flgo = false;
 		if (pKeyState.dflg == 1)
 		{
 			flgo = true;
@@ -106,7 +110,7 @@ void SceneTitle::Update(float elapsed_time)
 
 		if (flgo)
 		{
-			if (GetSound().FadoOut(elapsed_time))
+			if (GetSound().FadeOut(elapsed_time))
 			{
 				flgo = false;
 			}
@@ -120,11 +124,11 @@ void SceneTitle::Update(float elapsed_time)
 
 		if (flgi)
 		{
-			if (GetSound().FadoIn(elapsed_time))
+			if (GetSound().FadeIn(elapsed_time))
 			{
 				flgi = false;
 			}
-		}*/
+		}
 
 
 
@@ -273,7 +277,7 @@ void SceneTitle::Update(float elapsed_time)
 			//フェードアウトがスタートしてない場合は画面を映す
 			if (fado_alpha > 0.0f)
 			{
-				fado_alpha -= FEDO_MIX(elapsed_time);
+				fado_alpha -= FADE_MIX(elapsed_time);
 			}
 		}
 
@@ -407,7 +411,7 @@ void SceneTitle::Draw(float elapsed_time)
 
 	}
 
-	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
+	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
 
 #if USE_IMGUI
 	//ImGui
@@ -421,7 +425,7 @@ void SceneTitle::Draw(float elapsed_time)
 
 bool SceneTitle::FedoOut(float elapsed_time)
 {
-	fado_alpha += FEDO_MIX(elapsed_time);
+	fado_alpha += FADE_MIX(elapsed_time);
 
 	if (fado_alpha > 1.0f)
 	{

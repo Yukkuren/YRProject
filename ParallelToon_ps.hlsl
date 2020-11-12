@@ -67,9 +67,10 @@ PSOutput main(PSInput input) : SV_TARGET
 		return Out;
 	 }
 
-	color.rgb *= input.Color.rgb * float3(A + D * material_color.rgb + S);
+	color.rgb *= input.Color.rgb * float3(A + D + S);
 	
-	Out.Color = color;
+
+	Out.Color = color * material_color;
 	//Out.wNormal = float4(N, 1.0f);
 	//Out.wPosition = float4(input.wPos, 1.0f);
 	float4 lumi = float4(lumi_factor, lumi_factor, lumi_factor, 0.5f);

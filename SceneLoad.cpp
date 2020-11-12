@@ -1,6 +1,7 @@
 #include "Scene.h"
 #include "HitCheak.h"
 #include "framework.h"
+#include "YRSound.h"
 
 //-------------------------------------------------------------
 // **シーン概要**
@@ -34,6 +35,7 @@ void SceneLoad::Init()
 		spriteShader = std::make_unique<YRShader>(ShaderType::SPRITE);
 		spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
 	}
+	GetSound().BGMPlay(BGMKind::LOAD);
 }
 
 void SceneLoad::LoadData()
@@ -77,7 +79,7 @@ void SceneLoad::Update(float elapsedTime)
 		{
 			if (fado_alpha > 0.0f)
 			{
-				fado_alpha -= FEDO_MIX(elapsedTime);
+				fado_alpha -= FADE_MIX(elapsedTime);
 			}
 		}
 	}
@@ -96,6 +98,7 @@ void SceneLoad::Update(float elapsedTime)
 			{
 				//フェードアウトが終わったらゲームメインへ遷移
 				//FRAMEWORK.SetScene(SCENE_TABLE::SCENE_GAME);
+				GetSound().BGMStop(BGMKind::LOAD);
 				FRAMEWORK.SetScene(SCENE_TABLE::SCENE_GAME);
 				UnInit();
 				return;
@@ -182,7 +185,7 @@ void SceneLoad::Draw(float elapsedTime)
 	}
 
 	//フェード用画像描画
-	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
+	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
 
 #if USE_IMGUI
 	//ImGui
@@ -196,7 +199,7 @@ void SceneLoad::Draw(float elapsedTime)
 
 bool SceneLoad::FedoOut(float elapsed_time)
 {
-	fado_alpha += FEDO_MIX(elapsed_time);
+	fado_alpha += FADE_MIX(elapsed_time);
 
 	if (fado_alpha > 1.0f)
 	{

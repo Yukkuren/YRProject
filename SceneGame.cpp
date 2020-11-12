@@ -30,24 +30,19 @@ std::array<std::string, scastI(SceneGame::Player2PControl::END)> p2_con_name_lis
 #endif // USE_IMGUI
 
 
-void SceneGame::SetPlayerCharacter(std::unique_ptr<Player>& player, int select)
+void SceneGame::SetPlayerCharacter(std::unique_ptr<Player>* player, int select)
 {
 	switch (select)
 	{
 	case scastI(PLSELECT::KNIGHT):
-		player = std::make_unique<Knight>();
+		*player = std::make_unique<Knight>();
 		break;
 	case scastI(PLSELECT::KEN):
-		player = std::make_unique<Knight>();
+		*player = std::make_unique<Knight>();
 		break;
 
 	}
 }
-
-
-
-
-
 
 
 void SceneGame::Init()
@@ -66,7 +61,7 @@ void SceneGame::Init()
 	start_timer			= 0.0f;
 	end					= false;
 	endtimer			= 0.0f;
-	mix_fado			= 1.5f;
+	mix_fade			= 1.5f;
 	main_loop = MAIN_LOOP::INTRO1P;	//最初は1Pのイントロから開始
 
 	//カメラ初期設定
@@ -80,7 +75,23 @@ void SceneGame::Init()
 		p2combo[i] = 0;
 	}
 
+	D3D11_DEPTH_STENCIL_DESC desc2;
+	::memset(&desc2, 0, sizeof(desc2));
+	desc2.DepthEnable = FALSE;
+	desc2.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	desc2.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 
+	HRESULT hr = FRAMEWORK.device.Get()->CreateDepthStencilState(&desc2, m_depth_stencil_state2.GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+	D3D11_DEPTH_STENCIL_DESC desc;
+	::memset(&desc, 0, sizeof(desc));
+	desc.DepthEnable = TRUE;
+	desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+	hr = FRAMEWORK.device.Get()->CreateDepthStencilState(&desc, m_depth_stencil_state.GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 	/*motion.MeshSet(box);
 	motion.AnimReset();*/
@@ -96,6 +107,9 @@ void SceneGame::Init()
 	pl2_con = Player2PControl::SUSPENSION;
 
 	GetSound().BGMPlay(BGMKind::GAME);
+
+	//UnInit();
+	//FRAMEWORK.SetScene(SCENE_TABLE::SCENE_TITLE);
 }
 
 
@@ -278,8 +292,8 @@ void SceneGame::LoadData()
 	
 
 	//選択したキャラクターをそれぞれ生成する
-	SetPlayerCharacter(player1p, FRAMEWORK.sceneselect.select_p1);
-	SetPlayerCharacter(player2p, FRAMEWORK.sceneselect.select_p2);
+	SetPlayerCharacter(&player1p, FRAMEWORK.sceneselect.select_p1);
+	SetPlayerCharacter(&player2p, FRAMEWORK.sceneselect.select_p2);
 	player1p->now_player = 1;
 	player2p->now_player = 2;
 	//生成後初期化する(座標系、HP、UI座標など)
@@ -361,6 +375,9 @@ void SceneGame::UnInit()
 	ToonShader.reset();
 	ToonShader = nullptr;
 
+	//BGMを止める
+	GetSound().BGMStop(BGMKind::GAME);
+
 	//ステージ解放
 	stage.Uninit();
 }
@@ -427,7 +444,7 @@ void SceneGame::Update(float elapsed_time)
 		{
 			//イントロを飛ばす場合はゲームメインへ
 		case SceneGame::INTRO1P:
-			fado_alpha += (elapsed_time * mix_fado);
+			fado_alpha += (elapsed_time * mix_fade);
 			if (fado_alpha > 1.0f)
 			{
 				main_loop = MAIN_LOOP::INTRO2P;
@@ -435,7 +452,7 @@ void SceneGame::Update(float elapsed_time)
 			}
 			break;
 		case SceneGame::INTRO2P:
-			fado_alpha += (elapsed_time * mix_fado);
+			fado_alpha += (elapsed_time * mix_fade);
 			if (fado_alpha > 1.0f)
 			{
 				main_loop = MAIN_LOOP::READY;
@@ -449,7 +466,7 @@ void SceneGame::Update(float elapsed_time)
 		case SceneGame::READY:
 			break;
 		case SceneGame::MAIN:
-			if (FadoOut(elapsed_time))
+			if (FadeOut(elapsed_time))
 			{
 				UnInit();
 				FRAMEWORK.SetScene(SCENE_TABLE::SCENE_SELECT);
@@ -478,13 +495,13 @@ void SceneGame::Update(float elapsed_time)
 				default:
 					break;
 				}
-				mix_fado = 5.0f;
+				mix_fade = 5.0f;
 				fado_start = false;
 			}
 			break;
 		case SceneGame::WIN1P:
 		case SceneGame::WIN2P:
-			if (FadoOut(elapsed_time))
+			if (FadeOut(elapsed_time))
 			{
 				fado_start = false;
 				main_loop = SceneGame::GAME_FIN;
@@ -493,7 +510,7 @@ void SceneGame::Update(float elapsed_time)
 			}
 			break;
 		case SceneGame::GAME_FIN:
-			if (FadoOut(elapsed_time))
+			if (FadeOut(elapsed_time))
 			{
 				UnInit();
 				FRAMEWORK.SetScene(SCENE_TABLE::SCENE_SELECT);
@@ -570,7 +587,7 @@ void SceneGame::Update(float elapsed_time)
 			break;
 		case SceneGame::READY:
 			//イントロ終了後のフェードイン
-			mix_fado = 3.0f;
+			mix_fade = 3.0f;
 			if (fado_alpha < 0.1f)
 			{
 				main_loop = MAIN_LOOP::MAIN;
@@ -598,7 +615,7 @@ void SceneGame::Update(float elapsed_time)
 					CameraRequest(game_speed);
 
 					//カメラの挙動をステートごとに処理
-					CameraUpdate();
+					CameraUpdate(elapsed_time);
 
 					//プレイヤー押出し
 					if (player1p->act_state != ActState::STATENONE && player2p->act_state != ActState::STATENONE)
@@ -694,18 +711,16 @@ void SceneGame::Update(float elapsed_time)
 					if (end)
 					{
 						//勝敗がついた
-						endtimer += game_speed;
-						
-						float now_elapsed = 0.0f;
+						endtimer += elapsed_time;
 
 						//勝敗決定後、スローにする時間を作りたいので
 						if (endtimer > 3.0f)
 						{
-							now_elapsed = elapsed_time;
+							game_speed = elapsed_time;
 						}
 						else
 						{
-							now_elapsed = elapsed_time * 0.5f;
+							game_speed = elapsed_time * 0.5f;
 						}
 
 						//大体7秒後くらいに勝利画面へ
@@ -719,14 +734,14 @@ void SceneGame::Update(float elapsed_time)
 						//1Pが左
 						if (player1p->pos.x < player2p->pos.x)
 						{
-							player1p->Update(1.0f, now_elapsed);
-							player2p->Update(-1.0f, now_elapsed);
+							player1p->Update(1.0f, game_speed);
+							player2p->Update(-1.0f, game_speed);
 						}
 						//2Pが左
 						else
 						{
-							player1p->Update(-1.0f, now_elapsed);
-							player2p->Update(1.0f, now_elapsed);
+							player1p->Update(-1.0f, game_speed);
+							player2p->Update(1.0f, game_speed);
 						}
 					}
 					else
@@ -783,6 +798,7 @@ void SceneGame::Update(float elapsed_time)
 						ComboImageSet();
 
 						//勝敗判定
+						Winjudge();
 						if (judge != JUDGE_VICTORY::NO_VICTORY)
 						{
 							end = true;
@@ -872,7 +888,7 @@ void SceneGame::Update(float elapsed_time)
 		//フェードアウトがスタートしてない場合は画面を映す
 		if (fado_alpha > 0.0f)
 		{
-			fado_alpha -= (elapsed_time * mix_fado);
+			fado_alpha -= (elapsed_time * mix_fade);
 		}
 	}
 }
@@ -1027,7 +1043,7 @@ void SceneGame::Draw(float elapsed_time)
 		switch (YRCamera.GetRequest())
 		{
 		case Camera::Request::HOLD:
-			FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.8f));
+			FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.8f));
 			break;
 		default:
 			break;
@@ -1168,7 +1184,9 @@ void SceneGame::Draw(float elapsed_time)
 			V, P, light_direction, lightColor, ambient_color, elapsed_time, 0.0f
 		);*/
 
+
 #if USE_IMGUI
+		FRAMEWORK.context->OMSetDepthStencilState(m_depth_stencil_state2.Get(), 1);
 		player1p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed *p1_elapsed_time);
 		player2p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed *p2_elapsed_time);
 		
@@ -1181,6 +1199,7 @@ void SceneGame::Draw(float elapsed_time)
 	);*/
 
 		YRCamera.CameraMove(spriteShader.get());
+		FRAMEWORK.context->OMSetDepthStencilState(m_depth_stencil_state.Get(), 1);
 #endif // USE_IMGUI
 		
 
@@ -1234,7 +1253,7 @@ void SceneGame::Draw(float elapsed_time)
 	}
 
 	//フェード用画像描画
-	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
+	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
 	NullSetRenderTexture();
 	RenderTexture();
 	RenderBlur();
@@ -1245,9 +1264,9 @@ void SceneGame::Draw(float elapsed_time)
 
 }
 
-bool SceneGame::FadoOut(float elapsed_time)
+bool SceneGame::FadeOut(float elapsed_time)
 {
-	fado_alpha += mix_fado*(elapsed_time);
+	fado_alpha += mix_fade*(elapsed_time);
 
 	if (fado_alpha > 1.0f)
 	{
@@ -1465,7 +1484,7 @@ void SceneGame::FinUpdate()
 
 
 
-void SceneGame::CameraUpdate()
+void SceneGame::CameraUpdate(float elapsed_time)
 {
 	switch (YRCamera.camera_state)
 	{
@@ -1487,7 +1506,25 @@ void SceneGame::CameraUpdate()
 		//2Pがカメラを持っている
 		break;
 	case Camera::CAMERA_STATE::ZOOM_CAMERA:
-		//2Pがカメラを持っている
+		//カメラがズームしている
+		if (YRCamera.viblate_timer > 0)
+		{
+			YRCamera.viblate_timer -= elapsed_time;
+
+			DirectX::XMFLOAT3 focus;
+			focus = YRCamera.targetPos;
+			float rax = rand() % 3 - 1.0f;
+			float ray = rand() % 3 - 1.0f;
+			float raz = rand() % 3 - 1.0f;
+
+			float dx = rax * 0.5f * YRCamera.viblate_timer + YRCamera.targetPos.x;
+			float dy = ray * 0.5f * YRCamera.viblate_timer + YRCamera.targetPos.y;
+			//float dz = raz * 1.0f * YRCamera.viblate_timer + YRCamera.targetPos.z;
+			focus.x = dx;
+			focus.y = dy;
+
+			YRCamera.SetFocus(focus);
+		}
 		break;
 	default:
 		break;
@@ -1633,6 +1670,9 @@ void SceneGame::CameraRequest(float elapsed_time)
 		}
 		
 		eye.z = focus.z - 100.0f;
+
+		YRCamera.viblate_timer = 0.5f;
+		YRCamera.targetPos = focus;
 
 		YRCamera.SetEye(eye);
 		YRCamera.SetFocus(focus);

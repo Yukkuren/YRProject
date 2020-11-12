@@ -2,7 +2,7 @@
 #include "CoList.h"
 #include "framework.h"
 
-YR_Effect::YR_Effect()
+void YR_Effect::Init()
 {
 	//エフェクトレンダラーの作成
 	renderer = EffekseerRendererDX11::Renderer::Create(FRAMEWORK.device.Get(), FRAMEWORK.context.Get(), square_max_count);
@@ -121,8 +121,8 @@ void YR_Effect::PlayEffect(
 	//manager->AddLocation(handles[scastI(kind)], ::Effekseer::Vector3D(pos.x, pos.y, pos.z));
 
 	// エフェクトの再生
-	handles[scastI(kind)] = manager->Play(effects[scastI(kind)], 0, 0, 0);
-	//handles[scastI(kind)] = manager->Play(effects[scastI(kind)], pos.x,pos.y,pos.z);
+	//handles[scastI(kind)] = manager->Play(effects[scastI(kind)], 0, 0, 0);
+	handles[scastI(kind)] = manager->Play(effects[scastI(kind)], pos.x,pos.y,pos.z);
 
 	// エフェクトの移動
 	manager->SetLocation(handles[scastI(kind)], ::Effekseer::Vector3D(pos.x, pos.y, pos.z));

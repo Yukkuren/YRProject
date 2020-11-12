@@ -106,7 +106,6 @@ void Knight::Init(YR_Vector3 InitPos)
 
 	lumi_material = Model::Material_Attribute::NONE;
 
-	effect_timer = 0.0f;
 
 	if (now_player == 1)
 	{
@@ -127,13 +126,72 @@ void Knight::Uninit()
 	anim = nullptr;
 	model_motion.wait_R.reset();
 	model_motion.wait_R = nullptr;
-	model_motion.jaku_R.reset();
-	model_motion.jaku_R = nullptr;
 	model_motion.special_R.reset();
 	model_motion.special_R = nullptr;
 	model_motion.damage_R_g_u.reset();
 	model_motion.damage_R_g_u = nullptr;
+	model_motion.guard_R.reset();
+	model_motion.guard_R = nullptr;
+	model_motion.slid_R.reset();
+	model_motion.slid_R = nullptr;
+	model_motion.air_back_R.reset();
+	model_motion.air_back_R = nullptr;
+	model_motion.air_dash_R.reset();
+	model_motion.air_dash_R = nullptr;
+	model_motion.passive_R.reset();
+	model_motion.passive_R = nullptr;
+	model_motion.squat_R.reset();
+	model_motion.squat_R = nullptr;
+	model_motion.walk_R.reset();
+	model_motion.walk_R = nullptr;
+	model_motion.back_R.reset();
+	model_motion.back_R = nullptr;
+	model_motion.dash_R.reset();
+	model_motion.dash_R = nullptr;
+	model_motion.backstep_R.reset();
+	model_motion.backstep_R = nullptr;
+	model_motion.jump_R.reset();
+	model_motion.jump_R = nullptr;
+	model_motion.air_jump_R.reset();
+	model_motion.air_jump_R = nullptr;
+	model_motion.intro_R.reset();
+	model_motion.intro_R = nullptr;
 
+	model_motion.wait_L.reset();
+	model_motion.wait_L = nullptr;
+	model_motion.special_L.reset();
+	model_motion.special_L = nullptr;
+	model_motion.damage_L_g_u.reset();
+	model_motion.damage_L_g_u = nullptr;
+	model_motion.guard_L.reset();
+	model_motion.guard_L = nullptr;
+	model_motion.slid_L.reset();
+	model_motion.slid_L = nullptr;
+	model_motion.air_back_L.reset();
+	model_motion.air_back_L = nullptr;
+	model_motion.air_dash_L.reset();
+	model_motion.air_dash_L = nullptr;
+	model_motion.passive_L.reset();
+	model_motion.passive_L = nullptr;
+	model_motion.squat_L.reset();
+	model_motion.squat_L = nullptr;
+	model_motion.walk_L.reset();
+	model_motion.walk_L = nullptr;
+	model_motion.back_L.reset();
+	model_motion.back_L = nullptr;
+	model_motion.dash_L.reset();
+	model_motion.dash_L = nullptr;
+	model_motion.backstep_L.reset();
+	model_motion.backstep_L = nullptr;
+	model_motion.jump_L.reset();
+	model_motion.jump_L = nullptr;
+	model_motion.air_jump_L.reset();
+	model_motion.air_jump_L = nullptr;
+	model_motion.intro_L.reset();
+	model_motion.intro_L = nullptr;
+
+
+	model_motion.jaku_R.reset();
 	model_motion.thu_R.reset();
 	model_motion.kyo_R.reset();
 	model_motion.d_jaku_R.reset();
@@ -156,6 +214,7 @@ void Knight::Uninit()
 	model_motion.disire_m_R.reset();
 	model_motion.extend_R.reset();
 
+	model_motion.jaku_R = nullptr;
 	model_motion.thu_R = nullptr;
 	model_motion.kyo_R = nullptr;
 	model_motion.d_jaku_R = nullptr;
@@ -178,7 +237,61 @@ void Knight::Uninit()
 	model_motion.disire_m_R = nullptr;
 	model_motion.extend_R = nullptr;
 
+
+	model_motion.jaku_L.reset();
+	model_motion.thu_L.reset();
+	model_motion.kyo_L.reset();
+	model_motion.d_jaku_L.reset();
+	model_motion.d_thu_L.reset();
+	model_motion.u_kyo_L.reset();
+	model_motion.a_jaku_L.reset();
+	model_motion.a_thu_L.reset();
+	model_motion.a_kyo_L.reset();
+	model_motion.a_ukyo_L.reset();
+	model_motion.steal_L.reset();
+	model_motion.slow_L.reset();
+	model_motion.track_L.reset();
+	model_motion.jaku_rh_L.reset();
+	model_motion.thu_rh_L.reset();
+	model_motion.kyo_rh_L.reset();
+	model_motion.jaku_lh_L.reset();
+	model_motion.thu_lh_L.reset();
+	model_motion.kyo_lh_L.reset();
+	model_motion.disire_s_L.reset();
+	model_motion.disire_m_L.reset();
+	model_motion.extend_L.reset();
+
+	model_motion.jaku_L = nullptr;
+	model_motion.thu_L = nullptr;
+	model_motion.kyo_L = nullptr;
+	model_motion.d_jaku_L = nullptr;
+	model_motion.d_thu_L = nullptr;
+	model_motion.u_kyo_L = nullptr;
+	model_motion.a_jaku_L = nullptr;
+	model_motion.a_thu_L = nullptr;
+	model_motion.a_kyo_L = nullptr;
+	model_motion.a_ukyo_L = nullptr;
+	model_motion.steal_L = nullptr;
+	model_motion.slow_L = nullptr;
+	model_motion.track_L = nullptr;
+	model_motion.jaku_rh_L = nullptr;
+	model_motion.thu_rh_L = nullptr;
+	model_motion.kyo_rh_L = nullptr;
+	model_motion.jaku_lh_L = nullptr;
+	model_motion.thu_lh_L = nullptr;
+	model_motion.kyo_lh_L = nullptr;
+	model_motion.disire_s_L = nullptr;
+	model_motion.disire_m_L = nullptr;
+	model_motion.extend_L = nullptr;
+
 	model_motion.model_R.clear();
+	model_motion.model_L.clear();
+
+	atk.clear();
+	projectile_atk.clear();
+	hit.clear();
+	attack_list.clear();
+	hitparam_list.clear();
 }
 
 void Knight::Update(float decision, float elapsed_time)
@@ -557,6 +670,19 @@ void Knight::AttackInput()
 				anim_ccodinate = ac_attack[real].fream;
 				//攻撃番号を初期化
 				attack_list[real].now_attack_num = 0;
+				//当たり判定を初期化
+				if (attack_list[real].attack_single[0].parameter[0].type == AttackKind::NO_TO_OFFSET_UP)
+				{
+					HitBoxTransition(HitBoxState::UP_INVINCIBLE);
+				}
+				else if (attack_list[real].attack_single[0].parameter[0].type == AttackKind::NO_TO_OFFSET)
+				{
+					HitBoxTransition(HitBoxState::INVINCIBLE);
+				}
+				else
+				{
+					HitBoxTransition(HitBoxState::NOGUARD);
+				}
 				//攻撃発生前の前進距離を設定する(地上攻撃のみ)
 				if (attack_list[real].ground_on == Ground_C::GROUND)
 				{
@@ -716,7 +842,6 @@ void Knight::Attack(float decision, float elapsed_time)
 		//上方向への力がない場合、重力を付与する
 		pos.y -= gravity * elapsed_time;
 	}
-	HitBoxTransition(HitBoxState::NOGUARD);
 
 	AttackSwitch(decision, elapsed_time);
 
@@ -946,7 +1071,8 @@ void Knight::Draw(
 
 	bool inversion = true;//左右反転フラグ
 
-	DirectX::XMFLOAT4 material_color = { 1.0f,1.0f,1.0f,1.0f };
+	//Blenderのモデルのサブセットには0.8のmaterial_colorが入っているため逆数を入れている
+	DirectX::XMFLOAT4 material_color = { 1.1f,1.1f,1.1f,1.0f };
 
 
 	//左向き
@@ -1012,6 +1138,8 @@ void Knight::Draw(
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
 		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
+		anim->CalculateWorldTransform(DirectX::XMFLOAT3(pos.x,-5.0f,pos.z+2.0f), DirectX::XMFLOAT3(scale.x, 0.001f, scale.z), DirectX::XMFLOAT3(0.0f,angle.y,0.0f));
+		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], Model::Material_Attribute::NONE, DirectX::XMFLOAT4( 0.0f,0.0f,0.0f,1.0f ));
 	}
 	if (YRCamera.camera_state == Camera::CAMERA_STATE::MAIN)
 	{
@@ -1019,6 +1147,8 @@ void Knight::Draw(
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
 		anim->Draw(parallel_shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
+		anim->CalculateWorldTransform(DirectX::XMFLOAT3(pos.x, - 5.0f, pos.z + 2.0f), DirectX::XMFLOAT3(scale.x, 0.001f, scale.z), DirectX::XMFLOAT3(0.0f, angle.y, 0.0f));
+		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], Model::Material_Attribute::NONE, DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 	}
 	if (YRCamera.GetRequest() == Camera::Request::WEAKEN)
 	{
@@ -1026,6 +1156,8 @@ void Knight::Draw(
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
 		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
+		anim->CalculateWorldTransform(DirectX::XMFLOAT3(pos.x, - 5.0f, pos.z + 2.0f), DirectX::XMFLOAT3(scale.x, 0.001f, scale.z), DirectX::XMFLOAT3(0.0f, angle.y, 0.0f));
+		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], Model::Material_Attribute::NONE, DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 	}
 	if (YRCamera.camera_state == Camera::CAMERA_STATE::ZOOM_CAMERA)
 	{
@@ -1033,6 +1165,8 @@ void Knight::Draw(
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
 		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
+		anim->CalculateWorldTransform(DirectX::XMFLOAT3(pos.x, - 5.0f, pos.z + 2.0f), DirectX::XMFLOAT3(scale.x, 0.001f, scale.z), DirectX::XMFLOAT3(0.0f, angle.y, 0.0f));
+		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], Model::Material_Attribute::NONE, DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 	}
 
 	/*motion.DrawContinue(
@@ -1062,10 +1196,10 @@ void Knight::Draw(
 	TextDraw();
 
 	//エフェクト
-	GetEffect().CameraSet();
+	YRGetEffect().CameraSet();
 
 	//エフェクト描画
-	GetEffect().Draw();
+	YRGetEffect().Draw();
 
 //デバッグ状態なら
 #if USE_IMGUI
@@ -1177,9 +1311,9 @@ bool Knight::Step(float elapsed_time)
 		//空中左ステップ
 		if (pad->x_input[static_cast<int>(PAD::L_DASH)] == 1)
 		{
-			if (air_dash_count > 0)
+			if (air_dash_count == 1)
 			{
-				//ジャンプが残っている場合は空中ダッシュを行う
+				//ダッシュカウントが残っている場合は空中ダッシュを行う
 				//step = true;
 				moveflag = false;
 				jumpflag = false;
@@ -1218,9 +1352,9 @@ bool Knight::Step(float elapsed_time)
 		//空中右ステップ
 		if (pad->x_input[static_cast<int>(PAD::R_DASH)] == 1)
 		{
-			if (air_dash_count > 0)
+			if (air_dash_count == 1)
 			{
-				//ジャンプが残っている場合は空中ダッシュを行う
+				//ダッシュカウントが残っている場合は空中ダッシュを行う
 				//step = true;
 				moveflag = false;
 				jumpflag = false;
@@ -1425,6 +1559,7 @@ void Knight::AirDash(float elapsed_time)
 				pad->x_input[scastI(PAD::R_DASH)] = 0;
 				pad->x_input[scastI(PAD::L_DASH)] = 0;
 				moveflag = false;
+				air_dash_count = 0;
 				air_dash_state = AirDashState::NONE;
 				if (!attack)
 				{
@@ -1479,6 +1614,7 @@ void Knight::AirDash(float elapsed_time)
 				pad->x_input[scastI(PAD::L_DASH)] = 0;
 				air_dash_state = AirDashState::NONE;
 				moveflag = false;
+				air_dash_count = 0;
 				if (!attack)
 				{
 					//描画をセット
@@ -1544,6 +1680,7 @@ void Knight::AirDash(float elapsed_time)
 				pad->x_input[scastI(PAD::L_DASH)] = 0;
 				air_dash_state = AirDashState::NONE;
 				moveflag = false;
+				air_dash_count = 0;
 				//描画をセット
 				if (!attack)
 				{
@@ -1600,6 +1737,7 @@ void Knight::AirDash(float elapsed_time)
 				pad->x_input[scastI(PAD::L_DASH)] = 0;
 				air_dash_state = AirDashState::NONE;
 				moveflag = false;
+				air_dash_count = 0;
 				//描画をセット
 				if (!attack)
 				{
@@ -1938,20 +2076,10 @@ void Knight::GuardAnimSet()
 				if (rightOrleft > 0)
 				{
 					anim->NodeChange(model_motion.guard_R, 2);
-					if (effect_timer > draw_guard_effect_interval)
-					{
-						GetEffect().PlayEffect(EffectKind::GUARD, DirectX::XMFLOAT3(pos.x + draw_guarf_effect_add_pos_x, pos.y, pos.z), DirectX::XMFLOAT3(0.7f,0.7f,0.7f), DirectX::XMFLOAT3(0.0f,1.0f,0.0f), 5.5f);
-						effect_timer = 0.0f;
-					}
 				}
 				else
 				{
 					anim->NodeChange(model_motion.guard_L, 2);
-					if (effect_timer > draw_guard_effect_interval)
-					{
-						GetEffect().PlayEffect(EffectKind::GUARD, DirectX::XMFLOAT3(pos.x - draw_guarf_effect_add_pos_x, pos.y, pos.z), DirectX::XMFLOAT3(0.7f, 0.7f, 0.7f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -5.5f);
-						effect_timer = 0.0f;
-					}
 				}
 				anim_ccodinate = ac_act[scastI(act_state)].timer;
 			}
@@ -1961,20 +2089,10 @@ void Knight::GuardAnimSet()
 				if (rightOrleft > 0)
 				{
 					anim->NodeChange(model_motion.guard_R);
-					if (effect_timer > draw_guard_effect_interval)
-					{
-						GetEffect().PlayEffect(EffectKind::GUARD, DirectX::XMFLOAT3(pos.x + draw_guarf_effect_add_pos_x, pos.y, pos.z), DirectX::XMFLOAT3(0.7f, 0.7f, 0.7f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), 5.5f);
-						effect_timer = 0.0f;
-					}
 				}
 				else
 				{
 					anim->NodeChange(model_motion.guard_L);
-					if (effect_timer > draw_guard_effect_interval)
-					{
-						GetEffect().PlayEffect(EffectKind::GUARD, DirectX::XMFLOAT3(pos.x - draw_guarf_effect_add_pos_x, pos.y, pos.z), DirectX::XMFLOAT3(0.7f, 0.7f, 0.7f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -5.5f);
-						effect_timer = 0.0f;
-					}
 				}
 				anim_ccodinate = ac_act[scastI(act_state)].timer;
 			}
@@ -1985,20 +2103,10 @@ void Knight::GuardAnimSet()
 			if (rightOrleft > 0)
 			{
 				anim->NodeChange(model_motion.guard_R,1);
-				if (effect_timer > draw_guard_effect_interval)
-				{
-					GetEffect().PlayEffect(EffectKind::GUARD, DirectX::XMFLOAT3(pos.x + draw_guarf_effect_add_pos_x, pos.y, pos.z), DirectX::XMFLOAT3(0.7f, 0.7f, 0.7f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), 5.5f);
-					effect_timer = 0.0f;
-				}
 			}
 			else
 			{
 				anim->NodeChange(model_motion.guard_L,1);
-				if (effect_timer > draw_guard_effect_interval)
-				{
-					GetEffect().PlayEffect(EffectKind::GUARD, DirectX::XMFLOAT3(pos.x - draw_guarf_effect_add_pos_x, pos.y, pos.z), DirectX::XMFLOAT3(0.7f, 0.7f, 0.7f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -5.5f);
-					effect_timer = 0.0f;
-				}
 			}
 			anim_ccodinate = ac_act[scastI(act_state)].timer;
 		}
@@ -2364,12 +2472,56 @@ void Knight::DamageCheck(float decision)
 		if (hit[i].hit)
 		{
 			//攻撃を受けていた
+
+			//条件ごとに設定
+			switch (hit[i].hit_state)
+			{
+			case HitStateKind::NORMAL:
+				//通常攻撃
+				act_state = ActState::KNOCK;
+				steal_escape = 0.0f;
+				hit[i].hit_state = HitStateKind::NORMAL;
+				break;
+			case HitStateKind::STEAL:
+				//掴み攻撃
+				act_state = ActState::STATENONE;
+				steal_escape = hit[i].steal_timer;
+				hit[i].hit_state = HitStateKind::STEAL;
+				hit[i].steal_timer = 0.0f;
+				break;
+			case HitStateKind::SLAM:
+				//叩きつけ攻撃
+				act_state = ActState::SLAM;
+				hit[i].hit_state = HitStateKind::NORMAL;
+				steal_escape = 0.0f;
+				break;
+			case HitStateKind::ARMOR:
+				//アーマーが発動した
+			{
+				steal_escape = 0.0f;
+				hit[i].hit_state = HitStateKind::NORMAL;
+				float dg = hit[i].damege - (combo_count * 1.2f);
+				if (dg <= 0)
+				{
+					dg = 1;
+				}
+				hp -= dg;
+				GaugeUp(hit[i].damege / 5.0f);
+				hit[i].damege = 0.0f;
+				hit[i].hit = false;
+				return;
+			}
+				break;
+			default:
+				break;
+			}
+
 			//ダメージ、吹っ飛びベクトルなどを保存
 			HitBoxTransition(HitBoxState::NOGUARD);
-			float dg = hit[i].damege - (combo_count * 1.2f);
-			if (dg <= 0)
+			float dg = hit[i].damege - (static_cast<float>(combo_count) * 1.2f);
+			if (dg <= 0.0f)
 			{
-				dg = 1;
+				dg = 1.0f;
 			}
 			hp -= dg;
 			combo_count++;
@@ -2419,30 +2571,6 @@ void Knight::DamageCheck(float decision)
 			//最終入力内容を初期化する
 			last_attack = AttackState::NONE;
 			hit_state_n_set = false;
-			switch (hit[i].hit_state)
-			{
-			case HitStateKind::NORMAL:
-				//通常攻撃
-				act_state = ActState::KNOCK;
-				steal_escape = 0.0f;
-				hit[i].hit_state = HitStateKind::NORMAL;
-				break;
-			case HitStateKind::STEAL:
-				//掴み攻撃
-				act_state = ActState::STATENONE;
-				steal_escape = hit[i].steal_timer;
-				hit[i].hit_state = HitStateKind::STEAL;
-				hit[i].steal_timer = 0.0f;
-				break;
-			case HitStateKind::SLAM:
-				//叩きつけ攻撃
-				act_state = ActState::SLAM;
-				hit[i].hit_state = HitStateKind::NORMAL;
-				steal_escape = 0.0f;
-				break;
-			default:
-				break;
-			}
 		}
 	}
 }
@@ -2902,6 +3030,15 @@ void Knight::Guard(float decision)
 			pad->high_trigger = false;
 			hightrigger = false;
 			act_state = ActState::GUARD;
+			if (rightOrleft > 0)
+			{
+				YRGetEffect().PlayEffect(EffectKind::GUARD, DirectX::XMFLOAT3(pos.x + draw_guarf_effect_add_pos_x, pos.y, -2.0f), DirectX::XMFLOAT3(0.7f, 0.7f, 0.7f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), 5.5f);
+			}
+			else
+			{
+				YRGetEffect().PlayEffect(EffectKind::GUARD, DirectX::XMFLOAT3(pos.x - draw_guarf_effect_add_pos_x, pos.y, -2.0f), DirectX::XMFLOAT3(0.7f, 0.7f, 0.7f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -5.5f);
+			}
+			
 		}
 	}
 
@@ -2917,8 +3054,6 @@ void Knight::GuardBack(float elapsed_time)
 	hit_state_n_set = true;
 	bool hit_on = false;
 
-	//ガードエフェクト描画更新
-	effect_timer += elapsed_time;
 
 	for (int i = 0; i < hit.size(); i++)
 	{
@@ -3341,205 +3476,6 @@ void Knight::StateNone(float elapsed_time)
 		steal_escape -= elapsed_time;
 	}
 }
-
-
-void Knight::TrackDash(float decision,float elapsed_time)
-{
-	if (attack_state != AttackState::TRACK_DASH)
-	{
-		return;
-	}
-
-	//max_jump_flag = false;
-	/*speed.y = 0.0f;*/
-	rightOrleft = decision;
-
-	//正規化された相手に向かうベクトル
-	YR_Vector3	plusVec = { 0.0f,0.0f,0.0f };
-	plusVec = tracking.Veccalculate(hit[scastI(KNIGHTHIT::BODY)].center,decision);
-
-	//後隙が設定された後はこの関数には入らない
-	if (later > -1 && later < target_max)
-	{
-		return;
-	}
-	jumpflag = false;
-
-	//重力の逆数を付与する
-	pos.y += gravity * elapsed_time;
-
-	//スピードをすべて0にする
-	speed.x = 0.0f;
-	speed.y = 0.0f;
-
-	//発生フレームになるまで回す
-	if (fream < target_max)
-	{
-		fream -= elapsed_time;
-
-		//ちょっとずつ浮かせていく
-		pos.y += 5.0f * elapsed_time;
-	}
-	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
-	//発生フレームになったら攻撃判定を生成する
-	if (fream < 0.0f)
-	{
-		//int attack_num = attack_list[real].now_attack_num;
-		anim_ccodinate = ac_attack[now_at_list].timer;
-		if (attack_list[now_at_list].now_attack_num == 0)
-		{
-			//初回の攻撃のみアニメーションを変える
-			if(rightOrleft>0)
-			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
-			}
-			else
-			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::TIMER));
-			}
-		}
-		if (attack_list[now_at_list].speed_on)
-		{
-			//攻撃に速度を付与する場合
-			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos, attack_list[now_at_list].speed);
-		}
-		else
-		{
-			//付与しない場合
-			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos);
-		}
-		fream = non_target;
-
-		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
-	}
-
-
-
-	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
-	if (!atk.empty())
-	{
-		//常に回転させる
-		angle.z -= 50.0f * elapsed_time;
-
-		pos.x += ((plusVec.x * track_speed) * elapsed_time);
-		pos.y += ((plusVec.y * track_speed) * elapsed_time);
-
-		for (auto& a : atk)
-		{
-			if (knock && a.attack_name == scastI(attack_state))
-			{
-				a.parameter.knockback = 0.0f;
-			}
-			if (a.knock_start && a.attack_name == scastI(attack_state))
-			{
-				pos.x -= a.parameter.knockback * rightOrleft;
-				a.parameter.knockback = 0.0f;
-				knock = true;
-			}
-		}
-		if (knock)
-		{
-			//ホーミングダッシュは当たった時点で攻撃が終了するので後隙を入力する
-			//攻撃側のY座標を相手の座標に固定する
-			pos.y = tracking.rival_Pos.y;
-			//X座標も追撃可能な位置に固定する
-			pos.x = tracking.rival_Pos.x + (track_adjust_x * (-decision));
-			//上方向への速度を入力する(ちょっとホップさせる)
-			speed_X.Set(0.0f);
-			//speed_Y.Set(attack_list[now_at_list].advance_speed);
-			speed.y = attack_list[now_at_list].advance_speed;
-			//攻撃をすべて消去する
-			AllAttackClear();
-			//攻撃番号を初期化
-			attack_list[now_at_list].now_attack_num = 0;
-			//後隙を設定
-			later = attack_list[now_at_list].later;
-			//アニメーション速度を指定
-			anim_ccodinate = ac_attack[now_at_list].later;
-			//描画をセット
-			if (rightOrleft > 0)
-			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
-			}
-			else
-			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
-			}
-			//行動終了フラグをオンに
-			finish = true;
-			//角度を戻す
-			angle.z = 0.0f;
-			angle.x = 0.0f;
-			//ジャンプ回数を減らす
-			if (jumpcount != 0)
-			{
-				jumpcount = 1;
-			}
-			//ホーミングダッシュ回数を減らす
-			trackgauge--;
-			//ジャンプ状態にする
-			jumpflag = true;
-			max_jump_flag = true;
-		}
-	}
-
-	if (atk.empty())
-	{
-		//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-		return;
-	}
-
-	//攻撃が全て終了したことを確認する
-	if (AttackEndCheck())
-	{
-		//まだ攻撃が残っていれば次の攻撃に移る
-		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
-		{
-			fream = attack_list[now_at_list].attack_single[attack_list[now_at_list].now_attack_num].fream;
-		}
-		else
-		{
-			//ない場合は後隙に移行する
-			//上方向への速度を入力する(ちょっとホップさせる)
-			speed_X.Set(0.0f);
-			speed.y = 0.0f;
-			//攻撃番号を初期化
-			attack_list[now_at_list].now_attack_num = 0;
-			//後隙を設定
-			later = attack_list[now_at_list].later;
-			//アニメーション速度を指定
-			anim_ccodinate = ac_attack[now_at_list].later;
-			//描画をセット
-			if (rightOrleft > 0)
-			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
-			}
-			else
-			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
-			}
-			//行動終了フラグをオンに
-			finish = true;
-			//角度を戻す
-			angle.z = 0.0f;
-			angle.x = 0.0f;
-			//ジャンプ回数を減らす
-			if (jumpcount != 0)
-			{
-				jumpcount = 1;
-			}
-			//ホーミングダッシュ回数を減らす
-			trackgauge--;
-			//ジャンプ状態にする
-			jumpflag = true;
-			max_jump_flag = true;
-		}
-	}
-
-}
-
-
-
 
 
 //float Ryu::GetPosX()

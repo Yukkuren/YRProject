@@ -125,6 +125,7 @@ std::array<std::string, scastI(HitBoxState::END)> hitstate_name_list =
 	u8"下段ガード",
 	u8"無敵",
 	u8"空中ガード",
+	u8"上段攻撃に対して無敵",
 };
 
 std::array<std::string, scastI(HitResult::END)> result_name_list =
@@ -152,6 +153,9 @@ std::array<std::string, scastI(AttackKind::END)> attack_kind_name_list =
 	u8"たたきつけ(高さが一定なら滑り状態にする)",
 	u8"ロック技",
 	u8"飛び道具",
+	u8"ホーミングダッシュ",
+	u8"相殺しない攻撃",
+	u8"上段攻撃と相殺しない攻撃",
 };
 #endif // USE_IMGUI
 
@@ -389,7 +393,7 @@ bool Knight::AttackLoad()
 		anim_act_ifs >> ac_act[list].later;
 	}
 	//もし落ちたらエラーを出す
-	if (anim_ifs.fail())
+	if (anim_act_ifs.fail())
 	{
 		bool set = false;
 		ImGui::SetNextWindowSize(ImVec2(250, 500), 2);
@@ -749,6 +753,24 @@ void Knight::DrawDEBUG(
 	//攻撃リスト作成用処理
 #if USE_IMGUI
 	{
+
+		std::string p1_hp = std::to_string(hp);
+
+		FRAMEWORK.font->Begin(FRAMEWORK.context.Get());
+		if (now_player > 1)
+		{
+			FRAMEWORK.font->Draw(
+				static_cast<float>(FRAMEWORK.SCREEN_WIDTH / 2.0f) + 200.0f,
+				100.0f, p1_hp.c_str());
+		}
+		else
+		{
+			FRAMEWORK.font->Draw(
+				static_cast<float>(FRAMEWORK.SCREEN_WIDTH / 2.0f) - 500.0f,
+				100.0f, p1_hp.c_str());
+		}
+		
+		FRAMEWORK.font->End(FRAMEWORK.context.Get());
 
 		std::string now_play = std::to_string(now_player);
 		now_play += std::string(":RyuHitBox");

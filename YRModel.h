@@ -176,7 +176,7 @@ class Model
 {
 public:
 	Model(const char* filename);
-	Model(const char* filename, std::shared_ptr<Texture> tex_main, std::shared_ptr<Texture> tex_face);
+	Model(const char* filename, const std::shared_ptr<Texture> tex_main, const std::shared_ptr<Texture> tex_face);
 	~Model() {
 		color_texture_main.reset();
 		color_texture_face.reset();
@@ -262,8 +262,8 @@ public:
 	};
 
 	const std::vector<Mesh>& GetMeshes() const { return m_meshes; }
-	std::vector<ModelData::Node>& GetNodes(){ return m_data->nodes; }
-	std::vector<ModelData::Animation>& GetAnimations(){ return m_data->animations; }
+	const std::vector<ModelData::Node>& GetNodes(){ return m_data->nodes; }
+	const std::vector<ModelData::Animation>& GetAnimations(){ return m_data->animations; }
 	std::vector<Mesh>		m_meshes;
 	//テクスチャ利用
 	std::shared_ptr<Texture> color_texture_main = nullptr;

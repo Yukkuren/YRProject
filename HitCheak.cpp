@@ -59,6 +59,14 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
+							if (hit[hitnum].state == HitBoxState::UP_INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
+							if (hit[hitnum].state == HitBoxState::PROJECTILE_ARMOR)
+							{
+								flag = HitResultState::HIT;
+							}
 							break;
 						case AttackKind::MIDDLE:
 							//’†’iUŒ‚
@@ -69,6 +77,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							if (hit[hitnum].state == HitBoxState::INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
+							}
+							if (hit[hitnum].state == HitBoxState::PROJECTILE_ARMOR)
+							{
+								flag = HitResultState::HIT;
 							}
 							break;
 						case AttackKind::DOWN:
@@ -84,6 +96,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							if (hit[hitnum].state == HitBoxState::INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
+							}
+							if (hit[hitnum].state == HitBoxState::PROJECTILE_ARMOR)
+							{
+								flag = HitResultState::HIT;
 							}
 							break;
 						case AttackKind::STEAL:
@@ -104,6 +120,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
+							if (hit[hitnum].state == HitBoxState::PROJECTILE_ARMOR)
+							{
+								flag = HitResultState::STATE_NONE;
+							}
 							break;
 						case AttackKind::SLAM:
 							//’@‚«‚Â‚¯UŒ‚
@@ -119,10 +139,63 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
+							if (hit[hitnum].state == HitBoxState::PROJECTILE_ARMOR)
+							{
+								flag = HitResultState::HIT;
+							}
 							break;
 						case AttackKind::PROJECTILE:
 							//”ò‚Ñ“¹‹ïUŒ‚
 							if (hit[hitnum].state == HitBoxState::NOGUARD)
+							{
+								flag = HitResultState::HIT;
+							}
+							if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
+							if (hit[hitnum].state == HitBoxState::PROJECTILE_ARMOR)
+							{
+								flag = HitResultState::ARMOR;
+							}
+							break;
+						case AttackKind::TRACK:
+							//ƒz[ƒ~ƒ“ƒOƒ_ƒbƒVƒ…
+							if (hit[hitnum].state == HitBoxState::NOGUARD)
+							{
+								flag = HitResultState::HIT;
+							}
+							if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
+							if (hit[hitnum].state == HitBoxState::UP_INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
+							if (hit[hitnum].state == HitBoxState::PROJECTILE_ARMOR)
+							{
+								flag = HitResultState::HIT;
+							}
+							break;
+						case AttackKind::NO_TO_OFFSET:
+							//‘ŠE‚µ‚È‚¢UŒ‚
+							if (hit[hitnum].state == HitBoxState::NOGUARD)
+							{
+								flag = HitResultState::HIT;
+							}
+							if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
+							break;
+						case AttackKind::NO_TO_OFFSET_UP:
+							//ã’iUŒ‚‚Æ‘ŠE‚µ‚È‚¢UŒ‚
+							if (hit[hitnum].state == HitBoxState::NOGUARD)
+							{
+								flag = HitResultState::HIT;
+							}
+							if (hit[hitnum].state == HitBoxState::PROJECTILE_ARMOR)
 							{
 								flag = HitResultState::HIT;
 							}
@@ -149,8 +222,8 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							attack[atknum].knock_start = true;
 							hit[hitnum].damege = attack[atknum].parameter.damege / guard_damege_adj;
 							hit[hitnum].timer = attack[atknum].parameter.HB_timer / guard_stop_adj;
-							hit[hitnum].hitback.x = attack[atknum].parameter.hitback.x / guard_back_adj;
-							hit[hitnum].hitback.y = attack[atknum].parameter.hitback.y / guard_back_adj;
+							hit[hitnum].hitback.x = attack[atknum].parameter.hitback.x / guard_back_adj_x;
+							hit[hitnum].hitback.y = attack[atknum].parameter.hitback.y / guard_back_adj_y;
 							if (attack[atknum].parameter.type != AttackKind::PROJECTILE)
 							{
 								for (int n = 0; n < attack.size(); n++)
@@ -381,6 +454,103 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							return add;
 						}
 						break;
+						case HitResultState::ARMOR:
+						{
+							//ƒA[ƒ}[‚Å‘Ï‚¦‚½
+							float add = 0.0f;
+							if (!attack[atknum].parameter.gaugeout)
+							{
+								add = attack[atknum].parameter.gauge_get;
+							}
+							hit[hitnum].hit = true;
+							attack[atknum].hit_ok = false;
+							attack[atknum].knock_start = true;
+							hit[hitnum].damege = attack[atknum].parameter.damege;
+							hit[hitnum].timer = attack[atknum].parameter.HB_timer;
+							hit[hitnum].hitback = attack[atknum].parameter.hitback;
+							//Hitcheak::timer = ((attack[atknum].parameter.damege*0.1f) / hitstop_adjust);
+							if (player == 1)
+							{
+								Hitcheak::stop1p = true;
+							}
+							if (player == 2)
+							{
+								Hitcheak::stop2p = true;
+							}
+
+							if (attack[atknum].parameter.distance.x >= hit[hitnum].center.x)
+							{
+								float dis = attack[atknum].parameter.distance.x - hit[hitnum].center.x;
+								dis /= 2.0f;
+								effectpos.x = hit[hitnum].center.x + dis;
+								effecttimer = 10;
+							}
+							if (hit[hitnum].center.x > attack[atknum].parameter.distance.x)
+							{
+								float dis = hit[hitnum].center.x - attack[atknum].parameter.distance.x;
+								dis /= 2.0f;
+								effectpos.x = attack[atknum].parameter.distance.x + dis;
+								effecttimer = 10;
+							}
+
+							if (attack[atknum].parameter.distance.y >= hit[hitnum].center.y)
+							{
+								float dis = attack[atknum].parameter.distance.y - hit[hitnum].center.y;
+								dis /= 2.0f;
+								effectpos.y = hit[hitnum].center.y + dis;
+								effecttimer = 10;
+							}
+							if (hit[hitnum].center.y > attack[atknum].parameter.distance.y)
+							{
+								float dis = hit[hitnum].center.y - attack[atknum].parameter.distance.y;
+								dis /= 2.0f;
+								effectpos.y = attack[atknum].parameter.distance.y + dis;
+								effecttimer = 10;
+							}
+							switch (attack[atknum].parameter.HS_timer)
+							{
+							case HitStopTime::SHORT:
+								Hitcheak::timer = 0.05f;
+								break;
+							case HitStopTime::NORMAL:
+								Hitcheak::timer = 0.25f;
+								break;
+							case HitStopTime::LONG:
+								Hitcheak::timer = 0.35f;
+								break;
+							case HitStopTime::ZOOM:
+								Hitcheak::timer = 0.45f;
+								YRCamera.RequestCamera(player);
+								break;
+							default:
+								Hitcheak::timer = 0.05f;
+								break;
+							}
+
+							if (attack[atknum].parameter.type != AttackKind::PROJECTILE)
+							{
+								for (int n = 0; n < attack.size(); n++)
+								{
+									attack[n].parameter.damege = 0;
+									//attack[n].HB_timer = 0;
+									attack[n].parameter.hitback = YR_Vector3(0.0f, 0.0f);
+									attack[n].hit_ok = false;
+								}
+							}
+							else
+							{
+								attack[atknum].parameter.damege = 0;
+								//attack[n].HB_timer = 0;
+								attack[atknum].parameter.hitback = YR_Vector3(0.0f, 0.0f);
+								attack[atknum].hit_ok = false;
+							}
+							//UŒ‚‚ª“–‚½‚Á‚½‚±‚Æ‚ğ•Û‘¶‚·‚é
+							attack[atknum].hit_result = HitResult::HIT;
+							hit[hitnum].hit_state = HitStateKind::ARMOR;
+							//PlaySE(SE_HIT);
+							return add;
+						}
+						break;
 						default:
 							break;
 						}
@@ -528,35 +698,79 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 
 	for (int atknum = 0; atknum < attack1p.size(); atknum++)
 	{
-		if (attack1p[atknum].hit_ok)
+		auto& atk1p = attack1p[atknum];
+		if (atk1p.hit_ok)
 		{
 			for (int hitnum = 0; hitnum < attack2p.size(); hitnum++)
 			{
-				if (attack2p[hitnum].hit_ok)
+				auto& atk2p = attack2p[hitnum];
+				if (atk2p.hit_ok)
 				{
-					if (attack1p[atknum].pos.x - attack1p[atknum].parameter.size.x<attack2p[hitnum].pos.x + attack2p[hitnum].parameter.size.x &&
-						attack1p[atknum].pos.x + attack1p[atknum].parameter.size.x>attack2p[hitnum].pos.x - attack2p[hitnum].parameter.size.x)
+					if (atk1p.pos.x - atk1p.parameter.size.x<atk2p.pos.x + atk2p.parameter.size.x &&
+						atk1p.pos.x + atk1p.parameter.size.x>atk2p.pos.x - atk2p.parameter.size.x)
 					{
-						if (attack1p[atknum].pos.y - attack1p[atknum].parameter.size.y<attack2p[hitnum].pos.y + attack2p[hitnum].parameter.size.y &&
-							attack1p[atknum].pos.y + attack1p[atknum].parameter.size.y>attack2p[hitnum].pos.y - attack2p[hitnum].parameter.size.y)
+						if (atk1p.pos.y - atk1p.parameter.size.y<atk2p.pos.y + atk2p.parameter.size.y &&
+							atk1p.pos.y + atk1p.parameter.size.y>atk2p.pos.y - atk2p.parameter.size.y)
 						{
-							if (attack1p[atknum].parameter.gaugeout && !attack2p[hitnum].parameter.gaugeout)
+							if(atk1p.parameter.type == AttackKind::NO_TO_OFFSET &&
+								atk2p.parameter.type != AttackKind::NO_TO_OFFSET)
 							{
-								attack2p[hitnum].parameter.damege = 0;
-								attack2p[hitnum].hit_ok = false;
-								return;
+								//1p‚ÌUŒ‚‚ª‘ŠE‚µ‚È‚¢UŒ‚‚¾‚Á‚½
+								continue;
 							}
-							if (attack2p[hitnum].parameter.gaugeout && !attack1p[atknum].parameter.gaugeout)
+							if (atk2p.parameter.type == AttackKind::NO_TO_OFFSET &&
+								atk1p.parameter.type != AttackKind::NO_TO_OFFSET)
 							{
-								attack1p[atknum].parameter.damege = 0;
-								attack1p[atknum].hit_ok = false;
-								return;
+								//2p‚ÌUŒ‚‚ª‘ŠE‚µ‚È‚¢UŒ‚‚¾‚Á‚½
+								continue;
 							}
+							//—¼•û‚Æ‚à‘ŠE‚µ‚È‚¢UŒ‚‚È‚ç‘ŠE‚³‚¹‚é
+
+							if (atk1p.parameter.type == AttackKind::NO_TO_OFFSET_UP)
+							{
+								//1p‚ÌUŒ‚‚ªã’i‚Æ‚Í‘ŠE‚µ‚È‚¢UŒ‚‚¾‚Á‚½
+								if (atk2p.parameter.type == AttackKind::UP||
+									atk2p.parameter.type == AttackKind::TRACK)
+								{
+									//2P‚ÌUŒ‚‚ªã’iA‚Ü‚½‚Íƒz[ƒ~ƒ“ƒOƒ_ƒbƒVƒ…‚¾‚Á‚½ê‡
+									continue;
+								}
+							}
+							if (atk2p.parameter.type == AttackKind::NO_TO_OFFSET_UP)
+							{
+								//2p‚ÌUŒ‚‚ªã’i‚Æ‚Í‘ŠE‚µ‚È‚¢UŒ‚‚¾‚Á‚½
+								if (atk1p.parameter.type == AttackKind::UP ||
+									atk1p.parameter.type == AttackKind::TRACK)
+								{
+									//1P‚ÌUŒ‚‚ªã’iA‚Ü‚½‚Íƒz[ƒ~ƒ“ƒOƒ_ƒbƒVƒ…‚¾‚Á‚½ê‡
+									continue;
+								}
+							}
+
+							if (atk1p.parameter.type == AttackKind::TRACK)
+							{
+								//1p‚ÌUŒ‚‚ªƒz[ƒ~ƒ“ƒOƒ_ƒbƒVƒ…
+								if (atk2p.parameter.type == AttackKind::PROJECTILE)
+								{
+									//2P‚ÌUŒ‚‚ª”ò‚Ñ“¹‹ï‚¾‚Á‚½ê‡
+									continue;
+								}
+							}
+							if (atk2p.parameter.type == AttackKind::TRACK)
+							{
+								//2p‚ÌUŒ‚‚ªƒz[ƒ~ƒ“ƒOƒ_ƒbƒVƒ…
+								if (atk1p.parameter.type == AttackKind::PROJECTILE)
+								{
+									//1P‚ÌUŒ‚‚ª”ò‚Ñ“¹‹ï‚¾‚Á‚½ê‡
+									continue;
+								}
+							}
+
 
 							clash = true;
 							Hitcheak::timer = 0.0f;
 
-							switch (attack1p[atknum].parameter.HS_timer)
+							switch (atk1p.parameter.HS_timer)
 							{
 							case HitStopTime::SHORT:
 								Hitcheak::timer += 0.05f;
@@ -575,7 +789,7 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 								break;
 							}
 
-							switch (attack2p[atknum].parameter.HS_timer)
+							switch (atk2p.parameter.HS_timer)
 							{
 							case HitStopTime::SHORT:
 								Hitcheak::timer += 0.05f;
@@ -594,42 +808,42 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 								break;
 							}
 
-							add1P = attack1p[atknum].parameter.damege;
-							add2P = attack2p[hitnum].parameter.damege;
-							if (attack1p[atknum].parameter.distance.x >= attack2p[hitnum].parameter.distance.x)
+							add1P = atk1p.parameter.damege;
+							add2P = atk2p.parameter.damege;
+							if (atk1p.parameter.distance.x >= atk2p.parameter.distance.x)
 							{
-								float dis = attack1p[atknum].parameter.distance.x - attack2p[hitnum].parameter.distance.x;
+								float dis = atk1p.parameter.distance.x - atk2p.parameter.distance.x;
 								dis /= 2;
-								clashpos.x = attack2p[hitnum].parameter.distance.x + dis;
+								clashpos.x = atk2p.parameter.distance.x + dis;
 							}
-							if (attack2p[hitnum].parameter.distance.x > attack1p[atknum].parameter.distance.x)
+							if (atk2p.parameter.distance.x > atk1p.parameter.distance.x)
 							{
-								float dis = attack2p[hitnum].parameter.distance.x - attack1p[atknum].parameter.distance.x;
+								float dis = atk2p.parameter.distance.x - atk1p.parameter.distance.x;
 								dis /= 2;
-								clashpos.x = attack1p[atknum].parameter.distance.x + dis;
-							}
-
-							if (attack1p[atknum].parameter.distance.y >= attack2p[hitnum].parameter.distance.y)
-							{
-								float dis = attack1p[atknum].parameter.distance.y - attack2p[hitnum].parameter.distance.y;
-								dis /= 2;
-								clashpos.y = attack2p[hitnum].parameter.distance.y + dis;
-							}
-							if (attack2p[hitnum].parameter.distance.y > attack1p[atknum].parameter.distance.y)
-							{
-								float dis = attack2p[hitnum].parameter.distance.y - attack1p[atknum].parameter.distance.y;
-								dis /= 2;
-								clashpos.y = attack1p[atknum].parameter.distance.y + dis;
+								clashpos.x = atk1p.parameter.distance.x + dis;
 							}
 
-							attack2p[hitnum].parameter.damege = 0;
-							attack2p[hitnum].hit_ok = false;
-							attack2p[atknum].knock_start = true;
-							attack1p[atknum].parameter.damege = 0;
-							attack1p[atknum].hit_ok = false;
-							attack1p[atknum].knock_start = true;
+							if (atk1p.parameter.distance.y >= atk2p.parameter.distance.y)
+							{
+								float dis = atk1p.parameter.distance.y - atk2p.parameter.distance.y;
+								dis /= 2;
+								clashpos.y = atk2p.parameter.distance.y + dis;
+							}
+							if (atk2p.parameter.distance.y > atk1p.parameter.distance.y)
+							{
+								float dis = atk2p.parameter.distance.y - atk1p.parameter.distance.y;
+								dis /= 2;
+								clashpos.y = atk1p.parameter.distance.y + dis;
+							}
 
-							if (attack1p[atknum].parameter.type != AttackKind::PROJECTILE)
+							atk2p.parameter.damege = 0;
+							atk2p.hit_ok = false;
+							atk2p.knock_start = true;
+							atk1p.parameter.damege = 0;
+							atk1p.hit_ok = false;
+							atk1p.knock_start = true;
+
+							if (atk1p.parameter.type != AttackKind::PROJECTILE)
 							{
 								for (int n = 0; n < attack1p.size(); n++)
 								{
@@ -641,12 +855,12 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 							}
 							else
 							{
-								attack1p[atknum].parameter.damege = 0;
+								atk1p.parameter.damege = 0;
 								//attack[n].HB_timer = 0;
-								attack1p[atknum].parameter.hitback = YR_Vector3(0.0f, 0.0f);
-								attack1p[atknum].hit_ok = false;
+								atk1p.parameter.hitback = YR_Vector3(0.0f, 0.0f);
+								atk1p.hit_ok = false;
 							}
-							if (attack2p[atknum].parameter.type != AttackKind::PROJECTILE)
+							if (atk2p.parameter.type != AttackKind::PROJECTILE)
 							{
 								for (int n = 0; n < attack2p.size(); n++)
 								{
@@ -658,13 +872,13 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 							}
 							else
 							{
-								attack2p[atknum].parameter.damege = 0;
+								atk2p.parameter.damege = 0;
 								//attack[n].HB_timer = 0;
-								attack2p[atknum].parameter.hitback = YR_Vector3(0.0f, 0.0f);
-								attack2p[atknum].hit_ok = false;
+								atk2p.parameter.hitback = YR_Vector3(0.0f, 0.0f);
+								atk2p.hit_ok = false;
 							}
-							attack1p[atknum].hit_result = HitResult::GUARD;
-							attack2p[atknum].hit_result = HitResult::GUARD;
+							atk1p.hit_result = HitResult::GUARD;
+							atk2p.hit_result = HitResult::GUARD;
 						}
 					}
 				}

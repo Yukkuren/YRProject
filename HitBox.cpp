@@ -131,7 +131,33 @@ void HitBox::Draw(
 			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 			view,
 			projection,
-			DirectX::XMFLOAT4(1.0f, 0.8f, 0.0f, 0.5f)
+			DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.5f)
+		);
+	}
+	else if (state == HitBoxState::PROJECTILE_ARMOR)
+	{
+		//飛び道具アーマー時
+		FRAMEWORK.scenegame.geo->render(
+			shader,
+			center.GetDXFLOAT3(),
+			DirectX::XMFLOAT3(parameter.size.x, parameter.size.y, 0.0f),
+			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+			view,
+			projection,
+			DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 0.5f)
+		);
+	}
+	else if (state == HitBoxState::UP_INVINCIBLE)
+	{
+		//上段無敵時
+		FRAMEWORK.scenegame.geo->render(
+			shader,
+			center.GetDXFLOAT3(),
+			DirectX::XMFLOAT3(parameter.size.x, parameter.size.y, 0.0f),
+			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+			view,
+			projection,
+			DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.5f)
 		);
 	}
 	else

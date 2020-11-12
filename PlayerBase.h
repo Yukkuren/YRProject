@@ -22,7 +22,6 @@ constexpr int	Track_max = 2;						//ホーミングダッシュ最大数
 constexpr float	non_target = 110.0f;				//この値を入れられたフレームは条件から外れるようにする
 constexpr float target_max = 100.0f;				//条件式でこの値以上は外れるようにする
 constexpr float attenuation_slam = 8.0f;			//滑り中速度の減衰率
-constexpr float draw_guard_effect_interval = 0.2f;	//ガードエフェクト描画時に置く描画のインターバル
 constexpr float draw_guarf_effect_add_pos_x = 3.0f;	//ガードエフェクト描画時の位置補間値
 
 //--------------------------------------
@@ -357,7 +356,6 @@ public:
 	std::vector<AttackBox> atk;			//攻撃当たり判定
 	std::vector<AttackBox> projectile_atk;//飛び道具当たり判定
 	std::vector<HitBox>	hit;			//当たり判定
-	float				effect_timer;	//エフェクト描画用のタイマー
 	
 	std::array<Animation_Coordinate, scastI(AttackState::ATTACK_END)>	ac_attack;	//攻撃ごとのアニメーション調整値
 	std::array<Animation_Coordinate, scastI(ActState::ACT_END)>			ac_act;		//行動ごとのアニメーション調整値
@@ -412,6 +410,8 @@ public:
 		float						elapsed_time) = 0;
 
 	virtual void TextDraw()=0;
+
+	virtual ~Player() = default;
 
 public:
 	//行動系関数

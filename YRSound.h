@@ -29,7 +29,9 @@ struct FormatChunk
 enum class BGMKind : int
 {
 	TITLE = 0,			//タイトル
-	GAME,
+	CHARA_SELECT,		//キャラ選択画面
+	LOAD,				//ロード画面
+	GAME,				//ゲーム本編
 	END,
 };
 
@@ -60,7 +62,7 @@ public:
 	float								bgm_all_volume = 1.0f;		//BGM全体に与えるボリューム値のしきい値
 	float								se_all_volume = 1.0f;		//SE全体に与えるボリューム値のしきい値
 
-	float								fado_volume = 1.0f;			//音声のフェードに使用するボリューム
+	float								fade_volume = 1.0f;			//音声のフェードに使用するボリューム
 private:
 	//コンストラクタ
 	YRSound() {};
@@ -105,9 +107,9 @@ public:
 	void SoundDebugDrow();
 
 	//フェードイン(elapsed_time, 速度)
-	bool FadoIn(float elapsed_time, float adjust_time = 1.0f);
+	bool FadeIn(float elapsed_time, float adjust_time = 1.0f);
 	//フェードアウト(elapsed_time, 速度)
-	bool FadoOut(float elapsed_time, float adjust_time = 1.0f);
+	bool FadeOut(float elapsed_time, float adjust_time = 1.0f);
 
 	static YRSound& getInstance()
 	{

@@ -32,7 +32,7 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wparam
 #endif // 
 
 #define		USE_IMGUI	(1)
-#define		FEDO_MIX( x )		( x * 3.0f)
+#define		FADE_MIX( x )		( x * 3.0f)
 //#define		ToRadian( x )		( x * ( PI / 180.0f ) )
 
 
@@ -57,7 +57,7 @@ public:
 	static CONST LONG SCREEN_WIDTH = 1920;
 	static CONST LONG SCREEN_HEIGHT = 1080;
 
-	std::unique_ptr<Sprite>							fedo_img = nullptr;
+	std::unique_ptr<Sprite>							fade_img = nullptr;
 
 	std::unique_ptr<Font> font = nullptr;
 
@@ -158,6 +158,7 @@ public:
 		view->Release();
 		depth->Release();*/
 		scene->UnInit();
+
 		
 		YRBlend.Uninit();
 #if USE_IMGUI

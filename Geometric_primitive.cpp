@@ -44,7 +44,7 @@ geometric_primitive::geometric_primitive()
 	//深度ステンシルステートオブジェクト生成
 	D3D11_DEPTH_STENCIL_DESC depth_desc;
 
-	depth_desc.DepthEnable = TRUE;
+	depth_desc.DepthEnable = FALSE;
 	depth_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	depth_desc.DepthFunc = D3D11_COMPARISON_LESS;
 	depth_desc.StencilEnable = FALSE;

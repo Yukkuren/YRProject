@@ -28,10 +28,13 @@ private:
 	EffekseerRendererDX11::Renderer* renderer;		//エフェクトレンダラー
 public:
 	//コンストラクタ
-	YR_Effect();
+	YR_Effect() {};
 
 	//デストラクタ
 	~YR_Effect();
+
+	//初期化
+	void Init();
 
 	//カメラをレンダラーにセットする
 	void CameraSet();
@@ -57,7 +60,7 @@ public:
 	}
 };
 
-inline YR_Effect& GetEffect()
+inline YR_Effect& YRGetEffect()
 {
 	return YR_Effect::getInstance();
 }

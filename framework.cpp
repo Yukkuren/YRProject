@@ -6,6 +6,7 @@
 #include"static_mesh.h"
 #include "collision.h"
 #include "YRSound.h"
+#include "Effect.h"
 
 void BlendCreate(ID3D11Device *device, ID3D11BlendState **blendstate)
 {
@@ -500,6 +501,9 @@ bool framework::initialize()
 	//サウンド初期化
 	GetSound().Init();
 
+	//エフェクト初期化
+	YRGetEffect().Init();
+
 	SetScene(SCENE_TABLE::SCENE_TITLE);
 	scene->Init();
 
@@ -511,9 +515,9 @@ bool framework::initialize()
 
 	depth_stencil_buffer->Release();
 
-	if (fedo_img == nullptr)
+	if (fade_img == nullptr)
 	{
-		fedo_img = std::make_unique<Sprite>(L"./Data/Shader/white_bourd.png", 1920.0f, 1080.0f);
+		fade_img = std::make_unique<Sprite>(L"./Data/Shader/white_bourd.png", 1920.0f, 1080.0f);
 	}
 
 	if (font == nullptr)

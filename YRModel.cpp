@@ -253,7 +253,7 @@ Model::Model(const char* filename)
 }
 
 
-Model::Model(const char* filename, std::shared_ptr<Texture> tex_main, std::shared_ptr<Texture> tex_face)
+Model::Model(const char* filename, const std::shared_ptr<Texture> tex_main, const std::shared_ptr<Texture> tex_face)
 {
 	//m_data = std::move(data);
 

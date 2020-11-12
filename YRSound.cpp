@@ -13,6 +13,8 @@
 std::array<std::string, scastI(BGMKind::END)> bgm_name_list =
 {
 	u8"タイトル",
+	u8"キャラ選択",
+	u8"ロード画面",
 	u8"ゲームメイン",
 };
 
@@ -43,7 +45,7 @@ void YRSound::Init()
 		assert("MasterVoiceCreate error");
 	}
 
-	fado_volume = 1.0f;
+	fade_volume = 1.0f;
 
 	//ソースボイスの作成
 	pBGM.resize(scastI(BGMKind::END));
@@ -51,6 +53,8 @@ void YRSound::Init()
 
 	//BGM読み込み
 	BGMLoad("./Data/Sound/BGM/Title.wav", BGMKind::TITLE, XAUDIO2_LOOP_INFINITE, 0.5f);
+	BGMLoad("./Data/Sound/BGM/Chara_Select.wav", BGMKind::CHARA_SELECT, XAUDIO2_LOOP_INFINITE, 0.5f);
+	BGMLoad("./Data/Sound/BGM/Load_Intro.wav", BGMKind::LOAD, XAUDIO2_LOOP_INFINITE, 0.5f);
 	BGMLoad("./Data/Sound/BGM/Stage_castle.wav", BGMKind::GAME, XAUDIO2_LOOP_INFINITE, 0.5f);
 
 	//SE読み込み
@@ -212,18 +216,30 @@ bool YRSound::SELoad(const char* filename, const SEKind& kind, UINT32 loop_count
 //音声BGMデータの再生(wave)
 void YRSound::BGMPlay(const BGMKind& kind)
 {
+	if (pBGM.size() <= scastI(kind))
+	{
+		return;
+	}
 	pBGM[scastI(kind)].pSourceVoice->Start();
 }
 
 //音声SEデータの再生(wave)
 void YRSound::SEPlay(const SEKind& kind)
 {
+	if (pSE.size() <= scastI(kind))
+	{
+		return;
+	}
 	pSE[scastI(kind)].pSourceVoice->Start();
 }
 
 //音声SEデータの単発再生(wave)[再生中なら最初から再生しなおす]
 void YRSound::SESinglePlay(const SEKind& kind)
 {
+	if (pSE.size() <= scastI(kind))
+	{
+		return;
+	}
 	//現在再生中か確認する
 	XAUDIO2_VOICE_STATE xa2state;
 	pSE[scastI(kind)].pSourceVoice->GetState(&xa2state);
@@ -271,18 +287,30 @@ void YRSound::SEFinCheack()
 //音声BGMデータの音量設定(wave)
 void YRSound::BGMSetVolume(const BGMKind& kind)
 {
-	pBGM[scastI(kind)].pSourceVoice->SetVolume(pBGM[scastI(kind)].volume * bgm_all_volume * fado_volume);
+	if (pBGM.size() <= scastI(kind))
+	{
+		return;
+	}
+	pBGM[scastI(kind)].pSourceVoice->SetVolume(pBGM[scastI(kind)].volume * bgm_all_volume * fade_volume);
 }
 
 //音声SEデータの音量設定(wave)
 void YRSound::SESetVolume(const SEKind& kind)
 {
-	pSE[scastI(kind)].pSourceVoice->SetVolume(pSE[scastI(kind)].volume * se_all_volume * fado_volume);
+	if (pSE.size() <= scastI(kind))
+	{
+		return;
+	}
+	pSE[scastI(kind)].pSourceVoice->SetVolume(pSE[scastI(kind)].volume * se_all_volume * fade_volume);
 }
 
 //音声BGMデータの停止(wave)
 void YRSound::BGMStop(const BGMKind& kind)
 {
+	if (pBGM.size() <= scastI(kind))
+	{
+		return;
+	}
 	pBGM[scastI(kind)].pSourceVoice->Stop();
 	//バッファを一度削除する
 	pBGM[scastI(kind)].pSourceVoice->FlushSourceBuffers();
@@ -293,6 +321,10 @@ void YRSound::BGMStop(const BGMKind& kind)
 //音声SEデータの停止(wave)
 void YRSound::SEStop(const SEKind& kind)
 {
+	if (pSE.size() <= scastI(kind))
+	{
+		return;
+	}
 	pSE[scastI(kind)].pSourceVoice->Stop();
 	//バッファを一度削除する
 	pSE[scastI(kind)].pSourceVoice->FlushSourceBuffers();
@@ -303,12 +335,20 @@ void YRSound::SEStop(const SEKind& kind)
 //音声BGMデータの一時停止(wave)
 void YRSound::BGMPause(const BGMKind& kind)
 {
+	if (pBGM.size() <= scastI(kind))
+	{
+		return;
+	}
 	pBGM[scastI(kind)].pSourceVoice->Stop();
 }
 
 //音声SEデータの一時停止(wave)
 void YRSound::SEPause(const SEKind& kind)
 {
+	if (pSE.size() <= scastI(kind))
+	{
+		return;
+	}
 	pSE[scastI(kind)].pSourceVoice->Stop();
 }
 
@@ -364,13 +404,13 @@ void YRSound::Update()
 
 
 //フェードイン(elapsed_time, 速度)
-bool YRSound::FadoIn(float elapsed_time, float adjust_time)
+bool YRSound::FadeIn(float elapsed_time, float adjust_time)
 {
-	fado_volume += (elapsed_time * adjust_time);
+	fade_volume += (elapsed_time * adjust_time);
 
-	if (fado_volume > 1.0f)
+	if (fade_volume > 1.0f)
 	{
-		fado_volume = 1.0f;
+		fade_volume = 1.0f;
 		return true;
 	}
 
@@ -378,13 +418,13 @@ bool YRSound::FadoIn(float elapsed_time, float adjust_time)
 }
 
 //フェードアウト(elapsed_time, 速度)
-bool YRSound::FadoOut(float elapsed_time, float adjust_time)
+bool YRSound::FadeOut(float elapsed_time, float adjust_time)
 {
-	fado_volume -= (elapsed_time * adjust_time);
+	fade_volume -= (elapsed_time * adjust_time);
 
-	if (fado_volume < 0.0f)
+	if (fade_volume < 0.0f)
 	{
-		fado_volume = 0.0f;
+		fade_volume = 0.0f;
 		return true;
 	}
 

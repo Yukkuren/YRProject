@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "framework.h"
+#include "YRSound.h"
 
 //-------------------------------------------------------------
 // **シーン概要**
@@ -37,6 +38,7 @@ void SceneSelect::Init()
 		spriteShader = std::make_unique<YRShader>(ShaderType::SPRITE);
 		spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
 	}
+	GetSound().BGMPlay(BGMKind::CHARA_SELECT);
 }
 
 void SceneSelect::LoadData()
@@ -84,11 +86,13 @@ void SceneSelect::Update(float elapsed_time)
 {
 	//ロード終了
 	if (load_fin)
-	{if (pKeyState.nflg == 1 || FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::START)] == 1)
+	{
+		if (pKeyState.nflg == 1 || FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::START)] == 1)
 		{
 			select_p1 = scastI(PLSELECT::KNIGHT);
 			select_p2 = scastI(PLSELECT::KNIGHT);
 			//フェードアウトが終わったらロード画面へ
+			GetSound().BGMStop(BGMKind::CHARA_SELECT);
 			FRAMEWORK.SetScene(SCENE_LOAD);
 			UnInit();
 			return;
@@ -201,6 +205,7 @@ void SceneSelect::Update(float elapsed_time)
 			if (FadoOut(elapsed_time))
 			{
 				//フェードアウトが終わったらロード画面へ
+				GetSound().BGMStop(BGMKind::CHARA_SELECT);
 				FRAMEWORK.SetScene(SCENE_LOAD);
 				//FRAMEWORK.SetScene(SCENE_TITLE);
 				UnInit();
@@ -212,7 +217,7 @@ void SceneSelect::Update(float elapsed_time)
 			//フェードアウトがスタートしてない場合は画面を映す
 			if (fado_alpha > 0.0f)
 			{
-				fado_alpha -= FEDO_MIX(elapsed_time);
+				fado_alpha -= FADE_MIX(elapsed_time);
 			}
 		}
 
@@ -347,7 +352,7 @@ void SceneSelect::Draw(float elapsedTime)
 		}
 	}
 	//フェード用画像
-	FRAMEWORK.fedo_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
+	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
 }
 
 YR_Vector3 SceneSelect::PosSet(int select)
@@ -366,7 +371,7 @@ YR_Vector3 SceneSelect::PosSet(int select)
 
 bool SceneSelect::FadoOut(float elapsed_time)
 {
-	fado_alpha += FEDO_MIX(elapsed_time);
+	fado_alpha += FADE_MIX(elapsed_time);
 
 	if (fado_alpha > 1.0f)
 	{

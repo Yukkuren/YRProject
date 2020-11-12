@@ -123,6 +123,8 @@ class SceneGame : public SceneBase
 private:
 	POINT mouse_pos;
 	bool camera_move_debug;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>	m_depth_stencil_state;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>	m_depth_stencil_state2;
 public:
 
 	//2Pの行動制御列挙
@@ -241,7 +243,7 @@ public:
 	bool			end = false;						//勝敗がついた
 	bool			fin = false;						//全て終わった
 	float			endtimer = 0.0f;					//勝敗がついてから勝利画面に移行するまでに使用
-	float			mix_fado = 0.0f;					//フェードインの速度変更用
+	float			mix_fade = 0.0f;					//フェードインの速度変更用
 	bool			blur_on = false;					//ブルームをかけるフラグ
 
 public:
@@ -251,7 +253,7 @@ public:
 	void				Draw(float elapsed_time);
 	void				UnInit();
 	void				LoadData();
-	bool				FadoOut(float elapsed_time);
+	bool				FadeOut(float elapsed_time);
 
 	void				PadSet(int select1);
 	void				PadSet(int select1, int select2);
@@ -266,13 +268,13 @@ public:
 
 public:
 	//ゲーム処理関数
-	void	SetPlayerCharacter(std::unique_ptr<Player>& player, int select);	//selectによってプレイヤーを生成する
+	void	SetPlayerCharacter(std::unique_ptr<Player>* player, int select);	//selectによってプレイヤーを生成する
 	void	PauseUpdate();		//ポーズ中行う処理
 	void	TrackSet();			//ホーミングダッシュ用の値を変更する
 	void	FinUpdate();		//ゲーム終了後の処理
 	void	StartSet();			//イントロ終了後のゲーム画面のセット(カメラ)
 	void	FinSet();			//ゲーム終了後のゲーム画面のセット(カメラ)
-	void	CameraUpdate();		//カメラのステートがMAINにある場合のカメラ処理を行う
+	void	CameraUpdate(float elapsed_time);		//カメラのステートがMAINにある場合のカメラ処理を行う
 	void	CameraRequest(float elapsed_time);	//カメラのリクエストを確認し、リクエストがあれば処理を行う
 
 	void SetRenderTexture();

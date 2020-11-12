@@ -2,7 +2,7 @@
 #include "misc.h"
 #include "framework.h"
 
-ModelAnim::ModelAnim(std::shared_ptr<Model>& resource)
+ModelAnim::ModelAnim(const std::shared_ptr<Model>& resource)
 {
 	m_model_resource = resource;
 	model_resource_anim = nullptr;
@@ -41,12 +41,13 @@ ModelAnim::ModelAnim(std::shared_ptr<Model>& resource)
 	{
 		D3D11_DEPTH_STENCIL_DESC desc;
 		::memset(&desc, 0, sizeof(desc));
-		desc.DepthEnable = true;
+		desc.DepthEnable = TRUE;
 		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 		desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 
 		HRESULT hr = FRAMEWORK.device.Get()->CreateDepthStencilState(&desc, m_depth_stencil_state.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
 	}
 
 	// ラスタライザーステート
@@ -527,7 +528,7 @@ void ModelAnim::Draw(
 }
 
 
-void ModelAnim::NodeChange(std::shared_ptr<Model>& resource)
+void ModelAnim::NodeChange(const std::shared_ptr<Model>& resource)
 {
 	PlayAnimation(0, true);
 	// ノード
@@ -586,7 +587,7 @@ void ModelAnim::NodeChange(std::shared_ptr<Model>& resource)
 	m_current_seconds = 0.0f;
 }
 
-void ModelAnim::NodeChange(std::shared_ptr<Model>& resource, int anim_num)
+void ModelAnim::NodeChange(const std::shared_ptr<Model>& resource, int anim_num)
 {
 	PlayAnimation(anim_num, true);
 	// ノード

@@ -85,7 +85,6 @@ void AttackBox::Update(YR_Vector3 pl_pos, float elapsed_time)
 		//当たったからダメージなどの数値を消去する
 		parameter.damege = 0.0f;
 		parameter.HB_timer = 0.0f;
-		parameter.hitback = YR_Vector3(0.0f, 0.0f);
 		parameter.timer = -1.0f;
 	}
 
@@ -98,7 +97,6 @@ void AttackBox::Update(YR_Vector3 pl_pos, float elapsed_time)
 		hit_ok = false;
 		parameter.HB_timer = 0.0f;
 		parameter.hitback = YR_Vector3(0.0f, 0.0f);
-		parameter.knockback = 0.0f;
 	}
 }
 

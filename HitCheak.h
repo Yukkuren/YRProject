@@ -5,7 +5,8 @@
 #include"AttackBox.h"
 
 constexpr float guard_damege_adj = 3.0f;	//ガードされた時のダメージ補正値
-constexpr float guard_back_adj = 1.5f;	//ガードされた時の押出補正値
+constexpr float guard_back_adj_x = 2.5f;	//ガードされた時の押出補正値X
+constexpr float guard_back_adj_y = 1.5f;	//ガードされた時の押出補正値Y
 constexpr float guard_stop_adj = 2.5f;	//ガードされた時のガード硬直補正値
 constexpr float correction_value = 10.0f;	//プレイヤー同士の押出し補正値
 constexpr float slam_up_line = 40.0f;		//叩きつけ状態になる高さ
@@ -18,6 +19,7 @@ enum class HitResultState : int
 	AVOIDANCE,		//無敵で回避
 	STATE_NONE,		//掴まれた
 	SLAM,			//叩きつけ
+	ARMOR,			//アーマーが入った
 };
 
 class Hitcheak

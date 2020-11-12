@@ -35,7 +35,11 @@ private:
 	Camera() {};
 public:
 
+	float viblate_timer = 0.0f;
+
 	int damage_pl_num = 0;
+
+	DirectX::XMFLOAT3		targetPos = { 0.0f,0.0f,0.0f };		//íçéãì_
 
 	enum CAMERA_STATE
 	{
