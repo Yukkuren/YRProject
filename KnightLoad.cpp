@@ -407,7 +407,7 @@ void Knight::LoadData(int color_number)
 		model_motion.model_R.push_back(model_motion.wait_R);	//‹ó’†‘OŽã•KŽE
 		model_motion.model_R.push_back(model_motion.wait_R);	//‹ó’†‘O’†•KŽE
 		model_motion.model_R.push_back(model_motion.wait_R);	//‹ó’†‘O‹­•KŽE
-		model_motion.model_R.push_back(model_motion.wait_R);	//‹ó’†ŒãŽã•KŽE
+		model_motion.model_R.push_back(model_motion.jaku_lh_R);	//‹ó’†ŒãŽã•KŽE
 		model_motion.model_R.push_back(model_motion.wait_R);	//‹ó’†Œã’†•KŽE
 		model_motion.model_R.push_back(model_motion.wait_R);	//‹ó’†Œã‹­•KŽE
 		model_motion.model_R.push_back(model_motion.wait_R);	//‹ó’†‘O’´•KŽE
@@ -446,7 +446,7 @@ void Knight::LoadData(int color_number)
 		model_motion.model_L.push_back(model_motion.wait_L);	//‹ó’†‘OŽã•KŽE
 		model_motion.model_L.push_back(model_motion.wait_L);	//‹ó’†‘O’†•KŽE
 		model_motion.model_L.push_back(model_motion.wait_L);	//‹ó’†‘O‹­•KŽE
-		model_motion.model_L.push_back(model_motion.wait_L);	//‹ó’†ŒãŽã•KŽE
+		model_motion.model_L.push_back(model_motion.jaku_lh_L);	//‹ó’†ŒãŽã•KŽE
 		model_motion.model_L.push_back(model_motion.wait_L);	//‹ó’†Œã’†•KŽE
 		model_motion.model_L.push_back(model_motion.wait_L);	//‹ó’†Œã‹­•KŽE
 		model_motion.model_L.push_back(model_motion.wait_L);	//‹ó’†‘O’´•KŽE

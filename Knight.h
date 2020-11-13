@@ -190,6 +190,7 @@ public:
 	void JumpUpdate(float decision, float elapsed_time);
 	void DamageCheck(float decision);
 	void KnockUpdate(float elapsed_time);
+	void DownHitUpdate(float elapsed_time);
 	void SlamUpdate(float elapsed_time);
 	void Guard(float decision);
 	void GuardBack(float elapsed_time);
@@ -199,7 +200,6 @@ public:
 	void PassiveUpdate(float elapsed_time);
 	void WakeUp();
 	void GaugeUp(float add);
-	void CancelList();
 	void AttackDetailsSet(const AttackState &attack_state);
 
 	void HitBoxTransition(HitBoxState state);
@@ -223,9 +223,9 @@ public:
 	void Jaku(float elapsed_time);
 	void Thu(float elapsed_time);
 	void Kyo(float elapsed_time);
+	void U_Kyo(float elapsed_time);
 	void D_Jaku(float elapsed_time);
 	void D_Thu(float elapsed_time);
-	void U_Kyo(float elapsed_time);
 	void A_Jaku(float elapsed_time);
 	void A_Thu(float elapsed_time);
 	void A_Kyo(float elapsed_time);
@@ -242,6 +242,8 @@ public:
 	void Jaku_Lhurf(float elapsed_time);
 	void Thu_Lhurf(float elapsed_time);
 	void Kyo_Lhurf(float elapsed_time);
+
+	void A_Jaku_Lhurf(float elapsed_time);
 	void ExtendATK(float elapsed_time);
 
 	void StateNone(float elapsed_time);
@@ -282,6 +284,8 @@ public:
 	void ComboUpdate();
 
 	void ComboX(float decision, float elapsed_time);	//Xボタンコンボ関数
+	void ComboY(float decision, float elapsed_time);	//Xボタンコンボ関数
+	void ComboB(float decision, float elapsed_time);	//Xボタンコンボ関数
 
 	bool StealRangeCheck();
 

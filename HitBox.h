@@ -30,6 +30,7 @@ enum class HitStateKind : int
 	STEAL,			//掴みヒット
 	SLAM,			//叩きつけヒット
 	ARMOR,			//アーマーが発生した
+	DOWN,			//ダウンヒット
 };
 
 struct HitParameter

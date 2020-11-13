@@ -340,6 +340,10 @@ void Knight::Update(float decision, float elapsed_time)
 		//ダウン状態
 		DownUpdate();
 		break;
+	case ActState::DOWN_HIT:
+		//ダウンヒット状態
+		DownHitUpdate(elapsed_time);
+		break;
 	case ActState::FALL:
 		//空中でダウンしている状態
 		FallUpdate(elapsed_time);
@@ -611,16 +615,19 @@ void Knight::AttackInput()
 				}
 				//実際の攻撃内容
 				int real = scastI(attack_list[list].real_attack);
-				if (last_attack == AttackState::COMBO_X && attack_list[real].combo == last_attack)
+				if (attack_list[real].combo == last_attack)
 				{
-					//コンボ状態に入っている場合はコンボ関数で攻撃のステートを決定する
-					ComboUpdate();
-					return;
+					if (last_attack == AttackState::COMBO_X || last_attack == AttackState::COMBO_Y || last_attack == AttackState::COMBO_B)
+					{
+						//コンボ状態に入っている場合はコンボ関数で攻撃のステートを決定する
+						ComboUpdate();
+						return;
+					}
 				}
 
 				
 				//int next = scastI(attack_list[list].real_attack);
-				if (attack_list[real].need_gauge <= gauge)
+				if (attack_list[real].need_power <= power)
 				{
 					//ゲージの必要量を確認する
 					//通常の攻撃の場合、実際の攻撃内容は入れずに攻撃名をそのまま入れる
@@ -630,6 +637,7 @@ void Knight::AttackInput()
 				{
 					//ゲージが足りない場合指定した技を出す
 					attack_state = attack_list[real].aid_attack_name;
+					real = scastI(attack_list[scastI(attack_list[real].aid_attack_name)].real_attack);
 				}
 
 				//最後に行った攻撃が同じだった場合、コンボを確認して存在するならコンボを開始する
@@ -805,8 +813,17 @@ void Knight::AttackSwitch(float decision, float elapsed_time)
 		//中の次に出る強攻撃
 		Kyo(elapsed_time);
 		break;
+	case AttackState::A_JAKU_LHURF:
+		A_Jaku_Lhurf(elapsed_time);
+		break;
 	case AttackState::COMBO_X:
 		ComboX(decision,elapsed_time);
+		break;
+	case AttackState::COMBO_Y:
+		ComboY(decision, elapsed_time);
+		break;
+	case AttackState::COMBO_B:
+		ComboB(decision, elapsed_time);
 		break;
 	default:
 		break;
@@ -873,6 +890,7 @@ void Knight::Attack(float decision, float elapsed_time)
 		atk_result = HitResult::NONE;
 		//最終入力内容を初期化する
 		last_attack = AttackState::NONE;
+		angle.y = 0.0f;
 
 		if (ground)
 		{
@@ -925,94 +943,6 @@ void Knight::Attack(float decision, float elapsed_time)
 				anim->NodeChange(model_motion.jump_L, scastI(AnimAtk::TIMER));
 			}
 			//max_jump_flag = true;
-		}
-	}
-}
-
-
-//-------------------------------
-//*攻撃のキャンセルリスト*
-//----------------------------------------------------------------------
-//・このリスト内にで定義した行動はほかの行動からキャンセルして出すことが出来る
-//・基本的にゲージを使う技は全技キャンセル出し可能
-//----------------------------------------------------------------------
-void Knight::CancelList()
-{
-	//ジャンプ
-	Jump();
-
-	//ホーミングダッシュ
-	if (pad->x_input[scastI(PAD::R_TRIGGER)] == 1)
-	{
-		if (trackgauge > 0)
-		{
-			//later = -1;
-			pad->que.back().timer = 0;
-			attack = true;
-			tracking.Init();
-			act_state = ActState::ATTACK;
-			//描画をセット
-
-			attack_state = AttackState::TRACK_DASH;
-			moveflag = false;
-			pos.y -= 50.0f;
-			trackgauge--;
-		}
-	}
-
-	//214・Xコマンド
-	if (pad->x_input[scastI(PAD::X)] == 1)
-	{
-		Command command = pad->com_list.CommandCheack(scastI(PAD::X), pad->input_history.data(), rightOrleft);
-		if (command == Command::LHURF)
-		{
-			later = non_target;
-			attack = TRUE;
-			moveflag = false;
-			act_state = ActState::ATTACK;
-			//描画をセット
-
-			attack_state = AttackState::JAKU_RHURF;
-			specialfream = 0;
-		}
-	}
-
-	
-	//ゲージ技
-	if (pad->x_input[scastI(PAD::B)] == 1)
-	{
-		Command command = pad->com_list.CommandCheack(scastI(PAD::B), pad->input_history.data(), rightOrleft);
-		if (command == Command::LHURF)
-		{
-			//214・Bコマンド
-			if (power > 0)
-			{
-				later = -1;
-				//描画をセット
-
-				FastSet(YR_Vector3(pos.x - Getapply(50.0f), pos.y));
-				attack = TRUE;
-				moveflag = false;
-				act_state = ActState::ATTACK;
-				attack_state = AttackState::KYO_LHURF;
-				//エフェクトセット
-
-				pos.x = tracking.rival_Pos.x - Getapply(100.0f);
-				pos.y = tracking.rival_Pos.y - 100.0f;
-				power--;
-			}
-		}
-		else if (command == Command::RHURF)
-		{
-			//236・Bコマンド
-			later = -1;
-			//描画をセット
-			//エフェクトセット
-
-			act_state = ActState::ATTACK;
-			attack_state = AttackState::KYO_RHURF;
-			specialfream = 0;
-			power--;
 		}
 	}
 }
@@ -2450,6 +2380,7 @@ void Knight::JumpUpdate(float decision, float elapsed_time)
 		//攻撃でキャンセルできるように
 		atk_result = HitResult::NOT_OCCURRENCE;
 		rightOrleft = decision;
+		angle.y = 0.0f;
 		if (rightOrleft > 0)
 		{
 			anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::LATER));
@@ -2473,6 +2404,7 @@ void Knight::DamageCheck(float decision)
 		{
 			//攻撃を受けていた
 
+			rightOrleft = decision;
 			//条件ごとに設定
 			switch (hit[i].hit_state)
 			{
@@ -2481,6 +2413,16 @@ void Knight::DamageCheck(float decision)
 				act_state = ActState::KNOCK;
 				steal_escape = 0.0f;
 				hit[i].hit_state = HitStateKind::NORMAL;
+				if (rightOrleft > 0)
+				{
+					anim->NodeChange(model_motion.damage_R_g_u);
+				}
+				else
+				{
+					anim->NodeChange(model_motion.damage_L_g_u);
+				}
+				ChangeFace(FaceAnim::Damage);
+				anim_ccodinate = 5.0f;
 				break;
 			case HitStateKind::STEAL:
 				//掴み攻撃
@@ -2488,12 +2430,48 @@ void Knight::DamageCheck(float decision)
 				steal_escape = hit[i].steal_timer;
 				hit[i].hit_state = HitStateKind::STEAL;
 				hit[i].steal_timer = 0.0f;
+				if (rightOrleft > 0)
+				{
+					anim->NodeChange(model_motion.damage_R_g_u);
+				}
+				else
+				{
+					anim->NodeChange(model_motion.damage_L_g_u);
+				}
+				ChangeFace(FaceAnim::Damage);
+				anim_ccodinate = 5.0f;
 				break;
 			case HitStateKind::SLAM:
 				//叩きつけ攻撃
 				act_state = ActState::SLAM;
 				hit[i].hit_state = HitStateKind::NORMAL;
 				steal_escape = 0.0f;
+				if (rightOrleft > 0)
+				{
+					anim->NodeChange(model_motion.damage_R_g_u);
+				}
+				else
+				{
+					anim->NodeChange(model_motion.damage_L_g_u);
+				}
+				ChangeFace(FaceAnim::Damage);
+				anim_ccodinate = 5.0f;
+				break;
+			case HitStateKind::DOWN:
+				//ダウン攻撃
+				act_state = ActState::DOWN_HIT;
+				hit[i].hit_state = HitStateKind::NORMAL;
+				steal_escape = 0.0f;
+				if (rightOrleft > 0)
+				{
+					anim->NodeChange(model_motion.damage_R_g_u);
+				}
+				else
+				{
+					anim->NodeChange(model_motion.damage_L_g_u);
+				}
+				ChangeFace(FaceAnim::Damage);
+				anim_ccodinate = 5.0f;
 				break;
 			case HitStateKind::ARMOR:
 				//アーマーが発動した
@@ -2528,7 +2506,6 @@ void Knight::DamageCheck(float decision)
 			GaugeUp(hit[i].damege / 5.0f);
 			hit[i].damege = 0.0f;
 			hit[i].hit = false;
-			rightOrleft = decision;
 
 			//プレイヤーをやられ状態にする
 			attack = false;
@@ -2556,16 +2533,6 @@ void Knight::DamageCheck(float decision)
 			//キャンセルの条件を初期化
 			atk_result = HitResult::NONE;
 			attack_state = AttackState::NONE;
-			if (rightOrleft > 0)
-			{
-				anim->NodeChange(model_motion.damage_R_g_u);
-			}
-			else
-			{
-				anim->NodeChange(model_motion.damage_L_g_u);
-			}
-			ChangeFace(FaceAnim::Damage);
-			anim_ccodinate = 5.0f;
 			//角度を戻す
 			angle.z = 0.0f;
 			//最終入力内容を初期化する
@@ -2583,6 +2550,22 @@ void Knight::KnockUpdate(float elapsed_time)
 		if (hit[i].hitback.x != 0.0f)
 		{
 			pos.x += hit[i].hitback.x*elapsed_time;
+			if (pos.x > Limit::Right_max)
+			{
+				//一定の速度以上で壁に当たった場合跳ね返るようにする
+				if (hit[i].hitback.x > Reflection_range_min)
+				{
+					hit[i].hitback.x = (-hit[i].hitback.x*Reflection_attenuation_factor);
+				}
+			}
+			if (pos.x < Limit::Left_max)
+			{
+				//一定の速度以上で壁に当たった場合跳ね返るようにする
+				if (hit[i].hitback.x < -Reflection_range_min)
+				{
+					hit[i].hitback.x = (-hit[i].hitback.x * Reflection_attenuation_factor);
+				}
+			}
 			pflag = true;
 		}
 		if (hit[i].hitback.y != 0.0f)
@@ -2917,6 +2900,78 @@ void Knight::SlamUpdate(float elapsed_time)
 	}
 }
 
+
+void Knight::DownHitUpdate(float elapsed_time)
+{
+	bool pflag = false;
+
+	for (int i = 0; i < hit.size(); i++)
+	{
+		if (hit[i].hitback.x != 0.0f)
+		{
+			pos.x += hit[i].hitback.x * elapsed_time;
+			pflag = true;
+		}
+		if (hit[i].hitback.y != 0.0f)
+		{
+			pos.y += hit[i].hitback.y * elapsed_time;
+			pflag = true;
+		}
+		if (pflag)
+		{
+			break;
+		}
+	}
+	//角度を戻す
+	angle.z = 0.0f;
+	
+	if (knocktimer > 0.0f)
+	{
+		knocktimer -= elapsed_time;
+	}
+	else
+	{
+		//当たり判定に入力されている速度を全て初期化する
+		for (int i = 0; i < hit.size(); i++)
+		{
+			hit[i].hitback.x = 0.0f;
+			hit[i].hitback.y = 0.0f;
+		}
+		if (!ground)
+		{
+			max_jump_flag = true;
+		}
+	}
+
+	//地面についた時
+	if (pos.y < POS_Y)
+	{
+		combo_count = 0;
+		knocktimer = 0.0f;
+		//ダウン状態にする
+		act_state = ActState::DOWN;
+		speed.y = 0.0f;
+		speed.x = 0.0f;
+		for (int i = 0; i < hit.size(); i++)
+		{
+			hit[i].timer = 0.0f;
+			hit[i].hitback = YR_Vector3(0.0f, 0.0f);
+		}
+		//描画をセット
+		if (rightOrleft > 0)
+		{
+			anim->NodeChange(model_motion.slid_R);
+		}
+		else
+		{
+			anim->NodeChange(model_motion.slid_L);
+		}
+		anim_ccodinate = ac_act[scastI(act_state)].timer;
+		//地面のめり込みを治す
+		pos.y = POS_Y;
+	}
+}
+
 void Knight::Guard(float decision)
 {
 	
@@ -3022,6 +3077,23 @@ void Knight::Guard(float decision)
 			if (decision != rightOrleft)
 			{
 				rightOrleft = decision;
+			}
+			//ベクトルが内側だった場合外側にする
+			if (rightOrleft > 0)
+			{
+				//右向き時
+				if (hit[i].hitback.x > 0.0f)
+				{
+					hit[i].hitback.x = -hit[i].hitback.x;
+				}
+			}
+			else
+			{
+				//左向き
+				if (hit[i].hitback.x < 0.0f)
+				{
+					hit[i].hitback.x = -hit[i].hitback.x;
+				}
 			}
 			hit[i].damege = 0;
 			hit[i].guard_ok = false;
@@ -3827,7 +3899,7 @@ bool Knight::AttackEndCheck()
 	{
 		for (auto& a : atk)
 		{
-			if (!a.fin && a.attack_name == scastI(attack_state))
+			if (!a.fin)
 			{
 				return false;
 			}
@@ -4143,6 +4215,10 @@ void Knight::AttackDetailsSet(const AttackState& attack_state)
 		camera_state_knight = CAMERA_STATE_KNIGHT::FIRST;
 		ChangeFace(FaceAnim::KOUHUN);
 		lumi_material= Model::Material_Attribute::SWORD;
+		if (power > 0)
+		{
+			power--;
+		}
 		break;
 	case AttackState::DESIRE_SPECIAL:
 		break;

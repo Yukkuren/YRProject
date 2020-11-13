@@ -390,7 +390,7 @@ void Knight::U_Kyo(float elapsed_time)
 	}
 	//重力の逆数を付与する
 	pos.y += gravity * elapsed_time;
-
+	int now_at_list = scastI(attack_state);
 	//発生フレームになったら攻撃判定を生成する
 	if (fream < 0.0f)
 	{
@@ -398,9 +398,17 @@ void Knight::U_Kyo(float elapsed_time)
 		hit_result = HitResult::NONE;
 		//前進しないようにする
 		speed_X.Set(0.0f);
-		int attack_num = attack_list[scastI(attack_state)].now_attack_num;
-		anim_ccodinate = ac_attack[scastI(attack_state)].timer;
-		attack_list[scastI(attack_state)].SetAttack(&atk, rightOrleft,pos);
+		anim_ccodinate = ac_attack[now_at_list].timer;
+		if (attack_list[now_at_list].speed_on)
+		{
+			//攻撃に速度を付与する場合
+			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos, YR_Vector3(attack_list[now_at_list].speed.x * rightOrleft, attack_list[now_at_list].speed.y));
+		}
+		else
+		{
+			//付与しない場合
+			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos);
+		}
 		fream = non_target;
 		if (rightOrleft > 0)
 		{
@@ -411,8 +419,6 @@ void Knight::U_Kyo(float elapsed_time)
 			anim->NodeChange(model_motion.u_kyo_L, scastI(AnimAtk::TIMER));
 		}
 	}
-
-	int now_at_list = scastI(attack_state);
 
 	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
 	if (!atk.empty())
@@ -947,7 +953,8 @@ void Knight::Kyo_Rhurf(float elapsed_time)
 }
 
 
-
+//--------------------------------------
+//　214コマンド弱
 void Knight::Jaku_Lhurf(float elapsed_time)
 {
 	//後隙が設定された後はこの関数には入らない
@@ -1002,13 +1009,13 @@ void Knight::Jaku_Lhurf(float elapsed_time)
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
 
-
-
 	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
 	if (!atk.empty())
 	{
+		//攻撃判定時前進させて回転させる
 		speed.x = attack_list[now_at_list].advance_speed * rightOrleft;
 		angle.y += elapsed_time * (50.0f * rightOrleft);
+
 		for (auto& a : atk)
 		{
 			if (knock)
@@ -1022,7 +1029,133 @@ void Knight::Jaku_Lhurf(float elapsed_time)
 				a.parameter.knockback = 0.0f;
 				knock = true;
 				a.knock_start = false;
-				//上方向への力を設定する
+			}
+		}
+	}
+
+	if (atk.empty())
+	{
+		//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
+		return;
+	}
+
+
+	//攻撃が全て終了したことを確認する
+	if (AttackEndCheck())
+	{
+		//まだ攻撃が残っていれば次の攻撃に移る
+		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
+		{
+			fream = attack_list[now_at_list].attack_single[attack_list[now_at_list].now_attack_num].fream;
+		}
+		else
+		{
+			//ない場合は後隙に移行する
+			//攻撃番号を初期化
+			attack_list[now_at_list].now_attack_num = 0;
+			//後隙を設定
+			later = attack_list[now_at_list].later;
+			//アニメーション速度を指定
+			anim_ccodinate = ac_attack[now_at_list].later;
+			//角度を戻す
+			angle.y = 0.0f;
+			//速度を戻す
+			speed.x = 0.0f;
+			HitBoxTransition(HitBoxState::NOGUARD);
+			//描画をセット
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+			}
+			else
+			{
+				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+			}
+			//行動終了フラグをオンに
+			finish = true;
+		}
+	}
+}
+
+
+//--------------------------------------
+//　空中214コマンド弱
+void Knight::A_Jaku_Lhurf(float elapsed_time)
+{
+	//後隙が設定された後はこの関数には入らない
+	if (later > -1 && later < target_max)
+	{
+		return;
+	}
+	speed_X.Set(0.0f);
+	//発生フレームになるまで回す
+	if (fream < target_max)
+	{
+		//speed_Y.Set(0.0f);
+		//攻撃発生の結果を保存する
+		hit_result = HitResult::NOT_OCCURRENCE;
+		fream -= elapsed_time;
+	}
+	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
+	//発生フレームになったら攻撃判定を生成する
+	if (fream < 0.0f)
+	{
+		//攻撃発生の結果を保存する
+		hit_result = HitResult::NONE;
+		//前進しないようにする
+		speed_X.Set(0.0f);
+
+		//int attack_num = attack_list[real].now_attack_num;
+		anim_ccodinate = ac_attack[now_at_list].timer;
+		if (attack_list[now_at_list].now_attack_num == 0)
+		{
+			//初回の攻撃のみアニメーションを変える
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+			}
+			else
+			{
+				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::TIMER));
+			}
+		}
+		if (attack_list[now_at_list].speed_on)
+		{
+			//攻撃に速度を付与する場合
+			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos, attack_list[now_at_list].speed);
+		}
+		else
+		{
+			//付与しない場合
+			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos);
+		}
+		fream = non_target;
+
+		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+	}
+
+	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
+	if (!atk.empty())
+	{
+		//攻撃判定時前進させて回転させる
+		speed.x = attack_list[now_at_list].advance_speed * rightOrleft;
+		angle.y += elapsed_time * (50.0f * rightOrleft);
+
+		//空中なので少しふわっとさせる
+		pos.y += (gravity * elapsed_time);
+		for (auto& a : atk)
+		{
+			if (knock)
+			{
+				a.parameter.knockback = 0.0f;
+				a.knock_start = false;
+			}
+			if (a.knock_start)
+			{
+				pos.x -= a.parameter.knockback * rightOrleft;
+				a.parameter.knockback = 0.0f;
+				knock = true;
+				a.knock_start = false;
 			}
 		}
 	}
@@ -1481,6 +1614,7 @@ void Knight::SpecialAttack(float elapsed_time)
 bool Knight::ComboSet()
 {
 	AttackState real = attack_list[scastI(attack_state)].real_attack;
+	AttackState now_atk = attack_list[scastI(attack_state)].attack_name;
 	AttackState truth = attack_list[scastI(attack_state)].real_attack;
 	AttackState combo = attack_list[scastI(attack_state)].combo;
 
@@ -1495,7 +1629,7 @@ bool Knight::ComboSet()
 			for (int i = 0; i < combolist_X.combolist.size(); i++)
 			{
 				//コンボリストのどの位置に今の攻撃があるかを確認する
-				if (combolist_X.combolist[i] == real)
+				if (combolist_X.combolist[i] == now_atk)
 				{
 					combolist_X.now_pos = i;
 					break;
@@ -1515,6 +1649,64 @@ bool Knight::ComboSet()
 		truth = combolist_X.combolist[combolist_X.now_pos];
 	}
 		break;
+	case AttackState::COMBO_Y:
+	{
+		//Xボタンコンボ
+		combolist_Y.now_pos = -1;
+		if (!combolist_Y.combolist.empty())
+		{
+			for (int i = 0; i < combolist_Y.combolist.size(); i++)
+			{
+				//コンボリストのどの位置に今の攻撃があるかを確認する
+				if (combolist_Y.combolist[i] == now_atk)
+				{
+					combolist_Y.now_pos = i;
+					break;
+				}
+			}
+		}
+
+		if (combolist_Y.now_pos < 0)
+		{
+			//その攻撃がコンボに含まれていなかった場合false
+			return false;
+		}
+		//コンボを更新
+		combolist_Y.now_pos++;
+
+		//次の攻撃を設定する
+		truth = combolist_Y.combolist[combolist_Y.now_pos];
+	}
+	break;
+	case AttackState::COMBO_B:
+	{
+		//Xボタンコンボ
+		combolist_B.now_pos = -1;
+		if (!combolist_B.combolist.empty())
+		{
+			for (int i = 0; i < combolist_B.combolist.size(); i++)
+			{
+				//コンボリストのどの位置に今の攻撃があるかを確認する
+				if (combolist_B.combolist[i] == now_atk)
+				{
+					combolist_B.now_pos = i;
+					break;
+				}
+			}
+		}
+
+		if (combolist_B.now_pos < 0)
+		{
+			//その攻撃がコンボに含まれていなかった場合false
+			return false;
+		}
+		//コンボを更新
+		combolist_B.now_pos++;
+
+		//次の攻撃を設定する
+		truth = combolist_B.combolist[combolist_B.now_pos];
+	}
+	break;
 	default:
 		return false;
 		break;
@@ -1606,6 +1798,44 @@ void Knight::ComboUpdate()
 		truth = combolist_X.combolist[combolist_X.now_pos];
 	}
 	break;
+	case AttackState::COMBO_Y:
+	{
+		//Xボタンコンボ
+		//コンボを更新
+		combolist_Y.now_pos++;
+		if (combolist_Y.combolist.empty())
+		{
+			return;
+		}
+		if (combolist_Y.now_pos >= combolist_Y.combolist.size())
+		{
+			//コンボの最終地点だった場合
+
+			return;
+		}
+		//次の攻撃を設定する
+		truth = combolist_Y.combolist[combolist_Y.now_pos];
+	}
+	break;
+	case AttackState::COMBO_B:
+	{
+		//Xボタンコンボ
+		//コンボを更新
+		combolist_B.now_pos++;
+		if (combolist_B.combolist.empty())
+		{
+			return;
+		}
+		if (combolist_B.now_pos >= combolist_B.combolist.size())
+		{
+			//コンボの最終地点だった場合
+
+			return;
+		}
+		//次の攻撃を設定する
+		truth = combolist_B.combolist[combolist_B.now_pos];
+	}
+	break;
 	default:
 		return;
 		break;
@@ -1674,6 +1904,38 @@ void Knight::ComboX(float decision, float elapsed_time)
 		return;
 	}
 	AttackState truth = combolist_X.combolist[combolist_X.now_pos];
+	int truth_num = scastI(truth);
+	attack_state = attack_list[truth_num].real_attack;
+
+	AttackSwitch(decision, elapsed_time);
+
+	attack_state = last_attack;
+}
+
+void Knight::ComboY(float decision, float elapsed_time)
+{
+	//Yボタンコンボ関数
+	if (combolist_Y.now_pos >= combolist_Y.combolist.size())
+	{
+		return;
+	}
+	AttackState truth = combolist_Y.combolist[combolist_Y.now_pos];
+	int truth_num = scastI(truth);
+	attack_state = attack_list[truth_num].real_attack;
+
+	AttackSwitch(decision, elapsed_time);
+
+	attack_state = last_attack;
+}
+
+void Knight::ComboB(float decision, float elapsed_time)
+{
+	//Bボタンコンボ関数
+	if (combolist_B.now_pos >= combolist_B.combolist.size())
+	{
+		return;
+	}
+	AttackState truth = combolist_B.combolist[combolist_B.now_pos];
 	int truth_num = scastI(truth);
 	attack_state = attack_list[truth_num].real_attack;
 

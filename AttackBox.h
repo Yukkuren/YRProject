@@ -47,6 +47,7 @@ enum class AttackKind : int
 	TRACK,			//ホーミングダッシュ
 	NO_TO_OFFSET,	//相殺しない攻撃
 	NO_TO_OFFSET_UP,//上段攻撃と相殺しない
+	DOWN_ATTACK,	//ダウン攻撃
 	END,
 };
 

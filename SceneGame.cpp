@@ -1102,7 +1102,7 @@ void SceneGame::Draw(float elapsed_time)
 				400.0f,
 				0.0f,
 				3.0f,
-				p1combo[0],
+				p1combo[2],
 				DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
 			);
 			if (player1p->combo_count > 9)
@@ -1127,7 +1127,7 @@ void SceneGame::Draw(float elapsed_time)
 					400.0f,
 					0.0f,
 					3.0f,
-					p1combo[2],
+					p1combo[0],
 					DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
 				);
 			}

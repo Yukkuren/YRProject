@@ -23,6 +23,8 @@ constexpr float	non_target = 110.0f;				//この値を入れられたフレームは条件から外
 constexpr float target_max = 100.0f;				//条件式でこの値以上は外れるようにする
 constexpr float attenuation_slam = 8.0f;			//滑り中速度の減衰率
 constexpr float draw_guarf_effect_add_pos_x = 3.0f;	//ガードエフェクト描画時の位置補間値
+constexpr float Reflection_range_min = 100.0f;		//この数値以上の吹っ飛びなら壁で跳ね返る
+constexpr float Reflection_attenuation_factor = 0.8f;//壁反射時の減衰率
 
 //--------------------------------------
 //	**キャラ名設定
@@ -119,6 +121,7 @@ enum class ActState : int
 	FALL,			//空中でダウンしている状態
 	KNOCK,			//攻撃を受けてのけぞる
 	SLAM,			//叩きつけられ状態
+	DOWN_HIT,		//ダウン攻撃を受けた
 	ATTACK,			//攻撃中
 	ACT_END,		//(終点)
 };
@@ -161,6 +164,8 @@ enum class AttackState : int
 	A_DESIRE_SPECIAL,//空中後超必殺
 
 	COMBO_X,		//Xボタンコンボ
+	COMBO_Y,		//Yボタンコンボ
+	COMBO_B,		//Bボタンコンボ
 
 	ATTACK_END,		//最大サイズ
 };
@@ -225,7 +230,7 @@ public:
 	Command							linkage_command;//どのコマンドで攻撃を発生させるか
 	Ground_C						ground_on;		//攻撃は空中、地上、どちらでも発生させるか
 	bool							squat_on;		//しゃがみ攻撃がどうか(trueでしゃがみ攻撃)
-	float							need_gauge;		//攻撃を行うのに必要なゲージ量(1.0単位で記述)
+	int								need_power;		//攻撃を行うのに必要なゲージ量(1単位で記述)
 	PAD								linkage_stick;	//どの方向への入力で攻撃を発生させるか
 	AttackState						aid_attack_name;//ゲージが足りなかった場合出す技
 	AttackState						real_attack;	//実際の攻撃(基本はattack_nameと同じものを入れ、特定の攻撃と同じ攻撃を出す場合はその攻撃名を入れる)
@@ -238,7 +243,7 @@ public:
 public:
 	AttackList() : now_attack_num(0), attack_name(AttackState::NONE), later(0.0f),
 		attack_max(0), linkage_button(PAD::BUTTOM_END), linkage_command(Command::NOCOMMAND), ground_on(Ground_C::GROUND), squat_on(false),
-		need_gauge(0.0f), linkage_stick(PAD::BUTTOM_END), aid_attack_name(AttackState::NONE), real_attack(attack_name),
+		need_power(0), linkage_stick(PAD::BUTTOM_END), aid_attack_name(AttackState::NONE), real_attack(attack_name),
 		speed_on(false), speed(0.0f, 0.0f, 0.0f), advance_speed(0.0f), combo(AttackState::NONE), conditions_hit(HitResult::HIT),timer(0.0f) {};
 	//攻撃当たり判定を生成する
 	void SetAttack(std::vector<AttackBox> *atk, float rightOrleft, YR_Vector3 pl_pos)
@@ -366,6 +371,8 @@ public:
 	std::vector<AttackList>								attack_list;	//攻撃のリスト。生成時に読み込み、保存する(攻撃発生時にパラメーターを送る)
 	std::vector<HitParameterList>						hitparam_list;	//当たり判定のリスト。生成時に読み込み、保存する(当たり判定の数だけ生成する)
 	ComboList											combolist_X;	//Xボタンコンボリスト
+	ComboList											combolist_Y;	//Yボタンコンボリスト
+	ComboList											combolist_B;	//Bボタンコンボリスト
 
 public:
 	//モデル用変数
@@ -430,9 +437,9 @@ public:
 	virtual void PassiveUpdate(float elapsed_time) = 0;
 	virtual void WakeUp() = 0;
 	virtual void GaugeUp(float add) = 0;
-	virtual void CancelList() = 0;
 	virtual void StateNone(float elapsed_time) = 0;
 	virtual void KnockUpdate(float elapsed_time) = 0;
+	virtual void DownHitUpdate(float elapsed_time) = 0;
 	virtual void SlamUpdate(float elapsed_time) = 0;
 
 	virtual void HitBoxTransition(HitBoxState state) = 0;

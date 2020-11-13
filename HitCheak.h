@@ -20,6 +20,7 @@ enum class HitResultState : int
 	STATE_NONE,		//掴まれた
 	SLAM,			//叩きつけ
 	ARMOR,			//アーマーが入った
+	DOWN_HIT,		//ダウン攻撃がヒット
 };
 
 class Hitcheak

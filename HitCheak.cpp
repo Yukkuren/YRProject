@@ -43,166 +43,233 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 						//3:íÕÇ‹ÇÍÇΩ
 						//4:í@Ç´Ç¬ÇØ
 
+
+						//äeì‡óeÇ…ÇÕÉKÅ[ÉhÇ≈Ç´ÇÈÇ‡ÇÃÇæÇØãLèqÇµÇƒÇ¢Ç´ÅAÇªÇÍà»äOÇÕëSïîÇ‹Ç∆ÇﬂÇƒÉqÉbÉgÇµÇΩÇ±Ç∆Ç…Ç∑ÇÈ
 						switch (attack[atknum].parameter.type)
 						{
 						case AttackKind::UP:
 							//è„íiçUåÇ
-							if (hit[hitnum].state == HitBoxState::NOGUARD)
+							if (hit[hitnum].state == HitBoxState::MIDDLE)
 							{
-								flag = HitResultState::HIT;
+								flag = HitResultState::GUARD_OK;
 							}
-							if (hit[hitnum].state == HitBoxState::DOWN)
+							else if (hit[hitnum].state == HitBoxState::ALL)
 							{
-								flag = HitResultState::HIT;
+								flag = HitResultState::GUARD_OK;
 							}
-							if (hit[hitnum].state == HitBoxState::INVINCIBLE)
-							{
-								flag = HitResultState::AVOIDANCE;
-							}
-							if (hit[hitnum].state == HitBoxState::UP_INVINCIBLE)
+							else if (hit[hitnum].state == HitBoxState::INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
-							if (hit[hitnum].state == HitBoxState::PROJECTILE_ARMOR)
+							else if (hit[hitnum].state == HitBoxState::UP_INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
+							else
 							{
 								flag = HitResultState::HIT;
 							}
 							break;
 						case AttackKind::MIDDLE:
 							//íÜíiçUåÇ
-							if (hit[hitnum].state == HitBoxState::NOGUARD)
+							if (hit[hitnum].state == HitBoxState::MIDDLE)
 							{
-								flag = HitResultState::HIT;
+								flag = HitResultState::GUARD_OK;
 							}
-							if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							else if (hit[hitnum].state == HitBoxState::DOWN)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else if (hit[hitnum].state == HitBoxState::ALL)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else if (hit[hitnum].state == HitBoxState::INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
-							if (hit[hitnum].state == HitBoxState::PROJECTILE_ARMOR)
+							else
 							{
 								flag = HitResultState::HIT;
 							}
 							break;
 						case AttackKind::DOWN:
 							//â∫íiçUåÇ
-							if (hit[hitnum].state == HitBoxState::NOGUARD)
+							if (hit[hitnum].state == HitBoxState::DOWN)
 							{
-								flag = HitResultState::HIT;
+								flag = HitResultState::GUARD_OK;
 							}
-							if (hit[hitnum].state == HitBoxState::MIDDLE)
-							{
-								flag = HitResultState::HIT;
-							}
-							if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							else if (hit[hitnum].state == HitBoxState::INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
-							if (hit[hitnum].state == HitBoxState::PROJECTILE_ARMOR)
+							else if (hit[hitnum].state == HitBoxState::ALL)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else
 							{
 								flag = HitResultState::HIT;
 							}
 							break;
 						case AttackKind::STEAL:
 							//ìäÇ∞çUåÇ
-							if (hit[hitnum].state == HitBoxState::NOGUARD)
-							{
-								flag = HitResultState::STATE_NONE;
-							}
-							if (hit[hitnum].state == HitBoxState::MIDDLE)
-							{
-								flag = HitResultState::STATE_NONE;
-							}
-							if (hit[hitnum].state == HitBoxState::DOWN)
-							{
-								flag = HitResultState::STATE_NONE;
-							}
 							if (hit[hitnum].state == HitBoxState::INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
-							if (hit[hitnum].state == HitBoxState::PROJECTILE_ARMOR)
+							else
 							{
 								flag = HitResultState::STATE_NONE;
 							}
 							break;
 						case AttackKind::SLAM:
 							//í@Ç´Ç¬ÇØçUåÇ
-							if (hit[hitnum].state == HitBoxState::NOGUARD)
+							if (hit[hitnum].state == HitBoxState::MIDDLE)
 							{
-								flag = HitResultState::SLAM;
+								flag = HitResultState::GUARD_OK;
 							}
-							if (hit[hitnum].state == HitBoxState::DOWN)
+							else if (hit[hitnum].state == HitBoxState::ALL)
 							{
-								flag = HitResultState::SLAM;
+								flag = HitResultState::GUARD_OK;
 							}
-							if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							else if (hit[hitnum].state == HitBoxState::INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
-							if (hit[hitnum].state == HitBoxState::PROJECTILE_ARMOR)
+							else if (hit[hitnum].state == HitBoxState::UP_INVINCIBLE)
 							{
-								flag = HitResultState::HIT;
+								flag = HitResultState::AVOIDANCE;
+							}
+							else
+							{
+								flag = HitResultState::SLAM;
 							}
 							break;
 						case AttackKind::PROJECTILE:
 							//îÚÇ—ìπãÔçUåÇ
-							if (hit[hitnum].state == HitBoxState::NOGUARD)
+							if (hit[hitnum].state == HitBoxState::ALL)
 							{
-								flag = HitResultState::HIT;
+								flag = HitResultState::GUARD_OK;
 							}
-							if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							else if (hit[hitnum].state == HitBoxState::INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
-							if (hit[hitnum].state == HitBoxState::PROJECTILE_ARMOR)
+							else if (hit[hitnum].state == HitBoxState::MIDDLE)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else if (hit[hitnum].state == HitBoxState::DOWN)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else if (hit[hitnum].state == HitBoxState::PROJECTILE_ARMOR)
 							{
 								flag = HitResultState::ARMOR;
+							}
+							else
+							{
+								flag = HitResultState::HIT;
 							}
 							break;
 						case AttackKind::TRACK:
 							//ÉzÅ[É~ÉìÉOÉ_ÉbÉVÉÖ
-							if (hit[hitnum].state == HitBoxState::NOGUARD)
+							if (hit[hitnum].state == HitBoxState::ALL)
 							{
-								flag = HitResultState::HIT;
+								flag = HitResultState::GUARD_OK;
 							}
-							if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							else if (hit[hitnum].state == HitBoxState::MIDDLE)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else if (hit[hitnum].state == HitBoxState::DOWN)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else if (hit[hitnum].state == HitBoxState::INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
-							if (hit[hitnum].state == HitBoxState::UP_INVINCIBLE)
+							else if (hit[hitnum].state == HitBoxState::UP_INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
-							if (hit[hitnum].state == HitBoxState::PROJECTILE_ARMOR)
+							else
 							{
 								flag = HitResultState::HIT;
 							}
 							break;
 						case AttackKind::NO_TO_OFFSET:
 							//ëäéEÇµÇ»Ç¢çUåÇ
-							if (hit[hitnum].state == HitBoxState::NOGUARD)
+							if (hit[hitnum].state == HitBoxState::ALL)
 							{
-								flag = HitResultState::HIT;
+								flag = HitResultState::GUARD_OK;
 							}
-							if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							else if (hit[hitnum].state == HitBoxState::INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
+							}
+							else if (hit[hitnum].state == HitBoxState::MIDDLE)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else if (hit[hitnum].state == HitBoxState::DOWN)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else
+							{
+								flag = HitResultState::HIT;
 							}
 							break;
 						case AttackKind::NO_TO_OFFSET_UP:
 							//è„íiçUåÇÇ∆ëäéEÇµÇ»Ç¢çUåÇ
-							if (hit[hitnum].state == HitBoxState::NOGUARD)
+							if (hit[hitnum].state == HitBoxState::ALL)
 							{
-								flag = HitResultState::HIT;
+								flag = HitResultState::GUARD_OK;
 							}
-							if (hit[hitnum].state == HitBoxState::PROJECTILE_ARMOR)
-							{
-								flag = HitResultState::HIT;
-							}
-							if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							else if (hit[hitnum].state == HitBoxState::INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
+							else if (hit[hitnum].state == HitBoxState::MIDDLE)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else if (hit[hitnum].state == HitBoxState::DOWN)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else
+							{
+								flag = HitResultState::HIT;
+							}
+							break;
+						case AttackKind::DOWN_ATTACK:
+							//É_ÉEÉìÇ∑ÇÈçUåÇ
+							if (hit[hitnum].state == HitBoxState::MIDDLE)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else if (hit[hitnum].state == HitBoxState::DOWN)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else if (hit[hitnum].state == HitBoxState::ALL)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
+							else
+							{
+								flag = HitResultState::DOWN_HIT;
+							}
+							break;
+						default:
 							break;
 						}
 
@@ -547,6 +614,103 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							//çUåÇÇ™ìñÇΩÇ¡ÇΩÇ±Ç∆Çï€ë∂Ç∑ÇÈ
 							attack[atknum].hit_result = HitResult::HIT;
 							hit[hitnum].hit_state = HitStateKind::ARMOR;
+							//PlaySE(SE_HIT);
+							return add;
+						}
+						break;
+						case HitResultState::DOWN_HIT:
+						{
+							//îÌíeÇµÇΩ
+							float add = 0.0f;
+							if (!attack[atknum].parameter.gaugeout)
+							{
+								add = attack[atknum].parameter.gauge_get;
+							}
+							hit[hitnum].hit = true;
+							attack[atknum].hit_ok = false;
+							attack[atknum].knock_start = true;
+							hit[hitnum].damege = attack[atknum].parameter.damege;
+							hit[hitnum].timer = attack[atknum].parameter.HB_timer;
+							hit[hitnum].hitback = attack[atknum].parameter.hitback;
+							//Hitcheak::timer = ((attack[atknum].parameter.damege*0.1f) / hitstop_adjust);
+							if (player == 1)
+							{
+								Hitcheak::stop1p = true;
+							}
+							if (player == 2)
+							{
+								Hitcheak::stop2p = true;
+							}
+
+							if (attack[atknum].parameter.distance.x >= hit[hitnum].center.x)
+							{
+								float dis = attack[atknum].parameter.distance.x - hit[hitnum].center.x;
+								dis /= 2.0f;
+								effectpos.x = hit[hitnum].center.x + dis;
+								effecttimer = 10;
+							}
+							if (hit[hitnum].center.x > attack[atknum].parameter.distance.x)
+							{
+								float dis = hit[hitnum].center.x - attack[atknum].parameter.distance.x;
+								dis /= 2.0f;
+								effectpos.x = attack[atknum].parameter.distance.x + dis;
+								effecttimer = 10;
+							}
+
+							if (attack[atknum].parameter.distance.y >= hit[hitnum].center.y)
+							{
+								float dis = attack[atknum].parameter.distance.y - hit[hitnum].center.y;
+								dis /= 2.0f;
+								effectpos.y = hit[hitnum].center.y + dis;
+								effecttimer = 10;
+							}
+							if (hit[hitnum].center.y > attack[atknum].parameter.distance.y)
+							{
+								float dis = hit[hitnum].center.y - attack[atknum].parameter.distance.y;
+								dis /= 2.0f;
+								effectpos.y = attack[atknum].parameter.distance.y + dis;
+								effecttimer = 10;
+							}
+							switch (attack[atknum].parameter.HS_timer)
+							{
+							case HitStopTime::SHORT:
+								Hitcheak::timer = 0.05f;
+								break;
+							case HitStopTime::NORMAL:
+								Hitcheak::timer = 0.25f;
+								break;
+							case HitStopTime::LONG:
+								Hitcheak::timer = 0.35f;
+								break;
+							case HitStopTime::ZOOM:
+								Hitcheak::timer = 0.45f;
+								YRCamera.RequestCamera(player);
+								break;
+							default:
+								Hitcheak::timer = 0.05f;
+								break;
+							}
+
+							if (attack[atknum].parameter.type != AttackKind::PROJECTILE)
+							{
+								for (int n = 0; n < attack.size(); n++)
+								{
+									attack[n].parameter.damege = 0;
+									//attack[n].HB_timer = 0;
+									attack[n].parameter.hitback = YR_Vector3(0.0f, 0.0f);
+									attack[n].hit_ok = false;
+								}
+							}
+							else
+							{
+								attack[atknum].parameter.damege = 0;
+								//attack[n].HB_timer = 0;
+								attack[atknum].parameter.hitback = YR_Vector3(0.0f, 0.0f);
+								attack[atknum].hit_ok = false;
+							}
+							//çUåÇÇ™ìñÇΩÇ¡ÇΩÇ±Ç∆Çï€ë∂Ç∑ÇÈ
+							attack[atknum].hit_result = HitResult::HIT;
+							hit[hitnum].hit_state = HitStateKind::DOWN;
 							//PlaySE(SE_HIT);
 							return add;
 						}
