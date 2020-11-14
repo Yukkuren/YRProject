@@ -19,7 +19,9 @@ void Knight::LoadData(int color_number)
 	//DEBUGAttackLoad();
 #endif // 0
 	//AttackLoad();
-
+	DEBUGAttackLoad();
+	AttackClean();
+	AttackLoad();
 
 
 	switch (color_number)

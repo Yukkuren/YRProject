@@ -65,6 +65,15 @@ void SceneLoad::UnInit()
 	//シェーダーも解放
 	spriteShader.reset();
 	spriteShader = nullptr;
+
+	if (load_state < 8)
+	{
+		if (t->joinable())
+		{
+			t->join();
+		}
+		delete t;
+	}
 }
 
 void SceneLoad::Update(float elapsedTime)

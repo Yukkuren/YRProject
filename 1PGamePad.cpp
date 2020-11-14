@@ -25,6 +25,11 @@ void GamePad1::Init()
 	bottomLU = false;
 	pre_input = false;
 	dash_trigger = false;
+
+	for (int i = 0; i < x_input.size(); i++)
+	{
+		x_input[i] = 0;
+	}
 }
 
 void GamePad1::UnInit()

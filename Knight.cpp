@@ -678,6 +678,9 @@ void Knight::AttackInput()
 				anim_ccodinate = ac_attack[real].fream;
 				//攻撃番号を初期化
 				attack_list[real].now_attack_num = 0;
+				//角度を元に戻す
+				angle.y = 0.0f;
+				angle.z = 0.0f;
 				//当たり判定を初期化
 				if (attack_list[real].attack_single[0].parameter[0].type == AttackKind::NO_TO_OFFSET_UP)
 				{
@@ -2381,6 +2384,9 @@ void Knight::JumpUpdate(float decision, float elapsed_time)
 		atk_result = HitResult::NOT_OCCURRENCE;
 		rightOrleft = decision;
 		angle.y = 0.0f;
+		//角度を元に戻す
+		angle.y = 0.0f;
+		angle.z = 0.0f;
 		if (rightOrleft > 0)
 		{
 			anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::LATER));
@@ -2484,6 +2490,23 @@ void Knight::DamageCheck(float decision)
 					dg = 1;
 				}
 				hp -= dg;
+				if (hp <= 0.0f)
+				{
+					//強制的にダウン状態にする
+					act_state = ActState::DOWN_HIT;
+					hp = 0.0f;
+					if (rightOrleft > 0)
+					{
+						anim->NodeChange(model_motion.damage_R_g_u);
+					}
+					else
+					{
+						anim->NodeChange(model_motion.damage_L_g_u);
+					}
+					ChangeFace(FaceAnim::Damage);
+					anim_ccodinate = 5.0f;
+					break;
+				}
 				GaugeUp(hit[i].damege / 5.0f);
 				hit[i].damege = 0.0f;
 				hit[i].hit = false;
@@ -2502,6 +2525,24 @@ void Knight::DamageCheck(float decision)
 				dg = 1.0f;
 			}
 			hp -= dg;
+			if (hp <= 0.0f)
+			{
+				//強制的にダウン状態にする
+				act_state = ActState::DOWN_HIT;
+				hp = 0.0f;
+				if (pos.y <= POS_Y)
+				{
+					//描画をセット
+					if (rightOrleft > 0)
+					{
+						anim->NodeChange(model_motion.slid_R);
+					}
+					else
+					{
+						anim->NodeChange(model_motion.slid_L);
+					}
+				}
+			}
 			combo_count++;
 			GaugeUp(hit[i].damege / 5.0f);
 			hit[i].damege = 0.0f;
@@ -2533,7 +2574,8 @@ void Knight::DamageCheck(float decision)
 			//キャンセルの条件を初期化
 			atk_result = HitResult::NONE;
 			attack_state = AttackState::NONE;
-			//角度を戻す
+			//角度を元に戻す
+			angle.y = 0.0f;
 			angle.z = 0.0f;
 			//最終入力内容を初期化する
 			last_attack = AttackState::NONE;

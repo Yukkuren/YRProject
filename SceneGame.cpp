@@ -104,7 +104,7 @@ void SceneGame::Init()
 	blur_on = true;
 
 	//2Pの動き
-	pl2_con = Player2PControl::SUSPENSION;
+	pl2_con = Player2PControl::OPERATION;
 
 	GetSound().BGMPlay(BGMKind::GAME);
 
@@ -331,7 +331,6 @@ void SceneGame::UnInit()
 	//プレイヤーのUninit関数を回す
 	player1p->Uninit();
 	player1p.reset();
-	//player1p = nullptr;
 	player2p->Uninit();
 	player2p.reset();
 	//player2p = nullptr;
@@ -513,7 +512,7 @@ void SceneGame::Update(float elapsed_time)
 			if (FadeOut(elapsed_time))
 			{
 				UnInit();
-				FRAMEWORK.SetScene(SCENE_TABLE::SCENE_SELECT);
+				FRAMEWORK.SetScene(SCENE_TABLE::SCENE_TITLE);
 			}
 			break;
 		default:
@@ -598,9 +597,12 @@ void SceneGame::Update(float elapsed_time)
 			{
 				//イントロがすべて終わり、カウントも終えゲームが開始された
 				
-				//パッド更新
-				player1p->pad->Update(game_speed);
-				Control2PState(game_speed);
+				if (!end)
+				{
+					//パッド更新
+					player1p->pad->Update(game_speed);
+					Control2PState(game_speed);
+				}
 				if (pause)
 				{
 					//ポーズ中
@@ -714,20 +716,25 @@ void SceneGame::Update(float elapsed_time)
 						endtimer += elapsed_time;
 
 						//勝敗決定後、スローにする時間を作りたいので
-						if (endtimer > 3.0f)
+						if (endtimer > end_slow_time)
 						{
 							game_speed = elapsed_time;
 						}
 						else
 						{
-							game_speed = elapsed_time * 0.5f;
+							game_speed = elapsed_time * slow_adjust;
 						}
 
 						//大体7秒後くらいに勝利画面へ
-						if (endtimer > 7.0f)
+						if (endtimer > game_end_time)
 						{
 							main_loop = MAIN_LOOP::FINISH;
 							fado_start = true;
+							if (judge == JUDGE_VICTORY::DROW)
+							{
+								main_loop = MAIN_LOOP::DRAW;
+								timer = 0.0f;
+							}
 						}
 
 						//プレイヤー更新(KO時のｳﾜｧ...ｳﾜｧ...ｳﾜｧ...ってスローになるやつ)
@@ -836,6 +843,8 @@ void SceneGame::Update(float elapsed_time)
 					main_loop = MAIN_LOOP::WIN2P;
 					break;
 				case SceneGame::DROW:
+					main_loop = MAIN_LOOP::DRAW;
+					timer = 0.0f;
 					break;
 				default:
 					break;
@@ -870,6 +879,28 @@ void SceneGame::Update(float elapsed_time)
 			if (player2p->WinPerformance())
 			{
 				fado_start = true;
+			}
+
+			//途中ボタンが押されたらスキップ
+			if (player1p->pad->x_input[scastI(PAD::X)] == 1 ||
+				player2p->pad->x_input[scastI(PAD::X)] == 1)
+			{
+				fado_start = true;
+			}
+			break;
+		case SceneGame::DRAW:
+
+			//パッドの更新
+			player1p->pad->Update(game_speed);
+			player2p->pad->Update(game_speed);
+
+			if (timer > end_slow_time)
+			{
+				fado_start = true;
+			}
+			else
+			{
+				timer += elapsed_time;
 			}
 
 			//途中ボタンが押されたらスキップ
@@ -1036,6 +1067,7 @@ void SceneGame::Draw(float elapsed_time)
 	case SceneGame::READY:
 	case SceneGame::MAIN:
 	case SceneGame::FINISH:
+	case SceneGame::DRAW:
 		//内部処理ではフェードをしているだけで画面に変化はない為一括
 
 
@@ -1047,37 +1079,6 @@ void SceneGame::Draw(float elapsed_time)
 			break;
 		default:
 			break;
-		}
-
-		//カウント表示
-		if (!start)
-		{
-			//Are You Ready?
-			if (start_timer < 1.0f)
-			{
-				call_img->DrawRotaDivGraph
-				(
-					spriteShader.get(),
-					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
-					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f,
-					0.0f,
-					1.0f,
-					0
-				);
-			}
-			else
-			{
-				//Go!!
-				call_img->DrawRotaDivGraph
-				(
-					spriteShader.get(),
-					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
-					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f,
-					0.0f,
-					1.0f,
-					1
-				);
-			}
 		}
 
 		//UI描画
@@ -1237,14 +1238,82 @@ void SceneGame::Draw(float elapsed_time)
 			player2p->power,
 			PL.power2P
 		);
+
+
+		//カウント表示
+		if (!start)
+		{
+			//Are You Ready?
+			if (start_timer < ready_time)
+			{
+				call_img->DrawRotaDivGraph
+				(
+					spriteShader.get(),
+					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
+					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f,
+					0.0f,
+					1.0f,
+					0
+				);
+			}
+			else
+			{
+				//Go!!
+				call_img->DrawRotaDivGraph
+				(
+					spriteShader.get(),
+					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
+					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f,
+					0.0f,
+					1.0f,
+					1
+				);
+			}
+		}
+		
+		if (end) 
+		{
+			//ゲームの決着がついた後
+			if (endtimer < end_slow_time)
+			{
+				KO_img->DrawGraph(
+					spriteShader.get(),
+					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
+					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f
+				);
+			}
+
+			if (endtimer > game_end_time)
+			{
+				if (judge == JUDGE_VICTORY::DROW)
+				{
+					draw_img->DrawGraph(
+						spriteShader.get(),
+						static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
+						static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f
+					);
+				}
+			}
+		}
+
 		break;
 	case SceneGame::WIN1P:
+	{
 		//プレイヤー描画
 		player1p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, lightColor, ambient_color, game_speed);
+		float x_pos = static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.7f;
+		float y_pos = static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f;
+		win1P_img->DrawGraph(spriteShader.get(), x_pos, y_pos);
+	}
 		break;
 	case SceneGame::WIN2P:
+	{
 		//プレイヤー描画
 		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, lightColor, ambient_color, game_speed);
+		float x_pos = static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.7f;
+		float y_pos = static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f;
+		win2P_img->DrawGraph(spriteShader.get(), x_pos, y_pos);
+	}
 		break;
 	case SceneGame::GAME_FIN:
 		break;

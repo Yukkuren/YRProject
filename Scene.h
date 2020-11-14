@@ -21,7 +21,11 @@
 #include "collision.h"
 
 
-constexpr float start_time = 0.0f;
+constexpr float start_time = 2.0f;			//ゲームが開始するまでの時間
+constexpr float ready_time = 1.0f;			//Readyの表示を出す時間
+constexpr float end_slow_time = 3.0f;		//試合終了後スローにする時間
+constexpr float slow_adjust = 0.2f;			//スロー補正値
+constexpr float game_end_time = 5.0f;		//ゲームが終了して勝利画面に移行する時間
 
 enum class INPUT_PLAYER : int
 {
@@ -167,6 +171,7 @@ public:
 		FINISH,
 		WIN1P,
 		WIN2P,
+		DRAW,
 		GAME_FIN,
 	};
 

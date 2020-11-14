@@ -522,5 +522,8 @@
     <Filter Include="EXlib\Effekseer">
       <UniqueIdentifier>{e044e26b-8ef0-4875-aa46-33e2ff468618}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\TitleShader">
+      <UniqueIdentifier>{f71697e9-0394-4bdf-a0c5-e164b11de95f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

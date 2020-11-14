@@ -88,7 +88,7 @@ void SceneTitle::Update(float elapsed_time)
 	//ロード終了
 	if (load_fin)
 	{
-		if (pKeyState.sflg == 1)
+		/*if (pKeyState.sflg == 1)
 		{
 			GetSound().SESinglePlay(SEKind::SELECT_ENTER);
 		}
@@ -128,24 +128,29 @@ void SceneTitle::Update(float elapsed_time)
 			{
 				flgi = false;
 			}
-		}
+		}*/
 
 
-
-		if (pKeyState.nflg == 1 || g1.x_input[scastI(PAD::START)] == 1)
+		//先行会用に直接ロードに行くようにする
+		if (!fado_start)
 		{
-			GetSound().BGMStop(BGMKind::TITLE);
-			select_p1 = scastI(INPUT_PLAYER::P1);
-			select_p2 = scastI(INPUT_PLAYER::P2);
-			FRAMEWORK.scenegame.PadSet(select_p1);
-			UnInit();
-			FRAMEWORK.SetScene(SCENE_SELECT);
-			return;
+			if (pKeyState.hflg == 1 || g1.x_input[scastI(PAD::X)] == 1)
+			{
+				GetSound().FadeOut(elapsed_time);
+				select_p1 = scastI(INPUT_PLAYER::P1);
+				select_p2 = scastI(INPUT_PLAYER::P2);
+				//FRAMEWORK.scenegame.PadSet(select_p1);
+				//UnInit();
+				FRAMEWORK.sceneselect.select_p1 = scastI(PLSELECT::KNIGHT);
+				FRAMEWORK.sceneselect.select_p2 = scastI(PLSELECT::KNIGHT);
+				fado_start = true;
+				//FRAMEWORK.SetScene(SCENE_SELECT);
+			}
 		}
 #if USE_IMGUI
 		
 
-		if (pKeyState.tflg == 1)
+		/*if (pKeyState.tflg == 1)
 		{
 			GetSound().BGMStop(BGMKind::TITLE);
 			select_p1 = scastI(INPUT_PLAYER::P1);
@@ -154,7 +159,7 @@ void SceneTitle::Update(float elapsed_time)
 			UnInit();
 			FRAMEWORK.SetScene(SCENE_TEST);
 			return;
-		}
+		}*/
 
 #endif // USE_IMGUI
 
@@ -260,14 +265,27 @@ void SceneTitle::Update(float elapsed_time)
 		}
 		if (fado_start)
 		{
+			//if (FedoOut(elapsed_time))
+			//{
+			//	//フェードアウトが終わったらセレクト画面へ
+			//	//ここで入力を保存する
+			//	//関数にする
+			//	GetSound().BGMStop(BGMKind::TITLE);
+			//	FRAMEWORK.scenegame.PadSet(select_p1);
+			//	FRAMEWORK.SetScene(SCENE_SELECT);
+			//	UnInit();
+			//	return;
+			//}
+
+			//先行会用
 			if (FedoOut(elapsed_time))
 			{
 				//フェードアウトが終わったらセレクト画面へ
 				//ここで入力を保存する
-				//関数にする
-				GetSound().BGMStop(BGMKind::TITLE);
 				FRAMEWORK.scenegame.PadSet(select_p1);
-				FRAMEWORK.SetScene(SCENE_SELECT);
+				GetSound().BGMStop(BGMKind::TITLE);
+				//フェードアウトが終わったらロード画面へ
+				FRAMEWORK.SetScene(SCENE_LOAD);
 				UnInit();
 				return;
 			}
