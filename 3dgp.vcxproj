@@ -160,6 +160,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="2Pgamepad.cpp" />
+    <ClCompile Include="AIControll.cpp" />
     <ClCompile Include="AnimBoard.cpp" />
     <ClCompile Include="AttackBox.cpp" />
     <ClCompile Include="Blur.cpp" />

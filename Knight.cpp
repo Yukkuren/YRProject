@@ -65,6 +65,7 @@ void Knight::Init(YR_Vector3 InitPos)
 
 	stop_state = 0;
 	air_dash_state = AirDashState::NONE;
+	power = 5;
 
 	light_direction = DirectX::XMFLOAT4(-1.0f, -0.1, 1.0f, 0.0f);
 #pragma region HITBOXINIT
@@ -547,7 +548,10 @@ void Knight::AttackInput()
 		Command now_com = attack_list[list].linkage_command;
 		if (pad->x_input[button] == 1)
 		{
-			pad->que.back().timer = 0;
+			if (!pad->que.empty())
+			{
+				pad->que.back().timer = 0;
+			}
 			//コマンド判定
 			Command command = pad->com_list.CommandCheack(button, pad->input_history.data(), rightOrleft);
 			if (now_com == command)
@@ -2492,19 +2496,7 @@ void Knight::DamageCheck(float decision)
 				hp -= dg;
 				if (hp <= 0.0f)
 				{
-					//強制的にダウン状態にする
-					act_state = ActState::DOWN_HIT;
 					hp = 0.0f;
-					if (rightOrleft > 0)
-					{
-						anim->NodeChange(model_motion.damage_R_g_u);
-					}
-					else
-					{
-						anim->NodeChange(model_motion.damage_L_g_u);
-					}
-					ChangeFace(FaceAnim::Damage);
-					anim_ccodinate = 5.0f;
 					break;
 				}
 				GaugeUp(hit[i].damege / 5.0f);
@@ -2527,21 +2519,7 @@ void Knight::DamageCheck(float decision)
 			hp -= dg;
 			if (hp <= 0.0f)
 			{
-				//強制的にダウン状態にする
-				act_state = ActState::DOWN_HIT;
 				hp = 0.0f;
-				if (pos.y <= POS_Y)
-				{
-					//描画をセット
-					if (rightOrleft > 0)
-					{
-						anim->NodeChange(model_motion.slid_R);
-					}
-					else
-					{
-						anim->NodeChange(model_motion.slid_L);
-					}
-				}
 			}
 			combo_count++;
 			GaugeUp(hit[i].damege / 5.0f);
@@ -2676,7 +2654,18 @@ void Knight::KnockUpdate(float elapsed_time)
 		if (hp == 0.0f)
 		{
 			//体力がなくなったら落下状態にする
-			act_state = ActState::FALL;
+			act_state = ActState::DOWN;
+			speed.y = 0.0f;
+			//描画をセット
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.slid_R);
+			}
+			else
+			{
+				anim->NodeChange(model_motion.slid_L);
+			}
+			anim_ccodinate = ac_act[scastI(act_state)].timer;
 		}
 		return;
 	}
@@ -2754,7 +2743,6 @@ void Knight::KnockUpdate(float elapsed_time)
 					speed.y = passive_speed.y;
 				}
 			}
-			//描画をセット
 
 			if (trackgauge < 2)
 			{
@@ -2765,7 +2753,18 @@ void Knight::KnockUpdate(float elapsed_time)
 		if (hp == 0.0f)
 		{
 			//体力がなくなったら落下状態にする
-			act_state = ActState::FALL;
+			act_state = ActState::DOWN;
+			speed.y = 0.0f;
+			//描画をセット
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.slid_R);
+			}
+			else
+			{
+				anim->NodeChange(model_motion.slid_L);
+			}
+			anim_ccodinate = ac_act[scastI(act_state)].timer;
 		}
 		knocktimer = 0.0f;
 		for (int i = 0; i < hit.size(); i++)
@@ -2827,6 +2826,7 @@ void Knight::SlamUpdate(float elapsed_time)
 		}
 
 		//アニメーションを変更する
+		ChangeFace(FaceAnim::NORMAL);
 		if (rightOrleft > 0)
 		{
 			anim->NodeChange(model_motion.slid_R, 1);
@@ -3396,6 +3396,7 @@ void Knight::DownUpdate()
 		pos.y = POS_Y;
 		speed.y = 0.0f;
 		speed.x = 0.0f;
+		ChangeFace(FaceAnim::NORMAL);
 		if (pad->x_input[scastI(PAD::STICK_R)] > 0)
 		{
 			speed.x = passive_speed.x;
@@ -3546,6 +3547,7 @@ void Knight::PassiveUpdate(float elapsed_time)
 	if (speed.x == 0.0f && speed.y == 0)
 	{
 		HitBoxTransition(HitBoxState::NOGUARD);
+		ChangeFace(FaceAnim::NORMAL);
 		angle.z = 0.0f;
 		if (ground)
 		{
@@ -3583,8 +3585,29 @@ void Knight::StateNone(float elapsed_time)
 		if (pad->x_input[scastI(PAD::RB)] == 1)
 		{
 			steal_escape = 0.0f;
-			pos.x -= Getapply(15.0f);
-			act_state = ActState::NONE;
+			speed.x = 0.0f;
+			speed.y = 0.0f;
+			knocktimer = 0.0f;
+			for (int i = 0; i < hit.size(); i++)
+			{
+				hit[i].timer = 0.0f;
+				hit[i].hitback = YR_Vector3(0.0f, 0.0f);
+			}
+			combo_count = 0;
+			act_state = ActState::PASSIVE;
+			//描画をセット
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.passive_R);
+			}
+			else
+			{
+				anim->NodeChange(model_motion.passive_L);
+			}
+			HitBoxTransition(HitBoxState::INVINCIBLE);
+
+			speed.x = Getapply(-passive_speed.x);
+			speed.y = passive_speed.y;
 			return;
 		}
 		steal_escape -= elapsed_time;

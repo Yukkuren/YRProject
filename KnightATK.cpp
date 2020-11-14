@@ -793,6 +793,29 @@ void Knight::Slow(float elapsed_time)
 	{
 		steal_escape -= elapsed_time;
 
+		if (rival_state != ActState::STATENONE)
+		{
+			//攻撃番号を初期化
+			attack_list[scastI(attack_list[scastI(attack_state)].real_attack)].now_attack_num = 0;
+			//後隙を設定
+			later = attack_list[scastI(attack_list[scastI(attack_state)].real_attack)].later;
+			//アニメーション速度を指定
+			anim_ccodinate = ac_attack[scastI(attack_list[scastI(attack_state)].real_attack)].later;
+			HitBoxTransition(HitBoxState::NOGUARD);
+			//描画をセット
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.model_R[scastI(attack_list[scastI(attack_state)].real_attack)], scastI(AnimAtk::LATER));
+			}
+			else
+			{
+				anim->NodeChange(model_motion.model_L[scastI(attack_list[scastI(attack_state)].real_attack)], scastI(AnimAtk::LATER));
+			}
+			steal_escape = non_target;
+			//行動終了フラグをオンに
+			finish = true;
+		}
+
 		if (steal_escape < 0.0f)
 		{
 			steal_escape = non_target;

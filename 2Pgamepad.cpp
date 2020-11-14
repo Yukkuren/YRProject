@@ -32,6 +32,15 @@ void GamePad2::UnInit()
 	}
 }
 
+bool GamePad2::GetX_INPUT_ON()
+{
+	if (XInputGetState(1, &input) == ERROR_SUCCESS)
+	{
+		return true;
+	}
+	return false;
+}
+
 void GamePad2::Update(float elapsed_time)
 {
 #pragma region hei

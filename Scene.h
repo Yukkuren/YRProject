@@ -122,6 +122,46 @@ public:
 };
 
 
+
+class AI_Controller
+{
+public:
+	const float max_dis = 16.0f;		//近づくかどうかの距離目安
+	const int attack_probability = 4;	//攻撃の確率
+	const int track_probability = 3;	//ホーミングダッシュの確率
+	const int guard_probability = 7;	//ガードの確率
+	const float timer_max = 2.0f;		//タイマーの最大値
+	const float guard_timer_max = 1.0f;	//ガードタイマーの最大値
+
+	float timer = 0.0f;
+
+	enum class AI_State : int
+	{
+		INIT = 0,		//最初の設定
+		RAND_SELECT,	//ランダムで行動を決定する
+		APPROACH,		//近づく
+		LEAVE,			//離れる
+		COMBO,			//Xボタンを連打する
+		TRACK_DASH,		//ホーミングダッシュを行う
+		GUARD,			//ガードしようとする
+		KNOCK,			//のけぞった
+		DEAPTH,			//体力がなくなった
+		DOWN,			//ダウン中
+		END,
+	};
+
+	AI_State state = AI_State::INIT;
+public:
+	void Init()
+	{
+		state = AI_State::INIT;
+		timer = 0.0f;
+	}
+};
+
+
+
+
 class SceneGame : public SceneBase
 {
 private:
@@ -162,7 +202,7 @@ public:
 	YR_Vector3	Start_Scene_eye;		//ゲーム開始時の初期カメラ座標
 	YR_Vector3	Start_Scene_focus;		//ゲーム開始時の初期カメラ方向
 
-	enum MAIN_LOOP
+	enum class MAIN_LOOP :int
 	{
 		INTRO1P = 0,
 		INTRO2P,
@@ -175,12 +215,12 @@ public:
 		GAME_FIN,
 	};
 
-	enum JUDGE_VICTORY
+	enum class JUDGE_VICTORY : int
 	{
 		NO_VICTORY = 0,
 		VICTORY1P,
 		VICTORY2P,
-		DROW,
+		DRAW,
 	};
 
 	MAIN_LOOP		main_loop;	//この変数でゲームメインの遷移を管理する
@@ -251,6 +291,8 @@ public:
 	float			mix_fade = 0.0f;					//フェードインの速度変更用
 	bool			blur_on = false;					//ブルームをかけるフラグ
 
+	AI_Controller	AI2P;								//2PのAI情報
+
 public:
 
 	void				Init();
@@ -290,6 +332,8 @@ public:
 	void RenderTexture();
 
 	void RenderBlur();
+
+	void AIControll(float elapsed_time);
 
 	/*struct CB_Multi_Render_Target
 	{

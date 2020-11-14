@@ -134,6 +134,7 @@ class GamePad2 : public GamepadBase
 {
 public:
 	void Init();
+	bool GetX_INPUT_ON();
 	void Update(float elapsed_time);
 	void InputSave();
 	void InputUpdate(float elapsed_time);
