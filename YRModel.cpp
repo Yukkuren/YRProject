@@ -259,7 +259,19 @@ Model::Model(const char* filename, const std::shared_ptr<Texture> tex_main, cons
 
 	m_data = std::make_unique<ModelData>();
 
-	Load(filename);
+	SerialNameGet(filename);
+
+	if (FileCheck())
+	{
+		//シリアライズされたバイナリを読み込む
+		LoadSerial();
+	}
+	else
+	{
+		//普通にFBXから読み込み、シリアライズする
+		Load(filename);
+		Serialize();
+	}
 
 	// マテリアル
 	m_materials.resize(m_data->materials.size());

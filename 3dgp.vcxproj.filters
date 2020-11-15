@@ -112,6 +112,12 @@
     <FxCompile Include="SkyMapShader_ps.hlsl">
       <Filter>Shader\SkyMapShader</Filter>
     </FxCompile>
+    <FxCompile Include="TitleShader_ps.hlsl">
+      <Filter>Shader\TitleShader</Filter>
+    </FxCompile>
+    <FxCompile Include="TitleShader_vs.hlsl">
+      <Filter>Shader\TitleShader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="1PGamePad.cpp">
@@ -444,6 +450,9 @@
     </None>
     <None Include="SkyMapShader.hlsli">
       <Filter>Shader\SkyMapShader</Filter>
+    </None>
+    <None Include="TitleShader.hlsli">
+      <Filter>Shader\TitleShader</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

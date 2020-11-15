@@ -58,6 +58,8 @@ struct Model_MotionData
 	std::shared_ptr<Model>			air_jump_L = nullptr;
 	std::shared_ptr<Model>			intro_R = nullptr;
 	std::shared_ptr<Model>			intro_L = nullptr;
+	std::shared_ptr<Model>			win_R = nullptr;
+	std::shared_ptr<Model>			win_L = nullptr;
 	std::shared_ptr<Model>			damage_R_g_u = nullptr;
 	std::shared_ptr<Model>			damage_L_g_u = nullptr;
 	std::shared_ptr<Model>			jaku_R = nullptr;
@@ -207,7 +209,7 @@ public:
 	void GuardAnimSet();
 	void WaitAnimSet();
 	void WinAnimSet();
-	bool WinPerformance();
+	bool WinPerformance(float elapsed_time);
 
 
 	void AttackInput();	//攻撃するボタンが押されたか確認し、押されていればその行動をさせる
@@ -316,10 +318,17 @@ public:
 	//勝利演出用列挙
 	enum class WIN_PERFORMANCE_KNIGHT : int
 	{
-		CAMERA_ZOOM = 0,
+		SET = 0,
+		ZOOM,
+		PULL,
+		STOP,
 		FINISH,
 	};
-	WIN_PERFORMANCE_KNIGHT win_state;
+	WIN_PERFORMANCE_KNIGHT	win_state;
+
+	float					win_timer;
+
+	void WinDEBUG();
 
 	//特殊技カメラ処理用列挙
 	enum class CAMERA_STATE_KNIGHT : int
@@ -354,6 +363,8 @@ public:
 		Damage,
 		YARUKI,
 		KOUHUN,
+		TOZI,
+		YEAH,
 	};
 
 	//目の識別用列挙

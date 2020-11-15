@@ -53,6 +53,14 @@ void SceneLoad::LoadData()
 			100.0f);
 	}
 
+	if (load_bg == nullptr)
+	{
+		load_bg = std::make_unique<Sprite>(
+			L"./Data/Image/BG/Load_BG.png",
+			3840.0f,
+			2160.0f);
+	}
+
 	load_state = 2;
 }
 
@@ -80,7 +88,7 @@ void SceneLoad::Update(float elapsedTime)
 {
 	//タイマーは常に更新する
 	timer += elapsedTime;
-
+	GetSound().FadeIn(elapsedTime);
 	//「ロード画面で表示する画像等」がロードできた
 	if (load_fin)
 	{
@@ -170,7 +178,13 @@ void SceneLoad::Update(float elapsedTime)
 				t->join();
 			}
 			delete t;
-			Game_load_fin = true;
+			load_state = 9;
+			break;
+		case 9:
+			if (timer > 10.0f)
+			{
+				Game_load_fin = true;
+			}
 			break;
 		default:
 			break;
@@ -183,12 +197,20 @@ void SceneLoad::Draw(float elapsedTime)
 	//「ロード画面で表示する画像等」がロードできた
 	if (load_fin)
 	{
+		load_bg->DrawRotaGraph(
+			spriteShader.get(),
+			static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
+			static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f,
+			0.0f,
+			0.5f
+		);
+
 		load_img->DrawRotaDivGraph(
 			spriteShader.get(),
-			FRAMEWORK.SCREEN_WIDTH / 2.0f,
-			FRAMEWORK.SCREEN_HEIGHT / 2.0f,
+			FRAMEWORK.SCREEN_WIDTH * 0.92f,
+			FRAMEWORK.SCREEN_HEIGHT * 0.85f,
 			0.0f,
-			5.0f,
+			2.0f,
 			0.05f,
 			elapsedTime);
 	}

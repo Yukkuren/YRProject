@@ -465,7 +465,8 @@ public:
 
 	virtual bool Intro(float elapsed_time) = 0;
 	virtual void IntroDEBUG() = 0;
-	virtual bool WinPerformance() = 0;
+	virtual bool WinPerformance(float elapsed_time) = 0;
+	virtual void WinDEBUG() = 0;
 
 	virtual void ReadySet() = 0;
 

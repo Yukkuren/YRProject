@@ -17,6 +17,13 @@
 //	・描画関数で対応したDraw関数を呼ぶ
 //-------------------------------------------------------------
 
+//タイトルのシェーダーに使用する定数構造体
+struct Title_CBuffer
+{
+	DirectX::XMFLOAT3		Resolution;
+	float					iTime;
+};
+
 struct Sprite_div
 {
 	float nx;						//分割した画像の始点X
@@ -81,6 +88,21 @@ public:
 	void render(
 		YRShader*	shader,
 		Texture*	 tex,
+		float	dx, float	dy,
+		float	dw, float	dh,
+		float	sx, float	sy,
+		float	sw, float	sh,
+		float		angle,
+		float		alpha
+	);
+
+	void render(
+		YRShader* shader,
+		Texture* tex0,
+		Texture* tex1,
+		float elapsed_time,
+		DirectX::XMFLOAT3 Resolution,
+		Microsoft::WRL::ComPtr<ID3D11Buffer> constantBuffer,
 		float	dx, float	dy,
 		float	dw, float	dh,
 		float	sx, float	sy,

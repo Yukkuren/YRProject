@@ -51,6 +51,9 @@ void YRSound::Init()
 	pBGM.resize(scastI(BGMKind::END));
 	pSE.resize(scastI(SEKind::END));
 
+	bgm_all_volume = 1.0f;
+	se_all_volume = 1.0f;
+
 	//BGMì«Ç›çûÇ›
 	BGMLoad("./Data/Sound/BGM/Title.wav", BGMKind::TITLE, XAUDIO2_LOOP_INFINITE, 0.5f);
 	BGMLoad("./Data/Sound/BGM/Chara_Select.wav", BGMKind::CHARA_SELECT, XAUDIO2_LOOP_INFINITE, 0.5f);

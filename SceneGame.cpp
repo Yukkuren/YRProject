@@ -89,6 +89,8 @@ void SceneGame::Init()
 		p2combo[i] = 0;
 	}
 
+
+	//深度テスト切り替え用のステンシルステートを作成
 	D3D11_DEPTH_STENCIL_DESC desc2;
 	::memset(&desc2, 0, sizeof(desc2));
 	desc2.DepthEnable = FALSE;
@@ -118,7 +120,7 @@ void SceneGame::Init()
 	blur_on = true;
 
 	//2Pの動き
-	pl2_con = Player2PControl::OPERATION;
+	//pl2_con = Player2PControl::OPERATION;
 
 	GetSound().BGMPlay(BGMKind::GAME);
 
@@ -285,6 +287,10 @@ void SceneGame::LoadData()
 	{
 		effect_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/effect.png", 192.0f, 128.0f, 3, 2, 64.0f, 64.0f);
 	}
+	if (pause_img == nullptr)
+	{
+		pause_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/pause.png", 384.0f, 128.0f);
+	}
 	if (gaussShader == nullptr)
 	{
 		gaussShader = std::make_unique<YRShader>(ShaderType::GAUSS);
@@ -363,6 +369,7 @@ void SceneGame::UnInit()
 	font_img.reset();
 	call_img.reset();
 	effect_img.reset();
+	pause_img.reset();
 	test = nullptr;
 	geo = nullptr;
 	HP_img = nullptr;
@@ -376,6 +383,7 @@ void SceneGame::UnInit()
 	font_img = nullptr;
 	call_img = nullptr;
 	effect_img = nullptr;
+	pause_img = nullptr;
 
 	//シェーダー解放
 	spriteShader.reset();
@@ -618,14 +626,14 @@ void SceneGame::Update(float elapsed_time)
 					//パッド更新
 					player1p->pad->Update(game_speed);
 					Control2PState(game_speed);
-
-					if (pKeyState.oflg == 1)
+					timer += elapsed_time;
+					/*if (pKeyState.oflg == 1)
 					{
 						player1p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
 						player2p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
 						player1p->pad->x_input[scastI(PAD::X)] = 1;
 						player2p->pad->x_input[scastI(PAD::X)] = 1;
-					}
+					}*/
 				}
 				if (pause)
 				{
@@ -635,7 +643,6 @@ void SceneGame::Update(float elapsed_time)
 				else
 				{
 					//対戦中
-
 
 					//カメラリクエスト更新
 					CameraRequest(game_speed);
@@ -878,11 +885,24 @@ void SceneGame::Update(float elapsed_time)
 			break;
 		case MAIN_LOOP::WIN1P:
 			
+			YRCamera.camera_state = Camera::CAMERA_STATE::PLAYER1P;
 			//パッドの更新
 			player1p->pad->Update(game_speed);
 			player2p->pad->Update(game_speed);
 
-			if (player1p->WinPerformance())
+			if (player1p->pad->x_input[scastI(PAD::START)] == 1 || player2p->pad->x_input[scastI(PAD::START)] == 1)
+			{
+				//ポーズボタンが押された
+				pause = !pause;
+			}
+
+			//1Pイントロ更新
+			if (pause)
+			{
+				game_speed = 0.0f;
+			}
+
+			if (player1p->WinPerformance(game_speed))
 			{
 				fado_start = true;
 			}
@@ -896,11 +916,12 @@ void SceneGame::Update(float elapsed_time)
 			break;
 		case MAIN_LOOP::WIN2P:
 
+			YRCamera.camera_state = Camera::CAMERA_STATE::PLAYER2P;
 			//パッドの更新
 			player1p->pad->Update(game_speed);
 			player2p->pad->Update(game_speed);
 
-			if (player2p->WinPerformance())
+			if (player2p->WinPerformance(game_speed))
 			{
 				fado_start = true;
 			}
@@ -1268,6 +1289,14 @@ void SceneGame::Draw(float elapsed_time)
 			PL.power2P
 		);
 
+		if (pause)
+		{
+			pause_img->DrawGraph(
+				spriteShader.get(),
+				static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
+				static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f + (sinf(timer)*100.0f)
+			);
+		}
 
 		//カウント表示
 		if (!start)
@@ -1335,6 +1364,7 @@ void SceneGame::Draw(float elapsed_time)
 		float x_pos = static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.7f;
 		float y_pos = static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f;
 		win1P_img->DrawGraph(spriteShader.get(), x_pos, y_pos);
+		player1p->WinDEBUG();
 	}
 		break;
 	case MAIN_LOOP::WIN2P:

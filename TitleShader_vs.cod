@@ -7,7 +7,7 @@
 //
 // Name                 Index   Mask Register SysValue  Format   Used
 // -------------------- ----- ------ -------- -------- ------- ------
-// POSITION                 0   xyz         0     NONE   float   xyz 
+// POSITION                 0   xyz         0     NONE   float       
 // NORMAL                   0   xyz         1     NONE   float       
 // TEXCOORD                 0   xy          2     NONE   float   xy  
 // COLOR                    0   xyzw        3     NONE   float       
@@ -17,17 +17,12 @@
 //
 // Name                 Index   Mask Register SysValue  Format   Used
 // -------------------- ----- ------ -------- -------- ------- ------
-// SV_POSITION              0   xyzw        0      POS   float   xyzw
-// TEXCOORD                 0   xy          1     NONE   float   xy  
+// TEXCOORD                 0   xy          0     NONE   float   xy  
 //
 vs_5_0
 dcl_globalFlags refactoringAllowed
-dcl_input v0.xyz
 dcl_input v2.xy
-dcl_output_siv o0.xyzw, position
-dcl_output o1.xy
-mov o0.xyz, v0.xyzx
-mov o0.w, l(1.000000)
-mov o1.xy, v2.xyxx
+dcl_output o0.xy
+mov o0.xy, v2.xyxx
 ret 
-// Approximately 4 instruction slots used
+// Approximately 2 instruction slots used

@@ -243,6 +243,7 @@ public:
 	std::unique_ptr<Sprite> font_img = nullptr;
 	std::unique_ptr<Sprite> call_img = nullptr;
 	std::unique_ptr<Sprite> effect_img = nullptr;
+	std::unique_ptr<Sprite> pause_img = nullptr;
 	std::array<int, 3>		p1combo;
 	std::array<int, 3>		p2combo;
 
@@ -345,7 +346,6 @@ public:
 };
 
 
-
 class SceneTitle : public SceneBase
 {
 	
@@ -360,6 +360,8 @@ public:
 
 	//シェーダー
 	std::unique_ptr<YRShader> spriteShader = nullptr;
+	std::unique_ptr<YRShader> titleShader = nullptr;
+	std::unique_ptr<YRShader> spriteEx = nullptr;
 
 	//画像描画関係
 	YR_Vector3			p1;
@@ -380,6 +382,25 @@ public:
 	std::unique_ptr<Sprite>	knight_icon = nullptr;
 	std::unique_ptr<Sprite>	ken_icon = nullptr;
 	std::unique_ptr<Sprite>	select_img = nullptr;
+	std::unique_ptr<Sprite>	title_img = nullptr;
+	std::unique_ptr<Sprite> choice_img = nullptr;
+
+	//画面描画用テクスチャ
+	std::unique_ptr<Texture> color_texture = nullptr;
+	//std::unique_ptr<Texture> normal_texture = nullptr;
+	//std::unique_ptr<Texture> position_texture = nullptr;
+	std::unique_ptr<Texture> luminance_texture = nullptr;
+
+	//Gbuffer用スプライト
+	std::unique_ptr<Sprite>	sprite = nullptr;
+
+	//サンプラー
+	std::shared_ptr<Sampler> sampler_clamp = nullptr;
+
+	//定数バッファ
+	Microsoft::WRL::ComPtr<ID3D11Buffer>	constantBuffer = nullptr;
+
+	DirectX::XMFLOAT3 Resolusion;
 
 	void LoadData();
 
@@ -390,6 +411,29 @@ public:
 
 	bool FedoOut(float elapsed_time);
 	YR_Vector3			PosSet(int select);
+
+
+	void SetRenderTexture();
+
+	void NullSetRenderTexture();
+
+	void RenderTexture(float elapsed_time);
+
+	enum class VS_MODE : int
+	{
+		PLAYER = 0,
+		CPU,
+	};
+
+	VS_MODE vs_mode = VS_MODE::CPU;
+
+	enum class STATE : int
+	{
+		HOME,
+		SELECT,
+		END,
+	};
+	STATE state = STATE::HOME;
 };
 
 class SceneClear : public SceneBase
@@ -425,6 +469,7 @@ public:
 
 	//ロード時の画像
 	std::unique_ptr<Sprite>	load_img = nullptr;
+	std::unique_ptr<Sprite>	load_bg = nullptr;
 
 	//シェーダー
 	std::unique_ptr<YRShader> spriteShader = nullptr;

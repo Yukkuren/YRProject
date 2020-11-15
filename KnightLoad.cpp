@@ -199,6 +199,16 @@ void Knight::LoadData(int color_number)
 		model_motion.intro_L = std::make_shared<Model>("./Data/FBX/Knight/AnimationL/knight_Intro_L.fbx");
 	}
 
+	//勝利モーション
+	if (model_motion.win_R == nullptr)
+	{
+		model_motion.win_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_win_R.fbx");
+	}
+	if (model_motion.win_L == nullptr)
+	{
+		model_motion.win_L = std::make_shared<Model>("./Data/FBX/Knight/AnimationL/knight_win_L.fbx");
+	}
+
 	//ダメージモーション
 	if (model_motion.damage_R_g_u == nullptr)
 	{

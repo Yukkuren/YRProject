@@ -56,7 +56,7 @@ void Knight::Init(YR_Vector3 InitPos)
 	speed_Y.Set(0.0f);
 	combo_count = 0;
 	intro_state = INTRO_KNIGHT::SET;
-	win_state = WIN_PERFORMANCE_KNIGHT::CAMERA_ZOOM;
+	win_state = WIN_PERFORMANCE_KNIGHT::SET;
 
 	fream = 0.0f;
 
@@ -65,7 +65,7 @@ void Knight::Init(YR_Vector3 InitPos)
 
 	stop_state = 0;
 	air_dash_state = AirDashState::NONE;
-	power = 5;
+	power = 1;
 
 	light_direction = DirectX::XMFLOAT4(-1.0f, -0.1, 1.0f, 0.0f);
 #pragma region HITBOXINIT
@@ -96,6 +96,7 @@ void Knight::Init(YR_Vector3 InitPos)
 
 	camera_state_knight = CAMERA_STATE_KNIGHT::FIRST;
 	intro_timer = 0.0f;
+	win_timer = 0.0f;
 
 	eye_plus = YR_Vector3(0.0f, 0.0f, -10.0f);
 	focus_plus = YR_Vector3(0.0f, 0.0f, 0.0f);
@@ -157,6 +158,8 @@ void Knight::Uninit()
 	model_motion.air_jump_R = nullptr;
 	model_motion.intro_R.reset();
 	model_motion.intro_R = nullptr;
+	model_motion.win_R.reset();
+	model_motion.win_R = nullptr;
 
 	model_motion.wait_L.reset();
 	model_motion.wait_L = nullptr;
@@ -190,6 +193,8 @@ void Knight::Uninit()
 	model_motion.air_jump_L = nullptr;
 	model_motion.intro_L.reset();
 	model_motion.intro_L = nullptr;
+	model_motion.win_L.reset();
+	model_motion.win_L = nullptr;
 
 
 	model_motion.jaku_R.reset();
@@ -3736,41 +3741,91 @@ void Knight::StopEnd()
 void Knight::WinAnimSet()
 {
 	//勝利演出用のセット
-	pos = YR_Vector3(1.0f, 0.0f, 0.0f);
-	YRCamera.SetFocus(pos.GetDXFLOAT3());
-	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 0.0f, -25.0f));
+	pos = YR_Vector3( 0.0f,0.0f,0.0f );
+	angle = YR_Vector3( 0.0f,0.0f,0.0f );
+
+	YR_Vector3 eye = YR_Vector3(pos.x, pos.y + 5.0f, pos.z - 80.0f);
+	YR_Vector3 focus = YR_Vector3(pos.x, pos.y + 3.5f, pos.z);
+	YRCamera.SetEye(eye.GetDXFLOAT3());
+	YRCamera.SetFocus(focus.GetDXFLOAT3());
+	if (now_player == 1)
+	{
+		anim->NodeChange(model_motion.win_R);
+	}
+	else
+	{
+		anim->NodeChange(model_motion.win_L);
+	}
+	ChangeFace(FaceAnim::TOZI);
+	FaceAnimation(0.0f);
+	win_state = WIN_PERFORMANCE_KNIGHT::SET;
+	anim_ccodinate = 1.0f;
 }
 
-bool Knight::WinPerformance()
+bool Knight::WinPerformance(float elapsed_time)
 {
+	YR_Vector3 focus;
+	YR_Vector3 eye;
+	/*focus = YR_Vector3(pos.x + focus_plus.x, pos.y + focus_plus.y, pos.z + focus_plus.z);
+	eye = YR_Vector3(pos.x + eye_plus.x, pos.y + eye_plus.y, pos.z + eye_plus.z);
+	YRCamera.SetEye(eye.GetDXFLOAT3());
+	YRCamera.SetFocus(focus.GetDXFLOAT3());
+	win_timer += elapsed_time;*/
+
+	float apply = 1.0f;
+	if (now_player == 1)
+	{
+		apply = 1.0f;
+	}
+	else
+	{
+		apply = -1.0f;
+	}
 	//勝利演出の行動をする
 	//カメラもこちらで動かす
 	switch (win_state)
 	{
-	case Knight::WIN_PERFORMANCE_KNIGHT::CAMERA_ZOOM:
-	{
-		YR_Vector3 vec, eye, focus;
-		focus = YRCamera.GetFocus();
-		eye = YRCamera.GetEye();
-		vec = focus - eye;
-		float len = vec.Length();
-		if (len < 0.5f)
+	case Knight::WIN_PERFORMANCE_KNIGHT::SET:
+		//原点を設定(初期化)
+		eye = YR_Vector3(pos.x, pos.y + 5.0f, pos.z - 80.0f);
+		focus = YR_Vector3(pos.x, pos.y + 3.5f, pos.z);
+		YRCamera.SetEye(eye.GetDXFLOAT3());
+		YRCamera.SetFocus(focus.GetDXFLOAT3());
+		win_state = WIN_PERFORMANCE_KNIGHT::ZOOM;
+		break;
+	case Knight::WIN_PERFORMANCE_KNIGHT::ZOOM:
+		eye = YR_Vector3(pos.x, pos.y + 5.0f, pos.z - 50.0f);
+		focus = YR_Vector3(pos.x, pos.y + 3.5f, pos.z);
+		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 0.1f * elapsed_time);
+		if (win_timer > 1.5f)
+		{
+			ChangeFace(FaceAnim::YEAH);
+			FaceAnimation(0.0f);
+			win_state = WIN_PERFORMANCE_KNIGHT::PULL;
+		}
+		break;
+	case Knight::WIN_PERFORMANCE_KNIGHT::PULL:
+		eye = YR_Vector3(pos.x+(apply*-18.0f), pos.y + 5.0f, pos.z - 43.0f);
+		focus = YR_Vector3(pos.x, pos.y + 3.5f, pos.z);
+		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 8.0f * elapsed_time);
+		if (win_timer > 1.8f)
+		{
+			win_state = WIN_PERFORMANCE_KNIGHT::STOP;
+		}
+		break;
+	case Knight::WIN_PERFORMANCE_KNIGHT::STOP:
+		if (win_timer > 3.0f)
 		{
 			win_state = WIN_PERFORMANCE_KNIGHT::FINISH;
-			break;
 		}
-		vec.Normalize();
-		eye += vec * 0.1f;
-		YRCamera.SetEye(eye.GetDXFLOAT3());
-	}
-	break;
+		break;
 	case Knight::WIN_PERFORMANCE_KNIGHT::FINISH:
 		return true;
 		break;
 	default:
 		break;
 	}
-
+	win_timer += elapsed_time;
 
 	return false;
 }
@@ -3957,6 +4012,38 @@ void Knight::IntroDEBUG()
 
 }
 
+void Knight::WinDEBUG()
+{
+#if USE_IMGUI
+	ImGui::Begin(u8"勝利カメラ");
+	int state_in = scastI(win_state);
+	ImGui::InputInt(u8"ステート", &state_in, 1, 10);
+	if (ImGui::TreeNode("Input"))
+	{
+		ImGui::InputFloat("eye.X", &eye_plus.x, 0.1f, 1.0f);
+		ImGui::InputFloat("eye.Y", &eye_plus.y, 0.1f, 1.0f);
+		ImGui::InputFloat("eye.Z", &eye_plus.z, 0.1f, 1.0f);
+		ImGui::InputFloat("focus.X", &focus_plus.x, 0.1f, 1.0f);
+		ImGui::InputFloat("focus.Y", &focus_plus.y, 0.1f, 1.0f);
+		ImGui::InputFloat("focus.Z", &focus_plus.z, 0.1f, 1.0f);
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Slider"))
+	{
+		ImGui::SliderFloat("eye_X", &eye_plus.x, -350.1f, 350.1f);
+		ImGui::SliderFloat("eye_Y", &eye_plus.y, -350.1f, 350.1);
+		ImGui::SliderFloat("eye_Z", &eye_plus.z, -350.1f, 350.1);
+		ImGui::SliderFloat("focus_X", &focus_plus.x, -350.1f, 350.1);
+		ImGui::SliderFloat("focus_Y", &focus_plus.y, -350.1f, 350.1);
+		ImGui::SliderFloat("focus_Z", &focus_plus.z, -350.1f, 350.1);
+		ImGui::TreePop();
+	}
+	ImGui::Text("intro_timer = %.3f", win_timer);
+	ImGui::End();
+#endif // USE_IMGUI
+
+}
+
 //攻撃当たり判定が全て終了しているか確認する
 bool Knight::AttackEndCheck()
 {
@@ -4096,6 +4183,14 @@ void Knight::FaceAnimation(float elapsed_time)
 		break;
 	case Knight::FaceAnim::KOUHUN:
 		eye_offset = face_eye_offset[scastI(FaceEye_Num::KIRAME)];
+		face_mouth_num = FaceMouth_Num::OOGUTI;
+		break;
+	case Knight::FaceAnim::TOZI:
+		eye_offset = face_eye_offset[scastI(FaceEye_Num::CLOSE)];
+		face_mouth_num = FaceMouth_Num::TOZI;
+		break;
+	case Knight::FaceAnim::YEAH:
+		eye_offset = face_eye_offset[scastI(FaceEye_Num::TURI)];
 		face_mouth_num = FaceMouth_Num::OOGUTI;
 		break;
 	default:

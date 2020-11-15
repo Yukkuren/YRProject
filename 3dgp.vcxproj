@@ -269,6 +269,7 @@
     <None Include="Skinned_mesh.hlsli" />
     <None Include="SkyMapShader.hlsli" />
     <None Include="sprite.hlsli" />
+    <None Include="TitleShader.hlsli" />
     <None Include="ToonShader.hlsli" />
     <None Include="SpriteEx.hlsli" />
     <None Include="toGbuffer.hlsli" />
@@ -469,6 +470,8 @@
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyCode</AssemblerOutput>
       <AssemblerOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename).cod</AssemblerOutputFile>
       <AssemblerOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).cod</AssemblerOutputFile>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="GaussShader_vs.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
@@ -481,6 +484,8 @@
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyCode</AssemblerOutput>
       <AssemblerOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).cod</AssemblerOutputFile>
       <AssemblerOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename).cod</AssemblerOutputFile>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="geometric_primitive_ps.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
@@ -709,6 +714,34 @@
       <AssemblerOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).cod</AssemblerOutputFile>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="TitleShader_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)Data\Shader\%(Filename).cso</ObjectFileOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyCode</AssemblerOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)Data\Shader\%(Filename).cso</ObjectFileOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyCode</AssemblerOutput>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <AssemblerOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename).cod</AssemblerOutputFile>
+      <AssemblerOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).cod</AssemblerOutputFile>
+    </FxCompile>
+    <FxCompile Include="TitleShader_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)Data\Shader\%(Filename).cso</ObjectFileOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyCode</AssemblerOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)Data\Shader\%(Filename).cso</ObjectFileOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyCode</AssemblerOutput>
+      <AssemblerOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename).cod</AssemblerOutputFile>
+      <AssemblerOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).cod</AssemblerOutputFile>
     </FxCompile>
     <FxCompile Include="toGbuffer_ps.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
