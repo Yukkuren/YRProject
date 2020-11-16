@@ -2,6 +2,7 @@
 #define _ATTACKBOX_H_
 #include "YR_VectorMaster.h"
 #include "YRShader.h"
+#include "Effect.h"
 
 //--------------------------------------------------
 // **攻撃パラメーター列挙**
@@ -88,6 +89,9 @@ public:
 	YR_Vector3			pos;		//攻撃の実際の中心
 	YR_Vector3			speed;		//攻撃の移動速度
 	YR_Vector3			plus_speed;	//飛び道具用の常に付与するスピード
+
+	Effekseer::Handle	handle;		//エフェクトのハンドル
+	EffectKind			effect_kind;//エフェクトの種類
 
 	void Init(int attack_name, AttackParameter& param, float rightOrleft, YR_Vector3 pl_pos);
 	void Init(int attack_name, AttackParameter& param, float rightOrleft, YR_Vector3 pl_pos, YR_Vector3 plus_speed);

@@ -4,6 +4,7 @@
 #include "CoList.h"
 #include <string>
 #include <array>
+#include "framework.h"
 
 #include"./imgui/imgui.h"
 #include"./imgui/imgui_impl_win32.h"
@@ -358,7 +359,8 @@ void YRSound::SEPause(const SEKind& kind)
 //デバッグ描画
 void YRSound::SoundDebugDrow()
 {
-#ifdef  _DEBUG
+
+#if  USE_IMGUI
 	ImGui::Begin("SoundVolume");
 
 	ImGui::SliderFloat("BGM_All_volume", &bgm_all_volume, 0.0f, 1.0f);

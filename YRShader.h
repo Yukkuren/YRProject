@@ -110,7 +110,10 @@ private:
 		sky_element_desc.push_back(tex);
 
 		//title
+		title_element_desc.push_back(pos);
+		title_element_desc.push_back(normal);
 		title_element_desc.push_back(tex);
+		title_element_desc.push_back(color);
 	};
 public:
 

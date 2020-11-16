@@ -251,7 +251,7 @@ public:
 		for (int quantity = 0; quantity < attack_single[now_attack_num].quantity; quantity++)
 		{
 			atk->push_back(AttackBox());
-			atk->back().Init(scastI(attack_name),attack_single[now_attack_num].parameter[quantity], rightOrleft, pl_pos);
+			atk->back().Init(scastI(attack_name), attack_single[now_attack_num].parameter[quantity], rightOrleft, pl_pos);
 		}
 		now_attack_num++;
 	}

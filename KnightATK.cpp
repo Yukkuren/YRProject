@@ -3,6 +3,7 @@
 #include "Key.h"
 #include "YRGamePad.h"
 #include "camera.h"
+#include "Effect.h"
 
 //------------------------------------------------------
 //				UŒ‚ŠÖ”
@@ -174,6 +175,8 @@ void Knight::AttackProjectileDefault(float elapsed_time)
 		}
 
 		attack_list[now_at_list].SetAttack(&projectile_atk, rightOrleft, pos, attack_list[now_at_list].speed);
+
+		YRGetEffect().PlayEffect(EffectKind::DRILL, projectile_atk.back().handle, projectile_atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -90.0f*rightOrleft);
 
 		//”­¶ƒtƒŒ[ƒ€‚ð‰Šú‰»
 		fream = non_target;
@@ -1027,6 +1030,9 @@ void Knight::Jaku_Lhurf(float elapsed_time)
 			//•t—^‚µ‚È‚¢ê‡
 			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos);
 		}
+
+		atk.back().effect_kind = EffectKind::TORNADE;
+		YRGetEffect().PlayEffect(EffectKind::TORNADE, atk.back().handle, atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
 		fream = non_target;
 
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
@@ -1152,6 +1158,9 @@ void Knight::A_Jaku_Lhurf(float elapsed_time)
 			//•t—^‚µ‚È‚¢ê‡
 			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos);
 		}
+		atk.back().effect_kind = EffectKind::TORNADE;
+		YRGetEffect().PlayEffect(EffectKind::TORNADE, atk.back().handle, atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+
 		fream = non_target;
 
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));

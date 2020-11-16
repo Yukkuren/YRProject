@@ -9,6 +9,7 @@ PSInput main(VSInput input)
 
 	// o—Í’lİ’è
 	output.fragCoord = input.Tex;
+	output.position = float4(input.Position, 1.0);
 
 	return output;
 }

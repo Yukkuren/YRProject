@@ -11,7 +11,11 @@
 
 enum class EffectKind : int
 {
-	GUARD = 0,
+	NONE = 0,
+	GUARD,
+	TORNADE,
+	SWORD,
+	DRILL,
 	END,
 };
 
@@ -21,7 +25,7 @@ class YR_Effect
 private:
 	const int square_max_count = 8000;				//エフェクト生成時に出すメッシュの最大数
 
-	std::vector<Effekseer::Handle> handles;			//エフェクト再生用ハンドル
+	std::vector<Effekseer::Handle>	handles;		//エフェクト再生用ハンドル
 	std::vector<Effekseer::Effect*> effects;		//エフェクト本体
 
 	Effekseer::Manager *manager;					//エフェクトマネージャー
@@ -47,8 +51,27 @@ public:
 		const DirectX::XMFLOAT3& axis,
 		const float& angle);
 
+	void PlayEffect(
+		EffectKind kind,
+		Effekseer::Handle& handle,
+		const DirectX::XMFLOAT3& pos,
+		const DirectX::XMFLOAT3& scale,
+		const DirectX::XMFLOAT3& axis,
+		const float& angle);
+
+	void SetLocation(
+		EffectKind kind,
+		const DirectX::XMFLOAT3& pos
+	);
+	void SetLocation(
+		EffectKind kind,
+		Effekseer::Handle& handle,
+		const DirectX::XMFLOAT3& pos
+	);
+
 	//アニメーション再生の停止
 	void StopEffect(EffectKind kind);
+	void StopEffect(EffectKind kind,Effekseer::Handle& handle);
 
 	//エフェクトの描画
 	void Draw();

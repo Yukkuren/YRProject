@@ -24,6 +24,8 @@ void AttackBox::Init(int attack_name, AttackParameter& param, float rightOrleft,
 		hit_ok = true;
 	}
 
+	effect_kind = EffectKind::NONE;
+
 	pos.x = pl_pos.x + ((parameter.distance.x) * rightOrleft);	//X座標更新
 	pos.y = pl_pos.y + ((parameter.distance.y));	//Y座標更新
 }
@@ -55,6 +57,8 @@ void AttackBox::Init(int attack_name, AttackParameter& param, float rightOrleft,
 		speed = plus_speed;
 	}
 
+	effect_kind = EffectKind::NONE;
+
 	pos.x = pl_pos.x + (parameter.distance.x * rightOrleft);	//X座標更新
 	pos.y = pl_pos.y + (parameter.distance.y);	//Y座標更新
 }
@@ -66,11 +70,14 @@ void AttackBox::Update(YR_Vector3 pl_pos, float elapsed_time)
 	{
 		pos.x += ((speed.x * rightOrleft) * elapsed_time);	//X座標更新
 		pos.y += (speed.y * elapsed_time);	//Y座標更新
+		YRGetEffect().SetLocation(EffectKind::DRILL, handle, DirectX::XMFLOAT3(pos.x + (rightOrleft * parameter.size.x), pos.y, pos.z));
 	}
 	else
 	{
 		pos.x = pl_pos.x + ((parameter.distance.x + speed.x) * rightOrleft);	//X座標更新
 		pos.y = pl_pos.y + ((parameter.distance.y + speed.y));	//Y座標更新
+
+		YRGetEffect().SetLocation(effect_kind,handle, DirectX::XMFLOAT3(pos.x + (rightOrleft * parameter.size.x), pos.y-5.0f, pos.z));
 
 		if (plus)
 		{
@@ -97,6 +104,14 @@ void AttackBox::Update(YR_Vector3 pl_pos, float elapsed_time)
 		hit_ok = false;
 		parameter.HB_timer = 0.0f;
 		parameter.hitback = YR_Vector3(0.0f, 0.0f);
+		if (parameter.type == AttackKind::PROJECTILE)
+		{
+			YRGetEffect().StopEffect(EffectKind::DRILL,handle);
+		}
+		else
+		{
+			YRGetEffect().StopEffect(effect_kind, handle);
+		}
 	}
 }
 
@@ -104,321 +119,6 @@ void AttackBox::SpeedPlus(YR_Vector3 plus_speed, float elapsed_time)
 {
 	this->plus_speed += plus_speed * elapsed_time;
 }
-
-//void AttackBox::Update(
-//	YR_Vector3 cent, 
-//	YR_Vector3 range, 
-//	float time, float frm, float late, float dage, float hitbackT, YR_Vector3 divhitback, int kind, float knock, float elapsed_time)
-//{
-//	if (!start)
-//	{
-//		timer = 0;
-//		timer = time;
-//		fream = frm;
-//		later = late;
-//		attack = false;
-//		fin = false;
-//		start = true;
-//		damege = dage;
-//		HB_timer = hitbackT;
-//		hitback = divhitback;
-//		type = kind;
-//		knockback = knock;
-//		knock_start = false;
-//	}
-//	center = cent;
-//	size = range;
-//
-//	fream-=elapsed_time;
-//
-//	if (fream < 0.0f)
-//	{
-//		attack = true;
-//		if (damege != 0.0f)
-//		{
-//			hit_ok = true;
-//		}
-//	}
-//
-//	if (attack)
-//	{
-//		if (timer > 0.0f)
-//		{
-//
-//		}
-//		timer -= elapsed_time;
-//		if (!hit_ok)
-//		{
-//			damege = 0.0f;
-//			HB_timer = 0.0f;
-//			hitback = YR_Vector3(0.0f, 0.0f);
-//		}
-//	}
-//
-//
-//
-//	if (timer < 0.0f)
-//	{
-//		fin = true;
-//		attack = false;
-//		timer = 0.0f;
-//		damege = 0.0f;
-//		hit_ok = false;
-//		HB_timer = 0.0f;
-//		hitback = YR_Vector3(0.0f, 0.0f);
-//		knockback = 0.0f;
-//	}
-//}
-//
-//void AttackBox::UpdateMissile(
-//	YR_Vector3 cent, YR_Vector3 range, float time, float dage, float hitbackT, YR_Vector3 divhitback, int kind, float elapsed_time)
-//{
-//	if (!start)
-//	{
-//		timer = 0.0f;
-//		timer = time;
-//		attack = false;
-//		fin = false;
-//		start = true;
-//		damege = dage;
-//		HB_timer = hitbackT;
-//		hitback = divhitback;
-//		type = kind;
-//		knock_start = false;
-//	}
-//	center = cent;
-//	size = range;
-//
-//
-//	attack = true;
-//	if (damege != 0.0f)
-//	{
-//		hit_ok = true;
-//	}
-//
-//	if (attack)
-//	{
-//		if (timer > 0.0f)
-//		{
-//
-//		}
-//		timer -= elapsed_time;
-//		if (!hit_ok)
-//		{
-//			damege = 0.0f;
-//			HB_timer = 0.0f;
-//			hitback = YR_Vector3(0.0f, 0.0f);
-//		}
-//	}
-//
-//
-//
-//	if (timer < 0.0f)
-//	{
-//		fin = true;
-//		attack = false;
-//		timer = 0.0f;
-//		damege = 0.0f;
-//		hit_ok = false;
-//		HB_timer = 0.0f;
-//		hitback = YR_Vector3(0.0f, 0.0f);
-//		knockback = 0.0f;
-//	}
-//}
-//
-//
-//void AttackBox::UpdateMissile(
-//	YR_Vector3 cent, YR_Vector3 range, float time, float dage, float hitbackT, YR_Vector3 divhitback, int kind, int gauge, float elapsed_time)
-//{
-//	if (!start)
-//	{
-//		timer = 0.0f;
-//		timer = time;
-//		attack = false;
-//		fin = false;
-//		start = true;
-//		damege = dage;
-//		HB_timer = hitbackT;
-//		hitback = divhitback;
-//		type = kind;
-//		knock_start = false;
-//		gaugeout = true;
-//	}
-//	center = cent;
-//	size = range;
-//
-//
-//	attack = true;
-//	if (damege != 0.0f)
-//	{
-//		hit_ok = true;
-//	}
-//
-//	if (attack)
-//	{
-//		if (timer > 0.0f)
-//		{
-//
-//		}
-//		timer -= elapsed_time;
-//		if (!hit_ok)
-//		{
-//			damege = 0.0f;
-//			HB_timer = 0.0f;
-//			hitback = YR_Vector3(0.0f, 0.0f);
-//		}
-//	}
-//
-//
-//
-//	if (timer < 0.0f)
-//	{
-//		fin = true;
-//		attack = false;
-//		timer = 0.0f;
-//		damege = 0.0f;
-//		hit_ok = false;
-//		HB_timer = 0.0f;
-//		hitback = YR_Vector3(0.0f, 0.0f);
-//		knockback = 0.0f;
-//		gaugeout = false;
-//	}
-//}
-//
-//bool AttackBox::Update(
-//	YR_Vector3 cent,
-//	YR_Vector3 range,
-//	float time, float frm, float late, float dage, float hitbackT, YR_Vector3 divhitback, int kind, float knock, bool fin, float elapsed_time)
-//{
-//	if (!start)
-//	{
-//		timer = 0.0f;
-//		timer = time;
-//		fream = frm;
-//		later = late;
-//		attack = false;
-//		this->fin = false;
-//		start = true;
-//		damege = dage;
-//		HB_timer = hitbackT;
-//		hitback = divhitback;
-//		type = kind;
-//		knockback = knock;
-//		knock_start = false;
-//		stealtimer = 20.0f;
-//	}
-//	center = cent;
-//	size = range;
-//
-//	fream -= elapsed_time;
-//
-//	if (fream < 0.0f)
-//	{
-//		attack = true;
-//		if (damege != 0.0f)
-//		{
-//			hit_ok = true;
-//		}
-//	}
-//
-//	if (attack)
-//	{
-//		if (timer > 0.0f)
-//		{
-//
-//		}
-//		timer -= elapsed_time;
-//		if (!hit_ok)
-//		{
-//			damege = 0.0f;
-//			HB_timer = 0.0f;
-//			hitback = YR_Vector3(0.0f, 0.0f);
-//		}
-//	}
-//
-//
-//
-//	if (timer < 0.0f)
-//	{
-//		attack = false;
-//		timer = 0.0f;
-//		damege = 0.0f;
-//		hit_ok = false;
-//		HB_timer = 0.0f;
-//		hitback = YR_Vector3(0.0f, 0.0f);
-//		knockback = 0.0f;
-//		return true;
-//	}
-//
-//	return false;
-//}
-//
-//void AttackBox::Update(
-//	YR_Vector3 cent,
-//	YR_Vector3 range,
-//	float time, float frm, float late, float dage, float hitbackT, YR_Vector3 divhitback, int kind, float knock, int gauge, float elapsed_time)
-//{
-//	if (!start)
-//	{
-//		timer = 0.0f;
-//		timer = time;
-//		fream = frm;
-//		later = late;
-//		attack = false;
-//		fin = false;
-//		start = true;
-//		damege = dage;
-//		HB_timer = hitbackT;
-//		hitback = divhitback;
-//		type = kind;
-//		knockback = knock;
-//		knock_start = false;
-//		gaugeout = true;
-//	}
-//	center = cent;
-//	size = range;
-//
-//	fream -= elapsed_time;
-//
-//	if (fream < 0.0f)
-//	{
-//		attack = true;
-//		if (damege != 0.0f)
-//		{
-//			hit_ok = true;
-//		}
-//	}
-//
-//	if (attack)
-//	{
-//		if (timer > 0)
-//		{
-//
-//		}
-//		timer -= elapsed_time;
-//		if (!hit_ok)
-//		{
-//			damege = 0.0f;
-//			HB_timer = 0.0f;
-//			hitback = YR_Vector3(0.0f, 0.0f);
-//		}
-//	}
-//
-//
-//
-//	if (timer < 0.0f)
-//	{
-//		fin = true;
-//		attack = false;
-//		timer = 0.0f;
-//		damege = 0.0f;
-//		hit_ok = false;
-//		HB_timer = 0.0f;
-//		hitback = YR_Vector3(0.0f, 0.0f);
-//		knockback = 0.0f;
-//		gaugeout = false;
-//	}
-//}
 
 void AttackBox::Draw(YRShader* shader,
 	const DirectX::XMMATRIX& view,

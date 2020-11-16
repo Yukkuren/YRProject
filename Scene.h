@@ -419,6 +419,8 @@ public:
 
 	void RenderTexture(float elapsed_time);
 
+	void SceneRender(float elapsed_time);
+
 	enum class VS_MODE : int
 	{
 		PLAYER = 0,

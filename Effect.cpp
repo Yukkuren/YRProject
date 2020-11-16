@@ -28,6 +28,9 @@ void YR_Effect::Init()
 
 	//エフェクトの読み込み
 	effects[scastI(EffectKind::GUARD)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/guard.efk");
+	effects[scastI(EffectKind::TORNADE)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/Tornade.efk");
+	effects[scastI(EffectKind::SWORD)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/sword.efk");
+	effects[scastI(EffectKind::DRILL)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/drill.efk");
 
 	//ハンドルの初期化
 	for (int i = 0; i < handles.size(); i++)
@@ -120,6 +123,10 @@ void YR_Effect::PlayEffect(
 	// エフェクトの移動
 	//manager->AddLocation(handles[scastI(kind)], ::Effekseer::Vector3D(pos.x, pos.y, pos.z));
 
+	if (kind == EffectKind::NONE)
+	{
+		return;
+	}
 	// エフェクトの再生
 	//handles[scastI(kind)] = manager->Play(effects[scastI(kind)], 0, 0, 0);
 	handles[scastI(kind)] = manager->Play(effects[scastI(kind)], pos.x,pos.y,pos.z);
@@ -134,9 +141,81 @@ void YR_Effect::PlayEffect(
 	manager->SetScale(handles[scastI(kind)], scale.x, scale.y, scale.z);
 }
 
+
+
+void YR_Effect::PlayEffect(
+	EffectKind kind,
+	Effekseer::Handle& handle,
+	const DirectX::XMFLOAT3& pos,
+	const DirectX::XMFLOAT3& scale,
+	const DirectX::XMFLOAT3& axis,
+	const float& angle)
+{
+	// エフェクトの移動
+	//manager->AddLocation(handles[scastI(kind)], ::Effekseer::Vector3D(pos.x, pos.y, pos.z));
+	if (kind == EffectKind::NONE)
+	{
+		return;
+	}
+
+	// エフェクトの再生
+	//handles[scastI(kind)] = manager->Play(effects[scastI(kind)], 0, 0, 0);
+	handle = manager->Play(effects[scastI(kind)], pos.x,pos.y,pos.z);
+
+	// エフェクトの移動
+	manager->SetLocation(handle, ::Effekseer::Vector3D(pos.x, pos.y, pos.z));
+
+	// エフェクトの回転
+	manager->SetRotation(handle, ::Effekseer::Vector3D(axis.x, axis.y, axis.z), angle);
+
+	// エフェクトの拡大縮小
+	manager->SetScale(handle, scale.x, scale.y, scale.z);
+}
+
+void YR_Effect::SetLocation(
+	EffectKind kind,
+	const DirectX::XMFLOAT3& pos
+)
+{
+	if (kind == EffectKind::NONE)
+	{
+		return;
+	}
+	// エフェクトの移動
+	manager->SetLocation(handles[scastI(kind)], ::Effekseer::Vector3D(pos.x, pos.y, pos.z));
+}
+
+void YR_Effect::SetLocation(
+	EffectKind kind,
+	Effekseer::Handle& handle,
+	const DirectX::XMFLOAT3& pos
+)
+{
+	if (kind == EffectKind::NONE)
+	{
+		return;
+	}
+	// エフェクトの移動
+	manager->SetLocation(handle, ::Effekseer::Vector3D(pos.x, pos.y, pos.z));
+}
+
 //アニメーション再生の停止
 void YR_Effect::StopEffect(EffectKind kind)
 {
+	if (kind == EffectKind::NONE)
+	{
+		return;
+	}
 	// エフェクトの停止
 	manager->StopEffect(handles[scastI(kind)]);
+}
+
+void YR_Effect::StopEffect(EffectKind kind, Effekseer::Handle& handle)
+{
+	if (kind == EffectKind::NONE)
+	{
+		return;
+	}
+	// エフェクトの停止
+	manager->StopEffect(handle);
 }
