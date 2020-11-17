@@ -33,8 +33,8 @@ void SceneTitle::Init()
 	p2Enter = false;
 	end = false;
 	timer = 0.0f;
-	//Resolusion = { static_cast<float>(FRAMEWORK.SCREEN_WIDTH),static_cast<float>(FRAMEWORK.SCREEN_HEIGHT),(1920.0f / 1080.0f) };
-	Resolusion = { 66.0f,54.0f,(1920.0f / 1080.0f) };
+	Resolusion = { static_cast<float>(FRAMEWORK.SCREEN_WIDTH),static_cast<float>(FRAMEWORK.SCREEN_HEIGHT),(1920.0f / 1080.0f) };
+	//Resolusion = { 66.0f,54.0f,(1920.0f / 1080.0f) };
 	//Resolusion = { -1.0f,1.0,(1920.0f / 1080.0f) };
 
 	//スプライトのシェーダーはフェード画像に使用するため初期化の時点で読み込む

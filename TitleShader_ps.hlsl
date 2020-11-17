@@ -151,7 +151,7 @@ float3 render(float3 ro, float3 rd)
 
     if (t > 0.0)
     {
-        float3 mat = float3(0.8,0.0,0.0);
+        float3 mat = float3(0.18,0.0,0.0);
         float3 pos = ro + t * rd;
         float3 nor = sphNormal(pos, sph1);
 
@@ -250,18 +250,20 @@ float4 main(PSInput input) : SV_TARGET0
 {
 
     PSOutput Out = (PSOutput)0;
-    float2 p = (-iResolution.xy + 10.0 * input.fragCoord.xy) / iResolution.y;
+
+    float2 flag = float2(input.fragCoord.x * iResolution.x, input.fragCoord.y * iResolution.y);
+    float2 p = (-iResolution.xy + 2.0 * flag.xy) / iResolution.y;
 
     float zo = 1.0 + smoothstep(5.0, 15.0, abs(iTime - 48.0));
     float an = 3.0 + 0.05 * iTime + 6.0 / iResolution.x;
     float3 ro = zo * float3(2.0 * cos(an), 1.0, 2.0 * sin(an));
     float3 rt = float3(1.0, 0.0, 0.0);
     float3x3 cam = setCamera(ro, rt, 0.35);
-    float3 rd = normalize(mul(float3(p, -0.01),cam));
+    float3 rd = normalize(mul(cam,float3(p, -0.01)));
     //float3 rd = float3(p, -2.0);
     float3 col = render(ro, rd);
 
-    float2 q = input.fragCoord.xy / iResolution.xy;
+    float2 q = flag.xy / iResolution.xy;
     col *= 0.2 + 0.8 * pow(16.0 * q.x * q.y * (1.0 - q.x) * (1.0 - q.y), 0.1);
 
     Out.Color = float4(col, 1.0);
