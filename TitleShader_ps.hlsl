@@ -127,6 +127,8 @@ PSOutput main(PSInput input) : SV_TARGET0
 	col = clamp(col, 0.0, 1.0);
 	col = pow(col, float3(1.7,1.7,1.7));
 
+	col.x *= material_color.xyz;
+
 	Out.Color = float4(col, 1.0);
 	Out.Luminance = float4(0.0f, 0.0f, 0.0f, 0.0f);
 

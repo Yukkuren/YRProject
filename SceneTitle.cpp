@@ -37,14 +37,15 @@ void SceneTitle::Init()
 
 	//cbuffer_param
 	cbuffer_param.Resolution = { static_cast<float>(FRAMEWORK.SCREEN_WIDTH),static_cast<float>(FRAMEWORK.SCREEN_HEIGHT),(1920.0f / 1080.0f) };
-	cbuffer_param.brightness = 3.0f;
-	cbuffer_param.gamma = 6;
+	cbuffer_param.brightness = 13.0f;
+	cbuffer_param.gamma = 13;
 	cbuffer_param.spot_brightness = 1.5f;
-	cbuffer_param.ray_density = 6.0f;
+	cbuffer_param.ray_density = 1.5f;
 	cbuffer_param.curvature = 90.0f;
-	cbuffer_param.red = 5.8f;
-	cbuffer_param.green = 1.0f;
-	cbuffer_param.blue = 4.5f;
+	cbuffer_param.red = 9.8f;
+	cbuffer_param.green = 5.0f;
+	cbuffer_param.blue = 7.5f;
+	cbuffer_param.material_color = { 1.0f,1.0f,1.0f,1.0f };
 	cbuffer_param.dummy1 = 0.0f;
 	cbuffer_param.dummy2 = 0.0f;
 	cbuffer_param.dummy3 = 0.0f;
@@ -142,6 +143,10 @@ void SceneTitle::LoadData()
 	if (sampler_clamp == nullptr)
 	{
 		sampler_clamp = std::make_shared<Sampler>(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_CLAMP);
+	}
+	if (sampler_wrap == nullptr)
+	{
+		sampler_wrap = std::make_shared<Sampler>(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP);
 	}
 
 	//シェーダー作成
@@ -526,6 +531,10 @@ void SceneTitle::Draw(float elapsed_time)
 	ImGui::SliderFloat("green", &cbuffer_param.green, 0.0f, 10.0f);
 	ImGui::SliderFloat("blue", &cbuffer_param.blue, 0.0f, 10.0f);
 
+	ImGui::SliderFloat("material_color_x", &cbuffer_param.material_color.x, 0.0f, 1.0f);
+	ImGui::SliderFloat("material_color_y", &cbuffer_param.material_color.y, 0.0f, 1.0f);
+	ImGui::SliderFloat("material_color_z", &cbuffer_param.material_color.z, 0.0f, 1.0f);
+	ImGui::SliderFloat("material_color_w", &cbuffer_param.material_color.w, 0.0f, 1.0f);
 
 	if (ImGui::TreeNode(u8"カラーテクスチャ"))
 	{
@@ -542,13 +551,17 @@ void SceneTitle::Draw(float elapsed_time)
 
 		//test->DrawGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f);
 
+		if (fado_start)
+		{
+			cbuffer_param.curvature *= (1.0f - fado_alpha);
+		}
 		cbuffer_param.iTime = timer;
 
 		sprite->render(
 			titleShader.get(),
 			title_texture.get(),
 			cbuffer_param,
-			sampler_clamp.get(),
+			sampler_wrap.get(),
 			constantBuffer,
 			0.0f, 0.0f, 1920.0f, 1080.0f,
 			0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
@@ -771,128 +784,6 @@ void SceneTitle::Draw(float elapsed_time)
 	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
 }
 
-
-void SceneTitle::SceneRender(float elapsed_time)
-{
-	if (load_fin)
-	{
-
-		//test->DrawGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f);
-
-
-		title_img->DrawRotaGraph(
-			spriteShader.get(),
-			static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
-			static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.3f,
-			0.0f,
-			0.3f
-		);
-
-
-		switch (state)
-		{
-		case SceneTitle::STATE::HOME:
-			choice_img->DrawRotaDivGraph(
-				spriteShader.get(),
-				static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
-				static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f + (sinf(timer) * 100.0f),
-				0.0f,
-				0.5f,
-				0
-			);
-			break;
-		case SceneTitle::STATE::SELECT:
-			if (vs_mode == VS_MODE::CPU)
-			{
-				choice_img->DrawRotaDivGraph(
-					spriteShader.get(),
-					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.3f,
-					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f + (sinf(timer) * 50.0f),
-					0.0f,
-					0.3f,
-					1
-				);
-				choice_img->DrawRotaDivGraph(
-					spriteShader.get(),
-					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.7f,
-					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f,
-					0.0f,
-					0.3f,
-					2,
-					DirectX::XMFLOAT4(0.2f, 0.2f, 0.2f, 0.3f)
-				);
-			}
-			else
-			{
-				choice_img->DrawRotaDivGraph(
-					spriteShader.get(),
-					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.3f,
-					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f,
-					0.0f,
-					0.3f,
-					1,
-					DirectX::XMFLOAT4(0.2f, 0.2f, 0.2f, 0.3f)
-				);
-				choice_img->DrawRotaDivGraph(
-					spriteShader.get(),
-					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.7f,
-					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f + (sinf(timer) * 50.0f),
-					0.0f,
-					0.3f,
-					2
-				);
-			}
-			break;
-		case SceneTitle::STATE::END:
-			if (vs_mode == VS_MODE::CPU)
-			{
-				choice_img->DrawRotaDivGraph(
-					spriteShader.get(),
-					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.3f,
-					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f + (sinf(timer) * 50.0f),
-					0.0f,
-					0.3f,
-					1
-				);
-				choice_img->DrawRotaDivGraph(
-					spriteShader.get(),
-					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.7f,
-					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f,
-					0.0f,
-					0.3f,
-					2,
-					DirectX::XMFLOAT4(0.2f, 0.2f, 0.2f, 0.3f)
-				);
-			}
-			else
-			{
-				choice_img->DrawRotaDivGraph(
-					spriteShader.get(),
-					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.3f,
-					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f,
-					0.0f,
-					0.3f,
-					1,
-					DirectX::XMFLOAT4(0.2f, 0.2f, 0.2f, 0.3f)
-				);
-				choice_img->DrawRotaDivGraph(
-					spriteShader.get(),
-					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.7f,
-					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f + (sinf(timer) * 50.0f),
-					0.0f,
-					0.3f,
-					2
-				);
-			}
-			break;
-		default:
-			break;
-		}
-
-	}
-
-	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
-}
 
 bool SceneTitle::FedoOut(float elapsed_time)
 {

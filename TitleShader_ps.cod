@@ -18,9 +18,10 @@
 //   float red;                         // Offset:   40 Size:     4
 //   float green;                       // Offset:   44 Size:     4
 //   float blue;                        // Offset:   48 Size:     4
-//   float dummy1;                      // Offset:   52 Size:     4 [unused]
-//   float dummy2;                      // Offset:   56 Size:     4 [unused]
-//   float dummy3;                      // Offset:   60 Size:     4 [unused]
+//   float4 material_color;             // Offset:   64 Size:    16
+//   float dummy1;                      // Offset:   80 Size:     4 [unused]
+//   float dummy2;                      // Offset:   84 Size:     4 [unused]
+//   float dummy3;                      // Offset:   88 Size:     4 [unused]
 //
 // }
 //
@@ -52,7 +53,7 @@
 //
 ps_5_0
 dcl_globalFlags refactoringAllowed | skipOptimization
-dcl_constantbuffer CB0[4], immediateIndexed
+dcl_constantbuffer CB0[5], immediateIndexed
 dcl_sampler s0, mode_default
 dcl_resource_texture2d (float,float,float,float) t0
 dcl_input_ps linear v1.xy
@@ -361,14 +362,17 @@ mul r0.xyz, r0.xyzx, l(1.700000, 1.700000, 1.700000, 0.000000)
 exp r0.xyz, r0.xyzx  // r0.x <- col.x; r0.y <- col.y; r0.z <- col.z
 
 #line 130
-mov r0.xyz, r0.xyzx  // r0.x <- Out.Color.x; r0.y <- Out.Color.y; r0.z <- Out.Color.z
-mov r0.w, l(1.000000)  // r0.w <- Out.Color.w
+mul r0.x, r0.x, cb0[4].x
 
-#line 131
-mov r1.xyzw, l(0,0,0,0)  // r1.x <- Out.Luminance.x; r1.y <- Out.Luminance.y; r1.z <- Out.Luminance.z; r1.w <- Out.Luminance.w
+#line 132
+mov r0.w, l(1.000000)
+mov r0.xyzw, r0.xyzw  // r0.x <- Out.Color.x; r0.y <- Out.Color.y; r0.z <- Out.Color.z; r0.w <- Out.Color.w
 
 #line 133
+mov r1.xyzw, l(0,0,0,0)  // r1.x <- Out.Luminance.x; r1.y <- Out.Luminance.y; r1.z <- Out.Luminance.z; r1.w <- Out.Luminance.w
+
+#line 135
 mov o0.xyzw, r0.xyzw
 mov o1.xyzw, r1.xyzw
 ret 
-// Approximately 184 instruction slots used
+// Approximately 185 instruction slots used

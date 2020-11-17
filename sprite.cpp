@@ -980,6 +980,10 @@ void Sprite::render(
 	cb.red = cbuffer_param.red;
 	cb.green = cbuffer_param.green;
 	cb.blue = cbuffer_param.blue;
+	cb.material_color.x = cbuffer_param.material_color.x;
+	cb.material_color.y = cbuffer_param.material_color.y;
+	cb.material_color.z = cbuffer_param.material_color.z;
+	cb.material_color.w = cbuffer_param.material_color.w;
 	cb.dummy1 = 0.0f;
 	cb.dummy2 = 0.0f;
 	cb.dummy3 = 0.0f;

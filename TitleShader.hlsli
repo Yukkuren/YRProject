@@ -41,6 +41,7 @@ cbuffer CONSTANT_BUFFER : register(b0)
 	float		red;
 	float		green;
 	float		blue;
+	float4		material_color;
 	float		dummy1;
 	float		dummy2;
 	float		dummy3;

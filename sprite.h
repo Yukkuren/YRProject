@@ -34,6 +34,7 @@ public:
 	float					red;
 	float					green;
 	float					blue;
+	DirectX::XMFLOAT4		material_color;
 	float					dummy1;
 	float					dummy2;
 	float					dummy3;

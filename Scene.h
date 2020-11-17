@@ -398,6 +398,7 @@ public:
 
 	//サンプラー
 	std::shared_ptr<Sampler> sampler_clamp = nullptr;
+	std::shared_ptr<Sampler> sampler_wrap = nullptr;
 
 	//定数バッファ
 	Microsoft::WRL::ComPtr<ID3D11Buffer>	constantBuffer = nullptr;
@@ -421,7 +422,6 @@ public:
 
 	void RenderTexture(float elapsed_time);
 
-	void SceneRender(float elapsed_time);
 
 	enum class VS_MODE : int
 	{
