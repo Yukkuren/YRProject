@@ -399,6 +399,7 @@ void SceneGame::UnInit()
 
 	//BGMを止める
 	GetSound().BGMStop(BGMKind::GAME);
+	GetSound().BGMStop(BGMKind::KNIGHT_WIN);
 
 	//ステージ解放
 	stage.Uninit();
@@ -498,6 +499,7 @@ void SceneGame::Update(float elapsed_time)
 			fado_alpha += (elapsed_time * 5.0f);
 			if (fado_alpha > 1.0f)
 			{
+				GetSound().BGMStop(BGMKind::GAME);
 				switch (judge)
 				{
 				case JUDGE_VICTORY::NO_VICTORY:
@@ -505,10 +507,12 @@ void SceneGame::Update(float elapsed_time)
 				case JUDGE_VICTORY::VICTORY1P:
 					//ここで勝利画面設定関数を呼ぶ
 					player1p->WinAnimSet();
+					GetSound().BGMPlay(BGMKind::KNIGHT_WIN);
 					break;
 				case JUDGE_VICTORY::VICTORY2P:
 					//ここで勝利画面設定関数を呼ぶ
 					player2p->WinAnimSet();
+					GetSound().BGMPlay(BGMKind::KNIGHT_WIN);
 					break;
 				case JUDGE_VICTORY::DRAW:
 					//ここで勝利画面設定関数を呼ぶ
@@ -584,6 +588,7 @@ void SceneGame::Update(float elapsed_time)
 				player2p->pad->x_input[scastI(PAD::X)] == 1)
 			{
 				fado_start = true;
+				GetSound().SEStop(SEKind::INTRO_WIND);
 			}
 			break;
 		case MAIN_LOOP::INTRO2P:
@@ -606,6 +611,7 @@ void SceneGame::Update(float elapsed_time)
 			{
 				fado_start = true;
 				main_loop = MAIN_LOOP::INTRO2P;
+				GetSound().SEStop(SEKind::INTRO_WIND);
 			}
 			break;
 		case MAIN_LOOP::READY:
@@ -627,13 +633,13 @@ void SceneGame::Update(float elapsed_time)
 					player1p->pad->Update(game_speed);
 					Control2PState(game_speed);
 					timer += elapsed_time;
-					/*if (pKeyState.oflg == 1)
+					if (pKeyState.oflg == 1)
 					{
 						player1p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
-						player2p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
+						//player2p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
 						player1p->pad->x_input[scastI(PAD::X)] = 1;
-						player2p->pad->x_input[scastI(PAD::X)] = 1;
-					}*/
+						//player2p->pad->x_input[scastI(PAD::X)] = 1;
+					}
 				}
 				if (pause)
 				{
@@ -851,17 +857,27 @@ void SceneGame::Update(float elapsed_time)
 				if (start_timer < start_time)
 				{
 					start_timer += game_speed;
+					if (start_timer > ready_time)
+					{
+						GetSound().SEStop(SEKind::READY);
+						GetSound().SEPlay(SEKind::SPECIAL_ATTACK);
+					}
+					else
+					{
+						GetSound().SEPlay(SEKind::READY);
+					}
 				}
 				else
 				{
 					//カウントが既定に到達したのでゲーム開始
 					start = true;
+					GetSound().SEStop(SEKind::SPECIAL_ATTACK);
 				}
 			}
 			break;
 		case MAIN_LOOP::FINISH:
 			//フェードインしたら勝敗に合わせてステートを変える
-			if (fado_alpha < 0.1f)
+			if (fado_alpha < 0.4f)
 			{
 				switch (judge)
 				{

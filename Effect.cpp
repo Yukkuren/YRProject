@@ -31,6 +31,7 @@ void YR_Effect::Init()
 	effects[scastI(EffectKind::TORNADE)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/Tornade.efk");
 	effects[scastI(EffectKind::SWORD)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/sword.efk");
 	effects[scastI(EffectKind::DRILL)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/drill.efk");
+	effects[scastI(EffectKind::OFFSET)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/Offset.efk");
 
 	//ƒnƒ“ƒhƒ‹‚Ì‰Šú‰»
 	for (int i = 0; i < handles.size(); i++)

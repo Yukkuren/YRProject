@@ -7,6 +7,7 @@
 #include <algorithm>
 #include "World.h"
 #include "Effect.h"
+#include "YRSound.h"
 
 //#define _CRTDBG_MAP_ALLOC						// mallocによるメモリリーク検出でCPPファイル名と行数出力指定
 //#define DBG_NEW new( _NORMAL_BLOCK , __FILE__ , __LINE__)	// new によるメモリリーク検出でCPPファイル名と行数出力指定
@@ -1261,6 +1262,7 @@ bool Knight::Step(float elapsed_time)
 				jumpflag = false;
 				jumpcount = 0;
 				air_dash_count = 0;
+				GetSound().SESinglePlay(SEKind::HIGH_JUMP);
 				//スピードはどっちも同じ
 				speed.x = -stepspeed;
 				if (rightOrleft > 0)
@@ -1304,6 +1306,7 @@ bool Knight::Step(float elapsed_time)
 				air_dash_count = 1;
 				//スピードはどっちも同じ
 				speed.x = stepspeed;
+				GetSound().SESinglePlay(SEKind::HIGH_JUMP);
 				if (rightOrleft > 0)
 				{
 					//空中前ダッシュ
@@ -1747,6 +1750,7 @@ void Knight::Move(float decision)
 				step = true;
 				act_state = ActState::BACK;
 				moveflag = false;
+				GetSound().SESinglePlay(SEKind::BACKSTEP);
 				//描画をセット
 				anim->NodeChange(model_motion.backstep_R, scastI(AnimAtk::FREAM));
 				anim->PlayAnimation(scastI(AnimAtk::FREAM), false);
@@ -1775,6 +1779,7 @@ void Knight::Move(float decision)
 				step = true;
 				act_state = ActState::BACK;
 				moveflag = false;
+				GetSound().SESinglePlay(SEKind::BACKSTEP);
 				//描画をセット
 				anim->NodeChange(model_motion.backstep_L, scastI(AnimAtk::FREAM));
 				anim->PlayAnimation(scastI(AnimAtk::FREAM), false);
@@ -2097,6 +2102,7 @@ void Knight::Jump()
 			speed_Y.Set(0.0f);
 			speed_X.Set(0.0f);
 			pad->que.back().timer = 0;
+			GetSound().SESinglePlay(SEKind::HIGH_JUMP);
 			jumpcount = 0;
 			speed.y = high_jump_speed;
 			hightrigger = true;
@@ -2163,6 +2169,7 @@ void Knight::Jump()
 			speed_X.Set(0.0f);
 			speed_Y.Set(0.0f);
 			pad->que.back().timer = 0;
+			GetSound().SESinglePlay(SEKind::JUMP);
 			jumpcount--;
 			hightrigger = false;
 			speed.y = jump_speed;
@@ -2229,6 +2236,7 @@ void Knight::Jump()
 				speed_X.Set(0.0f);
 				speed_Y.Set(0.0f);
 				pad->que.back().timer = 0;
+				GetSound().SESinglePlay(SEKind::JUMP);
 				jumpcount = 0;
 				air_dash_count = 0;
 				hightrigger = false;
@@ -2396,6 +2404,7 @@ void Knight::JumpUpdate(float decision, float elapsed_time)
 		//角度を元に戻す
 		angle.y = 0.0f;
 		angle.z = 0.0f;
+		GetSound().SESinglePlay(SEKind::LANDING);
 		if (rightOrleft > 0)
 		{
 			anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::LATER));
@@ -2418,7 +2427,7 @@ void Knight::DamageCheck(float decision)
 		if (hit[i].hit)
 		{
 			//攻撃を受けていた
-
+			GetSound().SEStop(SEKind::SLIDE);
 			rightOrleft = decision;
 			//条件ごとに設定
 			switch (hit[i].hit_state)
@@ -2525,6 +2534,7 @@ void Knight::DamageCheck(float decision)
 			if (hp <= 0.0f)
 			{
 				hp = 0.0f;
+				act_state = ActState::DOWN_HIT;
 			}
 			combo_count++;
 			GaugeUp(hit[i].damege / 5.0f);
@@ -2625,6 +2635,7 @@ void Knight::KnockUpdate(float elapsed_time)
 			//スティックの下入力がある場合は落下状態にする
 			act_state = ActState::DOWN;
 			speed.y = 0.0f;
+			GetSound().SESinglePlay(SEKind::SLAM);
 			//描画をセット
 			if (rightOrleft > 0)
 			{
@@ -2644,6 +2655,7 @@ void Knight::KnockUpdate(float elapsed_time)
 			speed.x = Getapply(-passive_speed.x);
 			speed.y = passive_speed.y;
 			act_state = ActState::PASSIVE;
+			GetSound().SESinglePlay(SEKind::PASSIVE);
 			//描画をセット
 			if (rightOrleft > 0)
 			{
@@ -2654,23 +2666,22 @@ void Knight::KnockUpdate(float elapsed_time)
 				anim->NodeChange(model_motion.passive_L);
 			}
 			HitBoxTransition(HitBoxState::INVINCIBLE);
-		}
-
-		if (hp == 0.0f)
-		{
-			//体力がなくなったら落下状態にする
-			act_state = ActState::DOWN;
-			speed.y = 0.0f;
-			//描画をセット
-			if (rightOrleft > 0)
+			if (hp <= 0.0f)
 			{
-				anim->NodeChange(model_motion.slid_R);
+				//体力がなくなったら落下状態にする
+				act_state = ActState::DOWN;
+				speed.y = 0.0f;
+				//描画をセット
+				if (rightOrleft > 0)
+				{
+					anim->NodeChange(model_motion.slid_R);
+				}
+				else
+				{
+					anim->NodeChange(model_motion.slid_L);
+				}
+				anim_ccodinate = ac_act[scastI(act_state)].timer;
 			}
-			else
-			{
-				anim->NodeChange(model_motion.slid_L);
-			}
-			anim_ccodinate = ac_act[scastI(act_state)].timer;
 		}
 		return;
 	}
@@ -2707,11 +2718,17 @@ void Knight::KnockUpdate(float elapsed_time)
 			//	speed.y = 0.0f;
 			//}
 			//else
+			if (hp <= 0.0f)
+			{
+
+			}
+			else
 			{
 				//入力が何もない場合は受け身を自動で取る
 				speed.x = 0.0f;
 				speed.y = 0.0f;
 				act_state = ActState::PASSIVE;
+				GetSound().SESinglePlay(SEKind::PASSIVE);
 				//描画をセット
 				if (rightOrleft > 0)
 				{
@@ -2758,8 +2775,10 @@ void Knight::KnockUpdate(float elapsed_time)
 		if (hp == 0.0f)
 		{
 			//体力がなくなったら落下状態にする
-			act_state = ActState::DOWN;
+			act_state = ActState::FALL;
 			speed.y = 0.0f;
+			jumpflag = true;
+			max_jump_flag = true;
 			//描画をセット
 			if (rightOrleft > 0)
 			{
@@ -2848,6 +2867,7 @@ void Knight::SlamUpdate(float elapsed_time)
 	//地面を滑っている時
 	if (ground)
 	{
+		GetSound().SEPlay(SEKind::SLIDE);
 		if (speed.x > 0.0f)
 		{
 			speed.x -= (attenuation_slam * elapsed_time);
@@ -2869,6 +2889,7 @@ void Knight::SlamUpdate(float elapsed_time)
 	//のけぞり時間経過
 	if (knocktimer < 0.0f)
 	{
+		GetSound().SEStop(SEKind::SLIDE);
 		combo_count = 0;
 		if (ground)
 		{
@@ -2899,6 +2920,23 @@ void Knight::SlamUpdate(float elapsed_time)
 				}
 				anim_ccodinate = ac_act[scastI(act_state)].timer;
 			}
+			else if (hp == 0.0f)
+			{
+				//体力がない場合は落下状態にする
+				act_state = ActState::DOWN;
+				speed.y = 0.0f;
+				speed.x = 0.0f;
+				//描画をセット
+				if (rightOrleft > 0)
+				{
+					anim->NodeChange(model_motion.slid_R);
+				}
+				else
+				{
+					anim->NodeChange(model_motion.slid_L);
+				}
+				anim_ccodinate = ac_act[scastI(act_state)].timer;
+			}
 			else
 			{
 				speed.x = 0.0f;
@@ -2907,6 +2945,7 @@ void Knight::SlamUpdate(float elapsed_time)
 				speed.x = Getapply(-passive_speed.x);
 				speed.y = passive_speed.y;
 				act_state = ActState::PASSIVE;
+				GetSound().SESinglePlay(SEKind::PASSIVE);
 				//描画をセット
 				if (rightOrleft > 0)
 				{
@@ -2988,6 +3027,33 @@ void Knight::DownHitUpdate(float elapsed_time)
 		{
 			max_jump_flag = true;
 		}
+		if (hp == 0.0f)
+		{
+			if (ground)
+			{
+				combo_count = 0;
+				knocktimer = 0.0f;
+				//ダウン状態にする
+				act_state = ActState::DOWN;
+				speed.y = 0.0f;
+				speed.x = 0.0f;
+				for (int i = 0; i < hit.size(); i++)
+				{
+					hit[i].timer = 0.0f;
+					hit[i].hitback = YR_Vector3(0.0f, 0.0f);
+				}
+				//描画をセット
+				if (rightOrleft > 0)
+				{
+					anim->NodeChange(model_motion.slid_R);
+				}
+				else
+				{
+					anim->NodeChange(model_motion.slid_L);
+				}
+				anim_ccodinate = ac_act[scastI(act_state)].timer;
+			}
+		}
 	}
 
 	//地面についた時
@@ -2997,6 +3063,7 @@ void Knight::DownHitUpdate(float elapsed_time)
 		knocktimer = 0.0f;
 		//ダウン状態にする
 		act_state = ActState::DOWN;
+		GetSound().SESinglePlay(SEKind::SLAM);
 		speed.y = 0.0f;
 		speed.x = 0.0f;
 		for (int i = 0; i < hit.size(); i++)
@@ -3149,6 +3216,8 @@ void Knight::Guard(float decision)
 			pad->high_trigger = false;
 			hightrigger = false;
 			act_state = ActState::GUARD;
+
+			GetSound().SESinglePlay(SEKind::GUARD);
 			if (rightOrleft > 0)
 			{
 				YRGetEffect().PlayEffect(EffectKind::GUARD, DirectX::XMFLOAT3(pos.x + draw_guarf_effect_add_pos_x, pos.y, -2.0f), DirectX::XMFLOAT3(0.7f, 0.7f, 0.7f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), 5.5f);
@@ -3337,7 +3406,7 @@ void Knight::FallUpdate(float elapsed_time)
 		pos.y = POS_Y;
 		if (hp > 0)
 		{
-			speed.y = -5.0f;
+			speed.y = 5.0f;
 		}
 		act_state = ActState::DOWN;
 		//描画をセット
@@ -3346,47 +3415,47 @@ void Knight::FallUpdate(float elapsed_time)
 	else
 	{
 		//空中時
-		if (pos.y > POS_Y)
+		if (pos.y < POS_Y)
 		{
 			//重力を付与する
-			pos.y -= fall_force * elapsed_time;
+			pos.y -= gravity * elapsed_time;
 			//speed.y += 10.0f * elapsed_time;
 		}
-		if (pad->x_input[scastI(PAD::X)] == 1 || pad->x_input[scastI(PAD::Y)] == 1 ||
-			pad->x_input[scastI(PAD::B)] == 1 || pad->x_input[scastI(PAD::A)] == 1)
-		{
-			speed.x = 0.0f;
-			speed.y = 0.0f;
-			act_state = ActState::PASSIVE;
-			//描画をセット
+		//if (pad->x_input[scastI(PAD::X)] == 1 || pad->x_input[scastI(PAD::Y)] == 1 ||
+		//	pad->x_input[scastI(PAD::B)] == 1 || pad->x_input[scastI(PAD::A)] == 1)
+		//{
+		//	speed.x = 0.0f;
+		//	speed.y = 0.0f;
+		//	act_state = ActState::PASSIVE;
+		//	//描画をセット
 
-			HitBoxTransition(HitBoxState::INVINCIBLE);
-			if (pad->x_input[scastI(PAD::STICK_R)] > 0)
-			{
-				speed.x = 20.0f;
-				speed.y = -10.0f;
-			}
-			if (pad->x_input[scastI(PAD::STICK_L)] > 0)
-			{
-				speed.x = -20.0f;
-				speed.y = -10.0f;
-			}
-			if (pad->x_input[scastI(PAD::STICK_U)] > 0)
-			{
-				speed.y = -20.0f;
-			}
-			if (pad->x_input[scastI(PAD::STICK_D)] > 0)
-			{
-				speed.y = 20.0f;
-			}
+		//	HitBoxTransition(HitBoxState::INVINCIBLE);
+		//	if (pad->x_input[scastI(PAD::STICK_R)] > 0)
+		//	{
+		//		speed.x = 20.0f;
+		//		speed.y = -10.0f;
+		//	}
+		//	if (pad->x_input[scastI(PAD::STICK_L)] > 0)
+		//	{
+		//		speed.x = -20.0f;
+		//		speed.y = -10.0f;
+		//	}
+		//	if (pad->x_input[scastI(PAD::STICK_U)] > 0)
+		//	{
+		//		speed.y = -20.0f;
+		//	}
+		//	if (pad->x_input[scastI(PAD::STICK_D)] > 0)
+		//	{
+		//		speed.y = 20.0f;
+		//	}
 
-			if (pad->x_input[scastI(PAD::STICK_R)] == 0 && pad->x_input[scastI(PAD::STICK_L)] == 0 &&
-				pad->x_input[scastI(PAD::STICK_U)] == 0 && pad->x_input[scastI(PAD::STICK_D)] == 0)
-			{
-				speed.x = Getapply(-20.0f);
-				speed.y = -10.0f;
-			}
-		}
+		//	if (pad->x_input[scastI(PAD::STICK_R)] == 0 && pad->x_input[scastI(PAD::STICK_L)] == 0 &&
+		//		pad->x_input[scastI(PAD::STICK_U)] == 0 && pad->x_input[scastI(PAD::STICK_D)] == 0)
+		//	{
+		//		speed.x = Getapply(-20.0f);
+		//		speed.y = -10.0f;
+		//	}
+		//}
 	}
 }
 
@@ -3407,6 +3476,7 @@ void Knight::DownUpdate()
 			speed.x = passive_speed.x;
 			speed.y = passive_speed.y;
 			act_state = ActState::PASSIVE;
+			GetSound().SESinglePlay(SEKind::PASSIVE);
 			//描画をセット
 			if (rightOrleft > 0)
 			{
@@ -3423,6 +3493,7 @@ void Knight::DownUpdate()
 			speed.x = -passive_speed.x;
 			speed.y = passive_speed.y;
 			act_state = ActState::PASSIVE;
+			GetSound().SESinglePlay(SEKind::PASSIVE);
 			//描画をセット
 			if (rightOrleft > 0)
 			{
@@ -3440,6 +3511,7 @@ void Knight::DownUpdate()
 			speed.x = 0.0f;
 			speed.y = 0.0f;
 			act_state = ActState::PASSIVE;
+			GetSound().SESinglePlay(SEKind::PASSIVE);
 			//描画をセット
 			if (rightOrleft > 0)
 			{
@@ -3600,6 +3672,7 @@ void Knight::StateNone(float elapsed_time)
 			}
 			combo_count = 0;
 			act_state = ActState::PASSIVE;
+			GetSound().SESinglePlay(SEKind::PASSIVE);
 			//描画をセット
 			if (rightOrleft > 0)
 			{
@@ -3756,10 +3829,11 @@ void Knight::WinAnimSet()
 	{
 		anim->NodeChange(model_motion.win_L);
 	}
+	anim->PlayAnimation(0, false);
 	ChangeFace(FaceAnim::TOZI);
 	FaceAnimation(0.0f);
 	win_state = WIN_PERFORMANCE_KNIGHT::SET;
-	anim_ccodinate = 1.0f;
+	anim_ccodinate = 1.1f;
 }
 
 bool Knight::WinPerformance(float elapsed_time)
@@ -3853,6 +3927,7 @@ bool Knight::Intro(float elapsed_time)
 		YRCamera.SetFocus(focus.GetDXFLOAT3());
 		intro_state = INTRO_KNIGHT::WAIT;
 		lip_text = RandTextSelect();
+		GetSound().SESinglePlay(SEKind::INTRO_WIND);
 		break;
 	case Knight::INTRO_KNIGHT::WAIT:
 		//指定した位置までカメラを動かしていく(更新)
@@ -3976,6 +4051,7 @@ void Knight::ReadySet()
 	}
 	ChangeFace(FaceAnim::NORMAL);
 	FaceAnimation(0.0f);
+	//GetSound().SEPlay(SEKind::INTRO_WIND);
 }
 
 
@@ -4379,6 +4455,7 @@ void Knight::AttackDetailsSet(const AttackState& attack_state)
 		{
 			power--;
 		}
+		GetSound().SESinglePlay(SEKind::SPECIAL_ATTACK);
 		break;
 	case AttackState::DESIRE_SPECIAL:
 		break;

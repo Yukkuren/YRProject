@@ -10,7 +10,7 @@
 #include"./imgui/imgui_impl_win32.h"
 #include"./imgui/imgui_impl_dx11.h"
 
-#ifdef  _DEBUG
+#if  USE_IMGUI
 std::array<std::string, scastI(BGMKind::END)> bgm_name_list =
 {
 	u8"タイトル",
@@ -52,17 +52,40 @@ void YRSound::Init()
 	pBGM.resize(scastI(BGMKind::END));
 	pSE.resize(scastI(SEKind::END));
 
-	bgm_all_volume = 1.0f;
+	bgm_all_volume = 0.7f;
 	se_all_volume = 1.0f;
 
 	//BGM読み込み
 	BGMLoad("./Data/Sound/BGM/Title.wav", BGMKind::TITLE, XAUDIO2_LOOP_INFINITE, 0.5f);
 	BGMLoad("./Data/Sound/BGM/Chara_Select.wav", BGMKind::CHARA_SELECT, XAUDIO2_LOOP_INFINITE, 0.5f);
-	BGMLoad("./Data/Sound/BGM/Load_Intro.wav", BGMKind::LOAD, XAUDIO2_LOOP_INFINITE, 0.5f);
+	BGMLoad("./Data/Sound/BGM/Load_Intro.wav", BGMKind::LOAD, 0, 0.5f);
 	BGMLoad("./Data/Sound/BGM/Stage_castle.wav", BGMKind::GAME, XAUDIO2_LOOP_INFINITE, 0.5f);
+	BGMLoad("./Data/Sound/BGM/knight_win.wav", BGMKind::KNIGHT_WIN, 0.0f, 0.5f);
 
 	//SE読み込み
 	SELoad("./Data/Sound/SE/enter.wav", SEKind::SELECT_ENTER);
+	SELoad("./Data/Sound/SE/cancel.wav", SEKind::SELECT_CANCEL);
+	SELoad("./Data/Sound/SE/hit_sword.wav", SEKind::HIT_SWORD);
+	SELoad("./Data/Sound/SE/intro_wind.wav", SEKind::INTRO_WIND);
+	SELoad("./Data/Sound/SE/offset.wav", SEKind::OFFSET);
+	SELoad("./Data/Sound/SE/special_attack.wav", SEKind::SPECIAL_ATTACK);
+	SELoad("./Data/Sound/SE/tornado.wav", SEKind::TORNADO);
+	SELoad("./Data/Sound/SE/hit.wav", SEKind::HIT);
+	SELoad("./Data/Sound/SE/special_attack2.wav", SEKind::SPECIAL_ATTACK2);
+	SELoad("./Data/Sound/SE/up_attack.wav", SEKind::UP_ATTACK);
+	SELoad("./Data/Sound/SE/projectile.wav", SEKind::PROJECTILE);
+	SELoad("./Data/Sound/SE/special_attack3.wav", SEKind::SPECIAL_ATTACK3);
+	SELoad("./Data/Sound/SE/select.wav", SEKind::SELECT);
+	SELoad("./Data/Sound/SE/track.wav", SEKind::TRACK);
+	SELoad("./Data/Sound/SE/slam.wav", SEKind::SLAM);
+	SELoad("./Data/Sound/SE/backstep.wav", SEKind::BACKSTEP);
+	SELoad("./Data/Sound/SE/passive.wav", SEKind::PASSIVE);
+	SELoad("./Data/Sound/SE/slide.wav", SEKind::SLIDE);
+	SELoad("./Data/Sound/SE/guard.wav", SEKind::GUARD);
+	SELoad("./Data/Sound/SE/ready.wav", SEKind::READY);
+	SELoad("./Data/Sound/SE/jump.wav", SEKind::JUMP);
+	SELoad("./Data/Sound/SE/high_jump.wav", SEKind::HIGH_JUMP);
+	SELoad("./Data/Sound/SE/landing.wav", SEKind::LANDING);
 }
 
 //デストラクタ

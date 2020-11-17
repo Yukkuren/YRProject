@@ -12,10 +12,11 @@
 enum class EffectKind : int
 {
 	NONE = 0,
-	GUARD,
-	TORNADE,
-	SWORD,
-	DRILL,
+	GUARD,		//ƒK[ƒh
+	TORNADE,	//—³Šª
+	SWORD,		//ŽaŒ‚
+	DRILL,		//ƒhƒŠƒ‹
+	OFFSET,		//‘ŠŽE
 	END,
 };
 

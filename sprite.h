@@ -6,6 +6,7 @@
 #include<map>
 #include<string>
 #include "Texture.h"
+#include "Sampler.h"
 //#include "framework.h"
 
 //-------------------------------------------------------------
@@ -20,8 +21,22 @@
 //タイトルのシェーダーに使用する定数構造体
 struct Title_CBuffer
 {
+public:
+	//52
 	DirectX::XMFLOAT3		Resolution;
 	float					iTime;
+	float					brightness;
+	float					ray_brightness;
+	float					gamma;
+	float					spot_brightness;
+	float					ray_density;
+	float					curvature;
+	float					red;
+	float					green;
+	float					blue;
+	float					dummy1;
+	float					dummy2;
+	float					dummy3;
 };
 
 struct Sprite_div
@@ -99,9 +114,8 @@ public:
 	void render(
 		YRShader* shader,
 		Texture* tex0,
-		Texture* tex1,
-		float elapsed_time,
-		DirectX::XMFLOAT3 Resolution,
+		Title_CBuffer cbuffer_param,
+		Sampler* sampler_clamp,
 		Microsoft::WRL::ComPtr<ID3D11Buffer> constantBuffer,
 		float	dx, float	dy,
 		float	dw, float	dh,

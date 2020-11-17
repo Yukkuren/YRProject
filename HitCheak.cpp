@@ -3,6 +3,9 @@
 #include <time.h>
 #include "YR_VectorMaster.h"
 #include "camera.h"
+
+#include "Effect.h"
+#include "YRSound.h"
 //#include "Music.h"
 
 const float guard_gauge_get = 3.0f;
@@ -337,35 +340,41 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 								Hitcheak::stop2p = true;
 							}
 
-							if (attack[atknum].parameter.distance.x >= hit[hitnum].center.x)
+							if (attack[atknum].pos.x >= hit[hitnum].center.x)
 							{
-								float dis = attack[atknum].parameter.distance.x - hit[hitnum].center.x;
-								dis /= 2.0f;
+								float dis = attack[atknum].pos.x - hit[hitnum].center.x;
+								dis *= 0.5f;
 								effectpos.x = hit[hitnum].center.x + dis;
-								effecttimer = 10;
 							}
-							if (hit[hitnum].center.x > attack[atknum].parameter.distance.x)
+							if (hit[hitnum].center.x > attack[atknum].pos.x)
 							{
-								float dis = hit[hitnum].center.x - attack[atknum].parameter.distance.x;
-								dis /= 2.0f;
-								effectpos.x = attack[atknum].parameter.distance.x + dis;
-								effecttimer = 10;
+								float dis = hit[hitnum].center.x - attack[atknum].pos.x;
+								dis *= 0.5f;
+								effectpos.x = attack[atknum].pos.x + dis;
 							}
 
-							if (attack[atknum].parameter.distance.y >= hit[hitnum].center.y)
+							if (attack[atknum].pos.y >= hit[hitnum].center.y)
 							{
-								float dis = attack[atknum].parameter.distance.y - hit[hitnum].center.y;
-								dis /= 2.0f;
+								float dis = attack[atknum].pos.y - hit[hitnum].center.y;
+								dis *= 0.5f;
 								effectpos.y = hit[hitnum].center.y + dis;
-								effecttimer = 10;
 							}
-							if (hit[hitnum].center.y > attack[atknum].parameter.distance.y)
+
+							if (hit[hitnum].center.y > attack[atknum].pos.y)
 							{
-								float dis = hit[hitnum].center.y - attack[atknum].parameter.distance.y;
-								dis /= 2.0f;
-								effectpos.y = attack[atknum].parameter.distance.y + dis;
-								effecttimer = 10;
+								float dis = hit[hitnum].center.y - attack[atknum].pos.y;
+								dis *= 0.5f;
+								effectpos.y = attack[atknum].pos.y + dis;
 							}
+
+							//エフェクト生成
+							YRGetEffect().PlayEffect(EffectKind::SWORD, effectpos.GetDXFLOAT3(), DirectX::XMFLOAT3(8.0f, 8.0f, 8.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+
+							//SE再生
+							GetSound().SESinglePlay(SEKind::HIT_SWORD);
+							//SE再生
+							GetSound().SESinglePlay(SEKind::HIT);
+
 							switch (attack[atknum].parameter.HS_timer)
 							{
 							case HitStopTime::SHORT:
@@ -380,6 +389,8 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							case HitStopTime::ZOOM:
 								Hitcheak::timer = 0.45f;
 								YRCamera.RequestCamera(player);
+								//SE再生
+								GetSound().SESinglePlay(SEKind::UP_ATTACK);
 								break;
 							default:
 								Hitcheak::timer = 0.05f;
@@ -422,6 +433,9 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							hit[hitnum].hit_state = HitStateKind::STEAL;
 							hit[hitnum].steal_timer = attack[atknum].parameter.stealtimer;
 							hit[hitnum].hit = true;
+
+							//SE再生
+							GetSound().SESinglePlay(SEKind::HIT);
 							//攻撃が当たったことを保存する
 							for (int n = 0; n < attack.size(); n++)
 							{
@@ -458,35 +472,40 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 								Hitcheak::stop2p = true;
 							}
 
-							if (attack[atknum].parameter.distance.x >= hit[hitnum].center.x)
+							if (attack[atknum].pos.x >= hit[hitnum].center.x)
 							{
-								float dis = attack[atknum].parameter.distance.x - hit[hitnum].center.x;
-								dis /= 2.0f;
+								float dis = attack[atknum].pos.x - hit[hitnum].center.x;
+								dis *= 0.5f;
 								effectpos.x = hit[hitnum].center.x + dis;
-								effecttimer = 10;
 							}
-							if (hit[hitnum].center.x > attack[atknum].parameter.distance.x)
+							if (hit[hitnum].center.x > attack[atknum].pos.x)
 							{
-								float dis = hit[hitnum].center.x - attack[atknum].parameter.distance.x;
-								dis /= 2.0f;
-								effectpos.x = attack[atknum].parameter.distance.x + dis;
-								effecttimer = 10;
+								float dis = hit[hitnum].center.x - attack[atknum].pos.x;
+								dis *= 0.5f;
+								effectpos.x = attack[atknum].pos.x + dis;
 							}
 
-							if (attack[atknum].parameter.distance.y >= hit[hitnum].center.y)
+							if (attack[atknum].pos.y >= hit[hitnum].center.y)
 							{
-								float dis = attack[atknum].parameter.distance.y - hit[hitnum].center.y;
-								dis /= 2.0f;
+								float dis = attack[atknum].pos.y - hit[hitnum].center.y;
+								dis *= 0.5f;
 								effectpos.y = hit[hitnum].center.y + dis;
-								effecttimer = 10;
 							}
-							if (hit[hitnum].center.y > attack[atknum].parameter.distance.y)
+
+							if (hit[hitnum].center.y > attack[atknum].pos.y)
 							{
-								float dis = hit[hitnum].center.y - attack[atknum].parameter.distance.y;
-								dis /= 2.0f;
-								effectpos.y = attack[atknum].parameter.distance.y + dis;
-								effecttimer = 10;
+								float dis = hit[hitnum].center.y - attack[atknum].pos.y;
+								dis *= 0.5f;
+								effectpos.y = attack[atknum].pos.y + dis;
 							}
+
+							//エフェクト再生
+							YRGetEffect().PlayEffect(EffectKind::SWORD, effectpos.GetDXFLOAT3(), DirectX::XMFLOAT3(8.0f, 8.0f, 8.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+
+							//SE再生
+							GetSound().SESinglePlay(SEKind::HIT_SWORD);
+							//SE再生
+							GetSound().SESinglePlay(SEKind::HIT);
 
 							for (int n = 0; n < attack.size(); n++)
 							{
@@ -503,6 +522,8 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 								hit[hitnum].hit_state = HitStateKind::SLAM;
 								Hitcheak::timer = 0.45f;
 								YRCamera.RequestCamera(player);
+								//SE再生
+								GetSound().SESinglePlay(SEKind::UP_ATTACK);
 							}
 							else if (attack[atknum].pos.y > slam_zoom_line)
 							{
@@ -510,6 +531,8 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 								hit[hitnum].hit_state = HitStateKind::NORMAL;
 								Hitcheak::timer = 0.45f;
 								YRCamera.RequestCamera(player);
+								//SE再生
+								GetSound().SESinglePlay(SEKind::UP_ATTACK);
 							}
 							else
 							{
@@ -545,35 +568,41 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 								Hitcheak::stop2p = true;
 							}
 
-							if (attack[atknum].parameter.distance.x >= hit[hitnum].center.x)
+							if (attack[atknum].pos.x >= hit[hitnum].center.x)
 							{
-								float dis = attack[atknum].parameter.distance.x - hit[hitnum].center.x;
-								dis /= 2.0f;
+								float dis = attack[atknum].pos.x - hit[hitnum].center.x;
+								dis *= 0.5f;
 								effectpos.x = hit[hitnum].center.x + dis;
-								effecttimer = 10;
 							}
-							if (hit[hitnum].center.x > attack[atknum].parameter.distance.x)
+							if (hit[hitnum].center.x > attack[atknum].pos.x)
 							{
-								float dis = hit[hitnum].center.x - attack[atknum].parameter.distance.x;
-								dis /= 2.0f;
-								effectpos.x = attack[atknum].parameter.distance.x + dis;
-								effecttimer = 10;
+								float dis = hit[hitnum].center.x - attack[atknum].pos.x;
+								dis *= 0.5f;
+								effectpos.x = attack[atknum].pos.x + dis;
 							}
 
-							if (attack[atknum].parameter.distance.y >= hit[hitnum].center.y)
+							if (attack[atknum].pos.y >= hit[hitnum].center.y)
 							{
-								float dis = attack[atknum].parameter.distance.y - hit[hitnum].center.y;
-								dis /= 2.0f;
+								float dis = attack[atknum].pos.y - hit[hitnum].center.y;
+								dis *= 0.5f;
 								effectpos.y = hit[hitnum].center.y + dis;
-								effecttimer = 10;
 							}
-							if (hit[hitnum].center.y > attack[atknum].parameter.distance.y)
+
+							if (hit[hitnum].center.y > attack[atknum].pos.y)
 							{
-								float dis = hit[hitnum].center.y - attack[atknum].parameter.distance.y;
-								dis /= 2.0f;
-								effectpos.y = attack[atknum].parameter.distance.y + dis;
-								effecttimer = 10;
+								float dis = hit[hitnum].center.y - attack[atknum].pos.y;
+								dis *= 0.5f;
+								effectpos.y = attack[atknum].pos.y + dis;
 							}
+
+							//エフェクト再生
+							YRGetEffect().PlayEffect(EffectKind::SWORD, effectpos.GetDXFLOAT3(), DirectX::XMFLOAT3(8.0f, 8.0f, 8.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+
+							//SE再生
+							GetSound().SESinglePlay(SEKind::HIT_SWORD);
+							//SE再生
+							GetSound().SESinglePlay(SEKind::HIT);
+
 							switch (attack[atknum].parameter.HS_timer)
 							{
 							case HitStopTime::SHORT:
@@ -588,6 +617,8 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							case HitStopTime::ZOOM:
 								Hitcheak::timer = 0.45f;
 								YRCamera.RequestCamera(player);
+								//SE再生
+								GetSound().SESinglePlay(SEKind::UP_ATTACK);
 								break;
 							default:
 								Hitcheak::timer = 0.05f;
@@ -620,7 +651,7 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 						break;
 						case HitResultState::DOWN_HIT:
 						{
-							//被弾した
+							//ダウン攻撃
 							float add = 0.0f;
 							if (!attack[atknum].parameter.gaugeout)
 							{
@@ -642,35 +673,41 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 								Hitcheak::stop2p = true;
 							}
 
-							if (attack[atknum].parameter.distance.x >= hit[hitnum].center.x)
+							if (attack[atknum].pos.x >= hit[hitnum].center.x)
 							{
-								float dis = attack[atknum].parameter.distance.x - hit[hitnum].center.x;
-								dis /= 2.0f;
+								float dis = attack[atknum].pos.x - hit[hitnum].center.x;
+								dis *= 0.5f;
 								effectpos.x = hit[hitnum].center.x + dis;
-								effecttimer = 10;
 							}
-							if (hit[hitnum].center.x > attack[atknum].parameter.distance.x)
+							if (hit[hitnum].center.x > attack[atknum].pos.x)
 							{
-								float dis = hit[hitnum].center.x - attack[atknum].parameter.distance.x;
-								dis /= 2.0f;
-								effectpos.x = attack[atknum].parameter.distance.x + dis;
-								effecttimer = 10;
+								float dis = hit[hitnum].center.x - attack[atknum].pos.x;
+								dis *= 0.5f;
+								effectpos.x = attack[atknum].pos.x + dis;
 							}
 
-							if (attack[atknum].parameter.distance.y >= hit[hitnum].center.y)
+							if (attack[atknum].pos.y >= hit[hitnum].center.y)
 							{
-								float dis = attack[atknum].parameter.distance.y - hit[hitnum].center.y;
-								dis /= 2.0f;
+								float dis = attack[atknum].pos.y - hit[hitnum].center.y;
+								dis *= 0.5f;
 								effectpos.y = hit[hitnum].center.y + dis;
-								effecttimer = 10;
 							}
-							if (hit[hitnum].center.y > attack[atknum].parameter.distance.y)
+
+							if (hit[hitnum].center.y > attack[atknum].pos.y)
 							{
-								float dis = hit[hitnum].center.y - attack[atknum].parameter.distance.y;
-								dis /= 2.0f;
-								effectpos.y = attack[atknum].parameter.distance.y + dis;
-								effecttimer = 10;
+								float dis = hit[hitnum].center.y - attack[atknum].pos.y;
+								dis *= 0.5f;
+								effectpos.y = attack[atknum].pos.y + dis;
 							}
+
+							//エフェクト再生
+							YRGetEffect().PlayEffect(EffectKind::SWORD, effectpos.GetDXFLOAT3(), DirectX::XMFLOAT3(8.0f, 8.0f, 8.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+
+							//SE再生
+							GetSound().SESinglePlay(SEKind::HIT_SWORD);
+							//SE再生
+							GetSound().SESinglePlay(SEKind::HIT);
+
 							switch (attack[atknum].parameter.HS_timer)
 							{
 							case HitStopTime::SHORT:
@@ -685,6 +722,8 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							case HitStopTime::ZOOM:
 								Hitcheak::timer = 0.45f;
 								YRCamera.RequestCamera(player);
+								//SE再生
+								GetSound().SESinglePlay(SEKind::UP_ATTACK);
 								break;
 							default:
 								Hitcheak::timer = 0.05f;
@@ -930,6 +969,21 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 								}
 							}
 
+							if (atk1p.parameter.type == AttackKind::DOWN_ATTACK)
+							{
+								if (atk2p.parameter.type != AttackKind::DOWN_ATTACK)
+								{
+									continue;
+								}
+							}
+							if (atk2p.parameter.type == AttackKind::DOWN_ATTACK)
+							{
+								if (atk1p.parameter.type != AttackKind::DOWN_ATTACK)
+								{
+									continue;
+								}
+							}
+
 
 							clash = true;
 							Hitcheak::timer = 0.0f;
@@ -974,31 +1028,37 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 
 							add1P = atk1p.parameter.damege;
 							add2P = atk2p.parameter.damege;
-							if (atk1p.parameter.distance.x >= atk2p.parameter.distance.x)
+							if (atk1p.pos.x >= atk2p.pos.x)
 							{
-								float dis = atk1p.parameter.distance.x - atk2p.parameter.distance.x;
-								dis /= 2;
-								clashpos.x = atk2p.parameter.distance.x + dis;
+								float dis = atk1p.pos.x - atk2p.pos.x;
+								dis *= 0.5f;
+								clashpos.x = atk2p.pos.x + dis;
 							}
-							if (atk2p.parameter.distance.x > atk1p.parameter.distance.x)
+							if (atk2p.pos.x > atk1p.pos.x)
 							{
-								float dis = atk2p.parameter.distance.x - atk1p.parameter.distance.x;
-								dis /= 2;
-								clashpos.x = atk1p.parameter.distance.x + dis;
+								float dis = atk2p.pos.x - atk1p.pos.x;
+								dis *= 0.5f;
+								clashpos.x = atk1p.pos.x + dis;
 							}
 
-							if (atk1p.parameter.distance.y >= atk2p.parameter.distance.y)
+							if (atk1p.pos.y >= atk2p.pos.y)
 							{
-								float dis = atk1p.parameter.distance.y - atk2p.parameter.distance.y;
-								dis /= 2;
-								clashpos.y = atk2p.parameter.distance.y + dis;
+								float dis = atk1p.pos.y - atk2p.pos.y;
+								dis *= 0.5f;
+								clashpos.y = atk2p.pos.y + dis;
 							}
-							if (atk2p.parameter.distance.y > atk1p.parameter.distance.y)
+							if (atk2p.pos.y > atk1p.pos.y)
 							{
-								float dis = atk2p.parameter.distance.y - atk1p.parameter.distance.y;
-								dis /= 2;
-								clashpos.y = atk1p.parameter.distance.y + dis;
+								float dis = atk2p.pos.y - atk1p.pos.y;
+								dis *= 0.5f;
+								clashpos.y = atk1p.pos.y + dis;
 							}
+
+							//エフェクト再生
+							YRGetEffect().PlayEffect(EffectKind::OFFSET, clashpos.GetDXFLOAT3(), DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+
+							//SE再生
+							GetSound().SESinglePlay(SEKind::OFFSET);
 
 							atk2p.parameter.damege = 0;
 							atk2p.hit_ok = false;

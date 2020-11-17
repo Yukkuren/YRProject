@@ -1,272 +1,134 @@
 #include "TitleShader.hlsli"
+//#define TYPE 4
+//
+//#if TYPE == 1
+//#define brightness 1.
+//#define ray_brightness 11.
+//#define gamma 5.
+//#define spot_brightness 4.
+//#define ray_density 1.5
+//#define curvature .1
+//#define red   7.
+//#define green 1.3
+//#define blue  1.
+////1 -> ridged, 2 -> sinfbm, 3 -> pure fbm
+//#define noisetype 2
+//#define sin_freq 50. //for type 2
+//#elif TYPE == 2
+//#define brightness 1.5
+//#define ray_brightness 10.
+//#define gamma 8.
+//#define spot_brightness 15.
+//#define ray_density 3.5
+//#define curvature 15.
+//#define red   4.
+//#define green 1.
+//#define blue  .1
+//#define noisetype 1
+//#define sin_freq 13.
+//#elif TYPE == 3
+//#define brightness 1.5
+//#define ray_brightness 20.
+//#define gamma 4.
+//#define spot_brightness .95
+//#define ray_density 3.14
+//#define curvature 17.
+//#define red   2.9
+//#define green .7
+//#define blue  3.5
+//#define noisetype 2
+//#define sin_freq 15.
 
-// Created by inigo quilez - iq/2015
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
+//#elif TYPE == 4
+//#define brightness 3.
+//#define ray_brightness 5.
+//#define gamma 6.
+//#define spot_brightness 1.5
+//#define ray_density 6.
+//#define curvature 90.
+//#define red   5.8
+//#define green 1.
+//#define blue  4.5
+//#define noisetype 1
+//#define sin_freq 6.
+//#define YO_DAWG
+
+//#elif TYPE == 5
+//#define brightness 2.
+//#define ray_brightness 5.
+//#define gamma 5.
+//#define spot_brightness 1.7
+//#define ray_density 30.
+//#define curvature 1.
+//#define red   1.
+//#define green 4.0
+//#define blue  4.9
+//#define noisetype 2
+//#define sin_freq 5. //for type 2
+//#endif
 
 
-float3 fancyCube(Texture2D sam, float3 d, float s, float b)
+
+float noise(float2 x)
 {
-    float3 colx = sam.Sample(DecalSampler, 0.5 + s * d.yz / d.x).xyz;
-    float3 coly = sam.Sample(DecalSampler, 0.5 + s * d.zx / d.y).xyz;
-    float3 colz = sam.Sample(DecalSampler, 0.5 + s * d.xy / d.z).xyz;
-
-    float3 n = d * d;
-
-    return float3((colx * n.x + coly * n.y + colz * n.z) / (n.x + n.y + n.z));
+	//return texture(iChannel0, x * .01).x;
+	return iChannel0.Sample(DecalSampler, (x * 0.01)).x;
 }
 
-
-float2 hash(float2 p)
+float fbm(float2 p)
 {
-    float2 p2 = float2(dot(p, float2(127.1, 311.7)), dot(p, float2(269.5, 183.3)));
-    return frac(sin(p2) * 43758.5453);
+	float z = 2.0;
+	float rz = 0.0;
+	p *= 0.25;
+	for (float i = 1.; i < 6.0; i++)
+	{
+		rz += abs((noise(p) - 0.5) * 2.0) / z;
+		//rz += (sin(noise(p) * sin_freq) * 0.5 + 0.5) / z;
+		//rz += noise(p) / z;
+		z = z * 2.0;
+		p *= 2.0;
+		p = mul(p, m2);
+	}
+	return rz;
 }
 
-float2 voronoi(float2 x)
+PSOutput main(PSInput input) : SV_TARGET0
 {
-    float2 n = floor(x);
-    float2 f = frac(x);
+	PSOutput Out = (PSOutput)0;
+	//float4 color = (float4)0;
+	//color = iChannel0.Sample(DecalSampler, input.fragCoord);
+	////Out.Color = float4(input.fragCoord.xy,1.0, 1.0);
+	//Out.Color = color;
+	//Out.Luminance = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-    float3 m = float3(8.0,0.0,0.0);
-    for (int j = -1; j <= 1; j++)
-        for (int i = -1; i <= 1; i++)
-        {
-            float2  g = float2(float(i), float(j));
-            float2  o = hash(n + g);
-            float2  r = g - f + o;
-            float d = dot(r, r);
-            if (d < m.x)
-            {
-                m = float3(d, o);
-            }
-        }
+	//return Out;
 
-    return float2(sqrt(m.x), m.y + m.z);
-}
+	float t = -iTime * 0.03;
+	float2 frag = float2(input.fragCoord.x * iResolution.x, input.fragCoord.y * iResolution.y);
+	float2 uv = frag.xy / iResolution.xy - 0.5;
+	uv.x *= iResolution.x / iResolution.y;
+	uv *= curvature * 0.05 + 0.0001;
 
-float shpIntersect(float3 ro, float3 rd, float4 sph)
-{
-    float3 oc = ro - sph.xyz;
-    float b = dot(rd, oc);
-    float c = dot(oc, oc) - sph.w * sph.w;
-    float h = b * b - c;
-    if (h > 0.0) h = -b - sqrt(h);
-    return h;
-}
+	float r = sqrt(dot(uv, uv));
+	float x = dot(normalize(uv), float2(0.5, 0.0)) + t;
+	float y = dot(normalize(uv), float2(0.0, 0.5)) + t;
 
-float sphDistance(float3 ro, float3 rd, float4 sph)
-{
-    float3 oc = ro - sph.xyz;
-    float b = dot(oc, rd);
-    float h = dot(oc, oc) - b * b;
-    return sqrt(max(0.0, h)) - sph.w;
-}
+	x = fbm(float2(y * ray_density * 0.5, r + x * ray_density * 0.2));
+	y = fbm(float2(r + y * ray_density * 0.1, x * ray_density * 0.5));
 
-float sphSoftShadow(float3 ro, float3 rd, float4 sph, float k)
-{
-    float3 oc = sph.xyz - ro;
-    float b = dot(oc, rd);
-    float c = dot(oc, oc) - sph.w * sph.w;
-    float h = b * b - c;
-    return (b < 0.0) ? 1.0 : 1.0 - smoothstep(0.0, 1.0, k * h / b);
-}
+	float val;
+	val = fbm(float2(r + y * ray_density, r + x * ray_density - y));
+	val = smoothstep(gamma * 0.02 - 0.1, ray_brightness + (gamma * 0.02 - 0.1) + 0.001, val);
+	val = sqrt(val);
 
+	float3 col = val / float3(red, green, blue);
+	col = clamp(1.0 - col, 0.0, 1.0);
+	col = lerp(col, float3(1.0,1.0,1.0), spot_brightness - r / 0.1 / curvature * 200.0 / brightness);
+	col = clamp(col, 0.0, 1.0);
+	col = pow(col, float3(1.7,1.7,1.7));
 
-float3 sphNormal(float3 pos, float4 sph)
-{
-    return float3((pos - sph.xyz) / sph.w);
-}
+	Out.Color = float4(col, 1.0);
+	Out.Luminance = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-//=======================================================
-
-float3 background(float3 d, float3 l)
-{
-    float3 col = float3(0.0,0.0,0.0);
-    col += 0.5 * pow(fancyCube(iChannel1, d, 0.05, 5.0).zyx, float3(2.0,0.0,0.0));
-    col += 0.2 * pow(fancyCube(iChannel1, d, 0.10, 3.0).zyx, float3(1.5,0.0,0.0));
-    col += 0.8 * float3(0.80, 0.5, 0.6) * pow(fancyCube(iChannel1, d, 0.1, 0.0).xxx, float3(6.0,0.0,0.0));
-    float stars = smoothstep(0.3, 0.7, fancyCube(iChannel1, d, 0.91, 0.0).x);
-
-
-    float3 n = abs(d);
-    n = n * n * n;
-
-    float2 vxy = voronoi(50.0 * d.xy);
-    float2 vyz = voronoi(50.0 * d.yz);
-    float2 vzx = voronoi(50.0 * d.zx);
-    float2 r = (vyz * n.x + vzx * n.y + vxy * n.z) / (n.x + n.y + n.z);
-    col += 0.9 * stars * clamp(1.0 - (3.0 + r.y * 5.0) * r.x, 0.0, 1.0);
-
-    col = 1.5 * col - 0.2;
-    col += float3(-0.05, 0.1, 0.0);
-
-    float s = clamp(dot(d, l), 0.0, 1.0);
-    col += 0.4 * pow(s, 5.0) * float3(1.0, 0.7, 0.6) * 2.0;
-    col += 0.4 * pow(s, 64.0) * float3(1.0, 0.9, 0.8) * 2.0;
-
-    return col;
-
-}
-
-//--------------------------------------------------------------------
-
-float rayTrace(float3 ro, float3 rd)
-{
-    return shpIntersect(ro, rd, sph1);
-}
-
-float map(float3 pos)
-{
-    float2 r = pos.xz - sph1.xz;
-    float h = 1.0 - 2.0 / (1.0 + 0.3 * dot(r, r));
-    return pos.y - h;
-}
-
-float rayMarch(float3 ro, float3 rd, float tmax)
-{
-    float t = 0.0;
-
-    // bounding plane
-    float h = (1.0 - ro.y) / rd.y;
-    if (h > 0.0) t = h;
-
-    // raymarch
-    for (int i = 0; i < 20; i++)
-    {
-        float3 pos = ro + t * rd;
-        float h = map(pos);
-        if (h<0.001 || t>tmax) break;
-        t += h;
-    }
-    return t;
-}
-
-float3 render(float3 ro, float3 rd)
-{
-    float3 lig = normalize(float3(1.0, 0.2, 1.0));
-    float3 col = background(rd, lig);
-
-    // raytrace stuff    
-    float t = rayTrace(ro, rd);
-
-    if (t > 0.0)
-    {
-        float3 mat = float3(0.8,0.0,0.0);
-        float3 pos = ro + t * rd;
-        float3 nor = sphNormal(pos, sph1);
-
-        float am = 0.1 * iTime;
-        float2 pr = float2(cos(am), sin(am));
-        float3 tnor = nor;
-        //tnor.xz = float2x2(pr.x, -pr.y, pr.y, pr.x) * tnor.xz;
-
-        float am2 = 0.08 * iTime - 1.0 * (1.0 - nor.y * nor.y);
-        pr = float2(cos(am2), sin(am2));
-        float3 tnor2 = nor;
-        //tnor2.xz = float2x2(pr.x, -pr.y, pr.y, pr.x) * tnor2.xz;
-
-        float3 ref = reflect(rd, nor);
-        float fre = clamp(1.0 + dot(nor, rd), 0.0, 1.0);
-
-        float l = fancyCube(iChannel0, tnor, 0.03, 0.0).x;
-        l += -0.1 + 0.3 * fancyCube(iChannel0, tnor, 8.0, 0.0).x;
-
-        float3 sea = lerp(float3(0.0, 0.07, 0.2), float3(0.0, 0.01, 0.3), fre);
-        sea *= 0.15;
-
-        float3 land = float3(0.02, 0.04, 0.0);
-        land = lerp(land, float3(0.05, 0.1, 0.0), smoothstep(0.4, 1.0, fancyCube(iChannel0, tnor, 0.1, 0.0).x));
-        land *= fancyCube(iChannel0, tnor, 0.3, 0.0).xyz;
-        land *= 0.5;
-
-        float los = smoothstep(0.45, 0.46, l);
-        mat = lerp(sea, land, los);
-
-        float3 wrap = -1.0 + 2.0 * fancyCube(iChannel1, tnor2.xzy, 0.025, 0.0).xyz;
-        float cc1 = fancyCube(iChannel1, tnor2 + 0.2 * wrap, 0.05, 0.0).y;
-        float clouds = smoothstep(0.3, 0.6, cc1);
-
-        mat = lerp(mat, float3(0.93 * 0.15,0.0,0.0), clouds);
-
-        float dif = clamp(dot(nor, lig), 0.0, 1.0);
-        mat *= 0.8;
-        float3 lin = float3(3.0, 2.5, 2.0) * dif;
-        lin += 0.01;
-        col = mat * lin;
-        col = pow(col, float3(0.4545,0.0,0.0));
-        col += 0.6 * fre * fre * float3(0.9, 0.9, 1.0) * (0.3 + 0.7 * dif);
-
-        float spe = clamp(dot(ref, lig), 0.0, 1.0);
-        float tspe = pow(spe, 3.0) + 0.5 * pow(spe, 16.0);
-        col += (1.0 - 0.5 * los) * clamp(1.0 - 2.0 * clouds, 0.0, 1.0) * 0.3 * float3(0.5, 0.4, 0.3) * tspe * dif;;
-    }
-
-    // raymarch stuff    
-    float tmax = 20.0;
-    if (t > 0.0) tmax = t;
-    t = rayMarch(ro, rd, tmax);
-    if (t < tmax)
-    {
-        float3 pos = ro + t * rd;
-
-        float2 scp = sin(2.0 * 6.2831 * pos.xz);
-
-        float3 wir = float3(0.0,0.0,0.0);
-        wir += 1.0 * exp(-12.0 * abs(scp.x));
-        wir += 1.0 * exp(-12.0 * abs(scp.y));
-        wir += 0.5 * exp(-4.0 * abs(scp.x));
-        wir += 0.5 * exp(-4.0 * abs(scp.y));
-        wir *= 0.2 + 1.0 * sphSoftShadow(pos, lig, sph1, 4.0);
-
-        col += wir * 0.5 * exp(-0.05 * t * t);;
-    }
-
-    if (dot(rd, sph1.xyz - ro) > 0.0)
-    {
-        float d = sphDistance(ro, rd, sph1);
-        float3 glo = float3(0.0,0.0,0.0);
-        glo += float3(0.6, 0.7, 1.0) * 0.3 * exp(-2.0 * abs(d)) * step(0.0, d);
-        glo += 0.6 * float3(0.6, 0.7, 1.0) * 0.3 * exp(-8.0 * abs(d));
-        glo += 0.6 * float3(0.8, 0.9, 1.0) * 0.4 * exp(-100.0 * abs(d));
-        col += glo * 2.0;
-    }
-
-    col *= smoothstep(0.0, 6.0, iTime);
-
-    return col;
-}
-
-
-float3x3 setCamera(float3 ro, float3 rt, float cr)
-{
-    float3 cw = normalize(rt - ro);
-    float3 cp = float3(sin(cr), cos(cr), 0.0);
-    float3 cu = normalize(cross(cw, cp));
-    float3 cv = normalize(cross(cu, cw));
-    return float3x3(cu, cv, -cw);
-}
-
-float4 main(PSInput input) : SV_TARGET0
-{
-
-    PSOutput Out = (PSOutput)0;
-    float2 p = (-iResolution.xy + 10.0 * input.fragCoord.xy) / iResolution.y;
-
-    float zo = 1.0 + smoothstep(5.0, 15.0, abs(iTime - 48.0));
-    float an = 3.0 + 0.05 * iTime + 6.0 / iResolution.x;
-    float3 ro = zo * float3(2.0 * cos(an), 1.0, 2.0 * sin(an));
-    float3 rt = float3(1.0, 0.0, 0.0);
-    float3x3 cam = setCamera(ro, rt, 0.35);
-    float3 rd = normalize(mul(float3(p, -0.01),cam));
-    //float3 rd = float3(p, -2.0);
-    float3 col = render(ro, rd);
-
-    float2 q = input.fragCoord.xy / iResolution.xy;
-    col *= 0.2 + 0.8 * pow(16.0 * q.x * q.y * (1.0 - q.x) * (1.0 - q.y), 0.1);
-
-    Out.Color = float4(col, 1.0);
-    float4 lumi = float4(0.0f, 0.0f, 0.0f, 1.0f);
-    Out.Luminance = lumi;
-
-    return Out.Color;
+	return Out;
 }

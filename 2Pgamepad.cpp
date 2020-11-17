@@ -82,7 +82,7 @@ void GamePad2::Update(float elapsed_time)
 
 
 		//左スティック左倒し
-		if (input.Gamepad.sThumbLX < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE || x_input[scastI(PAD::LEFT)]>0)
+		if (input.Gamepad.sThumbLX < -X_Input_LEFT_DEADZONE || x_input[scastI(PAD::LEFT)]>0)
 		{
 			if (dash_trigger)
 			{
@@ -111,7 +111,7 @@ void GamePad2::Update(float elapsed_time)
 		}
 
 		//左スティック右倒し
-		if (input.Gamepad.sThumbLX > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE || x_input[scastI(PAD::RIGHT)] > 0)
+		if (input.Gamepad.sThumbLX > X_Input_LEFT_DEADZONE || x_input[scastI(PAD::RIGHT)] > 0)
 		{
 			if (dash_trigger)
 			{
@@ -146,7 +146,7 @@ void GamePad2::Update(float elapsed_time)
 
 
 		//左スティック上倒し
-		if (input.Gamepad.sThumbLY > XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE || x_input[scastI(PAD::UP)] > 0)
+		if (input.Gamepad.sThumbLY > X_Input_LEFT_DEADZONE || x_input[scastI(PAD::UP)] > 0)
 		{
 			x_input[scastI(PAD::STICK_U)]++;
 		}
@@ -184,7 +184,7 @@ void GamePad2::Update(float elapsed_time)
 		}
 
 		//左スティック下倒し
-		if (input.Gamepad.sThumbLY < -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE || x_input[scastI(PAD::DOWN)]>0)
+		if (input.Gamepad.sThumbLY < -X_Input_LEFT_DEADZONE || x_input[scastI(PAD::DOWN)]>0)
 		{
 			x_input[scastI(PAD::STICK_D)]++;
 		}

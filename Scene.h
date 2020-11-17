@@ -391,6 +391,8 @@ public:
 	//std::unique_ptr<Texture> position_texture = nullptr;
 	std::unique_ptr<Texture> luminance_texture = nullptr;
 
+	std::unique_ptr<Texture> title_texture = nullptr;
+
 	//Gbuffer用スプライト
 	std::unique_ptr<Sprite>	sprite = nullptr;
 
@@ -400,7 +402,7 @@ public:
 	//定数バッファ
 	Microsoft::WRL::ComPtr<ID3D11Buffer>	constantBuffer = nullptr;
 
-	DirectX::XMFLOAT3 Resolusion;
+	Title_CBuffer cbuffer_param;
 
 	void LoadData();
 

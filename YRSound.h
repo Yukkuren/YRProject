@@ -32,12 +32,35 @@ enum class BGMKind : int
 	CHARA_SELECT,		//キャラ選択画面
 	LOAD,				//ロード画面
 	GAME,				//ゲーム本編
+	KNIGHT_WIN,			//ナイト勝利
 	END,
 };
 
 enum class SEKind : int
 {
 	SELECT_ENTER = 0,	//選択決定音
+	SELECT_CANCEL,		//選択解除
+	HIT_SWORD,
+	INTRO_WIND,
+	OFFSET,
+	SPECIAL_ATTACK,
+	TORNADO,
+	SPECIAL_ATTACK2,
+	UP_ATTACK,
+	HIT,
+	PROJECTILE,
+	SPECIAL_ATTACK3,
+	SELECT,
+	TRACK,
+	BACKSTEP,
+	SLAM,
+	SLIDE,
+	PASSIVE,
+	READY,
+	GUARD,
+	JUMP,
+	HIGH_JUMP,
+	LANDING,
 	END,
 };
 

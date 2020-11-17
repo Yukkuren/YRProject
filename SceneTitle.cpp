@@ -1,6 +1,7 @@
 ﻿#include "Scene.h"
 #include "framework.h"
 #include "YRSound.h"
+#include "Blur.h"
 
 //-------------------------------------------------------------
 // **シーン概要**
@@ -33,8 +34,22 @@ void SceneTitle::Init()
 	p2Enter = false;
 	end = false;
 	timer = 0.0f;
-	//Resolusion = { static_cast<float>(FRAMEWORK.SCREEN_WIDTH),static_cast<float>(FRAMEWORK.SCREEN_HEIGHT),(1920.0f / 1080.0f) };
-	Resolusion = { 66.0f,54.0f,(1920.0f / 1080.0f) };
+
+	//cbuffer_param
+	cbuffer_param.Resolution = { static_cast<float>(FRAMEWORK.SCREEN_WIDTH),static_cast<float>(FRAMEWORK.SCREEN_HEIGHT),(1920.0f / 1080.0f) };
+	cbuffer_param.brightness = 3.0f;
+	cbuffer_param.gamma = 6;
+	cbuffer_param.spot_brightness = 1.5f;
+	cbuffer_param.ray_density = 6.0f;
+	cbuffer_param.curvature = 90.0f;
+	cbuffer_param.red = 5.8f;
+	cbuffer_param.green = 1.0f;
+	cbuffer_param.blue = 4.5f;
+	cbuffer_param.dummy1 = 0.0f;
+	cbuffer_param.dummy2 = 0.0f;
+	cbuffer_param.dummy3 = 0.0f;
+
+	//Resolusion = { 66.0f,54.0f,(1920.0f / 1080.0f) };
 	//Resolusion = { -1.0f,1.0,(1920.0f / 1080.0f) };
 
 	//スプライトのシェーダーはフェード画像に使用するため初期化の時点で読み込む
@@ -83,6 +98,7 @@ void SceneTitle::LoadData()
 
 	//コンスタントバッファ作成
 	FRAMEWORK.CreateConstantBuffer(constantBuffer.GetAddressOf(), sizeof(Title_CBuffer));
+	//FRAMEWORK.CreateConstantBuffer(constantBuffer.GetAddressOf(), sizeof(GaussParamManager::GaussBlurParam));
 
 	//テクスチャロード
 	if (color_texture == nullptr)
@@ -109,6 +125,13 @@ void SceneTitle::LoadData()
 		luminance_texture->Create(1920, 1080, DXGI_FORMAT_R16G16B16A16_FLOAT);
 		luminance_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
 	}
+
+	if (title_texture == nullptr)
+	{
+		title_texture = std::make_unique<Texture>(L"./Data/Shader/noise.png");
+		//title_texture = std::make_unique<Texture>(L"./Data/Image/UI/GameTitle/Title.png");
+	}
+
 	//Gbuffer用スプライト
 	if (sprite == nullptr)
 	{
@@ -366,6 +389,8 @@ void SceneTitle::Update(float elapsed_time)
 				if (g1.x_input[scastI(PAD::STICK_R)] == 1)
 				{
 					vs_mode = VS_MODE::PLAYER;
+					//SE再生
+					GetSound().SESinglePlay(SEKind::SELECT);
 				}
 			}
 			if (vs_mode == VS_MODE::PLAYER)
@@ -373,6 +398,8 @@ void SceneTitle::Update(float elapsed_time)
 				if (g1.x_input[scastI(PAD::STICK_L)] == 1)
 				{
 					vs_mode = VS_MODE::CPU;
+					//SE再生
+					GetSound().SESinglePlay(SEKind::SELECT);
 				}
 			}
 			if (g1.x_input[scastI(PAD::X)] == 1)
@@ -383,7 +410,7 @@ void SceneTitle::Update(float elapsed_time)
 			if (g1.x_input[scastI(PAD::B)] == 1)
 			{
 				state = STATE::HOME;
-				GetSound().SESinglePlay(SEKind::SELECT_ENTER);
+				GetSound().SESinglePlay(SEKind::SELECT_CANCEL);
 			}
 
 			break;
@@ -484,12 +511,47 @@ void SceneTitle::Update(float elapsed_time)
 
 void SceneTitle::Draw(float elapsed_time)
 {
+#if USE_IMGUI
+
+	float zzz = (cbuffer_param.Resolution.x / cbuffer_param.Resolution.y);
+	ImGui::SliderFloat("Reso.x", &cbuffer_param.Resolution.x, 0.0f, 19200.0f);
+	ImGui::SliderFloat("Reso.y", &cbuffer_param.Resolution.y, 0.0f, 10800.0f);
+	ImGui::SliderFloat("Reso.z", &zzz, 0.0f, 100.0f);
+	ImGui::SliderFloat("brightness", &cbuffer_param.brightness, 0.0f, 100.0f);
+	ImGui::SliderFloat("gamma", &cbuffer_param.gamma, 0.0f, 100.0f);
+	ImGui::SliderFloat("spot_brightness", &cbuffer_param.spot_brightness, 0.0f, 100.0f);
+	ImGui::SliderFloat("ray_density", &cbuffer_param.ray_density, 0.0f, 100.0f);
+	ImGui::SliderFloat("curvature", &cbuffer_param.curvature, 0.0f, 200.0f);
+	ImGui::SliderFloat("red", &cbuffer_param.red, 0.0f, 10.0f);
+	ImGui::SliderFloat("green", &cbuffer_param.green, 0.0f, 10.0f);
+	ImGui::SliderFloat("blue", &cbuffer_param.blue, 0.0f, 10.0f);
+
+
+	if (ImGui::TreeNode(u8"カラーテクスチャ"))
+	{
+		ImGui::Image((void*)(color_texture->GetShaderResource()), ImVec2(360, 360));
+		ImGui::Image((void*)(luminance_texture->GetShaderResource()), ImVec2(360, 360));
+		ImGui::TreePop();
+	}
+	cbuffer_param.Resolution.z = zzz;
+#endif // USE_IMGUI
+
 	if (load_fin)
 	{
 		SetRenderTexture();
 
-		test->DrawGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f);
-		
+		//test->DrawGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f);
+
+		cbuffer_param.iTime = timer;
+
+		sprite->render(
+			titleShader.get(),
+			title_texture.get(),
+			cbuffer_param,
+			sampler_clamp.get(),
+			constantBuffer,
+			0.0f, 0.0f, 1920.0f, 1080.0f,
+			0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
 
 		title_img->DrawRotaGraph(
 			spriteShader.get(),
@@ -689,7 +751,6 @@ void SceneTitle::Draw(float elapsed_time)
 
 	}
 
-	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
 
 #if USE_IMGUI
 	//ImGui
@@ -705,8 +766,9 @@ void SceneTitle::Draw(float elapsed_time)
 		RenderTexture(elapsed_time);
 		FRAMEWORK.framebuffer.Deactivate();
 
-		SceneRender(elapsed_time);
+		//SceneRender(elapsed_time);
 	}
+	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
 }
 
 
@@ -908,31 +970,8 @@ void SceneTitle::RenderTexture(float elapsed_time)
 {
 	//Gbuffer描画
 	sprite->render(
-		titleShader.get(),
-		color_texture.get(),
-		color_texture.get(),
-		timer,
-		Resolusion,
-		constantBuffer,
-		0.0f, 0.0f, 1920.0f, 1080.0f,
-		0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
-
-	/*sprite->render(
 		spriteEx.get(),
 		color_texture.get(),
 		0.0f, 0.0f, 1920.0f, 1080.0f,
-		0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);*/
-
-#if USE_IMGUI
-	if (ImGui::TreeNode(u8"カラーテクスチャ"))
-	{
-		ImGui::SliderFloat("Reso.x", &Resolusion.x, 0.0f, 1920.0f);
-		ImGui::SliderFloat("Reso.y", &Resolusion.y, 0.0f, 1080.0f);
-		ImGui::SliderFloat("Reso.z", &Resolusion.z, 0.0f, 100.0f);
-		ImGui::Image((void*)(color_texture->GetShaderResource()), ImVec2(360, 360));
-		ImGui::Image((void*)(luminance_texture->GetShaderResource()), ImVec2(360, 360));
-		ImGui::TreePop();
-	}
-#endif // USE_IMGUI
-
+		0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
 }

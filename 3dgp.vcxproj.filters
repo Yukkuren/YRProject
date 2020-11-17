@@ -401,6 +401,9 @@
     <ClInclude Include="YRSound.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="AnimShader.hlsli">
@@ -537,5 +540,18 @@
     <Filter Include="Shader\TitleShader">
       <UniqueIdentifier>{f71697e9-0394-4bdf-a0c5-e164b11de95f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{61f1b81b-9692-448b-897a-bb0c4e61e40c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Data\Image\UI\icon\icon.ico">
+      <Filter>Resource</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc">
+      <Filter>Resource</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

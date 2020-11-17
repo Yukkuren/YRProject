@@ -794,9 +794,8 @@ void Sprite::render(
 void Sprite::render(
 	YRShader* shader,
 	Texture* tex0,
-	Texture* tex1,
-	float elapsed_time,
-	DirectX::XMFLOAT3 Resolution,
+	Title_CBuffer cbuffer_param,
+	Sampler* sampler_clamp,
 	Microsoft::WRL::ComPtr<ID3D11Buffer> constantBuffer,
 	float	dx, float	dy,
 	float	dw, float	dh,
@@ -970,11 +969,25 @@ void Sprite::render(
 	//FRAMEWORK.context->UpdateSubresource(buffer.Get(), 0, NULL, data, 0, 0);
 
 	Title_CBuffer cb;
-	cb.iTime = elapsed_time;
-	cb.Resolution = Resolution;
+	cb.Resolution = cbuffer_param.Resolution;
+	cb.iTime = cbuffer_param.iTime;
+	cb.brightness = cbuffer_param.brightness;
+	cb.ray_brightness = cbuffer_param.ray_brightness;
+	cb.gamma = cbuffer_param.gamma;
+	cb.spot_brightness = cbuffer_param.spot_brightness;
+	cb.ray_density = cbuffer_param.ray_density;
+	cb.curvature = cbuffer_param.curvature;
+	cb.red = cbuffer_param.red;
+	cb.green = cbuffer_param.green;
+	cb.blue = cbuffer_param.blue;
+	cb.dummy1 = 0.0f;
+	cb.dummy2 = 0.0f;
+	cb.dummy3 = 0.0f;
 
 	FRAMEWORK.context->UpdateSubresource(constantBuffer.Get(), 0, NULL, &cb, 0, 0);
 	FRAMEWORK.context->PSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
+
+	sampler_clamp->Set(0);
 
 	//	頂点バッファの指定
 	UINT stride = sizeof(vertex_tex);
@@ -994,14 +1007,12 @@ void Sprite::render(
 	//FRAMEWORK.context->PSSetSamplers(0, 1, sampler.GetAddressOf());
 	//テクスチャの設定
 	if (tex0) tex0->Set(0);
-	if (tex1) tex1->Set(1);
 
 	FRAMEWORK.context->Draw(4, 0);
 	//シェーダ無効化
 	shader->Inactivate();
 
 	if (tex0) tex0->Set(0, FALSE);
-	if (tex1) tex1->Set(1, FALSE);
 }
 
 

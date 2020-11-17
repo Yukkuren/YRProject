@@ -31,7 +31,7 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wparam
 #ifdef  _DEBUG
 #endif // 
 
-#define		USE_IMGUI	(0)
+#define		USE_IMGUI	(1)
 #define		FADE_MIX( x )		( x * 3.0f)
 //#define		ToRadian( x )		( x * ( PI / 180.0f ) )
 
@@ -357,9 +357,9 @@ private:
 			float mspf = 1000.0f / fps;
 			std::ostringstream outs;
 			outs.precision(6);
-			outs << "FPS : " << fps << " / " << "Frame Time : " << mspf << " (ms)";
+			//outs << "FPS : " << fps << " / " << "Frame Time : " << mspf << " (ms)";
+			outs << "Desastal";
 			SetWindowTextA(hwnd, outs.str().c_str());
-
 			// Reset for next average.
 			frames = 0;
 			time_tlapsed += 1.0f;

@@ -208,7 +208,7 @@ void SceneLoad::Draw(float elapsedTime)
 		load_img->DrawRotaDivGraph(
 			spriteShader.get(),
 			FRAMEWORK.SCREEN_WIDTH * 0.92f,
-			FRAMEWORK.SCREEN_HEIGHT * 0.85f,
+			FRAMEWORK.SCREEN_HEIGHT * 0.85f+(sinf(timer)*20.0f),
 			0.0f,
 			2.0f,
 			0.05f,

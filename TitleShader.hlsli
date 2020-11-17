@@ -1,8 +1,9 @@
 
-static const float4 sph1 = float4(0.0, 0.0, 0.0, 1.0);
+//static const float4 sph1 = float4(0.0, 0.0, 0.0, 1.0);
+static const float2x2 m2 = float2x2(0.80, 0.60, -0.60, 0.80);
 
 Texture2D	iChannel0 : register(t0);
-Texture2D	iChannel1 : register(t1);
+//Texture2D	iChannel1 : register(t1);
 SamplerState DecalSampler : register(s0);
 
 struct VSInput
@@ -31,4 +32,16 @@ cbuffer CONSTANT_BUFFER : register(b0)
 {
 	float3		iResolution;
 	float		iTime;
+	float		brightness;
+	float		ray_brightness;
+	float		gamma;
+	float		spot_brightness;
+	float		ray_density;
+	float		curvature;
+	float		red;
+	float		green;
+	float		blue;
+	float		dummy1;
+	float		dummy2;
+	float		dummy3;
 };

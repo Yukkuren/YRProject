@@ -4,6 +4,7 @@
 #include "YRGamePad.h"
 #include "camera.h"
 #include "Effect.h"
+#include "YRSound.h"
 
 //------------------------------------------------------
 //				攻撃関数
@@ -177,6 +178,9 @@ void Knight::AttackProjectileDefault(float elapsed_time)
 		attack_list[now_at_list].SetAttack(&projectile_atk, rightOrleft, pos, attack_list[now_at_list].speed);
 
 		YRGetEffect().PlayEffect(EffectKind::DRILL, projectile_atk.back().handle, projectile_atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -90.0f*rightOrleft);
+
+		//SE再生
+		GetSound().SESinglePlay(SEKind::PROJECTILE);
 
 		//発生フレームを初期化
 		fream = non_target;
@@ -1035,6 +1039,8 @@ void Knight::Jaku_Lhurf(float elapsed_time)
 		YRGetEffect().PlayEffect(EffectKind::TORNADE, atk.back().handle, atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
 		fream = non_target;
 
+		GetSound().SESinglePlay(SEKind::TORNADO);
+
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
 
@@ -1160,6 +1166,8 @@ void Knight::A_Jaku_Lhurf(float elapsed_time)
 		}
 		atk.back().effect_kind = EffectKind::TORNADE;
 		YRGetEffect().PlayEffect(EffectKind::TORNADE, atk.back().handle, atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+
+		GetSound().SESinglePlay(SEKind::TORNADO);
 
 		fream = non_target;
 
@@ -1325,6 +1333,8 @@ void Knight::TrackDash(float decision, float elapsed_time)
 
 		pos.x += ((plusVec.x * track_speed) * elapsed_time);
 		pos.y += ((plusVec.y * track_speed) * elapsed_time);
+
+		GetSound().SEPlay(SEKind::TRACK);
 
 		for (auto& a : atk)
 		{
@@ -1515,6 +1525,7 @@ void Knight::SpecialAttack(float elapsed_time)
 			YRCamera.SetEye(eye.GetDXFLOAT3());
 			YRCamera.SetFocus(focus.GetDXFLOAT3());
 			camera_state_knight = CAMERA_STATE_KNIGHT::SECOND;
+			GetSound().SESinglePlay(SEKind::INTRO_WIND);
 			break;
 		case Knight::CAMERA_STATE_KNIGHT::SECOND:
 			//指定した位置までカメラを動かしていく(更新)
@@ -1543,6 +1554,7 @@ void Knight::SpecialAttack(float elapsed_time)
 			YRCamera.SetEye(eye.GetDXFLOAT3());
 			YRCamera.SetFocus(focus.GetDXFLOAT3());
 			camera_state_knight = CAMERA_STATE_KNIGHT::SIX;
+			GetSound().SESinglePlay(SEKind::SPECIAL_ATTACK2);
 			break;
 		case Knight::CAMERA_STATE_KNIGHT::SIX:
 			//指定した位置までカメラを動かしていく(更新)
@@ -1577,6 +1589,11 @@ void Knight::SpecialAttack(float elapsed_time)
 			anim->NodeChange(model_motion.special_L, scastI(AnimAtk::TIMER));
 		}
 		YRCamera.RequestCamera(Camera::Request::RELEASE, now_player);
+		GetSound().SEStop(SEKind::INTRO_WIND);
+		GetSound().SEStop(SEKind::SPECIAL_ATTACK2);
+
+		//SE再生
+		GetSound().SESinglePlay(SEKind::SPECIAL_ATTACK3);
 	}
 
 	int now_at_list = scastI(attack_state);
