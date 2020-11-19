@@ -633,13 +633,15 @@ void SceneGame::Update(float elapsed_time)
 					player1p->pad->Update(game_speed);
 					Control2PState(game_speed);
 					timer += elapsed_time;
+#if USE_IMGUI
 					if (pKeyState.oflg == 1)
 					{
-						player1p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
+						//player1p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
 						//player2p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
-						player1p->pad->x_input[scastI(PAD::X)] = 1;
+						//player1p->pad->x_input[scastI(PAD::X)] = 1;
 						//player2p->pad->x_input[scastI(PAD::X)] = 1;
 					}
+#endif
 				}
 				if (pause)
 				{
@@ -747,6 +749,7 @@ void SceneGame::Update(float elapsed_time)
 					//ホーミングダッシュ用の値を変更する
 					TrackSet();
 
+					YRGetEffect().Update();
 					if (end)
 					{
 						//勝敗がついた
@@ -1244,6 +1247,12 @@ void SceneGame::Draw(float elapsed_time)
 		player1p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, lightColor, ambient_color, game_speed*p1_elapsed_time);
 		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, lightColor, ambient_color, game_speed*p2_elapsed_time);
 		
+		//エフェクト
+		YRGetEffect().CameraSet();
+
+		//エフェクト描画
+		YRGetEffect().Draw();
+
 		/*skin->Render(
 			skinShader.get(), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 			DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
@@ -2129,6 +2138,11 @@ void SceneGame::Control2PState(float elapsed_time)
 		break;
 	case SceneGame::Player2PControl::SUSPENSION:
 		//操作不能
+		player2p->hp = 1000.0f;
+		if (pKeyState.oflg == 1)
+		{
+			player1p->power++;
+		}
 		break;
 	case SceneGame::Player2PControl::AI:
 		//AI

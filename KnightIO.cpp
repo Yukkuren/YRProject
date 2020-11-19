@@ -45,6 +45,8 @@ std::array<std::string, scastI(AttackState::ATTACK_END)> attack_name_list =
 	u8"Xボタンコンボ",
 	u8"Yボタンコンボ",
 	u8"Bボタンコンボ",
+	u8"Aボタンを押すと出る攻撃(プレイヤー選択)",
+	u8"Aボタンを押すと出る空中攻撃(プレイヤー選択)",
 };
 
 std::array<std::string, scastI(ActState::ACT_END)> act_name_list =

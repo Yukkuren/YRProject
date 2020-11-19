@@ -12,7 +12,7 @@
 #pragma comment(lib,"xinput.lib")
 
 
-constexpr int X_Input_LEFT_DEADZONE = XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE + 2000;
+constexpr int X_Input_LEFT_DEADZONE = XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE + 3000;
 
 class InputListor
 {

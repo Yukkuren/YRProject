@@ -22,7 +22,6 @@
 struct Title_CBuffer
 {
 public:
-	//52
 	DirectX::XMFLOAT3		Resolution;
 	float					iTime;
 	float					brightness;

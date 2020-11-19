@@ -118,6 +118,12 @@
     <FxCompile Include="TitleShader_vs.hlsl">
       <Filter>Shader\TitleShader</Filter>
     </FxCompile>
+    <FxCompile Include="ModeSelectShader_ps.hlsl">
+      <Filter>Shader\ModeSelectShader</Filter>
+    </FxCompile>
+    <FxCompile Include="ModeSelectShader_vs.hlsl">
+      <Filter>Shader\ModeSelectShader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="1PGamePad.cpp">
@@ -457,6 +463,9 @@
     <None Include="TitleShader.hlsli">
       <Filter>Shader\TitleShader</Filter>
     </None>
+    <None Include="ModeSelectShader.hlsli">
+      <Filter>Shader\ModeSelectShader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shader">
@@ -542,6 +551,9 @@
     </Filter>
     <Filter Include="Resource">
       <UniqueIdentifier>{61f1b81b-9692-448b-897a-bb0c4e61e40c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\ModeSelectShader">
+      <UniqueIdentifier>{25538fba-3bff-4b57-9771-d497d358af3c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

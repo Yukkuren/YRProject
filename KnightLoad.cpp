@@ -405,10 +405,10 @@ void Knight::LoadData(int color_number)
 		model_motion.model_R.push_back(model_motion.slow_R);	//投げ
 		model_motion.model_R.push_back(model_motion.track_R);	//ホーミングダッシュ
 		model_motion.model_R.push_back(model_motion.jaku_rh_R);	//前弱必殺
-		model_motion.model_R.push_back(model_motion.thu_rh_R);	//前中必殺
-		model_motion.model_R.push_back(model_motion.kyo_rh_R);	//前強必殺
+		model_motion.model_R.push_back(model_motion.jaku_rh_R);	//前中必殺
+		model_motion.model_R.push_back(model_motion.jaku_rh_R);	//前強必殺
 		model_motion.model_R.push_back(model_motion.jaku_lh_R);	//後弱必殺
-		model_motion.model_R.push_back(model_motion.thu_lh_R);	//後中必殺
+		model_motion.model_R.push_back(model_motion.jaku_lh_R);	//後中必殺
 		model_motion.model_R.push_back(model_motion.kyo_lh_R);	//後強必殺
 		model_motion.model_R.push_back(model_motion.special_R);	//前超必殺
 		model_motion.model_R.push_back(model_motion.disire_s_R);//後超必殺
@@ -444,10 +444,10 @@ void Knight::LoadData(int color_number)
 		model_motion.model_L.push_back(model_motion.slow_L);	//投げ
 		model_motion.model_L.push_back(model_motion.track_L);	//ホーミングダッシュ
 		model_motion.model_L.push_back(model_motion.jaku_rh_L);	//前弱必殺
-		model_motion.model_L.push_back(model_motion.thu_rh_L);	//前中必殺
-		model_motion.model_L.push_back(model_motion.kyo_rh_L);	//前強必殺
+		model_motion.model_L.push_back(model_motion.jaku_rh_L);	//前中必殺
+		model_motion.model_L.push_back(model_motion.jaku_rh_L);	//前強必殺
 		model_motion.model_L.push_back(model_motion.jaku_lh_L);	//後弱必殺
-		model_motion.model_L.push_back(model_motion.thu_lh_L);	//後中必殺
+		model_motion.model_L.push_back(model_motion.jaku_lh_L);	//後中必殺
 		model_motion.model_L.push_back(model_motion.kyo_lh_L);	//後強必殺
 		model_motion.model_L.push_back(model_motion.special_L);	//前超必殺
 		model_motion.model_L.push_back(model_motion.disire_s_L);//後超必殺

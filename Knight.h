@@ -132,7 +132,7 @@ private:
 	const float high_jump_speed = 139.0f;	//毎フレームハイジャンプの速度に加算する数値
 	const float brake_speed =10000.0f;		//停止時にかかるブレーキ(基本ピタッと止まるので数値は大きめ)
 	const float track_speed = 100.0f;		//ホーミングダッシュの速度
-	const YR_Vector3 passive_speed = { 40.0f,30.0f };	//受け身状態にスピードに代入する速度
+	const YR_Vector3 passive_speed = { 70.0f,30.0f };	//受け身状態にスピードに代入する速度
 	const float passive_brake = 100.0f;		//受け身中に減速する速度
 
 	float		production_time = 0.0f;	//カメラ演出に使う変数
@@ -214,7 +214,7 @@ public:
 
 	void AttackInput();	//攻撃するボタンが押されたか確認し、押されていればその行動をさせる
 	void Attack(float decision, float elapsed_time);		//以下の関数を制御する
-	void AttackSwitch(float decision, float elapsed_time);	//attack_stateによってそれぞれ異なる関数を動かす
+	void AttackSwitch(float decision, float elapsed_time, AttackState attack_state = AttackState::NONE);	//attack_stateによってそれぞれ異なる関数を動かす
 	void AttackDefault(float elapsed_time);//特殊な記述のある攻撃以外はこの関数を使用する
 	void AttackProjectileDefault(float elapsed_time);//特殊な記述のある飛び道具攻撃以外はこの関数を使用する
 

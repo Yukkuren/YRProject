@@ -32,6 +32,10 @@ void YR_Effect::Init()
 	effects[scastI(EffectKind::SWORD)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/sword.efk");
 	effects[scastI(EffectKind::DRILL)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/drill.efk");
 	effects[scastI(EffectKind::OFFSET)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/Offset.efk");
+	effects[scastI(EffectKind::FIRE_DRILL)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/fire_drill.efk");
+	effects[scastI(EffectKind::POWER_DRILL)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/power_drill.efk");
+	effects[scastI(EffectKind::SPECIAL_DRILL)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/special_drill.efk");
+	effects[scastI(EffectKind::WIND)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/wind.efk");
 
 	//ハンドルの初期化
 	for (int i = 0; i < handles.size(); i++)
@@ -97,12 +101,16 @@ void YR_Effect::CameraSet()
 		::Effekseer::Matrix44().LookAtLH(g_position, g_at, g_up));
 }
 
-//アニメーションの描画
-void YR_Effect::Draw()
+void YR_Effect::Update()
 {
 	//マネージャーの更新
 	manager->Update();
-	
+}
+
+
+//アニメーションの描画
+void YR_Effect::Draw()
+{
 	// エフェクトの描画開始処理を行う。
 	renderer->BeginRendering();
 

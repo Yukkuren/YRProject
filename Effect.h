@@ -12,11 +12,15 @@
 enum class EffectKind : int
 {
 	NONE = 0,
-	GUARD,		//ガード
-	TORNADE,	//竜巻
-	SWORD,		//斬撃
-	DRILL,		//ドリル
-	OFFSET,		//相殺
+	GUARD,				//ガード
+	TORNADE,			//竜巻
+	SWORD,				//斬撃
+	DRILL,				//ドリル
+	OFFSET,				//相殺
+	FIRE_DRILL,			//赤いドリル
+	POWER_DRILL,		//緑のドリル
+	SPECIAL_DRILL,		//白いドリル
+	WIND,				//緑の竜巻
 	END,
 };
 
@@ -73,6 +77,8 @@ public:
 	//アニメーション再生の停止
 	void StopEffect(EffectKind kind);
 	void StopEffect(EffectKind kind,Effekseer::Handle& handle);
+
+	void Update();
 
 	//エフェクトの描画
 	void Draw();

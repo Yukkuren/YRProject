@@ -2,6 +2,7 @@
 #include "framework.h"
 #include "Blur.h"
 
+
 void SceneTest::Init()
 {
 	timer = 0.0f;

@@ -167,6 +167,9 @@ enum class AttackState : int
 	COMBO_Y,		//Yボタンコンボ
 	COMBO_B,		//Bボタンコンボ
 
+	VERSATILE_ATTACK,//Aボタンを押すと出る攻撃(プレイヤー選択)
+	A_VERSATILE_ATTACK,//Aボタンを押すと出る空中攻撃(プレイヤー選択)
+
 	ATTACK_END,		//最大サイズ
 };
 
@@ -446,7 +449,7 @@ public:
 
 	virtual void AttackInput() = 0;
 	virtual void Attack(float decision, float elapsed_time) = 0;
-	virtual void AttackSwitch(float decision, float elapsed_time) = 0;
+	virtual void AttackSwitch(float decision, float elapsed_time, AttackState attack_state = AttackState::NONE) = 0;
 
 	virtual void WinAnimSet() = 0;
 

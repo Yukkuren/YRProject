@@ -597,9 +597,9 @@ void Knight::AttackInput()
 					if (act_state == ActState::SQUAT || pad->x_input[scastI(PAD::STICK_D)] > 0 ||
 						pad->x_input[scastI(PAD::STICK_LDown)] > 0 || pad->x_input[scastI(PAD::STICK_RDown)] > 0)
 					{
-						if (static_cast<AttackState>(list) != AttackState::TRACK_DASH)
+						if (static_cast<AttackState>(list) != AttackState::TRACK_DASH|| static_cast<AttackState>(list) != AttackState::VERSATILE_ATTACK)
 						{
-							//ホーミングダッシュの場合はしゃがんでても出せるように判定する
+							//ホーミングダッシュとプレイヤー選択技の場合はしゃがんでても出せるように判定する
 							continue;
 						}
 					}
@@ -642,6 +642,11 @@ void Knight::AttackInput()
 					//ゲージの必要量を確認する
 					//通常の攻撃の場合、実際の攻撃内容は入れずに攻撃名をそのまま入れる
 					attack_state = static_cast<AttackState>(list);
+					if (attack_list[real].need_power > 0)
+					{
+						//ゲージを消費する攻撃だった場合はゲージを減らす
+						power -= attack_list[real].need_power;
+					}
 				}
 				else
 				{
@@ -715,6 +720,7 @@ void Knight::AttackInput()
 					jumpflag = true;
 					max_jump_flag = true;
 				}
+
 				//後隙を初期化
 				later = non_target;
 				//カメラ処理用変数を初期化
@@ -736,9 +742,20 @@ void Knight::AttackInput()
 	}
 }
 
-void Knight::AttackSwitch(float decision, float elapsed_time)
+void Knight::AttackSwitch(float decision, float elapsed_time, AttackState attack_state)
 {
-	switch (attack_state)
+	AttackState now_attack_state;
+
+	if (attack_state == AttackState::NONE)
+	{
+		now_attack_state = this->attack_state;
+	}
+	else
+	{
+		now_attack_state = attack_state;
+	}
+
+	switch (now_attack_state)
 	{
 	case AttackState::NONE:
 		break;
@@ -791,9 +808,11 @@ void Knight::AttackSwitch(float decision, float elapsed_time)
 		A_UKyo(elapsed_time);
 		break;
 	case AttackState::JAKU_RHURF:
+		//飛び道具(弱)
 		Jaku_Rhurf(elapsed_time);
 		break;
 	case AttackState::THU_RHURF:
+		//飛び道具(中)
 		Thu_Rhurf(elapsed_time);
 		break;
 	case AttackState::KYO_RHURF:
@@ -837,6 +856,12 @@ void Knight::AttackSwitch(float decision, float elapsed_time)
 		break;
 	case AttackState::COMBO_B:
 		ComboB(decision, elapsed_time);
+		break;
+	case AttackState::VERSATILE_ATTACK:
+		AttackSwitch(decision, elapsed_time, attack_list[scastI(now_attack_state)].real_attack);
+		break;
+	case AttackState::A_VERSATILE_ATTACK:
+		AttackSwitch(decision, elapsed_time, attack_list[scastI(now_attack_state)].real_attack);
 		break;
 	default:
 		break;
@@ -1075,6 +1100,9 @@ void Knight::Draw(
 		angle.GetDXFLOAT3(),
 		view, projection, light_direction, light_color, ambient_color, elapsed_time, 0.0f);*/
 
+
+	//カメラの状態によって描画が変更されるため個別で分けている
+
 	if (scastI(YRCamera.camera_state) == now_player)
 	{
 		anim->UpdateAnimation(game_speed * anim_ccodinate);
@@ -1137,12 +1165,6 @@ void Knight::Draw(
 	//}
 
 	TextDraw();
-
-	//エフェクト
-	YRGetEffect().CameraSet();
-
-	//エフェクト描画
-	YRGetEffect().Draw();
 
 //デバッグ状態なら
 #if USE_IMGUI
@@ -4194,26 +4216,29 @@ void Knight::AllAttackClear()
 //攻撃判定が存在する時のみ更新
 void Knight::AttackUpdate(float elapsed_time)
 {
-	if (!atk.empty())
+	if (YRCamera.camera_state == Camera::CAMERA_STATE::MAIN)
 	{
-		for (auto& a : atk)
+		if (!atk.empty())
 		{
-			a.Update(pos, elapsed_time);
-			if (a.hit_result != HitResult::NONE)
+			for (auto& a : atk)
 			{
-				//攻撃が当たっていた場合、その内容を保存する
-				hit_result = a.hit_result;
-				//行動終了フラグをオンに
-				finish = true;
+				a.Update(pos, elapsed_time);
+				if (a.hit_result != HitResult::NONE)
+				{
+					//攻撃が当たっていた場合、その内容を保存する
+					hit_result = a.hit_result;
+					//行動終了フラグをオンに
+					finish = true;
+				}
 			}
 		}
-	}
 
-	if (!projectile_atk.empty())
-	{
-		for (int i = 0; i < projectile_atk.size(); i++)
+		if (!projectile_atk.empty())
 		{
-			projectile_atk[i].Update(pos, elapsed_time);
+			for (int i = 0; i < projectile_atk.size(); i++)
+			{
+				projectile_atk[i].Update(pos, elapsed_time);
+			}
 		}
 	}
 }
@@ -4439,6 +4464,7 @@ void Knight::AttackDetailsSet(const AttackState& attack_state)
 	case AttackState::THU_RHURF:
 		break;
 	case AttackState::KYO_RHURF:
+		GetSound().SESinglePlay(SEKind::SPECIAL_ATTACK);
 		break;
 	case AttackState::JAKU_LHURF:
 		break;
@@ -4451,11 +4477,9 @@ void Knight::AttackDetailsSet(const AttackState& attack_state)
 		camera_state_knight = CAMERA_STATE_KNIGHT::FIRST;
 		ChangeFace(FaceAnim::KOUHUN);
 		lumi_material= Model::Material_Attribute::SWORD;
-		if (power > 0)
-		{
-			power--;
-		}
 		GetSound().SESinglePlay(SEKind::SPECIAL_ATTACK);
+		YRGetEffect().PlayEffect(EffectKind::WIND, DirectX::XMFLOAT3(pos.x, pos.y - 5.0f, pos.z), DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+		YRGetEffect().PlayEffect(EffectKind::WIND, DirectX::XMFLOAT3(pos.x, pos.y - 5.0f, pos.z), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
 		break;
 	case AttackState::DESIRE_SPECIAL:
 		break;

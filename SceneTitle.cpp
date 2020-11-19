@@ -3,6 +3,8 @@
 #include "YRSound.h"
 #include "Blur.h"
 
+constexpr float adjust = 1.0f;
+
 //-------------------------------------------------------------
 // **シーン概要**
 //・ボタンを押すとコントローラー設定が出るようにして
@@ -36,15 +38,19 @@ void SceneTitle::Init()
 	timer = 0.0f;
 
 	//cbuffer_param
-	cbuffer_param.Resolution = { static_cast<float>(FRAMEWORK.SCREEN_WIDTH),static_cast<float>(FRAMEWORK.SCREEN_HEIGHT),(1920.0f / 1080.0f) };
-	cbuffer_param.brightness = 13.0f;
+	//cbuffer_param.Resolution = { static_cast<float>(FRAMEWORK.SCREEN_WIDTH),static_cast<float>(FRAMEWORK.SCREEN_HEIGHT),(1920.0f / 1080.0f) };
+	cbuffer_param.Resolution = { 1920.0f/ adjust,1080.0f/ adjust,((1920.0f/ adjust) / (1080.0f/ adjust)) };
+	cbuffer_param.brightness = 15.0f;
+	//cbuffer_param.brightness = 3.0f;
 	cbuffer_param.gamma = 13;
+	//cbuffer_param.gamma = 6;
 	cbuffer_param.spot_brightness = 1.5f;
 	cbuffer_param.ray_density = 1.5f;
+	//cbuffer_param.ray_density = 6.0f;
 	cbuffer_param.curvature = 90.0f;
-	cbuffer_param.red = 9.8f;
-	cbuffer_param.green = 5.0f;
-	cbuffer_param.blue = 7.5f;
+	cbuffer_param.red = 10.0f;
+	cbuffer_param.green = 2.8f;
+	cbuffer_param.blue = 4.0f;
 	cbuffer_param.material_color = { 1.0f,1.0f,1.0f,1.0f };
 	cbuffer_param.dummy1 = 0.0f;
 	cbuffer_param.dummy2 = 0.0f;
@@ -60,7 +66,7 @@ void SceneTitle::Init()
 		spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
 	}
 
-	vs_mode = VS_MODE::CPU;
+	vs_mode = VS_MODE::PLAYER;
 	state = STATE::HOME;
 
 	GetSound().BGMPlay(BGMKind::TITLE);
@@ -105,8 +111,10 @@ void SceneTitle::LoadData()
 	if (color_texture == nullptr)
 	{
 		color_texture = std::make_unique<Texture>();
-		color_texture->Create(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM);
-		color_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
+		//color_texture->Create(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM);
+		color_texture->Create(1920/ adjust, 1080/ adjust, DXGI_FORMAT_R8G8B8A8_UNORM);
+		//color_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
+		color_texture->CreateDepth(1920/ adjust, 1080/ adjust, DXGI_FORMAT_R24G8_TYPELESS);
 	}
 	/*if (normal_texture == nullptr)
 	{
@@ -123,8 +131,10 @@ void SceneTitle::LoadData()
 	if (luminance_texture == nullptr)
 	{
 		luminance_texture = std::make_unique<Texture>();
-		luminance_texture->Create(1920, 1080, DXGI_FORMAT_R16G16B16A16_FLOAT);
-		luminance_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
+		//luminance_texture->Create(1920, 1080, DXGI_FORMAT_R16G16B16A16_FLOAT);
+		luminance_texture->Create(1920/ adjust, 1080/ adjust, DXGI_FORMAT_R16G16B16A16_FLOAT);
+		//luminance_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
+		luminance_texture->CreateDepth(1920/ adjust, 1080/ adjust, DXGI_FORMAT_R24G8_TYPELESS);
 	}
 
 	if (title_texture == nullptr)
@@ -160,6 +170,11 @@ void SceneTitle::LoadData()
 		titleShader = std::make_unique<YRShader>(ShaderType::TITLE);
 		titleShader->Create("./Data/Shader/TitleShader_vs.cso", "./Data/Shader/TitleShader_ps.cso");
 	}
+	/*if (titleShader == nullptr)
+	{
+		titleShader = std::make_unique<YRShader>(ShaderType::TITLE);
+		titleShader->Create("./Data/Shader/ModeSelectShader_vs.cso", "./Data/Shader/ModeSelectShader_ps.cso");
+	}*/
 
 	load_state = 3;
 }
@@ -454,20 +469,23 @@ void SceneTitle::Update(float elapsed_time)
 			//}
 
 			//先行会用
-			if (FedoOut(elapsed_time))
+			if (cbuffer_param.curvature <= 0.0f)
 			{
-				//フェードアウトが終わったらセレクト画面へ
-				//ここで入力を保存する
-				select_p1 = scastI(INPUT_PLAYER::P1);
-				select_p2 = scastI(INPUT_PLAYER::P2);
-				FRAMEWORK.scenegame.PadSet(select_p1);
-				GetSound().BGMStop(BGMKind::TITLE);
-				FRAMEWORK.sceneselect.select_p1 = scastI(PLSELECT::KNIGHT);
-				FRAMEWORK.sceneselect.select_p2 = scastI(PLSELECT::KNIGHT);
-				//フェードアウトが終わったらロード画面へ
-				FRAMEWORK.SetScene(SCENE_LOAD);
-				UnInit();
-				return;
+				if (FedoOut(elapsed_time))
+				{
+					//フェードアウトが終わったらセレクト画面へ
+					//ここで入力を保存する
+					select_p1 = scastI(INPUT_PLAYER::P1);
+					select_p2 = scastI(INPUT_PLAYER::P2);
+					FRAMEWORK.scenegame.PadSet(select_p1);
+					GetSound().BGMStop(BGMKind::TITLE);
+					FRAMEWORK.sceneselect.select_p1 = scastI(PLSELECT::KNIGHT);
+					FRAMEWORK.sceneselect.select_p2 = scastI(PLSELECT::KNIGHT);
+					//フェードアウトが終わったらロード画面へ
+					FRAMEWORK.SetScene(SCENE_LOAD);
+					UnInit();
+					return;
+				}
 			}
 		}
 		else
@@ -553,7 +571,7 @@ void SceneTitle::Draw(float elapsed_time)
 
 		if (fado_start)
 		{
-			cbuffer_param.curvature *= (1.0f - fado_alpha);
+			cbuffer_param.curvature -= elapsed_time*200.0f;
 		}
 		cbuffer_param.iTime = timer;
 
@@ -864,5 +882,5 @@ void SceneTitle::RenderTexture(float elapsed_time)
 		spriteEx.get(),
 		color_texture.get(),
 		0.0f, 0.0f, 1920.0f, 1080.0f,
-		0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
+		0.0f, 0.0f, 1920.0f/ adjust, 1080.0f/ adjust, 0.0f, 1.0f);
 }

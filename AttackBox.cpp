@@ -70,14 +70,21 @@ void AttackBox::Update(YR_Vector3 pl_pos, float elapsed_time)
 	{
 		pos.x += ((speed.x * rightOrleft) * elapsed_time);	//X座標更新
 		pos.y += (speed.y * elapsed_time);	//Y座標更新
-		YRGetEffect().SetLocation(EffectKind::DRILL, handle, DirectX::XMFLOAT3(pos.x + (rightOrleft * parameter.size.x), pos.y, pos.z));
+		YRGetEffect().SetLocation(effect_kind, handle, DirectX::XMFLOAT3(pos.x + (rightOrleft * parameter.size.x), pos.y, pos.z));
 	}
 	else
 	{
 		pos.x = pl_pos.x + ((parameter.distance.x + speed.x) * rightOrleft);	//X座標更新
 		pos.y = pl_pos.y + ((parameter.distance.y + speed.y));	//Y座標更新
 
-		YRGetEffect().SetLocation(effect_kind,handle, DirectX::XMFLOAT3(pos.x + (rightOrleft * parameter.size.x), pos.y-5.0f, pos.z));
+		if (effect_kind == EffectKind::TORNADE)
+		{
+			YRGetEffect().SetLocation(effect_kind, handle, DirectX::XMFLOAT3(pos.x + (rightOrleft * parameter.size.x), pos.y - 5.0f, pos.z));
+		}
+		else
+		{
+			YRGetEffect().SetLocation(effect_kind, handle, DirectX::XMFLOAT3(pos.x + (rightOrleft * parameter.size.x), pos.y , pos.z));
+		}
 
 		if (plus)
 		{
@@ -104,14 +111,8 @@ void AttackBox::Update(YR_Vector3 pl_pos, float elapsed_time)
 		hit_ok = false;
 		parameter.HB_timer = 0.0f;
 		parameter.hitback = YR_Vector3(0.0f, 0.0f);
-		if (parameter.type == AttackKind::PROJECTILE)
-		{
-			YRGetEffect().StopEffect(EffectKind::DRILL,handle);
-		}
-		else
-		{
-			YRGetEffect().StopEffect(effect_kind, handle);
-		}
+
+		YRGetEffect().StopEffect(effect_kind, handle);
 	}
 }
 
