@@ -165,10 +165,15 @@ void SceneTitle::LoadData()
 		spriteEx = std::make_unique<YRShader>(ShaderType::SPRITE_EX);
 		spriteEx->Create("./Data/Shader/SpriteEx_vs.cso", "./Data/Shader/SpriteEx_ps.cso");
 	}
-	if (titleShader == nullptr)
+	/*if (titleShader == nullptr)
 	{
 		titleShader = std::make_unique<YRShader>(ShaderType::TITLE);
 		titleShader->Create("./Data/Shader/TitleShader_vs.cso", "./Data/Shader/TitleShader_ps.cso");
+	}*/
+	if (titleShader == nullptr)
+	{
+		titleShader = std::make_unique<YRShader>(ShaderType::TITLE);
+		titleShader->Create("./Data/Shader/CharaSelectShader_vs.cso", "./Data/Shader/CharaSelectShader_ps.cso");
 	}
 	/*if (titleShader == nullptr)
 	{
