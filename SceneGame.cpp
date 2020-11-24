@@ -711,10 +711,12 @@ void SceneGame::Update(float elapsed_time)
 					player1p->GaugeUp(Hitcheak::add1P);
 					player2p->GaugeUp(Hitcheak::add2P);
 
-					if (Hitcheak::hei == 1)
+					/*if (Hitcheak::hei == 1)
 					{
 						player1p->pad->x_input[scastI(PAD::A)] = 1;
-					}
+						player1p->projectile_atk.back().pos.x -= (player1p->projectile_atk.back().plus_speed.x * elapsed_time);
+						Hitcheak::hei++;
+					}*/
 
 					//ヒットストップ処理
 					if (Hitcheak::hit)
