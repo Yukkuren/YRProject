@@ -319,6 +319,14 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 						case HitResultState::HIT:
 						{
 							//”í’e‚µ‚½
+
+							if (hei == 0)
+							{
+								hei++;
+								return 0.0f;
+							}
+							hei++;
+
 							float add = 0.0f;
 							if (!attack[atknum].parameter.gaugeout)
 							{

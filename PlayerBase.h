@@ -253,7 +253,7 @@ public:
 	{
 		for (int quantity = 0; quantity < attack_single[now_attack_num].quantity; quantity++)
 		{
-			atk->push_back(AttackBox());
+			atk->emplace_back();
 			atk->back().Init(scastI(attack_name), attack_single[now_attack_num].parameter[quantity], rightOrleft, pl_pos);
 		}
 		now_attack_num++;
@@ -264,7 +264,7 @@ public:
 	{
 		for (int quantity = 0; quantity < attack_single[now_attack_num].quantity; quantity++)
 		{
-			atk->push_back(AttackBox());
+			atk->emplace_back();
 			atk->back().Init(scastI(attack_name), attack_single[now_attack_num].parameter[quantity], rightOrleft, pl_pos, plus_speed);
 		}
 		now_attack_num++;
@@ -340,7 +340,7 @@ public:
 	bool				moveflag;		//TRUEなら動いている
 	float				fream;			//発生フレーム
 	float				later;			//後隙フレーム(初期値にnon_targetを入れておく)
-	float				timer;			//持続フレーム(初期値にnon_targetを入れておく。飛び道具時のみ値を入れる)
+	float				timer;			//持続フレーム(初期値にnon_targetを入れておく)
 	float				knocktimer;		//喰らい時間
 	float				gravity;		//重力値
 	float				down_force;		//ジャンプ時に重力とは別に働く下方向の力

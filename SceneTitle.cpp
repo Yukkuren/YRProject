@@ -165,16 +165,26 @@ void SceneTitle::LoadData()
 		spriteEx = std::make_unique<YRShader>(ShaderType::SPRITE_EX);
 		spriteEx->Create("./Data/Shader/SpriteEx_vs.cso", "./Data/Shader/SpriteEx_ps.cso");
 	}
-	/*if (titleShader == nullptr)
-	{
-		titleShader = std::make_unique<YRShader>(ShaderType::TITLE);
-		titleShader->Create("./Data/Shader/TitleShader_vs.cso", "./Data/Shader/TitleShader_ps.cso");
-	}*/
 	if (titleShader == nullptr)
 	{
 		titleShader = std::make_unique<YRShader>(ShaderType::TITLE);
-		titleShader->Create("./Data/Shader/CharaSelectShader_vs.cso", "./Data/Shader/CharaSelectShader_ps.cso");
+		titleShader->Create("./Data/Shader/TitleShader_vs.cso", "./Data/Shader/TitleShader_ps.cso");
 	}
+	/*if (titleShader == nullptr)
+	{
+		titleShader = std::make_unique<YRShader>(ShaderType::TITLE);
+		titleShader->Create("./Data/Shader/CharaSelectShader_vs.cso", "./Data/Shader/CharaSelectShader_ps.cso");
+	}*/
+	/*if (titleShader == nullptr)
+	{
+		titleShader = std::make_unique<YRShader>(ShaderType::TITLE);
+		titleShader->Create("./Data/Shader/CyberShader_vs.cso", "./Data/Shader/CyberShader_ps.cso");
+	}*/
+	/*if (titleShader == nullptr)
+	{
+		titleShader = std::make_unique<YRShader>(ShaderType::TITLE);
+		titleShader->Create("./Data/Shader/ConcentrationShader_vs.cso", "./Data/Shader/ConcentrationShader_ps.cso");
+	}*/
 	/*if (titleShader == nullptr)
 	{
 		titleShader = std::make_unique<YRShader>(ShaderType::TITLE);
@@ -279,7 +289,7 @@ void SceneTitle::Update(float elapsed_time)
 			//	//FRAMEWORK.SetScene(SCENE_SELECT);
 			//}
 		}
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 		
 
 		/*if (pKeyState.tflg == 1)
@@ -539,33 +549,36 @@ void SceneTitle::Update(float elapsed_time)
 
 void SceneTitle::Draw(float elapsed_time)
 {
-#if USE_IMGUI
-
-	float zzz = (cbuffer_param.Resolution.x / cbuffer_param.Resolution.y);
-	ImGui::SliderFloat("Reso.x", &cbuffer_param.Resolution.x, 0.0f, 19200.0f);
-	ImGui::SliderFloat("Reso.y", &cbuffer_param.Resolution.y, 0.0f, 10800.0f);
-	ImGui::SliderFloat("Reso.z", &zzz, 0.0f, 100.0f);
-	ImGui::SliderFloat("brightness", &cbuffer_param.brightness, 0.0f, 100.0f);
-	ImGui::SliderFloat("gamma", &cbuffer_param.gamma, 0.0f, 100.0f);
-	ImGui::SliderFloat("spot_brightness", &cbuffer_param.spot_brightness, 0.0f, 100.0f);
-	ImGui::SliderFloat("ray_density", &cbuffer_param.ray_density, 0.0f, 100.0f);
-	ImGui::SliderFloat("curvature", &cbuffer_param.curvature, 0.0f, 200.0f);
-	ImGui::SliderFloat("red", &cbuffer_param.red, 0.0f, 10.0f);
-	ImGui::SliderFloat("green", &cbuffer_param.green, 0.0f, 10.0f);
-	ImGui::SliderFloat("blue", &cbuffer_param.blue, 0.0f, 10.0f);
-
-	ImGui::SliderFloat("material_color_x", &cbuffer_param.material_color.x, 0.0f, 1.0f);
-	ImGui::SliderFloat("material_color_y", &cbuffer_param.material_color.y, 0.0f, 1.0f);
-	ImGui::SliderFloat("material_color_z", &cbuffer_param.material_color.z, 0.0f, 1.0f);
-	ImGui::SliderFloat("material_color_w", &cbuffer_param.material_color.w, 0.0f, 1.0f);
-
-	if (ImGui::TreeNode(u8"カラーテクスチャ"))
+#ifdef EXIST_IMGUI
+	if (Get_Use_ImGui())
 	{
-		ImGui::Image((void*)(color_texture->GetShaderResource()), ImVec2(360, 360));
-		ImGui::Image((void*)(luminance_texture->GetShaderResource()), ImVec2(360, 360));
-		ImGui::TreePop();
+
+		float zzz = (cbuffer_param.Resolution.x / cbuffer_param.Resolution.y);
+		ImGui::SliderFloat("Reso.x", &cbuffer_param.Resolution.x, 0.0f, 19200.0f);
+		ImGui::SliderFloat("Reso.y", &cbuffer_param.Resolution.y, 0.0f, 10800.0f);
+		ImGui::SliderFloat("Reso.z", &zzz, 0.0f, 100.0f);
+		ImGui::SliderFloat("brightness", &cbuffer_param.brightness, 0.0f, 100.0f);
+		ImGui::SliderFloat("gamma", &cbuffer_param.gamma, 0.0f, 100.0f);
+		ImGui::SliderFloat("spot_brightness", &cbuffer_param.spot_brightness, 0.0f, 100.0f);
+		ImGui::SliderFloat("ray_density", &cbuffer_param.ray_density, 0.0f, 100.0f);
+		ImGui::SliderFloat("curvature", &cbuffer_param.curvature, 0.0f, 200.0f);
+		ImGui::SliderFloat("red", &cbuffer_param.red, 0.0f, 10.0f);
+		ImGui::SliderFloat("green", &cbuffer_param.green, 0.0f, 10.0f);
+		ImGui::SliderFloat("blue", &cbuffer_param.blue, 0.0f, 10.0f);
+
+		ImGui::SliderFloat("material_color_x", &cbuffer_param.material_color.x, 0.0f, 1.0f);
+		ImGui::SliderFloat("material_color_y", &cbuffer_param.material_color.y, 0.0f, 1.0f);
+		ImGui::SliderFloat("material_color_z", &cbuffer_param.material_color.z, 0.0f, 1.0f);
+		ImGui::SliderFloat("material_color_w", &cbuffer_param.material_color.w, 0.0f, 1.0f);
+
+		if (ImGui::TreeNode(u8"カラーテクスチャ"))
+		{
+			ImGui::Image((void*)(color_texture->GetShaderResource()), ImVec2(360, 360));
+			ImGui::Image((void*)(luminance_texture->GetShaderResource()), ImVec2(360, 360));
+			ImGui::TreePop();
+		}
+		cbuffer_param.Resolution.z = zzz;
 	}
-	cbuffer_param.Resolution.z = zzz;
 #endif // USE_IMGUI
 
 	if (load_fin)
@@ -788,8 +801,9 @@ void SceneTitle::Draw(float elapsed_time)
 	}
 
 
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 	//ImGui
+	if(Get_Use_ImGui())
 	{
 		ImGui::Text("title");
 		ImGui::Text("time : %f",timer);

@@ -40,5 +40,6 @@ public:
 	static YR_Vector3 clashpos;
 	static YR_Vector3 effectpos;
 	static int effecttimer;
+	static int hei;
 };
 #endif // !_HITCHEAK_H_

@@ -5,12 +5,13 @@
 #include <string>
 #include <array>
 #include "framework.h"
+#include "Key.h"
 
 #include"./imgui/imgui.h"
 #include"./imgui/imgui_impl_win32.h"
 #include"./imgui/imgui_impl_dx11.h"
 
-#if  USE_IMGUI
+#ifdef  EXIST_IMGUI
 std::array<std::string, scastI(BGMKind::END)> bgm_name_list =
 {
 	u8"タイトル",
@@ -383,36 +384,79 @@ void YRSound::SEPause(const SEKind& kind)
 void YRSound::SoundDebugDrow()
 {
 
-#if  USE_IMGUI
-	ImGui::Begin("SoundVolume");
-
-	ImGui::SliderFloat("BGM_All_volume", &bgm_all_volume, 0.0f, 1.0f);
-	ImGui::SliderFloat("SE_All_volume", &se_all_volume, 0.0f, 1.0f);
-	if (!pBGM.empty())
+#ifdef  EXIST_IMGUI
+	if (Get_Use_ImGui())
 	{
-		for (int b = 0; b < pBGM.size(); b++)
-		{
-			ImGui::SliderFloat(bgm_name_list[b].c_str(), &pBGM[b].volume, 0.0f, 1.0f);
-			
-		}
-	}
+		ImGui::Begin("SoundVolume");
 
-	if (!pSE.empty())
-	{
-		for (int s = 0; s < pSE.size(); s++)
+		ImGui::SliderFloat("BGM_All_volume", &bgm_all_volume, 0.0f, 1.0f);
+		ImGui::SliderFloat("SE_All_volume", &se_all_volume, 0.0f, 1.0f);
+		if (!pBGM.empty())
 		{
-			ImGui::SliderFloat(se_name_list[s].c_str(), &pSE[s].volume, 0.0f, 1.0f);
-			//SESetVolume(static_cast<SEKind>(s));
-		}
-	}
+			for (int b = 0; b < pBGM.size(); b++)
+			{
+				ImGui::SliderFloat(bgm_name_list[b].c_str(), &pBGM[b].volume, 0.0f, 1.0f);
 
-	ImGui::End();
+			}
+		}
+
+		if (!pSE.empty())
+		{
+			for (int s = 0; s < pSE.size(); s++)
+			{
+				ImGui::SliderFloat(se_name_list[s].c_str(), &pSE[s].volume, 0.0f, 1.0f);
+				//SESetVolume(static_cast<SEKind>(s));
+			}
+		}
+
+		ImGui::End();
+	}
 #endif // 
 }
 
 //更新処理
 void YRSound::Update()
 {
+
+#ifdef EXIST_IMGUI
+
+	if (Get_Use_ImGui())
+	{
+		if (pKeyState.lshiftflg > 0)
+		{
+			if (pKeyState.upflg > 0)
+			{
+				bgm_all_volume += 0.01f;
+				se_all_volume += 0.01f;
+				if (bgm_all_volume > 1.0f)
+				{
+					bgm_all_volume = 1.0f;
+				}
+				if (se_all_volume > 1.0f)
+				{
+					se_all_volume = 1.0f;
+				}
+			}
+
+			if (pKeyState.downflg > 0)
+			{
+				bgm_all_volume -= 0.01f;
+				se_all_volume -= 0.01f;
+				if (bgm_all_volume < 0.0f)
+				{
+					bgm_all_volume = 0.0f;
+				}
+				if (se_all_volume < 0.0f)
+				{
+					se_all_volume = 0.0f;
+				}
+			}
+		}
+	}
+
+#endif // EXIST_IMGUI
+
+
 	if (!pBGM.empty())
 	{
 		for (int b = 0; b < pBGM.size(); b++)

@@ -4,6 +4,15 @@
 #include "PlayerBase.h"
 #include "framework.h"
 
+AttackBox::~AttackBox()
+{
+	if (parameter.timer > 0.0f)
+	{
+		//YRGetEffect().StopEffect(effect_kind, handle);
+	}
+}
+
+
 void AttackBox::Init(int attack_name, AttackParameter& param, float rightOrleft,YR_Vector3 pl_pos)
 {
 	attack = true;

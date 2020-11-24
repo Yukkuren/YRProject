@@ -97,7 +97,7 @@ void SceneSelect::Update(float elapsed_time)
 			UnInit();
 			return;
 		}
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 		
 #endif // USE_IMGUI
 
@@ -258,8 +258,9 @@ void SceneSelect::Update(float elapsed_time)
 
 void SceneSelect::Draw(float elapsedTime)
 {
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 	//ImGui
+	if(Get_Use_ImGui())
 	{
 		ImGui::Text("time : %f", timer);
 		ImGui::Text("select");

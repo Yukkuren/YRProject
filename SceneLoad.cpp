@@ -19,6 +19,7 @@ bool Hitcheak::clash = false;
 YR_Vector3 Hitcheak::clashpos = { 0.0f,0.0f };
 YR_Vector3 Hitcheak::effectpos = { 0.0f,0.0f };
 int Hitcheak::effecttimer = 0;
+int Hitcheak::hei = 0;
 
 void SceneLoad::Init()
 {
@@ -218,8 +219,9 @@ void SceneLoad::Draw(float elapsedTime)
 	//フェード用画像描画
 	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
 
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 	//ImGui
+	if(Get_Use_ImGui())
 	{
 		ImGui::Text("Load");
 		ImGui::Text("time : %f", timer);

@@ -132,8 +132,8 @@ private:
 	const float high_jump_speed = 139.0f;	//毎フレームハイジャンプの速度に加算する数値
 	const float brake_speed =10000.0f;		//停止時にかかるブレーキ(基本ピタッと止まるので数値は大きめ)
 	const float track_speed = 100.0f;		//ホーミングダッシュの速度
-	const YR_Vector3 passive_speed = { 70.0f,30.0f };	//受け身状態にスピードに代入する速度
-	const float passive_brake = 100.0f;		//受け身中に減速する速度
+	const YR_Vector3 passive_speed = { 70.0f,70.0f };	//受け身状態にスピードに代入する速度
+	const float passive_brake = 200.0f;		//受け身中に減速する速度
 
 	float		production_time = 0.0f;	//カメラ演出に使う変数
 	

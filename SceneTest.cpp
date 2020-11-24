@@ -270,9 +270,10 @@ void SceneTest::Draw(float elapsed_time)
 	static DirectX::XMFLOAT4 ambient_color(0.3f, 0.3f, 0.3f, 0.5f);
 	//static DirectX::XMFLOAT3 box_angle = { DirectX::XMConvertToRadians(-90.0f),0.0f,0.0f };
 
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 	//ImGui
-	/*if(1)*/{
+	if(Get_Use_ImGui())
+	{
 		DirectX::XMFLOAT3	eye = YRCamera.GetEye();
 		DirectX::XMFLOAT3	focus = YRCamera.GetFocus();
 		float				fov = YRCamera.GetFov();
@@ -338,8 +339,9 @@ void SceneTest::Draw(float elapsed_time)
 	RenderTexture(V, P, light_direction, lightColor, ambient_color, elapsed_time);
 
 static bool blur = true;
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 	//ImGui
+	if(Get_Use_ImGui())
 	{
 		
 		//ImGui::Checkbox(u8"ブルーム", &blur);
@@ -411,11 +413,14 @@ static bool blur = true;
 	RenderBlur(V, P, light_direction, lightColor, ambient_color, elapsed_time);
 
 
-#if USE_IMGUI
-	if (ImGui::TreeNode(u8"合成テクスチャ"))
+#ifdef EXIST_IMGUI
+	if (Get_Use_ImGui())
 	{
-		ImGui::Image((void*)(multi_blur_texture->GetShaderResource()), ImVec2(360, 360));
-		ImGui::TreePop();
+		if (ImGui::TreeNode(u8"合成テクスチャ"))
+		{
+			ImGui::Image((void*)(multi_blur_texture->GetShaderResource()), ImVec2(360, 360));
+			ImGui::TreePop();
+		}
 	}
 #endif // USE_IMGUI
 
@@ -444,7 +449,8 @@ void SceneTest::RenderTexture(
 	//static DirectX::XMFLOAT3 sky_scale = { 10.0f,10.0f,10.0f };
 	static float sky_scale[3] = { 1.0f,1.0f,1.0f };
 
-#ifdef USE_IMGUI
+#ifdef EXIST_IMGUI
+	if(Get_Use_ImGui())
 	{
 		ImGui::InputFloat("knight_pos.x", &knight_pos.x, 0.01f, 0.01f);
 		ImGui::InputFloat("knight_pos.y", &knight_pos.y, 0.01f, 0.01f);
@@ -611,8 +617,9 @@ void SceneTest::RenderBlur(
 	static float off_x = 1.0f;
 	static float off_y = 1.0f;
 	static float deviation = 0.5f;
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 	//ImGui
+	if(Get_Use_ImGui())
 	{
 		if (ImGui::TreeNode(u8"ブルーム"))
 		{

@@ -4,7 +4,7 @@
 #include <fstream>
 
 
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 
 std::array<std::string, scastI(AttackState::ATTACK_END)> attack_name_list =
 {
@@ -811,7 +811,8 @@ void Knight::DrawDEBUG(
 	}
 
 	//UŒ‚ƒŠƒXƒgì¬—pˆ—
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
+	if(Get_Use_ImGui())
 	{
 
 		std::string p1_hp = std::to_string(hp);

@@ -31,7 +31,13 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wparam
 #ifdef  _DEBUG
 #endif // 
 
-#define		USE_IMGUI	(0)
+
+//ImGuiを完全に出さない場合はこの定義をコメントアウトする
+#define		EXIST_IMGUI
+
+//この関数でImGuiを描画するかどうかを決定する
+bool Get_Use_ImGui();
+
 #define		FADE_MIX( x )		( x * 3.0f)
 //#define		ToRadian( x )		( x * ( PI / 180.0f ) )
 
@@ -161,7 +167,7 @@ public:
 
 		
 		YRBlend.Uninit();
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 		ImGui_ImplDX11_Shutdown();
 		ImGui_ImplWin32_Shutdown();
 		ImGui::DestroyContext();
@@ -181,7 +187,7 @@ public:
 			}
 			else
 			{
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 				ImGui_ImplDX11_NewFrame();
 				ImGui_ImplWin32_NewFrame();
 				ImGui::NewFrame();
@@ -198,7 +204,7 @@ public:
 
 	LRESULT CALLBACK handle_message(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	{
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 
 		if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam))
 		{

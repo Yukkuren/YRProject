@@ -8,6 +8,18 @@
 #include "YRSound.h"
 #include "Effect.h"
 
+//‚±‚Ì•Ï”‚Å•\Ž¦A”ñ•\Ž¦‚ðØ‚è‘Ö‚¦‚é
+static bool use_ImGui = true;
+
+bool Get_Use_ImGui()
+{
+#ifdef EXIST_IMGUI
+	return use_ImGui;
+#endif // !EXIST_IMGUI
+	return false;
+}
+
+
 void BlendCreate(ID3D11Device *device, ID3D11BlendState **blendstate)
 {
 	HRESULT hr = S_OK;
@@ -275,7 +287,6 @@ bool framework::initialize()
 	//D3D_DRIVER_TYPE         g_driverType = D3D_DRIVER_TYPE_NULL;
 	//D3D_FEATURE_LEVEL       g_featureLevel = D3D_FEATURE_LEVEL_11_0;
 
-
 	HRESULT hr = S_OK;
 
 	RECT rc;
@@ -446,7 +457,7 @@ bool framework::initialize()
 	vp.TopLeftY = 0;
 	context.Get()->RSSetViewports(1, &vp);
 
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 
 	//ImGui‰ŠúÝ’è
 	ImGui_ImplDX11_Init(device.Get(), context.Get());
@@ -535,6 +546,15 @@ bool framework::initialize()
 }
 void framework::update(float elapsed_time/*Elapsed seconds from last frame*/)
 {
+#ifdef EXIST_IMGUI
+
+	if (pKeyState.spaceflg == 1 && pKeyState.lshiftflg > 0)
+	{
+		use_ImGui = !use_ImGui;
+	}
+
+#endif // EXIST_IMGUI
+
 	YRCamera.Active();
 	pMouse.Update();
 	GetSound().Update();
@@ -643,8 +663,9 @@ void framework::render(float elapsed_time/*Elapsed seconds from last frame*/)
 	//static DirectX::XMFLOAT4 ambient_color(0.3f, 0.3f, 0.3f, 0.5f);
 	//static float anim_count = 0.0f;
 	//static int time = 0;
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 	//ImGui
+	if(use_ImGui)
 	{
 		/*bool show_demo_window = true;
 		bool show_another_window = false;
@@ -815,7 +836,7 @@ void framework::render(float elapsed_time/*Elapsed seconds from last frame*/)
 
 	GetSound().SoundDebugDrow();
 
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 #endif

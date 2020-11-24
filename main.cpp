@@ -67,14 +67,14 @@ INT WINAPI wWinMain(HINSTANCE instance, HINSTANCE prev_instance, LPWSTR cmd_line
 	ShowWindow(hwnd, cmd_show);
 	UpdateWindow(hwnd);
 
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 #endif
 
 	framework& f = framework::getInstance(hwnd);
 	SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(&f));
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 	ImGui_ImplWin32_Init(hwnd);
 #endif
 	return f.run();

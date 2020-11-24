@@ -130,6 +130,18 @@
     <FxCompile Include="CharaSelectShader_ps.hlsl">
       <Filter>Shader\CharaSelectShader</Filter>
     </FxCompile>
+    <FxCompile Include="CyberShader_ps.hlsl">
+      <Filter>Shader\CyberShader</Filter>
+    </FxCompile>
+    <FxCompile Include="CyberShader_vs.hlsl">
+      <Filter>Shader\CyberShader</Filter>
+    </FxCompile>
+    <FxCompile Include="ConcentrationShader_vs.hlsl">
+      <Filter>Shader\ConcentrationShader</Filter>
+    </FxCompile>
+    <FxCompile Include="ConcentrationShader_ps.hlsl">
+      <Filter>Shader\ConcentrationShader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="1PGamePad.cpp">
@@ -478,6 +490,12 @@
     <None Include="ShaderToy.hlsli">
       <Filter>Shader</Filter>
     </None>
+    <None Include="CyberShader.hlsli">
+      <Filter>Shader\CyberShader</Filter>
+    </None>
+    <None Include="ConcentrationShader.hlsli">
+      <Filter>Shader\ConcentrationShader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shader">
@@ -569,6 +587,12 @@
     </Filter>
     <Filter Include="Shader\CharaSelectShader">
       <UniqueIdentifier>{68e5516e-6fb2-4a7e-8749-0f8f5e2be420}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\CyberShader">
+      <UniqueIdentifier>{81c4f818-effa-4c43-befa-2d81ca51061b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\ConcentrationShader">
+      <UniqueIdentifier>{0206af5d-a27d-451c-a66d-e4200a80e5fb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

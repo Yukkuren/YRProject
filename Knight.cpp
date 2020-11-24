@@ -322,7 +322,6 @@ void Knight::Update(float decision, float elapsed_time)
 		ground = false;
 	}
 
-	AttackUpdate(elapsed_time);	//攻撃判定の更新
 
 	//-----------------------------------------------------
 	// *概要*
@@ -491,6 +490,8 @@ void Knight::Update(float decision, float elapsed_time)
 	{
 		pad->pre_input = false;
 	}
+
+	AttackUpdate(elapsed_time);	//攻撃判定の更新
 
 	JumpUpdate(decision,elapsed_time);
 	AirDash(elapsed_time);
@@ -723,6 +724,8 @@ void Knight::AttackInput()
 
 				//後隙を初期化
 				later = non_target;
+				//持続を初期化
+				timer = non_target;
 				//カメラ処理用変数を初期化
 				production_time = 0.0f;
 				//描画をセット
@@ -1167,7 +1170,7 @@ void Knight::Draw(
 	TextDraw();
 
 //デバッグ状態なら
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 		//プレイヤーの中心
 		if (ground)
 		{
@@ -2008,7 +2011,7 @@ void Knight::MoveAnimSet()
 		{
 			//描画をセット
 			//左向き
-			anim->NodeChange(model_motion.back_L);
+			anim->NodeChange(model_motion.walk_L);
 			anim_ccodinate = ac_act[scastI(ActState::MOVEL)].fream;
 		}
 	}
@@ -2020,7 +2023,7 @@ void Knight::MoveAnimSet()
 		{
 			//描画をセット
 			//左向き
-			anim->NodeChange(model_motion.walk_L);
+			anim->NodeChange(model_motion.back_L);
 			anim_ccodinate = ac_act[scastI(ActState::MOVER)].fream;
 		}
 		else
@@ -4080,64 +4083,70 @@ void Knight::ReadySet()
 //カメラ調整用デバッグ関数
 void Knight::IntroDEBUG()
 {
-#if USE_IMGUI
-	ImGui::Begin(u8"イントロカメラ");
-	int state_in = scastI(intro_state);
-	ImGui::InputInt(u8"ステート", &state_in, 1, 10);
-	if (ImGui::TreeNode("Input"))
+#ifdef EXIST_IMGUI
+	if (Get_Use_ImGui())
 	{
-		ImGui::InputFloat("eye.X", &eye_plus.x, 0.1f, 1.0f);
-		ImGui::InputFloat("eye.Y", &eye_plus.y, 0.1f, 1.0f);
-		ImGui::InputFloat("eye.Z", &eye_plus.z, 0.1f, 1.0f);
-		ImGui::InputFloat("focus.X", &focus_plus.x, 0.1f, 1.0f);
-		ImGui::InputFloat("focus.Y", &focus_plus.y, 0.1f, 1.0f);
-		ImGui::InputFloat("focus.Z", &focus_plus.z, 0.1f, 1.0f);
-		ImGui::TreePop();
+		ImGui::Begin(u8"イントロカメラ");
+		int state_in = scastI(intro_state);
+		ImGui::InputInt(u8"ステート", &state_in, 1, 10);
+		if (ImGui::TreeNode("Input"))
+		{
+			ImGui::InputFloat("eye.X", &eye_plus.x, 0.1f, 1.0f);
+			ImGui::InputFloat("eye.Y", &eye_plus.y, 0.1f, 1.0f);
+			ImGui::InputFloat("eye.Z", &eye_plus.z, 0.1f, 1.0f);
+			ImGui::InputFloat("focus.X", &focus_plus.x, 0.1f, 1.0f);
+			ImGui::InputFloat("focus.Y", &focus_plus.y, 0.1f, 1.0f);
+			ImGui::InputFloat("focus.Z", &focus_plus.z, 0.1f, 1.0f);
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Slider"))
+		{
+			ImGui::SliderFloat("eye_X", &eye_plus.x, -350.1f, 350.1f);
+			ImGui::SliderFloat("eye_Y", &eye_plus.y, -350.1f, 350.1);
+			ImGui::SliderFloat("eye_Z", &eye_plus.z, -350.1f, 350.1);
+			ImGui::SliderFloat("focus_X", &focus_plus.x, -350.1f, 350.1);
+			ImGui::SliderFloat("focus_Y", &focus_plus.y, -350.1f, 350.1);
+			ImGui::SliderFloat("focus_Z", &focus_plus.z, -350.1f, 350.1);
+			ImGui::TreePop();
+		}
+		ImGui::Text("intro_timer = %.3f", intro_timer);
+		ImGui::End();
 	}
-	if (ImGui::TreeNode("Slider"))
-	{
-		ImGui::SliderFloat("eye_X", &eye_plus.x, -350.1f, 350.1f);
-		ImGui::SliderFloat("eye_Y", &eye_plus.y, -350.1f, 350.1);
-		ImGui::SliderFloat("eye_Z", &eye_plus.z, -350.1f, 350.1);
-		ImGui::SliderFloat("focus_X", &focus_plus.x, -350.1f, 350.1);
-		ImGui::SliderFloat("focus_Y", &focus_plus.y, -350.1f, 350.1);
-		ImGui::SliderFloat("focus_Z", &focus_plus.z, -350.1f, 350.1);
-		ImGui::TreePop();
-	}
-	ImGui::Text("intro_timer = %.3f", intro_timer);
-	ImGui::End();
 #endif // USE_IMGUI
 
 }
 
 void Knight::WinDEBUG()
 {
-#if USE_IMGUI
-	ImGui::Begin(u8"勝利カメラ");
-	int state_in = scastI(win_state);
-	ImGui::InputInt(u8"ステート", &state_in, 1, 10);
-	if (ImGui::TreeNode("Input"))
+#ifdef EXIST_IMGUI
+	if (Get_Use_ImGui())
 	{
-		ImGui::InputFloat("eye.X", &eye_plus.x, 0.1f, 1.0f);
-		ImGui::InputFloat("eye.Y", &eye_plus.y, 0.1f, 1.0f);
-		ImGui::InputFloat("eye.Z", &eye_plus.z, 0.1f, 1.0f);
-		ImGui::InputFloat("focus.X", &focus_plus.x, 0.1f, 1.0f);
-		ImGui::InputFloat("focus.Y", &focus_plus.y, 0.1f, 1.0f);
-		ImGui::InputFloat("focus.Z", &focus_plus.z, 0.1f, 1.0f);
-		ImGui::TreePop();
+		ImGui::Begin(u8"勝利カメラ");
+		int state_in = scastI(win_state);
+		ImGui::InputInt(u8"ステート", &state_in, 1, 10);
+		if (ImGui::TreeNode("Input"))
+		{
+			ImGui::InputFloat("eye.X", &eye_plus.x, 0.1f, 1.0f);
+			ImGui::InputFloat("eye.Y", &eye_plus.y, 0.1f, 1.0f);
+			ImGui::InputFloat("eye.Z", &eye_plus.z, 0.1f, 1.0f);
+			ImGui::InputFloat("focus.X", &focus_plus.x, 0.1f, 1.0f);
+			ImGui::InputFloat("focus.Y", &focus_plus.y, 0.1f, 1.0f);
+			ImGui::InputFloat("focus.Z", &focus_plus.z, 0.1f, 1.0f);
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Slider"))
+		{
+			ImGui::SliderFloat("eye_X", &eye_plus.x, -350.1f, 350.1f);
+			ImGui::SliderFloat("eye_Y", &eye_plus.y, -350.1f, 350.1);
+			ImGui::SliderFloat("eye_Z", &eye_plus.z, -350.1f, 350.1);
+			ImGui::SliderFloat("focus_X", &focus_plus.x, -350.1f, 350.1);
+			ImGui::SliderFloat("focus_Y", &focus_plus.y, -350.1f, 350.1);
+			ImGui::SliderFloat("focus_Z", &focus_plus.z, -350.1f, 350.1);
+			ImGui::TreePop();
+		}
+		ImGui::Text("intro_timer = %.3f", win_timer);
+		ImGui::End();
 	}
-	if (ImGui::TreeNode("Slider"))
-	{
-		ImGui::SliderFloat("eye_X", &eye_plus.x, -350.1f, 350.1f);
-		ImGui::SliderFloat("eye_Y", &eye_plus.y, -350.1f, 350.1);
-		ImGui::SliderFloat("eye_Z", &eye_plus.z, -350.1f, 350.1);
-		ImGui::SliderFloat("focus_X", &focus_plus.x, -350.1f, 350.1);
-		ImGui::SliderFloat("focus_Y", &focus_plus.y, -350.1f, 350.1);
-		ImGui::SliderFloat("focus_Z", &focus_plus.z, -350.1f, 350.1);
-		ImGui::TreePop();
-	}
-	ImGui::Text("intro_timer = %.3f", win_timer);
-	ImGui::End();
 #endif // USE_IMGUI
 
 }

@@ -18,7 +18,7 @@
 //
 //------------------------------------------------
 
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 
 std::array<std::string, scastI(SceneGame::Player2PControl::END)> p2_con_name_list =
 {
@@ -40,6 +40,24 @@ std::array<std::string, scastI(AI_Controller::AI_State::END)> p2_AI_state_list =
 	u8"体力がなくなった",
 	u8"ダウン中"
 };
+
+std::array<std::string, scastI(Camera::CAMERA_STATE::ZOOM_CAMERA+1)> camera_state_list =
+{
+	u8"メインカメラ",
+	u8"プレイヤー1P",
+	u8"プレイヤー2P",
+	u8"ズームカメラ",
+};
+
+std::array<std::string, scastI(Camera::Request::ZOOM + 1)> camera_request_list =
+{
+	u8"なし",
+	u8"カメラをつかんでいる",
+	u8"カメラを離した",
+	u8"持つ手を弱めている",
+	u8"ズームさせる",
+};
+
 
 #endif // USE_IMGUI
 
@@ -633,7 +651,7 @@ void SceneGame::Update(float elapsed_time)
 					player1p->pad->Update(game_speed);
 					Control2PState(game_speed);
 					timer += elapsed_time;
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 					if (pKeyState.oflg == 1)
 					{
 						//player1p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
@@ -692,6 +710,11 @@ void SceneGame::Update(float elapsed_time)
 					Hitcheak::add2P = Hitcheak::HitCheak(player2p->projectile_atk, player1p->hit, 1, player2p->pos);
 					player1p->GaugeUp(Hitcheak::add1P);
 					player2p->GaugeUp(Hitcheak::add2P);
+
+					if (Hitcheak::hei == 1)
+					{
+						player1p->pad->x_input[scastI(PAD::A)] = 1;
+					}
 
 					//ヒットストップ処理
 					if (Hitcheak::hit)
@@ -1002,8 +1025,9 @@ void SceneGame::Draw(float elapsed_time)
 	static DirectX::XMFLOAT4 ambient_color(0.3f, 0.3f, 0.3f, 0.5f);
 	//FRAMEWORK.context.Get()->OMSetRenderTargets(1, FRAMEWORK.view.GetAddressOf(), FRAMEWORK.depth.Get());
 	SetRenderTexture();
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 	//ImGui
+	if(Get_Use_ImGui())
 	{
 		DirectX::XMFLOAT3	eye = YRCamera.GetEye();
 		DirectX::XMFLOAT3	focus = YRCamera.GetFocus();
@@ -1032,7 +1056,9 @@ void SceneGame::Draw(float elapsed_time)
 			eye.z -= 10.0f;
 		}
 
-		ImGui::Text(p2_AI_state_list[scastI(AI2P.state)].c_str());
+		ImGui::Text("AIState : "); ImGui::SameLine();ImGui::Text(p2_AI_state_list[scastI(AI2P.state)].c_str());
+		ImGui::Text(u8"カメラのステート : "); ImGui::SameLine(); ImGui::Text(camera_state_list[scastI(YRCamera.camera_state)].c_str());
+		ImGui::Text(u8"カメラリクエストステート : "); ImGui::SameLine(); ImGui::Text(camera_request_list[scastI(YRCamera.GetRequest())].c_str());
 		ImGui::Text("%f", AI2P.timer);
 		float dis = player1p->pos.Distance(player2p->pos);
 		ImGui::Text("%f", dis);
@@ -1261,21 +1287,24 @@ void SceneGame::Draw(float elapsed_time)
 		);*/
 
 
-#if USE_IMGUI
-		FRAMEWORK.context->OMSetDepthStencilState(m_depth_stencil_state2.Get(), 1);
-		player1p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed *p1_elapsed_time);
-		player2p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed *p2_elapsed_time);
-		
-		/*motion.DrawContinue(
-		skinShader.get(),
-		DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-		DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
-		box_angle,
-		V, P, light_direction, lightColor, ambient_color, elapsed_time
-	);*/
+#ifdef EXIST_IMGUI
+		if (Get_Use_ImGui())
+		{
+			FRAMEWORK.context->OMSetDepthStencilState(m_depth_stencil_state2.Get(), 1);
+			player1p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed * p1_elapsed_time);
+			player2p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed * p2_elapsed_time);
 
-		YRCamera.CameraMove(spriteShader.get());
-		FRAMEWORK.context->OMSetDepthStencilState(m_depth_stencil_state.Get(), 1);
+			/*motion.DrawContinue(
+			skinShader.get(),
+			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+			DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
+			box_angle,
+			V, P, light_direction, lightColor, ambient_color, elapsed_time
+		);*/
+
+			YRCamera.CameraMove(spriteShader.get());
+			FRAMEWORK.context->OMSetDepthStencilState(m_depth_stencil_state.Get(), 1);
+		}
 #endif // USE_IMGUI
 		
 
@@ -1921,12 +1950,15 @@ void SceneGame::RenderTexture()
 		0.0f, 0.0f, 1920.0f, 1080.0f,
 		0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
 
-#if USE_IMGUI
-	if (ImGui::TreeNode(u8"カラーテクスチャ"))
+#ifdef EXIST_IMGUI
+	if (Get_Use_ImGui())
 	{
-		ImGui::Image((void*)(color_texture->GetShaderResource()), ImVec2(360, 360));
-		ImGui::Image((void*)(luminance_texture->GetShaderResource()), ImVec2(360, 360));
-		ImGui::TreePop();
+		if (ImGui::TreeNode(u8"カラーテクスチャ"))
+		{
+			ImGui::Image((void*)(color_texture->GetShaderResource()), ImVec2(360, 360));
+			ImGui::Image((void*)(luminance_texture->GetShaderResource()), ImVec2(360, 360));
+			ImGui::TreePop();
+		}
 	}
 #endif // USE_IMGUI
 
@@ -1938,8 +1970,9 @@ void SceneGame::RenderBlur()
 	static float off_x = 1.0f;
 	static float off_y = 1.0f;
 	static float deviation = 0.5f;
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
 	//ImGui
+	if(Get_Use_ImGui())
 	{
 		if (ImGui::TreeNode(u8"ブルーム"))
 		{

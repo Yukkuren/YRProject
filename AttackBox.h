@@ -93,6 +93,13 @@ public:
 	Effekseer::Handle	handle;		//エフェクトのハンドル
 	EffectKind			effect_kind;//エフェクトの種類
 
+	AttackBox() 
+	{ 
+		effect_kind = EffectKind::NONE;
+
+	};
+	~AttackBox();
+
 	void Init(int attack_name, AttackParameter& param, float rightOrleft, YR_Vector3 pl_pos);
 	void Init(int attack_name, AttackParameter& param, float rightOrleft, YR_Vector3 pl_pos, YR_Vector3 plus_speed);
 	void Update(YR_Vector3 pl_pos, float elapsed_time);

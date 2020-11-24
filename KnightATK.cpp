@@ -60,6 +60,9 @@ void Knight::AttackDefault(float elapsed_time)
 		}
 		fream = non_target;
 		
+
+		//持続時間を設定
+		timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
 
@@ -86,20 +89,31 @@ void Knight::AttackDefault(float elapsed_time)
 		}
 	}
 
-	if (atk.empty())
+	if (timer > 0.0f && timer < target_max)
 	{
-		//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-		return;
+		//持続フレームを減らしていく
+		timer -= elapsed_time;
 	}
 
+	//if (atk.empty())
+	//{
+	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
+	//	return;
+	//}
 
-	//攻撃が全て終了したことを確認する
-	if (AttackEndCheck())
+
+	//持続時間が全て終了したことを確認する
+	if (timer < 0.0f)
 	{
+	////攻撃が全て終了したことを確認する
+	//if (AttackEndCheck())
+	//{
 		//まだ攻撃が残っていれば次の攻撃に移る
 		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
 		{
 			fream = attack_list[now_at_list].attack_single[attack_list[now_at_list].now_attack_num].fream;
+			//持続フレームを初期化
+			timer = non_target;
 		}
 		else
 		{
@@ -111,6 +125,8 @@ void Knight::AttackDefault(float elapsed_time)
 			//アニメーション速度を指定
 			anim_ccodinate = ac_attack[now_at_list].later;
 			HitBoxTransition(HitBoxState::NOGUARD);
+			//持続フレームを初期化
+			timer = non_target;
 			//描画をセット
 			if (rightOrleft > 0)
 			{
@@ -1801,6 +1817,16 @@ void Knight::SpecialAttack(float elapsed_time)
 	if (fream < target_max)
 	{
 		//攻撃発生の結果を保存する
+		YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
+		if (now_player > 1)
+		{
+			YRCamera.camera_state = Camera::CAMERA_STATE::PLAYER2P;
+		}
+		else
+		{
+			YRCamera.camera_state = Camera::CAMERA_STATE::PLAYER1P;
+		}
+		
 		hit_result = HitResult::NOT_OCCURRENCE;
 		fream -= elapsed_time;
 

@@ -92,7 +92,8 @@ void Stage::Draw(
 {
 	static DirectX::XMFLOAT4 light_direction_stage = DirectX::XMFLOAT4(-0.4f, -0.7f, 0.7f, 0.0f);
 	static DirectX::XMFLOAT4 ambient_color_stage(0.0f, 0.0f, 0.0f, 0.5f);
-#if USE_IMGUI
+#ifdef EXIST_IMGUI
+	if(Get_Use_ImGui())
 	{
 		
 		bool show_another_window = false;
