@@ -641,6 +641,7 @@ void SceneTitle::Draw(float elapsed_time)
 					0.0f,
 					0.3f,
 					2,
+					SpriteMask::NONE,
 					DirectX::XMFLOAT4(0.2f, 0.2f, 0.2f, 0.3f)
 				);
 			}
@@ -653,6 +654,7 @@ void SceneTitle::Draw(float elapsed_time)
 					0.0f,
 					0.3f,
 					1,
+					SpriteMask::NONE,
 					DirectX::XMFLOAT4(0.2f, 0.2f, 0.2f, 0.3f)
 				);
 				choice_img->DrawRotaDivGraph(
@@ -683,6 +685,7 @@ void SceneTitle::Draw(float elapsed_time)
 					0.0f,
 					0.3f,
 					2,
+					SpriteMask::NONE,
 					DirectX::XMFLOAT4(0.2f, 0.2f, 0.2f, 0.3f)
 				);
 			}
@@ -695,6 +698,7 @@ void SceneTitle::Draw(float elapsed_time)
 					0.0f,
 					0.3f,
 					1,
+					SpriteMask::NONE,
 					DirectX::XMFLOAT4(0.2f, 0.2f, 0.2f, 0.3f)
 				);
 				choice_img->DrawRotaDivGraph(
@@ -818,7 +822,7 @@ void SceneTitle::Draw(float elapsed_time)
 
 		//SceneRender(elapsed_time);
 	}
-	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
+	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
 }
 
 

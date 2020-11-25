@@ -84,7 +84,7 @@ public:
 	void DrawBox(YRShader *shader,float posX, float posY, float angle = 0.0f, DirectX::XMFLOAT4 color = { 1,1,1,0.5f })
 	{
 		//FRAMEWORK.BlendSet(Blend::BLEND_MODE::ALPHA);
-		pColSprite.box->DrawRotaGraph(shader,posX, posY, angle, boxsize, color);
+		pColSprite.box->DrawRotaGraph(shader,posX, posY, angle, boxsize,SpriteMask::NONE, color);
 		//FRAMEWORK.BlendSet(Blend::BLEND_MODE::NONE);
 	}
 	void DrawCircle(YRShader *shader,float posX, float posY, float angle = 0.0f, DirectX::XMFLOAT4 color = { 1,1,1,0.5f })

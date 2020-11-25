@@ -338,6 +338,10 @@ void SceneGame::LoadData()
 	//生成後初期化する(座標系、HP、UI座標など)
 	player1p->LoadData(1);
 	player2p->LoadData(2);
+
+	PL.pos1P = { -11.0f,0.0f };
+	PL.pos2P = { 11.0f,0.0f };
+
 	player1p->Init(PL.pos1P);
 	player2p->Init(PL.pos2P);
 	//キャラにどのプレイヤーが操作しているかの情報を与える
@@ -1172,7 +1176,7 @@ void SceneGame::Draw(float elapsed_time)
 		switch (YRCamera.GetRequest())
 		{
 		case Camera::Request::HOLD:
-			FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.8f));
+			FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.8f));
 			break;
 		default:
 			break;
@@ -1201,6 +1205,7 @@ void SceneGame::Draw(float elapsed_time)
 				0.0f,
 				3.0f,
 				p1combo[2],
+				SpriteMask::NONE,
 				DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
 			);
 			if (player1p->combo_count > 9)
@@ -1213,6 +1218,7 @@ void SceneGame::Draw(float elapsed_time)
 					0.0f,
 					3.0f,
 					p1combo[1],
+					SpriteMask::NONE,
 					DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
 				);
 			}
@@ -1226,6 +1232,7 @@ void SceneGame::Draw(float elapsed_time)
 					0.0f,
 					3.0f,
 					p1combo[0],
+					SpriteMask::NONE,
 					DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
 				);
 			}
@@ -1241,6 +1248,7 @@ void SceneGame::Draw(float elapsed_time)
 				0.0f,
 				3.0f,
 				p2combo[2],
+				SpriteMask::NONE,
 				DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
 			);
 			if (player2p->combo_count > 9)
@@ -1253,6 +1261,7 @@ void SceneGame::Draw(float elapsed_time)
 					0.0f,
 					3.0f,
 					p2combo[1],
+					SpriteMask::NONE,
 					DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
 				);
 			}
@@ -1266,6 +1275,7 @@ void SceneGame::Draw(float elapsed_time)
 					0.0f,
 					3.0f,
 					p2combo[0],
+					SpriteMask::NONE,
 					DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
 				);
 			}
@@ -1315,9 +1325,9 @@ void SceneGame::Draw(float elapsed_time)
 		PL.gauge2P = (player2p->gauge / GAUGE_MAX) * 640.0f;
 
 		PL.power1P = ColorSet(player1p->power);
-		gauge_img->DrawExtendGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + PL.gauge1P, 1064.0f, PL.power1P);
+		gauge_img->DrawExtendGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + PL.gauge1P, 1064.0f, SpriteMask::NONE, PL.power1P);
 		PL.power2P = ColorSet(player2p->power);
-		gauge_img->DrawExtendGraph(spriteShader.get(), 1800.0f - PL.gauge2P, 1000.0f, 1800.0f, 1064.0f, PL.power2P);
+		gauge_img->DrawExtendGraph(spriteShader.get(), 1800.0f - PL.gauge2P, 1000.0f, 1800.0f, 1064.0f, SpriteMask::NONE, PL.power2P);
 
 		//ゲージケース
 		gaugecase_img->DrawExtendGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + 640.0f, 1064.0f);
@@ -1332,6 +1342,7 @@ void SceneGame::Draw(float elapsed_time)
 			0.0f,
 			2.0f,
 			player1p->power,
+			SpriteMask::NONE,
 			PL.power1P
 		);
 		font_img->DrawRotaDivGraph
@@ -1342,6 +1353,7 @@ void SceneGame::Draw(float elapsed_time)
 			0.0f,
 			2.0f,
 			player2p->power,
+			SpriteMask::NONE,
 			PL.power2P
 		);
 
@@ -1439,7 +1451,7 @@ void SceneGame::Draw(float elapsed_time)
 	}
 
 	//フェード用画像描画
-	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
+	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
 	NullSetRenderTexture();
 	RenderTexture();
 	RenderBlur();

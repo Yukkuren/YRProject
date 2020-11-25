@@ -81,7 +81,7 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>	shader;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState>			sampler;
 	D3D11_TEXTURE2D_DESC								texture2d_desc;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>		depthstate[scastI(SpriteMask::END)];
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>		depthstate[static_cast<int>(SpriteMask::END)];
 	//ID3D11BlendState *blendstate;
 	//vertex vertics[4];
 
@@ -107,8 +107,9 @@ public:
 		float sx, float sy,				//Coordinate of sprite's left-top corner in texture space
 		float sw, float sh,				//Sizeof sprite in texture space
 		float angle,					//Raotation angle (Rotation centre is sprite's center),Unit is degree
-		float r,float g,float b,	//Color of sprite's each vertices
-		float a
+		float r,float g,float b,		//Color of sprite's each vertices
+		float a,
+		SpriteMask mask = SpriteMask::NONE
 	);
 
 	void render(
@@ -180,12 +181,12 @@ public:
 	}
 
 	//画像通常描画(コンテキスト、描画位置X、描画位置Y)
-	void DrawGraph(YRShader* shader, float x, float y)
+	void DrawGraph(YRShader* shader, float x, float y, SpriteMask mask = SpriteMask::NONE)
 	{
-		render( shader,x - (sw / 2.0f), y - (sh / 2.0f), sw, sh, sx, sy, sw, sh, 0.0f, 1, 1, 1, 1);
+		render( shader,x - (sw / 2.0f), y - (sh / 2.0f), sw, sh, sx, sy, sw, sh, 0.0f, 1, 1, 1, 1,mask);
 	}
 	//画像回転描画(コンテキスト、描画位置x,y、回転角度、画像拡大率)
-	void DrawRotaGraph(YRShader* shader, float x, float y, float angle, float size, DirectX::XMFLOAT4 color = { 1,1,1,1 })
+	void DrawRotaGraph(YRShader* shader, float x, float y, float angle, float size, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1,1,1,1 })
 	{
 		render(
 			shader,
@@ -200,14 +201,15 @@ public:
 			color.x,
 			color.y,
 			color.z,
-			color.w);
+			color.w,
+			mask);
 	}
 
 	//画像回転描画(画像描画サイズ決定型)(コンテキスト、描画位置x,y、回転角度、画像拡大率)
 	void DrawRotaGraph(
 		YRShader* shader,
 		float x, float y, float angle,
-		DirectX::XMFLOAT2 size, DirectX::XMFLOAT4 color = { 1,1,1,1 })
+		DirectX::XMFLOAT2 size, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1,1,1,1 })
 	{
 		render(
 			shader,
@@ -222,7 +224,8 @@ public:
 			color.x,
 			color.y,
 			color.z,
-			color.w);
+			color.w,
+			mask);
 	}
 	//円形画像描画(画像描画サイズ決定型)(コンテキスト、描画位置x,y、回転角度、円の半径)
 	void DrawCircleGraph(
@@ -250,7 +253,7 @@ public:
 	void DrawRotaDivGraph(
 		YRShader* shader,
 		int number,
-		float x, float y, float angle, float size, DirectX::XMFLOAT4 color = { 1,1,1,1 })
+		float x, float y, float angle, float size, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1,1,1,1 })
 	{
 		//number:画像の番号
 		//x,y:描画位置
@@ -272,7 +275,8 @@ public:
 			color.x,
 			color.y,
 			color.z,
-			color.w
+			color.w,
+			mask
 		);
 
 	}
@@ -280,7 +284,7 @@ public:
 	//分割画像アニメーション描画(コンテキスト、描画位置X,Y、回転角度、画像拡大率、アニメーション速度、カラー)
 	void DrawRotaDivGraph(
 		YRShader* shader,
-		float x, float y, float angle, float size, float frame,float elapsed_speed, DirectX::XMFLOAT4 color = { 1,1,1,1 })
+		float x, float y, float angle, float size, float frame,float elapsed_speed, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1,1,1,1 })
 	{
 		//x,y:描画位置
 		//nx,ny:描画する画像の縦、横の分割数
@@ -313,7 +317,8 @@ public:
 			color.x,
 			color.y,
 			color.z,
-			color.w
+			color.w,
+			mask
 		);
 
 	}
@@ -321,7 +326,7 @@ public:
 	//分割画像描画(シェーダー、描画位置X,Y、回転角度、画像拡大率、画像の番号、カラー)
 	void DrawRotaDivGraph(
 		YRShader* shader,
-		float x, float y, float angle, float size,int num, DirectX::XMFLOAT4 color = { 1,1,1,1 })
+		float x, float y, float angle, float size,int num, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1,1,1,1 })
 	{
 		//x,y:描画位置
 		//nx,ny:描画する画像の縦、横の分割数
@@ -342,23 +347,24 @@ public:
 			color.x,
 			color.y,
 			color.z,
-			color.w
+			color.w,
+			mask
 		);
 
 	}
 
 	//描画範囲指定描画(シェーダー、描画位置(x,y)、描画したい矩形の左上座標(x,y)、サイズ(指定した左上からどこまで))
 	//中心が左端なので注意
-	void DrawRectGraph(YRShader* shader, float x, float y, float srcX, float srcY, float width, float height, DirectX::XMFLOAT4 color = { 1,1,1,1 })
+	void DrawRectGraph(YRShader* shader, float x, float y, float srcX, float srcY, float width, float height, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1,1,1,1 })
 	{
-		render(shader, x, y, width, height, srcX, srcY, width, height, 0.0f, color.x, color.y, color.z, color.w);
+		render(shader, x, y, width, height, srcX, srcY, width, height, 0.0f, color.x, color.y, color.z, color.w,mask);
 	}
 
-	void DrawExtendGraph(YRShader* shader, float x, float y, float x2, float y2, DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,1.0f })
+	void DrawExtendGraph(YRShader* shader, float x, float y, float x2, float y2, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,1.0f })
 	{
 		float width = x2 - x;
 		float height = y2 - y;
-		render(shader, x, y, width, height, sx, sy, sw, sh, 0.0f, color.x, color.y, color.z, color.w);
+		render(shader, x, y, width, height, sx, sy, sw, sh, 0.0f, color.x, color.y, color.z, color.w,mask);
 	}
 
 	Sprite();

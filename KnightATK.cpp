@@ -789,6 +789,8 @@ void Knight::Steal(float elapsed_time)
 		attack_list[slow].now_attack_num = 0;
 		//後隙を初期化
 		later = non_target;
+		//持続を初期化
+		timer = non_target;
 		//投げ時間をセットする
 		steal_escape = attack_list[steal].attack_single[0].parameter[0].stealtimer;
 		//攻撃ごとに個別の設定を行う
@@ -1860,18 +1862,18 @@ void Knight::TrackDash(float decision, float elapsed_time)
 		timer -= elapsed_time;
 	}
 
-	if (atk.empty())
-	{
-		//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-		return;
-	}
-
-	////持続時間が全て終了したことを確認する
-	//if (timer < 0.0f)
+	//if (atk.empty())
 	//{
-	//攻撃が全て終了したことを確認する
-	if (AttackEndCheck())
+	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
+	//	return;
+	//}
+
+	//持続時間が全て終了したことを確認する
+	if (timer < 0.0f)
 	{
+	////攻撃が全て終了したことを確認する
+	//if (AttackEndCheck())
+	//{
 		//まだ攻撃が残っていれば次の攻撃に移る
 		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
 		{

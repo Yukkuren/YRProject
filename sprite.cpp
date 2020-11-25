@@ -224,10 +224,10 @@ void Sprite::Init(const wchar_t* wchar)
 
 	D3D11_DEPTH_STENCIL_DESC depth_desc;
 
-	depth_desc.DepthEnable = FALSE;
+	depth_desc.DepthEnable = false;
 	depth_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	depth_desc.DepthFunc = D3D11_COMPARISON_LESS;
-	depth_desc.StencilEnable = FALSE;
+	depth_desc.StencilEnable = false;
 	depth_desc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
 	depth_desc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
 	depth_desc.FrontFace.StencilFunc = depth_desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
@@ -236,7 +236,72 @@ void Sprite::Init(const wchar_t* wchar)
 	depth_desc.FrontFace.StencilFailOp = depth_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
 
 
-	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, depthstate.GetAddressOf());
+	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, depthstate[scastI(SpriteMask::NONE)].GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+
+	// マスク領域にステンシル値書き込み
+	//   深度テストが失敗したときにステンシル値を書き込む設定
+	//   このステートで描画したときは深度テストに必ず失敗するようにしているため、
+	//   ピクセルに色は打たれないが、ステンシルバッファにステンシル値が書き込まれる。
+	//   000000000000
+	//   000011110000  ←描画した場所のステンシルバッファに値が書き込まる。
+	//   000011110000
+	//   000000000000
+	depth_desc.DepthEnable = true;
+	depth_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depth_desc.DepthFunc = D3D11_COMPARISON_NEVER;	// 深度テストは必ず失敗させるようにする
+	depth_desc.StencilEnable = true;
+	depth_desc.StencilReadMask = ~0;
+	depth_desc.StencilWriteMask = ~0;
+	depth_desc.FrontFace.StencilFunc = depth_desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depth_desc.FrontFace.StencilPassOp = depth_desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilFailOp = depth_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilDepthFailOp = depth_desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_REPLACE;
+
+	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, depthstate[scastI(SpriteMask::WRITE)].GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+
+	// マスク領域内に描画
+	//   深度バッファに書き込まれている値と同じ値を参照した場合のみピクセルに色を打つようにする。
+	//   000000000000
+	//   000011110000  ← 0の場所に描画しようとした場合、その場所はピクセルが打たれない。
+	//   000011110000
+	//   000000000000
+	depth_desc.DepthEnable = true;
+	depth_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depth_desc.DepthFunc = D3D11_COMPARISON_ALWAYS;	// 深度テストは必ず合格させるようにする
+	depth_desc.StencilEnable = true;
+	depth_desc.StencilReadMask = ~0;
+	depth_desc.StencilWriteMask = ~0;
+	depth_desc.FrontFace.StencilFunc = depth_desc.BackFace.StencilFunc = D3D11_COMPARISON_EQUAL;
+	depth_desc.FrontFace.StencilPassOp = depth_desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilFailOp = depth_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilDepthFailOp = depth_desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+
+	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, depthstate[scastI(SpriteMask::INDRAW)].GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+
+	// マスク領域外に描画
+	//   深度バッファに書き込まれている値と同じ値を参照した場合はピクセルに色を打たないようにする。
+	//   000000000000
+	//   000011110000  ← 1の場所に描画しようとした場合、その場所はピクセルが打たれない。
+	//   000011110000
+	//   000000000000
+	depth_desc.DepthEnable = true;
+	depth_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depth_desc.DepthFunc = D3D11_COMPARISON_ALWAYS;	// 深度テストは必ず合格させるようにする
+	depth_desc.StencilEnable = true;
+	depth_desc.StencilReadMask = ~0;
+	depth_desc.StencilWriteMask = ~0;
+	depth_desc.FrontFace.StencilFunc = depth_desc.BackFace.StencilFunc = D3D11_COMPARISON_NOT_EQUAL;
+	depth_desc.FrontFace.StencilPassOp = depth_desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilFailOp = depth_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilDepthFailOp = depth_desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+
+	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, depthstate[scastI(SpriteMask::OUTDRAW)].GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 	/*D3D11_BLEND_DESC blend_desc;
@@ -344,10 +409,10 @@ Sprite::Sprite()
 
 	D3D11_DEPTH_STENCIL_DESC depth_desc;
 
-	depth_desc.DepthEnable = FALSE;
+	depth_desc.DepthEnable = false;
 	depth_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	depth_desc.DepthFunc = D3D11_COMPARISON_LESS;
-	depth_desc.StencilEnable = FALSE;
+	depth_desc.StencilEnable = false;
 	depth_desc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
 	depth_desc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
 	depth_desc.FrontFace.StencilFunc = depth_desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
@@ -356,7 +421,72 @@ Sprite::Sprite()
 	depth_desc.FrontFace.StencilFailOp = depth_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
 
 
-	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, depthstate.GetAddressOf());
+	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, depthstate[scastI(SpriteMask::NONE)].GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+
+	// マスク領域にステンシル値書き込み
+	//   深度テストが失敗したときにステンシル値を書き込む設定
+	//   このステートで描画したときは深度テストに必ず失敗するようにしているため、
+	//   ピクセルに色は打たれないが、ステンシルバッファにステンシル値が書き込まれる。
+	//   000000000000
+	//   000011110000  ←描画した場所のステンシルバッファに値が書き込まる。
+	//   000011110000
+	//   000000000000
+	depth_desc.DepthEnable = true;
+	depth_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depth_desc.DepthFunc = D3D11_COMPARISON_NEVER;	// 深度テストは必ず失敗させるようにする
+	depth_desc.StencilEnable = true;
+	depth_desc.StencilReadMask = ~0;
+	depth_desc.StencilWriteMask = ~0;
+	depth_desc.FrontFace.StencilFunc = depth_desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depth_desc.FrontFace.StencilPassOp = depth_desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilFailOp = depth_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilDepthFailOp = depth_desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_REPLACE;
+
+	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, depthstate[scastI(SpriteMask::WRITE)].GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+
+	// マスク領域内に描画
+	//   深度バッファに書き込まれている値と同じ値を参照した場合のみピクセルに色を打つようにする。
+	//   000000000000
+	//   000011110000  ← 0の場所に描画しようとした場合、その場所はピクセルが打たれない。
+	//   000011110000
+	//   000000000000
+	depth_desc.DepthEnable = true;
+	depth_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depth_desc.DepthFunc = D3D11_COMPARISON_ALWAYS;	// 深度テストは必ず合格させるようにする
+	depth_desc.StencilEnable = true;
+	depth_desc.StencilReadMask = ~0;
+	depth_desc.StencilWriteMask = ~0;
+	depth_desc.FrontFace.StencilFunc = depth_desc.BackFace.StencilFunc = D3D11_COMPARISON_EQUAL;
+	depth_desc.FrontFace.StencilPassOp = depth_desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilFailOp = depth_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilDepthFailOp = depth_desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+
+	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, depthstate[scastI(SpriteMask::INDRAW)].GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+
+	// マスク領域外に描画
+	//   深度バッファに書き込まれている値と同じ値を参照した場合はピクセルに色を打たないようにする。
+	//   000000000000
+	//   000011110000  ← 1の場所に描画しようとした場合、その場所はピクセルが打たれない。
+	//   000011110000
+	//   000000000000
+	depth_desc.DepthEnable = true;
+	depth_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depth_desc.DepthFunc = D3D11_COMPARISON_ALWAYS;	// 深度テストは必ず合格させるようにする
+	depth_desc.StencilEnable = true;
+	depth_desc.StencilReadMask = ~0;
+	depth_desc.StencilWriteMask = ~0;
+	depth_desc.FrontFace.StencilFunc = depth_desc.BackFace.StencilFunc = D3D11_COMPARISON_NOT_EQUAL;
+	depth_desc.FrontFace.StencilPassOp = depth_desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilFailOp = depth_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilDepthFailOp = depth_desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+
+	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, depthstate[scastI(SpriteMask::OUTDRAW)].GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 	/*D3D11_BLEND_DESC blend_desc;
@@ -409,13 +539,15 @@ Sprite::~Sprite()
 	//blendstate->Release();
 }
 
-void Sprite::render(YRShader* shader, float dx,float dy,float dw,float dh,float sx,float sy,float sw,float sh,float angle,float r,float g,float b,float a)
+void Sprite::render(YRShader* shader, float dx,float dy,float dw,float dh,float sx,float sy,float sw,float sh,float angle,float r,float g,float b,float a, SpriteMask mask)
 {
 	D3D11_VIEWPORT viewport;
 	UINT num_viewport = 1;
 	FRAMEWORK.context->RSGetViewports(&num_viewport, &viewport);
 	float screen_width = viewport.Width;
 	float screen_height = viewport.Height;
+
+	const UINT8 maskStencilRef = 1;
 
 	//screen
 	//左上座標
@@ -568,7 +700,21 @@ void Sprite::render(YRShader* shader, float dx,float dy,float dw,float dh,float 
 	
 	UINT stencil=1;
 
-	FRAMEWORK.context->OMSetDepthStencilState(depthstate.Get(), stencil);
+	switch (mask)
+	{
+	case SpriteMask::NONE:
+		FRAMEWORK.context->OMSetDepthStencilState(depthstate[scastI(mask)].Get(), stencil);
+		break;
+	case SpriteMask::WRITE:
+	case SpriteMask::INDRAW:
+	case SpriteMask::OUTDRAW:
+		FRAMEWORK.context->OMSetDepthStencilState(depthstate[scastI(mask)].Get(), maskStencilRef);
+		break;
+	case SpriteMask::END:
+		break;
+	default:
+		break;
+	}
 
 	//context->OMSetBlendState(blendstate,NULL, 0xffffffff);
 
@@ -776,7 +922,8 @@ void Sprite::render(
 	FRAMEWORK.context->IASetPrimitiveTopology(
 		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP
 	);
-	FRAMEWORK.context->OMSetDepthStencilState(depthstate.Get(), 1);
+
+	FRAMEWORK.context->OMSetDepthStencilState(depthstate[scastI(SpriteMask::NONE)].Get(), 1);
 	FRAMEWORK.context->RSSetState(rastersize.Get());
 	//FRAMEWORK.context->PSSetShaderResources(0, 1, this->shader.GetAddressOf());
 	//FRAMEWORK.context->PSSetSamplers(0, 1, sampler.GetAddressOf());
@@ -1005,7 +1152,7 @@ void Sprite::render(
 		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP
 
 	);
-	FRAMEWORK.context->OMSetDepthStencilState(depthstate.Get(), 1);
+	FRAMEWORK.context->OMSetDepthStencilState(depthstate[scastI(SpriteMask::NONE)].Get(), 1);
 	FRAMEWORK.context->RSSetState(rastersize.Get());
 	//FRAMEWORK.context->PSSetShaderResources(0, 1, this->shader.GetAddressOf());
 	//FRAMEWORK.context->PSSetSamplers(0, 1, sampler.GetAddressOf());
@@ -1177,7 +1324,7 @@ void Sprite::render(
 	FRAMEWORK.context->IASetPrimitiveTopology(
 		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP
 	);
-	FRAMEWORK.context->OMSetDepthStencilState(depthstate.Get(), 1);
+	FRAMEWORK.context->OMSetDepthStencilState(depthstate[scastI(SpriteMask::NONE)].Get(), 1);
 	FRAMEWORK.context->RSSetState(rastersize.Get());
 	//FRAMEWORK.context->PSSetShaderResources(0, 1, this->shader.GetAddressOf());
 	//FRAMEWORK.context->PSSetSamplers(0, 1, sampler.GetAddressOf());
