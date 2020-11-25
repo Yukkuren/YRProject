@@ -279,6 +279,7 @@ public:
 	void EndAttackErase();		//終了した攻撃当たり判定を全て消去する。
 	void AllAttackClear();		//全ての攻撃当たり判定を消去する
 	void AttackUpdate(float elapsed_time);		//攻撃判定が存在する時のみ更新
+	void HitResultUpdate();						//攻撃判定が存在する時のみ更新(当たり判定が取得した結果をプレイヤーに送る)
 
 	void ReadySet();			//イントロ後、ゲーム開始までの設定を行う
 

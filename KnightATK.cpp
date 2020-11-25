@@ -1806,6 +1806,16 @@ void Knight::TrackDash(float decision, float elapsed_time)
 		speed_X.Set(0.0f);
 		//speed_Y.Set(attack_list[now_at_list].advance_speed);
 		speed.y = attack_list[now_at_list].advance_speed;
+
+		//for (auto& a : atk)
+		//{
+		//	if (a.hit_result != HitResult::NONE)
+		//	{
+		//		//攻撃が当たっていた場合、その内容を保存する
+		//		hit_result = a.hit_result;
+		//	}
+		//}
+
 		//攻撃をすべて消去する
 		AllAttackClear();
 		//攻撃番号を初期化
@@ -1850,18 +1860,18 @@ void Knight::TrackDash(float decision, float elapsed_time)
 		timer -= elapsed_time;
 	}
 
-	//if (atk.empty())
-	//{
-	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-	//	return;
-	//}
-
-	//持続時間が全て終了したことを確認する
-	if (timer < 0.0f)
+	if (atk.empty())
 	{
-	////攻撃が全て終了したことを確認する
-	//if (AttackEndCheck())
+		//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
+		return;
+	}
+
+	////持続時間が全て終了したことを確認する
+	//if (timer < 0.0f)
 	//{
+	//攻撃が全て終了したことを確認する
+	if (AttackEndCheck())
+	{
 		//まだ攻撃が残っていれば次の攻撃に移る
 		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
 		{

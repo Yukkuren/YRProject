@@ -480,10 +480,11 @@ public:
 	virtual void ComboUpdate() = 0;					//コンボ更新。ステートを設定する
 
 public:
-	virtual bool AttackEndCheck() = 0;				//攻撃当たり判定が全て終了しているか確認する
-	virtual void EndAttackErase() = 0;				//終了した攻撃当たり判定を全て消去する。
-	virtual void AllAttackClear() = 0;				//全ての攻撃当たり判定を消去する
+	virtual bool AttackEndCheck() = 0;								//攻撃当たり判定が全て終了しているか確認する
+	virtual void EndAttackErase() = 0;								//終了した攻撃当たり判定を全て消去する。
+	virtual void AllAttackClear() = 0;								//全ての攻撃当たり判定を消去する
 	virtual void AttackUpdate(float elapsed_time) = 0;				//攻撃判定が存在する時のみ更新
+	virtual void HitResultUpdate() = 0;								//攻撃判定が存在する時のみ更新(当たり判定が取得した結果をプレイヤーに送る)
 
 };
 

@@ -39,6 +39,17 @@ public:
 	float					dummy3;
 };
 
+enum class SpriteMask
+{
+	NONE,		//マスクなし(デフォルト)
+	WRITE,		//マスク値書き込み
+	INDRAW,		//マスク領域内に描画
+	OUTDRAW,	//マスク領域外に描画
+
+	END,
+};
+
+
 struct Sprite_div
 {
 	float nx;						//分割した画像の始点X
@@ -70,7 +81,7 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>	shader;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState>			sampler;
 	D3D11_TEXTURE2D_DESC								texture2d_desc;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>		depthstate;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>		depthstate[scastI(SpriteMask::END)];
 	//ID3D11BlendState *blendstate;
 	//vertex vertics[4];
 

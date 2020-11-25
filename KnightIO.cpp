@@ -843,6 +843,9 @@ void Knight::DrawDEBUG(
 
 		ImGui::SliderFloat(u8"ジャンプの着地スキ", &jump_later, 0.0f, 2.0f);
 		ImGui::SliderFloat(u8"ダッシュの着地スキ", &dash_later, 0.0f, 2.0f);
+		ImGui::Text("fream : "); ImGui::SameLine(); ImGui::Text("%f", fream);
+		ImGui::Text("timer : "); ImGui::SameLine(); ImGui::Text("%f", timer);
+		ImGui::Text("later : "); ImGui::SameLine(); ImGui::Text("%f", later);
 
 		if (ImGui::TreeNode(u8"プレイヤー当たり判定調整"))
 		{

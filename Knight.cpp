@@ -312,6 +312,9 @@ void Knight::Update(float decision, float elapsed_time)
 	finish = false;
 	DamageCheck(decision);
 	WaitAnimSet();
+
+	HitResultUpdate();
+
 	if (pos.y <= POS_Y)
 	{
 		ground = true;
@@ -4232,13 +4235,6 @@ void Knight::AttackUpdate(float elapsed_time)
 			for (auto& a : atk)
 			{
 				a.Update(pos, elapsed_time);
-				if (a.hit_result != HitResult::NONE)
-				{
-					//攻撃が当たっていた場合、その内容を保存する
-					hit_result = a.hit_result;
-					//行動終了フラグをオンに
-					finish = true;
-				}
 			}
 		}
 
@@ -4247,6 +4243,24 @@ void Knight::AttackUpdate(float elapsed_time)
 			for (int i = 0; i < projectile_atk.size(); i++)
 			{
 				projectile_atk[i].Update(pos, elapsed_time);
+			}
+		}
+	}
+}
+
+//攻撃判定が存在する時のみ更新(当たり判定が取得した結果をプレイヤーに送る)
+void Knight::HitResultUpdate()
+{
+	if (!atk.empty())
+	{
+		for (auto& a : atk)
+		{
+			if (a.hit_result != HitResult::NONE)
+			{
+				//攻撃が当たっていた場合、その内容を保存する
+				hit_result = a.hit_result;
+				//行動終了フラグをオンに
+				finish = true;
 			}
 		}
 	}
