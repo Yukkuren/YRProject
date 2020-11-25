@@ -316,6 +316,9 @@ void Knight::Kyo(float elapsed_time)
 		}
 		fream = non_target;
 
+		//持続時間を設定
+		timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
+
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
 
@@ -339,15 +342,24 @@ void Knight::Kyo(float elapsed_time)
 		}
 	}
 
-	if (atk.empty())
+	if (timer > 0.0f && timer < target_max)
 	{
-		//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-		return;
+		//持続フレームを減らしていく
+		timer -= elapsed_time;
 	}
 
-	//攻撃が全て終了したことを確認する
-	if (AttackEndCheck())
+	//if (atk.empty())
+	//{
+	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
+	//	return;
+	//}
+
+	//持続時間が全て終了したことを確認する
+	if (timer < 0.0f)
 	{
+	////攻撃が全て終了したことを確認する
+	//if (AttackEndCheck())
+	//{
 		//まだ攻撃が残っていれば次の攻撃に移る
 		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
 		{
@@ -438,6 +450,8 @@ void Knight::U_Kyo(float elapsed_time)
 		{
 			anim->NodeChange(model_motion.u_kyo_L, scastI(AnimAtk::TIMER));
 		}
+		//持続時間を設定
+		timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
 	}
 
 	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
@@ -460,15 +474,24 @@ void Knight::U_Kyo(float elapsed_time)
 		}
 	}
 
-	if (atk.empty())
+	if (timer > 0.0f && timer < target_max)
 	{
-		//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-		return;
+		//持続フレームを減らしていく
+		timer -= elapsed_time;
 	}
+
+	//if (atk.empty())
+	//{
+	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
+	//	return;
+	//}
 	
-	//攻撃が全て終了したことを確認する
-	if (AttackEndCheck())
+	//持続時間が全て終了したことを確認する
+	if (timer < 0.0f)
 	{
+	////攻撃が全て終了したことを確認する
+	//if (AttackEndCheck())
+	//{
 		//まだ攻撃が残っていれば次の攻撃に移る
 		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
 		{
@@ -574,6 +597,8 @@ void Knight::A_UKyo(float elapsed_time)
 		}
 		fream = non_target;
 
+		//持続時間を設定
+		timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
 
@@ -604,15 +629,25 @@ void Knight::A_UKyo(float elapsed_time)
 		}
 	}
 
-	if (atk.empty())
+
+	if (timer > 0.0f && timer < target_max)
 	{
-		//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-		return;
+		//持続フレームを減らしていく
+		timer -= elapsed_time;
 	}
+
+	//if (atk.empty())
+	//{
+	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
+	//	return;
+	//}
 	
-	//攻撃が全て終了したことを確認する
-	if (AttackEndCheck())
+	//持続時間が全て終了したことを確認する
+	if (timer < 0.0f)
 	{
+	////攻撃が全て終了したことを確認する
+	//if (AttackEndCheck())
+	//{
 		//まだ攻撃が残っていれば次の攻撃に移る
 		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
 		{
@@ -699,6 +734,8 @@ void Knight::Steal(float elapsed_time)
 		}
 		fream = non_target;
 
+		//持続時間を設定
+		timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
 
@@ -759,15 +796,24 @@ void Knight::Steal(float elapsed_time)
 		return;
 	}
 
-	if (atk.empty())
+	if (timer > 0.0f && timer < target_max)
 	{
-		//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-		return;
+		//持続フレームを減らしていく
+		timer -= elapsed_time;
 	}
+
+	//if (atk.empty())
+	//{
+	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
+	//	return;
+	//}
 	
-	//攻撃が全て終了したことを確認する
-	if (AttackEndCheck())
+	//持続時間が全て終了したことを確認する
+	if (timer < 0.0f)
 	{
+	////攻撃が全て終了したことを確認する
+	//if (AttackEndCheck())
+	//{
 		//まだ攻撃が残っていれば次の攻撃に移る
 		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
 		{
@@ -901,6 +947,8 @@ void Knight::Slow(float elapsed_time)
 		}
 		fream = non_target;
 
+		//持続時間を設定
+		timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
 
@@ -931,15 +979,25 @@ void Knight::Slow(float elapsed_time)
 		}
 	}
 
-	if (atk.empty())
+
+	if (timer > 0.0f && timer < target_max)
 	{
-		//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-		return;
+		//持続フレームを減らしていく
+		timer -= elapsed_time;
 	}
+
+	//if (atk.empty())
+	//{
+	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
+	//	return;
+	//}
 	
-	//攻撃が全て終了したことを確認する
-	if (AttackEndCheck())
+	//持続時間が全て終了したことを確認する
+	if (timer < 0.0f)
 	{
+	////攻撃が全て終了したことを確認する
+	//if (AttackEndCheck())
+	//{
 		//まだ攻撃が残っていれば次の攻撃に移る
 		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
 		{
@@ -1263,6 +1321,8 @@ void Knight::Jaku_Lhurf(float elapsed_time)
 		atk.back().effect_kind = EffectKind::TORNADE;
 		YRGetEffect().PlayEffect(EffectKind::TORNADE, atk.back().handle, atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
 		fream = non_target;
+		//持続時間を設定
+		timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
 
 		GetSound().SESinglePlay(SEKind::TORNADO);
 
@@ -1293,16 +1353,25 @@ void Knight::Jaku_Lhurf(float elapsed_time)
 		}
 	}
 
-	if (atk.empty())
+	if (timer > 0.0f && timer < target_max)
 	{
-		//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-		return;
+		//持続フレームを減らしていく
+		timer -= elapsed_time;
 	}
 
+	//if (atk.empty())
+	//{
+	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
+	//	return;
+	//}
 
-	//攻撃が全て終了したことを確認する
-	if (AttackEndCheck())
+
+	//持続時間が全て終了したことを確認する
+	if (timer < 0.0f)
 	{
+	////攻撃が全て終了したことを確認する
+	//if (AttackEndCheck())
+	//{
 		//まだ攻撃が残っていれば次の攻撃に移る
 		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
 		{
@@ -1396,6 +1465,9 @@ void Knight::A_Jaku_Lhurf(float elapsed_time)
 
 		fream = non_target;
 
+		//持続時間を設定
+		timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
+
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
 
@@ -1425,16 +1497,25 @@ void Knight::A_Jaku_Lhurf(float elapsed_time)
 		}
 	}
 
-	if (atk.empty())
+	if (timer > 0.0f && timer < target_max)
 	{
-		//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-		return;
+		//持続フレームを減らしていく
+		timer -= elapsed_time;
 	}
 
+	//if (atk.empty())
+	//{
+	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
+	//	return;
+	//}
 
-	//攻撃が全て終了したことを確認する
-	if (AttackEndCheck())
+
+	//持続時間が全て終了したことを確認する
+	if (timer < 0.0f)
 	{
+	////攻撃が全て終了したことを確認する
+	//if (AttackEndCheck())
+	//{
 		//まだ攻撃が残っていれば次の攻撃に移る
 		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
 		{
@@ -1528,6 +1609,9 @@ void Knight::Thu_Lhurf(float elapsed_time)
 		GetSound().SESinglePlay(SEKind::TORNADO);
 		speed.x = attack_list[now_at_list].advance_speed * rightOrleft;
 
+		//持続時間を設定
+		timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
+
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
 
@@ -1554,16 +1638,25 @@ void Knight::Thu_Lhurf(float elapsed_time)
 		}
 	}
 
-	if (atk.empty())
+	if (timer > 0.0f && timer < target_max)
 	{
-		//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-		return;
+		//持続フレームを減らしていく
+		timer -= elapsed_time;
 	}
 
+	//if (atk.empty())
+	//{
+	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
+	//	return;
+	//}
 
-	//攻撃が全て終了したことを確認する
-	if (AttackEndCheck())
+
+	//持続時間が全て終了したことを確認する
+	if (timer < 0.0f)
 	{
+	////攻撃が全て終了したことを確認する
+	//if (AttackEndCheck())
+	//{
 		//まだ攻撃が残っていれば次の攻撃に移る
 		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
 		{
@@ -1666,6 +1759,10 @@ void Knight::TrackDash(float decision, float elapsed_time)
 			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos);
 		}
 		fream = non_target;
+
+		//持続時間を設定
+		timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
+
 		HitBoxTransition(HitBoxState::PROJECTILE_ARMOR);
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
@@ -1696,62 +1793,75 @@ void Knight::TrackDash(float decision, float elapsed_time)
 				knock = true;
 			}
 		}
-		if (knock)
+	}
+
+	if (knock)
+	{
+		//ホーミングダッシュは当たった時点で攻撃が終了するので後隙を入力する
+		//攻撃側のY座標を相手の座標に固定する
+		pos.y = tracking.rival_Pos.y;
+		//X座標も追撃可能な位置に固定する
+		pos.x = tracking.rival_Pos.x + (track_adjust_x * (-decision));
+		//上方向への速度を入力する(ちょっとホップさせる)
+		speed_X.Set(0.0f);
+		//speed_Y.Set(attack_list[now_at_list].advance_speed);
+		speed.y = attack_list[now_at_list].advance_speed;
+		//攻撃をすべて消去する
+		AllAttackClear();
+		//攻撃番号を初期化
+		attack_list[now_at_list].now_attack_num = 0;
+		//持続を初期化
+		timer = non_target;
+		//後隙を設定
+		later = attack_list[now_at_list].later;
+		//アニメーション速度を指定
+		anim_ccodinate = ac_attack[now_at_list].later;
+		HitBoxTransition(HitBoxState::NOGUARD);
+		//描画をセット
+		if (rightOrleft > 0)
 		{
-			//ホーミングダッシュは当たった時点で攻撃が終了するので後隙を入力する
-			//攻撃側のY座標を相手の座標に固定する
-			pos.y = tracking.rival_Pos.y;
-			//X座標も追撃可能な位置に固定する
-			pos.x = tracking.rival_Pos.x + (track_adjust_x * (-decision));
-			//上方向への速度を入力する(ちょっとホップさせる)
-			speed_X.Set(0.0f);
-			//speed_Y.Set(attack_list[now_at_list].advance_speed);
-			speed.y = attack_list[now_at_list].advance_speed;
-			//攻撃をすべて消去する
-			AllAttackClear();
-			//攻撃番号を初期化
-			attack_list[now_at_list].now_attack_num = 0;
-			//後隙を設定
-			later = attack_list[now_at_list].later;
-			//アニメーション速度を指定
-			anim_ccodinate = ac_attack[now_at_list].later;
-			HitBoxTransition(HitBoxState::NOGUARD);
-			//描画をセット
-			if (rightOrleft > 0)
-			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
-			}
-			else
-			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
-			}
-			//行動終了フラグをオンに
-			finish = true;
-			//角度を戻す
-			angle.z = 0.0f;
-			angle.x = 0.0f;
-			//ジャンプ回数を減らす
-			if (jumpcount != 0)
-			{
-				jumpcount = 1;
-			}
-			//ホーミングダッシュ回数を減らす
-			trackgauge--;
-			//ジャンプ状態にする
-			jumpflag = true;
-			max_jump_flag = true;
+			anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
 		}
+		else
+		{
+			anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+		}
+		//行動終了フラグをオンに
+		finish = true;
+		//角度を戻す
+		angle.z = 0.0f;
+		angle.x = 0.0f;
+		//ジャンプ回数を減らす
+		if (jumpcount != 0)
+		{
+			jumpcount = 1;
+		}
+		//ホーミングダッシュ回数を減らす
+		trackgauge--;
+		//ジャンプ状態にする
+		jumpflag = true;
+		max_jump_flag = true;
 	}
 
-	if (atk.empty())
+
+	if (timer > 0.0f && timer < target_max)
 	{
-		//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-		return;
+		//持続フレームを減らしていく
+		timer -= elapsed_time;
 	}
 
-	//攻撃が全て終了したことを確認する
-	if (AttackEndCheck())
+	//if (atk.empty())
+	//{
+	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
+	//	return;
+	//}
+
+	//持続時間が全て終了したことを確認する
+	if (timer < 0.0f)
 	{
+	////攻撃が全て終了したことを確認する
+	//if (AttackEndCheck())
+	//{
 		//まだ攻撃が残っていれば次の攻撃に移る
 		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
 		{
@@ -1767,6 +1877,8 @@ void Knight::TrackDash(float decision, float elapsed_time)
 			attack_list[now_at_list].now_attack_num = 0;
 			//後隙を設定
 			later = attack_list[now_at_list].later;
+			//持続を初期化
+			timer = non_target;
 			//アニメーション速度を指定
 			anim_ccodinate = ac_attack[now_at_list].later;
 			//描画をセット
@@ -1962,6 +2074,9 @@ void Knight::SpecialAttack(float elapsed_time)
 
 		//攻撃発生中は無敵
 		HitBoxTransition(HitBoxState::INVINCIBLE);
+
+		//持続時間を設定
+		timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
 	}
 
 	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
@@ -1984,14 +2099,23 @@ void Knight::SpecialAttack(float elapsed_time)
 		pos.x += elapsed_time * Getapply(150.0f);
 	}
 
-	if (atk.empty())
+	if (timer > 0.0f && timer < target_max)
 	{
-		//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-		return;
+		//持続フレームを減らしていく
+		timer -= elapsed_time;
 	}
+
+	//if (atk.empty())
+	//{
+	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
+	//	return;
+	//}
 	
-	if (AttackEndCheck())
+	//持続時間が全て終了したことを確認する
+	if (timer < 0.0f)
 	{
+	/*if (AttackEndCheck())
+	{*/
 		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
 		{
 			fream = attack_list[now_at_list].attack_single[attack_list[now_at_list].now_attack_num].fream;
@@ -2167,6 +2291,8 @@ bool Knight::ComboSet()
 	}
 	//後隙を初期化
 	later = non_target;
+	//持続を初期化
+	timer = non_target;
 	//カメラ処理用変数を初期化
 	production_time = 0.0f;
 	//描画をセット
@@ -2296,6 +2422,8 @@ void Knight::ComboUpdate()
 	}
 	//後隙を初期化
 	later = non_target;
+	//持続を初期化
+	timer = non_target;
 	//カメラ処理用変数を初期化
 	production_time = 0.0f;
 	//描画をセット
@@ -2365,6 +2493,7 @@ void Knight::ComboB(float decision, float elapsed_time)
 //		掴み攻撃時に
 bool Knight::StealRangeCheck()
 {
+	return true;
 	if (pos.x > tracking.rival_Pos.x)
 	{
 		//プレイヤーが右にいる場合

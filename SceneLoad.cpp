@@ -19,7 +19,7 @@ bool Hitcheak::clash = false;
 YR_Vector3 Hitcheak::clashpos = { 0.0f,0.0f };
 YR_Vector3 Hitcheak::effectpos = { 0.0f,0.0f };
 int Hitcheak::effecttimer = 0;
-int Hitcheak::hei = 0;
+//int Hitcheak::hei = 0;
 
 void SceneLoad::Init()
 {

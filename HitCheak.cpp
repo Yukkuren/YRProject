@@ -320,12 +320,12 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 						{
 							//”í’e‚µ‚½
 
-							if (hei == 0)
+							/*if (hei == 0)
 							{
 								hei++;
 								return 0.0f;
 							}
-							hei++;
+							hei++;*/
 
 							float add = 0.0f;
 							if (!attack[atknum].parameter.gaugeout)
