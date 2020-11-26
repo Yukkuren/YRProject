@@ -537,6 +537,11 @@ class SceneTest : public SceneBase
 public:
 	float	timer = 0.0f;
 
+	bool cut_in = false;
+	bool cut_fin = false;
+	float cut_timer = 0.0f;
+	bool timer_start = false;
+
 	std::unique_ptr<Sprite> test = nullptr;
 
 	std::unique_ptr<Sprite> cutFrame = nullptr;

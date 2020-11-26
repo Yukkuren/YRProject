@@ -141,11 +141,11 @@ void SceneTest::Init()
 	}
 	if (cutFrame == nullptr)
 	{
-		cutFrame = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/CutIn_Frame.png", 1280.0f, 720.0f);
+		cutFrame = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/CutIn_Frame.png", 1920.0f, 1440.0f, 3, 4, 640.0f, 360.0f, 10);
 	}
 	if (cutMask == nullptr)
 	{
-		cutMask = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/CutIn_Mask.png", 1280.0f, 720.0f);
+		cutMask = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/CutIn_Mask.png", 1920.0f, 1440.0f, 3, 4, 640.0f, 360.0f, 10);
 	}
 	if (cutIn == nullptr)
 	{
@@ -269,11 +269,35 @@ void SceneTest::Init()
 	}
 
 	circle.SetCircle(100.0f);
+
+	cut_in = false;
+	cut_timer = 0.0f;
+	timer_start = false;
+	cut_fin = false;
 }
 
 void SceneTest::Update(float elapsed_time)
 {
 
+	if (pKeyState.cflg == 1)
+	{
+		if (!cut_in)
+		{
+			cut_in = true;
+		}
+	}
+
+	if (timer_start)
+	{
+		cut_timer += elapsed_time;
+	}
+
+	if (cut_timer > 0.8f)
+	{
+		cut_timer = 0.0f;
+		timer_start = false;
+		cut_fin = true;
+	}
 }
 
 void SceneTest::Draw(float elapsed_time)
@@ -607,7 +631,7 @@ void SceneTest::RenderTexture(
 	float center_x = static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f;
 	float center_y = static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f;
 
-	cutFrame->DrawRotaGraph(
+	/*cutFrame->DrawRotaGraph(
 		spriteShader.get(),
 		center_x,
 		center_y,
@@ -623,14 +647,83 @@ void SceneTest::RenderTexture(
 		0.0f,
 		1.0f,
 		SpriteMask::WRITE
-	);
+	);*/
+
+	float fream = 0.03f;
+	float size = 3.0f;
+
+	if (cut_in)
+	{
+		if (cut_fin)
+		{
+			bool finish_cut = cutFrame->DrawRotaDivGraphReverse(
+				spriteShader.get(),
+				center_x,
+				center_y,
+				0.0f,
+				size,
+				fream,
+				elapsed_time,
+				SpriteMask::NONE
+			);
+
+			cutMask->DrawRotaDivGraphReverse(
+				spriteShader.get(),
+				center_x,
+				center_y,
+				0.0f,
+				size,
+				fream,
+				elapsed_time,
+				SpriteMask::WRITE
+			);
+
+			if (finish_cut)
+			{
+				cut_in = false;
+				cut_fin = false;
+			}
+		}
+		else
+		{
+			bool finish_cut = cutFrame->DrawRotaDivGraphOnec(
+				spriteShader.get(),
+				center_x,
+				center_y,
+				0.0f,
+				size,
+				fream,
+				elapsed_time,
+				SpriteMask::NONE
+			);
+
+			cutMask->DrawRotaDivGraphOnec(
+				spriteShader.get(),
+				center_x,
+				center_y,
+				0.0f,
+				size,
+				fream,
+				elapsed_time,
+				SpriteMask::WRITE
+			);
+
+			if (finish_cut)
+			{
+				timer_start = true;
+			}
+		}
+
+
+	}
+
 
 	cutIn->DrawRotaGraph(
 		spriteShader.get(),
 		center_x,
 		center_y,
 		0.0f,
-		1.0f,
+		3.0f,
 		SpriteMask::INDRAW
 	);
 

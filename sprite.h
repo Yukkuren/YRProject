@@ -157,17 +157,24 @@ public:
 		this->sh = sh;
 	}
 	//画像分割読み込み(画像横サイズ,画像縦サイズ,画像横分割数,画像縦分割数,分割した画像一枚の横サイズ,縦サイズ)
-	void LoadDivGraph(float sw, float sh, int numX, int numY, float n_x, float n_y)
+	void LoadDivGraph(float sw, float sh, int numX, int numY, float n_x, float n_y, int max_num = 0)
 	{
 		this->sw = sw;
 		this->sh = sh;
-		max = numX * numY;
+		if (max_num != 0)
+		{
+			max = max_num;
+		}
+		else
+		{
+			max = numX * numY;
+		}
 		div.resize(max);
 		int v = 0;
 		for (int i = 0; i < max; i++)
 		{
-			div[i].ny = static_cast<float>(i / numX)* n_y;
-			div[i].nx = static_cast<float>(v)* n_x;
+			div[i].ny = static_cast<float>(i / numX) * n_y;
+			div[i].nx = static_cast<float>(v) * n_x;
 			v++;
 			if (v >= numX)
 			{
@@ -281,6 +288,18 @@ public:
 
 	}
 
+	//アニメーション描画に使用するタイマーをリセットする
+	void TimerReset()
+	{
+		time = 0.0f;
+	}
+
+	//アニメーションリセット
+	void AnimReset()
+	{
+		num = 0;
+	}
+
 	//分割画像アニメーション描画(コンテキスト、描画位置X,Y、回転角度、画像拡大率、アニメーション速度、カラー)
 	void DrawRotaDivGraph(
 		YRShader* shader,
@@ -320,6 +339,108 @@ public:
 			color.w,
 			mask
 		);
+
+	}
+
+
+	//分割画像アニメーション描画(コンテキスト、描画位置X,Y、回転角度、画像拡大率、アニメーション速度、カラー)
+	//アニメーションが最後に来たらtrueを返す
+	bool DrawRotaDivGraphOnec(
+		YRShader* shader,
+		float x, float y, float angle, float size, float frame, float elapsed_speed, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1,1,1,1 })
+	{
+		//x,y:描画位置
+		//nx,ny:描画する画像の縦、横の分割数
+		//size:描画時の拡大率(通常サイズ1.0f)
+
+		/*static int num = 0;
+		static int time = 0;*/
+		time += elapsed_speed;
+		if (time > frame)
+		{
+			if (num < max - 1)
+			{
+				num++;
+			}
+			time = 0;
+		}
+		//numに合わせて描画位置を決定する
+		render(
+			shader,
+			x - (nsx / 2 * size),
+			y - (nsy / 2 * size),
+			nsx * size,
+			nsy * size,
+			div[num].nx,
+			div[num].ny,
+			nsx,
+			nsy,
+			angle,
+			color.x,
+			color.y,
+			color.z,
+			color.w,
+			mask
+		);
+
+		if (num >= max - 1)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+
+	//分割画像アニメーション逆再生描画(コンテキスト、描画位置X,Y、回転角度、画像拡大率、アニメーション速度、カラー)
+	//アニメーションが先頭に来たらtrueを返す
+	bool DrawRotaDivGraphReverse(
+		YRShader* shader,
+		float x, float y, float angle, float size, float frame, float elapsed_speed, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1,1,1,1 })
+	{
+		//x,y:描画位置
+		//nx,ny:描画する画像の縦、横の分割数
+		//size:描画時の拡大率(通常サイズ1.0f)
+
+		/*static int num = 0;
+		static int time = 0;*/
+		time += elapsed_speed;
+		if (time > frame)
+		{
+			if (num > 0)
+			{
+				num--;
+			}
+			time = 0.0f;
+		}
+		//numに合わせて描画位置を決定する
+		render(
+			shader,
+			x - (nsx / 2 * size),
+			y - (nsy / 2 * size),
+			nsx * size,
+			nsy * size,
+			div[num].nx,
+			div[num].ny,
+			nsx,
+			nsy,
+			angle,
+			color.x,
+			color.y,
+			color.z,
+			color.w,
+			mask
+		);
+		if (num == 0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 
 	}
 
@@ -378,7 +499,8 @@ public:
 		int numX,
 		int numY,
 		float n_x,
-		float n_y);
+		float n_y,
+		int max_num = 0);
 	void Init(const wchar_t* whar);
 	~Sprite();
 	
