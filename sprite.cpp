@@ -224,12 +224,13 @@ void Sprite::Init(const wchar_t* wchar)
 
 	D3D11_DEPTH_STENCIL_DESC depth_desc;
 
-	depth_desc.DepthEnable = false;
+	//ƒ}ƒXƒN‚È‚µ
+	depth_desc.DepthEnable = true;
 	depth_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	depth_desc.DepthFunc = D3D11_COMPARISON_LESS;
+	depth_desc.DepthFunc = D3D11_COMPARISON_ALWAYS;
 	depth_desc.StencilEnable = false;
-	depth_desc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
-	depth_desc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+	depth_desc.StencilReadMask = 0;
+	depth_desc.StencilWriteMask = 0;
 	depth_desc.FrontFace.StencilFunc = depth_desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 	depth_desc.FrontFace.StencilDepthFailOp = depth_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
 	depth_desc.FrontFace.StencilPassOp = depth_desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
@@ -409,7 +410,7 @@ Sprite::Sprite()
 
 	D3D11_DEPTH_STENCIL_DESC depth_desc;
 
-	depth_desc.DepthEnable = false;
+	depth_desc.DepthEnable = true;
 	depth_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	depth_desc.DepthFunc = D3D11_COMPARISON_LESS;
 	depth_desc.StencilEnable = false;
@@ -700,21 +701,9 @@ void Sprite::render(YRShader* shader, float dx,float dy,float dw,float dh,float 
 	
 	UINT stencil=1;
 
-	switch (mask)
-	{
-	case SpriteMask::NONE:
-		FRAMEWORK.context->OMSetDepthStencilState(depthstate[scastI(mask)].Get(), stencil);
-		break;
-	case SpriteMask::WRITE:
-	case SpriteMask::INDRAW:
-	case SpriteMask::OUTDRAW:
-		FRAMEWORK.context->OMSetDepthStencilState(depthstate[scastI(mask)].Get(), maskStencilRef);
-		break;
-	case SpriteMask::END:
-		break;
-	default:
-		break;
-	}
+	ID3D11DepthStencilState* currentDepthStencilState = nullptr;
+	currentDepthStencilState = depthstate[scastI(mask)].Get();
+	FRAMEWORK.context->OMSetDepthStencilState(currentDepthStencilState, maskStencilRef);
 
 	//context->OMSetBlendState(blendstate,NULL, 0xffffffff);
 

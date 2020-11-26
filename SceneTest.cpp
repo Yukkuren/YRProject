@@ -105,7 +105,7 @@ void SceneTest::Init()
 	}
 	if (wait_R == nullptr)
 	{
-		wait_R = std::make_shared<Model>("./Data/FBX/Knight/Animation/knight_wait.fbx");
+		wait_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_wait_R.fbx");
 	}
 	if (geo == nullptr)
 	{
@@ -137,8 +137,22 @@ void SceneTest::Init()
 	//âÊëúÇÃÉçÅ[Éh
 	if (test == nullptr)
 	{
-		test = std::make_unique<Sprite>(L"./Data/Image/BG/stage1.png", 3840.0f, 2160.0f);
+		//test = std::make_unique<Sprite>(L"./Data/Image/BG/stage1.png", 3840.0f, 2160.0f);
 	}
+	if (cutFrame == nullptr)
+	{
+		cutFrame = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/CutIn_Frame.png", 1280.0f, 720.0f);
+	}
+	if (cutMask == nullptr)
+	{
+		cutMask = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/CutIn_Mask.png", 1280.0f, 720.0f);
+	}
+	if (cutIn == nullptr)
+	{
+		cutIn = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut.png", 1280.0f, 720.0f);
+	}
+
+
 	if (fur == nullptr)
 	{
 		fur = std::make_unique<Texture>(L"./Data/Assets/Slime/fur.png");
@@ -588,6 +602,36 @@ void SceneTest::RenderTexture(
 	motion->Draw(
 		flatShader.get(),
 		view, projection, light_direction, light_color, ambient_color
+	);
+
+	float center_x = static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f;
+	float center_y = static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f;
+
+	cutFrame->DrawRotaGraph(
+		spriteShader.get(),
+		center_x,
+		center_y,
+		0.0f,
+		1.0f,
+		SpriteMask::NONE
+	);
+
+	cutMask->DrawRotaGraph(
+		spriteShader.get(),
+		center_x,
+		center_y,
+		0.0f,
+		1.0f,
+		SpriteMask::WRITE
+	);
+
+	cutIn->DrawRotaGraph(
+		spriteShader.get(),
+		center_x,
+		center_y,
+		0.0f,
+		1.0f,
+		SpriteMask::INDRAW
 	);
 
 	//circle.DrawCircle(spriteShader.get(), 400.0f, 900.0f);

@@ -79,16 +79,16 @@ void SceneTitle::LoadData()
 	{
 		test = std::make_unique<Sprite>(L"./Data/Image/BG/select.png", 1920.0f, 1080.0f);
 	}
-	if (knight_icon == nullptr)
-	{
-		knight_icon = std::make_unique<Sprite>(L"./Data/Image/Character/Ryu/icon.png", 64.0f, 64.0f);
-		//knight_icon->LoadGraph(64.0f, 64.0f);
-	}
-	if (ken_icon == nullptr)
-	{
-		ken_icon = std::make_unique<Sprite>(L"./Data/Image/Character/Ken/icon.png", 64.0f, 64.0f);
-		//ken_icon->LoadGraph(64.0f, 64.0f);
-	}
+	//if (knight_icon == nullptr)
+	//{
+	//	knight_icon = std::make_unique<Sprite>(L"./Data/Image/Character/Ryu/icon.png", 64.0f, 64.0f);
+	//	//knight_icon->LoadGraph(64.0f, 64.0f);
+	//}
+	//if (ken_icon == nullptr)
+	//{
+	//	ken_icon = std::make_unique<Sprite>(L"./Data/Image/Character/Ken/icon.png", 64.0f, 64.0f);
+	//	//ken_icon->LoadGraph(64.0f, 64.0f);
+	//}
 	if (select_img == nullptr)
 	{
 		select_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameSelect/select.png", 64.0f, 64.0f);
@@ -292,7 +292,7 @@ void SceneTitle::Update(float elapsed_time)
 #ifdef EXIST_IMGUI
 		
 
-		/*if (pKeyState.tflg == 1)
+		if (pKeyState.tflg == 1)
 		{
 			GetSound().BGMStop(BGMKind::TITLE);
 			select_p1 = scastI(INPUT_PLAYER::P1);
@@ -301,7 +301,7 @@ void SceneTitle::Update(float elapsed_time)
 			UnInit();
 			FRAMEWORK.SetScene(SCENE_TEST);
 			return;
-		}*/
+		}
 
 #endif // USE_IMGUI
 

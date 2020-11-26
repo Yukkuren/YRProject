@@ -538,6 +538,11 @@ public:
 	float	timer = 0.0f;
 
 	std::unique_ptr<Sprite> test = nullptr;
+
+	std::unique_ptr<Sprite> cutFrame = nullptr;
+	std::unique_ptr<Sprite> cutMask = nullptr;
+	std::unique_ptr<Sprite> cutIn = nullptr;
+
 	std::shared_ptr<Model> knight = nullptr;
 	std::shared_ptr<Model> wait_R = nullptr;
 	std::shared_ptr<Texture> box_texture = nullptr;
@@ -600,7 +605,7 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11Buffer>	constantBuffer = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11Buffer>	constantBuffer_Gauss = nullptr;
 
-	DirectX::XMFLOAT3 knight_angle = { DirectX::XMConvertToRadians(-90.0f),0.0f,0.0f };
+	DirectX::XMFLOAT3 knight_angle = { 0.0f,0.0f,0.0f };
 	DirectX::XMFLOAT3 knight_pos = { 0.0f,0.0f,20.0f };
 
 public:
