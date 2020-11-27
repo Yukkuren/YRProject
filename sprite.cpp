@@ -225,7 +225,7 @@ void Sprite::Init(const wchar_t* wchar)
 	D3D11_DEPTH_STENCIL_DESC depth_desc;
 
 	//マスクなし
-	depth_desc.DepthEnable = true;
+	depth_desc.DepthEnable = false;
 	depth_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	depth_desc.DepthFunc = D3D11_COMPARISON_ALWAYS;
 	depth_desc.StencilEnable = false;
@@ -238,6 +238,24 @@ void Sprite::Init(const wchar_t* wchar)
 
 
 	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, depthstate[scastI(SpriteMask::NONE)].GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+
+
+	//マスクをつける画像
+	depth_desc.DepthEnable = true;
+	depth_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depth_desc.DepthFunc = D3D11_COMPARISON_ALWAYS;
+	depth_desc.StencilEnable = false;
+	depth_desc.StencilReadMask = 0;
+	depth_desc.StencilWriteMask = 0;
+	depth_desc.FrontFace.StencilFunc = depth_desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depth_desc.FrontFace.StencilDepthFailOp = depth_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilPassOp = depth_desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilFailOp = depth_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+
+	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, depthstate[scastI(SpriteMask::FRAME)].GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 
@@ -410,7 +428,8 @@ Sprite::Sprite()
 
 	D3D11_DEPTH_STENCIL_DESC depth_desc;
 
-	depth_desc.DepthEnable = true;
+	//マスクなし
+	depth_desc.DepthEnable = false;
 	depth_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	depth_desc.DepthFunc = D3D11_COMPARISON_LESS;
 	depth_desc.StencilEnable = false;
@@ -425,6 +444,23 @@ Sprite::Sprite()
 	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, depthstate[scastI(SpriteMask::NONE)].GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
+
+
+	//マスクをつける画像
+	depth_desc.DepthEnable = true;
+	depth_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depth_desc.DepthFunc = D3D11_COMPARISON_ALWAYS;
+	depth_desc.StencilEnable = false;
+	depth_desc.StencilReadMask = 0;
+	depth_desc.StencilWriteMask = 0;
+	depth_desc.FrontFace.StencilFunc = depth_desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depth_desc.FrontFace.StencilDepthFailOp = depth_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilPassOp = depth_desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depth_desc.FrontFace.StencilFailOp = depth_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+
+	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, depthstate[scastI(SpriteMask::FRAME)].GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 	// マスク領域にステンシル値書き込み
 	//   深度テストが失敗したときにステンシル値を書き込む設定

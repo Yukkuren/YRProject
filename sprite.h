@@ -45,6 +45,7 @@ enum class SpriteMask
 	WRITE,		//マスク値書き込み
 	INDRAW,		//マスク領域内に描画
 	OUTDRAW,	//マスク領域外に描画
+	FRAME,		//マスクを適用する描画
 
 	END,
 };
@@ -298,6 +299,12 @@ public:
 	void AnimReset()
 	{
 		num = 0;
+	}
+
+	//現在のアニメーションが最後かどうかを返す
+	bool AnimFinCheck()
+	{
+		return num >= max - 1 ? true : false;
 	}
 
 	//分割画像アニメーション描画(コンテキスト、描画位置X,Y、回転角度、画像拡大率、アニメーション速度、カラー)

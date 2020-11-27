@@ -1357,6 +1357,19 @@ void SceneGame::Draw(float elapsed_time)
 			PL.power2P
 		);
 
+
+		switch (YRCamera.camera_state)
+		{
+		case Camera::CAMERA_STATE::PLAYER1P:
+			player1p->DrawCutIn(spriteShader.get(), game_speed);
+			break;
+		case Camera::CAMERA_STATE::PLAYER2P:
+			player2p->DrawCutIn(spriteShader.get(), game_speed);
+			break;
+		default:
+			break;
+		}
+
 		if (pause)
 		{
 			pause_img->DrawGraph(

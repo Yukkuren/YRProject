@@ -184,6 +184,11 @@ public:
 		float						elapsed_time);
 	//float GetPosX();
 
+	void DrawCutIn(
+		YRShader* shader,
+		float elapsed_time
+	);
+
 	void Move(float decision);
 	bool Step(float elapsed_time);
 	void AirDash(float elapsed_time);

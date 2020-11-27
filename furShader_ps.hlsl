@@ -11,6 +11,7 @@ float3 Diffuse(float3 N, float3 L, float3 C, float3 K)
 {
 	float D = dot(N, L);
 	D = max(0, D);		//•‰‚Ì’l‚ð0‚É‚·‚é
+	D = D * D;
 	return K * C * D;
 }
 
@@ -42,7 +43,7 @@ PSOutput main(PSInput input) : SV_TARGET
 	PSOutput Out = (PSOutput)0;
 
 	float4 color = DiffuseTexture.Sample(DecalSampler, input.Tex);
-	//float4 color = FurTexture.Sample(DecalSampler, input.Tex);
+	float alpha = FurTexture.Sample(FurSampler, input.Tex * Density).r;
 	float3 N = normalize(input.wNormal);
 	float3 E = normalize(EyePos.xyz - input.wPos);
 	float3 L = normalize(-light_direction.rgb);
@@ -62,6 +63,8 @@ PSOutput main(PSInput input) : SV_TARGET
 	//SP6
 	float3 S = BlinnPhongSpecular(N, -L, C, E, Ks, Shinness);
 
+	//clip(alpha-0.01f);
+	color.a = alpha;
 	Out.Color = color * input.Color * float4(A + D + S, 1.0f);
 	//Out.Color = float4(1.0f, 1.0f, 1.0f, 1.0f);
 	Out.Luminance = float4(1.0f, 1.0f, 1.0f, 1.0f);

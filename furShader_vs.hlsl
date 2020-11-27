@@ -1,8 +1,8 @@
 #include "furShader.hlsli"
 
-PSInput main(VSInput input)
+GSInput main(VSInput input)
 {
-	PSInput output = (PSInput)0;
+	GSInput output = (GSInput)0;
 
 	float3 ps = { 0,0,0 };
 	float3 n = { 0,0,0 };
@@ -24,7 +24,7 @@ PSInput main(VSInput input)
 	output.Color = float4(1.0, 1.0, 1.0, 1.0);
 	output.Tex = input.Tex;
 	output.wPos = worldPos.xyz;
-	output.Normal = input.Normal;
+	output.Normal = normalize(n);
 
 	return output;
 }

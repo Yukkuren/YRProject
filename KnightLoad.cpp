@@ -23,16 +23,39 @@ void Knight::LoadData(int color_number)
 	AttackClean();
 	AttackLoad();
 
+	//カットイン画像読み込み
+	if (cutFrame == nullptr)
+	{
+		cutFrame = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/CutIn_Frame.png", 1920.0f, 1440.0f, 3, 4, 640.0f, 360.0f, 10);
+	}
+	if (cutMask == nullptr)
+	{
+		cutMask = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/CutIn_Mask.png", 1920.0f, 1440.0f, 3, 4, 640.0f, 360.0f, 10);
+	}
+
 
 	switch (color_number)
 	{
 	case 1:
 		color_texture_main = nullptr;
 		color_texture_face = nullptr;
+
+		//カットイン画像読み込み
+		if (cutIn == nullptr)
+		{
+			cutIn = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut1.png", 1280.0f, 720.0f);
+		}
+
 		break;
 	case 2:
 		color_texture_main = std::make_shared<Texture>(L"./Data/FBX/Knight/knight_tex_nofaces2.png");
 		color_texture_face = std::make_shared<Texture>(L"./Data/FBX/Knight/knight_tex_face2.png");
+
+		//カットイン画像読み込み
+		if (cutIn == nullptr)
+		{
+			cutIn = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut2.png", 1280.0f, 720.0f);
+		}
 		break;
 	default:
 		color_texture_main = nullptr;

@@ -511,9 +511,9 @@ void ModelAnim::Draw(
 			}
 
 			FRAMEWORK.context->UpdateSubresource(constant_buffer.Get(), 0, 0, &cb, 0, 0);
-			FRAMEWORK.context->VSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
-			FRAMEWORK.context->PSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
-			FRAMEWORK.context->GSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
+			FRAMEWORK.context->VSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
+			FRAMEWORK.context->PSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
+			FRAMEWORK.context->GSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
 			
 			if (m_model_resource->color_texture_main == nullptr)
 			{

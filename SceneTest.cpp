@@ -97,16 +97,36 @@ void SceneTest::Init()
 		board_texture = std::make_shared<Texture>(L"./Data/Image/UI/GameScene/effect.png");
 	}
 
+
+	color_texture_main = nullptr;
+	color_texture_face = nullptr;
+
+	color_texture_main = std::make_shared<Texture>(L"./Data/FBX/Knight/knight_tex_nofaces2.png");
+	color_texture_face = std::make_shared<Texture>(L"./Data/FBX/Knight/knight_tex_face2.png");
+
 	if (knight == nullptr)
 	{
-		//box = std::make_unique<Skinned_mesh>("./Data/FBX/Knight.fbx");
-		knight = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
-		//knight = std::make_shared<Model>("./Data/FBX/Paimon/paimon.fbx");
+		if (color_texture_main != nullptr)
+		{
+			knight = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx", color_texture_main, color_texture_face);
+		}
+		else
+		{
+			//box = std::make_unique<Skinned_mesh>("./Data/FBX/Knight.fbx");
+			knight = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
+			//knight = std::make_shared<Model>("./Data/FBX/Paimon/paimon.fbx");
+		}
 	}
 	if (wait_R == nullptr)
 	{
 		wait_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_wait_R.fbx");
 	}
+
+	if (special_R == nullptr)
+	{
+		special_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_special_R.fbx");
+	}
+
 	if (geo == nullptr)
 	{
 		geo = std::make_unique<geometric_primitive>();
@@ -149,8 +169,12 @@ void SceneTest::Init()
 	}
 	if (cutIn == nullptr)
 	{
-		cutIn = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut.png", 1280.0f, 720.0f);
+		cutIn = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut1.png", 1280.0f, 720.0f);
 	}
+	/*if (cutIn == nullptr)
+	{
+		cutIn = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/EIngeCFWoAEPD2D.png", 1280.0f, 720.0f);
+	}*/
 
 
 	if (fur == nullptr)
@@ -274,6 +298,17 @@ void SceneTest::Init()
 	cut_timer = 0.0f;
 	timer_start = false;
 	cut_fin = false;
+
+	eye_cut = { 34.156f,5.693,-14.232 };
+	focus_cut = { 8.539f,5.693f,2.898f };
+	fov_cut = 50.0f;
+	near_cut = 1.4f;
+	far_cut = 100000.0f;
+
+	pause = false;
+
+	eye_offset = { 0.2f,0.1f };
+	mouth_offset = { 0.0f,0.0f };
 }
 
 void SceneTest::Update(float elapsed_time)
@@ -292,11 +327,26 @@ void SceneTest::Update(float elapsed_time)
 		cut_timer += elapsed_time;
 	}
 
-	if (cut_timer > 0.8f)
+	if (cut_timer > 0.5f)
 	{
 		cut_timer = 0.0f;
 		timer_start = false;
 		cut_fin = true;
+	}
+
+	if (pKeyState.pflg == 1)
+	{
+		pause = !pause;
+	}
+
+	if (pKeyState.oflg == 1)
+	{
+		YRCamera.SetEye(eye_cut);
+		YRCamera.SetFocus(focus_cut);
+		YRCamera.SetPerspective(fov_cut * 0.01745f, 1920.0f / 1080.0f, near_cut, far_cut);
+		knight_pos.x = 14.0f;
+		knight_pos.z = 0.0f;
+		motion->NodeChange(special_R);
 	}
 }
 
@@ -304,7 +354,7 @@ void SceneTest::Draw(float elapsed_time)
 {
 	static float light_color[4] = { 1,1,1,1 };
 	//ライト方向
-	static DirectX::XMFLOAT4 light_direction = DirectX::XMFLOAT4(0, -1, 1, 0);
+	static DirectX::XMFLOAT4 light_direction = DirectX::XMFLOAT4(-1.0f, -0.1, 1.0f, 0.0f);
 	static DirectX::XMFLOAT4 ambient_color(0.3f, 0.3f, 0.3f, 0.5f);
 	//static DirectX::XMFLOAT3 box_angle = { DirectX::XMConvertToRadians(-90.0f),0.0f,0.0f };
 
@@ -386,14 +436,15 @@ static bool blur = true;
 		if (ImGui::TreeNode("texture"))
 		{
 			ImGui::Image((void *)(color_texture->GetShaderResource()), ImVec2(360, 360));
-			ImGui::Image((void *)(normal_texture->GetShaderResource()), ImVec2(360, 360));
-			ImGui::Image((void *)(position_texture->GetShaderResource()), ImVec2(360, 360));
+			//ImGui::Image((void *)(normal_texture->GetShaderResource()), ImVec2(360, 360));
+			//ImGui::Image((void *)(position_texture->GetShaderResource()), ImVec2(360, 360));
 			ImGui::Image((void *)(luminance_texture->GetShaderResource()), ImVec2(360, 360));
 
 			ImGui::TreePop();
 		}
 	}
 #endif
+
 
 	FRAMEWORK.framebuffer.ResetRenderTexture();
 	FRAMEWORK.framebuffer.SetDefaultRTV();
@@ -471,6 +522,7 @@ static bool blur = true;
 		flatShader.get(),
 		V, P, light_direction, lightColor, ambient_color
 	);*/
+	FRAMEWORK.framebuffer.Deactivate();
 }
 
 
@@ -482,7 +534,7 @@ void SceneTest::RenderTexture(
 	const DirectX::XMFLOAT4&	ambient_color,
 	float						elapsed_time)
 {
-	static float Distance = 1.0f;
+	static float Distance = 0.0f;
 	static float Density = 1.0f;
 	//static DirectX::XMFLOAT3 sky_scale = { 10.0f,10.0f,10.0f };
 	static float sky_scale[3] = { 1.0f,1.0f,1.0f };
@@ -601,131 +653,165 @@ void SceneTest::RenderTexture(
 	//test->DrawExtendGraph(spriteShader.get(), 0.0f, 0.0f, FRAMEWORK.SCREEN_WIDTH, FRAMEWORK.SCREEN_HEIGHT, DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f));
 	
 	FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[framework::DS_WRITE_FALSE].Get(), 1);
-	sampler_wrap->Set(1);
-	fur->Set(1);
 
-
-	sky->Render(skyShader.get(),
-		knight_pos,
-		DirectX::XMFLOAT3(sky_scale[0], sky_scale[1], sky_scale[2]),
-		DirectX::XMFLOAT3(DirectX::XMConvertToRadians(-90.0f), 0.0f, 0.0f),
-		view,
-		projection,
-		light_direction,
-		light_color,
-		ambient_color,
-		elapsed_time,
-		0.0f
-	);	
-
-	motion->UpdateAnimation(elapsed_time);
-	motion->CalculateLocalTransform();
-	motion->CalculateWorldTransform(knight_pos,
-		DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
-		knight_angle);
-	motion->Draw(
-		flatShader.get(),
-		view, projection, light_direction, light_color, ambient_color
-	);
-
-	float center_x = static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f;
-	float center_y = static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f;
-
-	/*cutFrame->DrawRotaGraph(
-		spriteShader.get(),
-		center_x,
-		center_y,
-		0.0f,
-		1.0f,
-		SpriteMask::NONE
-	);
-
-	cutMask->DrawRotaGraph(
-		spriteShader.get(),
-		center_x,
-		center_y,
-		0.0f,
-		1.0f,
-		SpriteMask::WRITE
-	);*/
-
-	float fream = 0.03f;
-	float size = 3.0f;
-
-	if (cut_in)
+	if (pause)
 	{
-		if (cut_fin)
-		{
-			bool finish_cut = cutFrame->DrawRotaDivGraphReverse(
-				spriteShader.get(),
-				center_x,
-				center_y,
-				0.0f,
-				size,
-				fream,
-				elapsed_time,
-				SpriteMask::NONE
-			);
-
-			cutMask->DrawRotaDivGraphReverse(
-				spriteShader.get(),
-				center_x,
-				center_y,
-				0.0f,
-				size,
-				fream,
-				elapsed_time,
-				SpriteMask::WRITE
-			);
-
-			if (finish_cut)
-			{
-				cut_in = false;
-				cut_fin = false;
-			}
-		}
-		else
-		{
-			bool finish_cut = cutFrame->DrawRotaDivGraphOnec(
-				spriteShader.get(),
-				center_x,
-				center_y,
-				0.0f,
-				size,
-				fream,
-				elapsed_time,
-				SpriteMask::NONE
-			);
-
-			cutMask->DrawRotaDivGraphOnec(
-				spriteShader.get(),
-				center_x,
-				center_y,
-				0.0f,
-				size,
-				fream,
-				elapsed_time,
-				SpriteMask::WRITE
-			);
-
-			if (finish_cut)
-			{
-				timer_start = true;
-			}
-		}
-
-
+		//FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+		motion->UpdateAnimation(0.0f);
+		motion->CalculateLocalTransform();
+		motion->CalculateWorldTransform(knight_pos,
+			DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
+			knight_angle);
+		motion->Draw(
+			toonShader.get(),
+			view, projection, light_direction, light_color, ambient_color,eye_offset,mouth_offset,Model::Material_Attribute::SWORD
+		);
 	}
+	else
+	{
+		sky->Render(skyShader.get(),
+			knight_pos,
+			DirectX::XMFLOAT3(sky_scale[0], sky_scale[1], sky_scale[2]),
+			DirectX::XMFLOAT3(DirectX::XMConvertToRadians(-90.0f), 0.0f, 0.0f),
+			view,
+			projection,
+			light_direction,
+			light_color,
+			ambient_color,
+			elapsed_time,
+			0.0f
+		);
+
+		//sampler_wrap->Set(1);
+		//fur->Set(1);
+		//ブレンドステート設定
+
+		//sampler_wrap->Set(0);
+		motion->UpdateAnimation(elapsed_time);
+		motion->CalculateLocalTransform();
+		motion->CalculateWorldTransform(knight_pos,
+			DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
+			knight_angle);
+		motion->Draw(
+			toonShader.get(),
+			view, projection, light_direction, light_color, ambient_color
+		);
+		/*motion->Draw(
+			skinShader.get(),
+			view, projection, light_direction, light_color, ambient_color
+		);
+
+		motion->Draw(
+			furShader.get(),
+			view, projection, light_direction, light_color, ambient_color
+		);*/
+		float center_x = static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f;
+		float center_y = static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f;
+
+		/*cutFrame->DrawRotaGraph(
+			spriteShader.get(),
+			center_x,
+			center_y,
+			0.0f,
+			1.0f,
+			SpriteMask::NONE
+		);
+
+		cutMask->DrawRotaGraph(
+			spriteShader.get(),
+			center_x,
+			center_y,
+			0.0f,
+			1.0f,
+			SpriteMask::WRITE
+		);*/
+
+		float fream = 0.03f;
+		float size = 3.0f;
+
+		if (cut_in)
+		{
+			if (cut_fin)
+			{
+				bool finish_cut = cutFrame->DrawRotaDivGraphReverse(
+					spriteShader.get(),
+					center_x,
+					center_y,
+					0.0f,
+					size,
+					fream,
+					elapsed_time,
+					SpriteMask::FRAME
+				);
+
+				cutMask->DrawRotaDivGraphReverse(
+					spriteShader.get(),
+					center_x,
+					center_y,
+					0.0f,
+					size,
+					fream,
+					elapsed_time,
+					SpriteMask::WRITE
+				);
+
+				if (finish_cut)
+				{
+					cut_in = false;
+					cut_fin = false;
+				}
+			}
+			else
+			{
+				bool finish_cut = cutFrame->DrawRotaDivGraphOnec(
+					spriteShader.get(),
+					center_x,
+					center_y,
+					0.0f,
+					size,
+					fream,
+					elapsed_time,
+					SpriteMask::FRAME
+				);
+
+				cutMask->DrawRotaDivGraphOnec(
+					spriteShader.get(),
+					center_x,
+					center_y,
+					0.0f,
+					size,
+					fream,
+					elapsed_time,
+					SpriteMask::WRITE
+				);
+
+				if (finish_cut)
+				{
+					timer_start = true;
+				}
+			}
 
 
-	cutIn->DrawRotaGraph(
+		}
+
+
+		cutIn->DrawRotaGraph(
+			spriteShader.get(),
+			center_x,
+			center_y,
+			0.0f,
+			3.0f,
+			SpriteMask::INDRAW
+		);
+	}
+	/*cutIn->DrawRotaGraph(
 		spriteShader.get(),
 		center_x,
-		center_y,
-		0.0f,
-		3.0f,
+		center_y+500.0f,
+		-90.0f,
+		2.0f,
 		SpriteMask::INDRAW
-	);
+	);*/
 
 	//circle.DrawCircle(spriteShader.get(), 400.0f, 900.0f);
 
@@ -736,6 +822,7 @@ void SceneTest::RenderTexture(
 	testrtv[0] = FRAMEWORK.view.Get();*/
 	//レンダーターゲットの回復
 	//FRAMEWORK.context.Get()->OMSetRenderTargets(testrtv.size(), testrtv.data(), FRAMEWORK.depth.Get());
+	
 	FRAMEWORK.framebuffer.Deactivate();
 	FRAMEWORK.framebuffer.SetDefaultRTV();
 	FRAMEWORK.framebuffer.ResetRenderTexture();
@@ -795,8 +882,9 @@ void SceneTest::RenderBlur(
 
 		//レンダーターゲットビューの設定
 		FRAMEWORK.framebuffer.GetDefaultRTV();
-		FRAMEWORK.SetViewPort(1920.0f, 1080.0f);
-		FRAMEWORK.framebuffer.Activate(dsv);
+		/*FRAMEWORK.SetViewPort(1920.0f, 1080.0f);
+		FRAMEWORK.framebuffer.Activate(dsv);*/
+		FRAMEWORK.framebuffer.Activate(1920.0f, 1080.0f, dsv);
 
 		//ブレンドステート設定
 		FRAMEWORK.BlendSet(Blend::ALPHA);
@@ -867,10 +955,32 @@ void SceneTest::RenderBlur(
 		}
 
 	//全てのテクスチャを合成したマルチガウスのテクスチャを作成する
-		FRAMEWORK.framebuffer.Deactivate();
+		/*FRAMEWORK.framebuffer.Deactivate();
 		FRAMEWORK.framebuffer.ResetRenderTexture();
-		FRAMEWORK.framebuffer.SetDefaultRTV();
+		FRAMEWORK.framebuffer.SetDefaultRTV();*/
 		
+		//テクスチャをセット
+		FRAMEWORK.framebuffer.SetRenderTexture(multi_blur_texture->GetRenderTargetView(), true);
+		//ID3D11DepthStencilView* dsv = color_texture->GetDepthStencilView();
+
+		//画面をクリア
+		FRAMEWORK.framebuffer.Clear();
+		//FRAMEWORK.context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+		//レンダーターゲットビューの設定
+		FRAMEWORK.framebuffer.Activate(dsv);
+		//ブレンドステート設定
+		//FRAMEWORK.BlendSet(Blend::ALPHA);
+		//ラスタライザー設定
+		//FRAMEWORK.context->RSSetState(FRAMEWORK.rasterizer_state[framework::RS_CULL_BACK].Get());
+		//デプスステンシルステート設定
+		//FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[framework::DS_TRUE].Get(), 1);
+
+		//サンプラー設定
+		//sampler_clamp->Set(0);
+		FRAMEWORK.framebuffer.SetDefaultRTV();
+
+		//ブレンドステート設定
 		FRAMEWORK.BlendSet(Blend::ADD);
 
 		// シェーダリソースビューを設定.
@@ -892,6 +1002,8 @@ void SceneTest::RenderBlur(
 			0.0f, 0.0f, 1920.0f, 1080.0f,
 			0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
 		
+		FRAMEWORK.framebuffer.Deactivate();
+		FRAMEWORK.framebuffer.ResetRenderTexture();
 
 	//ブルーム画像の描画
 
@@ -913,10 +1025,10 @@ void SceneTest::RenderBlur(
 		////ブレンドステート設定
 		//FRAMEWORK.BlendSet(Blend::ADD);
 
-		//sprite->render(
-		//	spriteEx.get(),
-		//	multi_blur_texture.get(),
-		//	0.0f, 0.0f, 1920.0f, 1080.0f,
-		//	0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
+		/*sprite->render(
+			spriteEx.get(),
+			multi_blur_texture.get(),
+			0.0f, 0.0f, 1920.0f, 1080.0f,
+			0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);*/
 	}
 }

@@ -14,17 +14,19 @@
 #include "Texture.h"
 #include <vector>
 #include <string>
+#include "sprite.h"
 
 
-constexpr float POS_Y = 0.0f;						//最低の高さ
-constexpr float GAUGE_MAX = 100.0f;					//ゲージ最大量
-constexpr int	Track_max = 2;						//ホーミングダッシュ最大数
-constexpr float	non_target = 110.0f;				//この値を入れられたフレームは条件から外れるようにする
-constexpr float target_max = 100.0f;				//条件式でこの値以上は外れるようにする
-constexpr float attenuation_slam = 8.0f;			//滑り中速度の減衰率
-constexpr float draw_guarf_effect_add_pos_x = 3.0f;	//ガードエフェクト描画時の位置補間値
-constexpr float Reflection_range_min = 100.0f;		//この数値以上の吹っ飛びなら壁で跳ね返る
-constexpr float Reflection_attenuation_factor = 0.8f;//壁反射時の減衰率
+constexpr float POS_Y = 0.0f;							//最低の高さ
+constexpr float GAUGE_MAX = 100.0f;						//ゲージ最大量
+constexpr int	Track_max = 2;							//ホーミングダッシュ最大数
+constexpr float	non_target = 110.0f;					//この値を入れられたフレームは条件から外れるようにする
+constexpr float target_max = 100.0f;					//条件式でこの値以上は外れるようにする
+constexpr float attenuation_slam = 8.0f;				//滑り中速度の減衰率
+constexpr float draw_guarf_effect_add_pos_x = 3.0f;		//ガードエフェクト描画時の位置補間値
+constexpr float Reflection_range_min = 100.0f;			//この数値以上の吹っ飛びなら壁で跳ね返る
+constexpr float Reflection_attenuation_factor = 0.8f;	//壁反射時の減衰率
+constexpr float cut_in_max_time = 0.5f;					//カットイン表示時間
 
 //--------------------------------------
 //	**キャラ名設定
@@ -357,7 +359,8 @@ public:
 	int					now_player;		//どのプレイヤーがこのキャラを操作しているか(1:1P、2:2P)
 	float				anim_ccodinate;	//アニメーション速度を調整する変数
 	int					stop_state;		//ヒットストップ中の処理で使用
-	bool				hit_state_n_set;//当たり判定のパラメータをセットしたくないときはtrue	
+	//bool				hit_state_n_set;//当たり判定のパラメータをセットしたくないときはtrue	
+	float				cut_in_timer;	//カットインの表示時間
 	DirectX::XMFLOAT4	light_direction;//ライトの進む方向
 	HitResult			hit_result;		//攻撃が当たった場合の結果を保存する
 	HitResult			atk_result;		//攻撃決定時にキャンセル用の条件を保存するための変数
@@ -395,6 +398,13 @@ public:
 
 	int				chara_color;		//キャラのカラー番号
 
+
+public:
+	//画像
+	std::unique_ptr<Sprite> cutFrame = nullptr;		//カットインのフレーム
+	std::unique_ptr<Sprite> cutMask = nullptr;		//カットインのマスク画像
+	std::unique_ptr<Sprite> cutIn = nullptr;		//カットイン画像
+
 public:
 	//基本処理関数
 	virtual void Init(YR_Vector3 InitPos) = 0;
@@ -418,6 +428,11 @@ public:
 		const DirectX::XMFLOAT4& light_color,
 		const DirectX::XMFLOAT4& ambient_color,
 		float						elapsed_time) = 0;
+
+	virtual void DrawCutIn(
+		YRShader* shader,
+		float elapsed_time
+	) = 0;
 
 	virtual void TextDraw()=0;
 

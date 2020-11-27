@@ -542,14 +542,31 @@ public:
 	float cut_timer = 0.0f;
 	bool timer_start = false;
 
+	bool pause = false;
+
 	std::unique_ptr<Sprite> test = nullptr;
 
 	std::unique_ptr<Sprite> cutFrame = nullptr;
 	std::unique_ptr<Sprite> cutMask = nullptr;
 	std::unique_ptr<Sprite> cutIn = nullptr;
 
+	DirectX::XMFLOAT3	eye_cut = { 34.156f,5.693,-14.232 };
+	DirectX::XMFLOAT3	focus_cut = { 8.539f,5.693f,2.898f };
+	float				fov_cut = 50.0f;
+	float				near_cut = 1.4f;
+	float				far_cut = 100000.0f;
+
+
+	//カラーチェンジ用テクスチャ
+	std::shared_ptr<Texture>	color_texture_main = nullptr;
+	std::shared_ptr<Texture>	color_texture_face = nullptr;
+
+	DirectX::XMFLOAT2	eye_offset = { 0.0f,0.0f };
+	DirectX::XMFLOAT2	mouth_offset = { 0.0f,0.0f };
+
 	std::shared_ptr<Model> knight = nullptr;
 	std::shared_ptr<Model> wait_R = nullptr;
+	std::shared_ptr<Model> special_R = nullptr;
 	std::shared_ptr<Texture> box_texture = nullptr;
 	std::shared_ptr<Texture> board_texture = nullptr;
 	std::unique_ptr<ModelAnim> motion = nullptr;

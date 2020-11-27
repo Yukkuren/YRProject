@@ -105,7 +105,6 @@ void Knight::Init(YR_Vector3 InitPos)
 	ChangeFace(FaceAnim::NORMAL_LIP_SYNC);
 
 	text_on = false;
-	hit_state_n_set = false;
 
 	lumi_material = Model::Material_Attribute::NONE;
 
@@ -118,6 +117,8 @@ void Knight::Init(YR_Vector3 InitPos)
 	{
 		anim->NodeChange(model_motion.intro_L);
 	}
+
+	cut_in_timer = 0.0f;
 }
 
 void Knight::Uninit()
@@ -1236,6 +1237,111 @@ void Knight::Draw(
 		}
 #endif
 
+}
+
+void Knight::DrawCutIn(
+	YRShader* shader,
+	float elapsed_time
+)
+{
+	float center_x = static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f;
+	float center_y = static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f;
+
+	float fream = 0.03f;
+	float size = 3.0f;
+
+	bool anim_fin = cutFrame->AnimFinCheck();
+
+	if (anim_fin)
+	{
+		cut_in_timer += elapsed_time;
+		{
+			//通常の描画(最後のアニメーションを描画し続ける)
+			cutFrame->DrawRotaDivGraph(
+				shader,
+				center_x,
+				center_y,
+				0.0f,
+				size,
+				cutFrame->max - 1,
+				SpriteMask::FRAME
+			);
+
+			cutMask->DrawRotaDivGraph(
+				shader,
+				center_x,
+				center_y,
+				0.0f,
+				size,
+				cutMask->max - 1,
+				SpriteMask::WRITE
+			);
+		}
+	}
+	else
+	{
+		if(cut_in_timer < cut_in_max_time)
+		{
+			//カットイン再生
+			bool finish_cut = cutFrame->DrawRotaDivGraphOnec(
+				shader,
+				center_x,
+				center_y,
+				0.0f,
+				size,
+				fream,
+				elapsed_time,
+				SpriteMask::FRAME
+			);
+
+			cutMask->DrawRotaDivGraphOnec(
+				shader,
+				center_x,
+				center_y,
+				0.0f,
+				size,
+				fream,
+				elapsed_time,
+				SpriteMask::WRITE
+			);
+		}
+	}
+
+	//一定の時間以上になったら逆再生を開始する
+	if (cut_in_timer > cut_in_max_time)
+	{
+		bool finish_cut = cutFrame->DrawRotaDivGraphReverse(
+			shader,
+			center_x,
+			center_y,
+			0.0f,
+			size,
+			fream,
+			elapsed_time,
+			SpriteMask::FRAME
+		);
+
+		cutMask->DrawRotaDivGraphReverse(
+			shader,
+			center_x,
+			center_y,
+			0.0f,
+			size,
+			fream,
+			elapsed_time,
+			SpriteMask::WRITE
+		);
+	}
+
+
+	cutIn->DrawRotaGraph(
+		shader,
+		center_x,
+		center_y,
+		0.0f,
+		3.0f,
+		SpriteMask::INDRAW
+	);
 }
 
 
@@ -2600,7 +2706,6 @@ void Knight::DamageCheck(float decision)
 			angle.z = 0.0f;
 			//最終入力内容を初期化する
 			last_attack = AttackState::NONE;
-			hit_state_n_set = false;
 		}
 	}
 }
@@ -3132,12 +3237,10 @@ void Knight::Guard(float decision)
 			if (!ground)
 			{
 				HitBoxTransition(HitBoxState::ALL);
-				hit_state_n_set = true;
 			}
 			else
 			{
 				HitBoxTransition(HitBoxState::DOWN);
-				hit_state_n_set = true;
 			}
 		}
 		else
@@ -3147,12 +3250,10 @@ void Knight::Guard(float decision)
 				if (!ground)
 				{
 					HitBoxTransition(HitBoxState::ALL);
-					hit_state_n_set = true;
 				}
 				else
 				{
 					HitBoxTransition(HitBoxState::MIDDLE);
-					hit_state_n_set = true;
 				}
 			}
 		}
@@ -3164,12 +3265,10 @@ void Knight::Guard(float decision)
 			if (!ground)
 			{
 				HitBoxTransition(HitBoxState::ALL);
-				hit_state_n_set = true;
 			}
 			else
 			{
 				HitBoxTransition(HitBoxState::DOWN);
-				hit_state_n_set = true;
 			}
 		}
 		else
@@ -3179,12 +3278,10 @@ void Knight::Guard(float decision)
 				if (!ground)
 				{
 					HitBoxTransition(HitBoxState::ALL);
-					hit_state_n_set = true;
 				}
 				else
 				{
 					HitBoxTransition(HitBoxState::MIDDLE);
-					hit_state_n_set = true;
 				}
 			}
 		}
@@ -3198,7 +3295,6 @@ void Knight::Guard(float decision)
 				|| pad->x_input[scastI(PAD::STICK_L)] > 0 || pad->x_input[scastI(PAD::STICK_LDown)] > 0)
 			{
 				HitBoxTransition(HitBoxState::ALL);
-				hit_state_n_set = true;
 			}
 		}
 	}
@@ -3267,7 +3363,6 @@ void Knight::GuardBack(float elapsed_time)
 		return;
 	}
 
-	hit_state_n_set = true;
 	bool hit_on = false;
 
 
@@ -3304,7 +3399,6 @@ void Knight::GuardBack(float elapsed_time)
 	{
 		if (ground)
 		{
-			hit_state_n_set = false;
 			if (act_state != ActState::WAIT)
 			{
 				act_state = ActState::NONE;
@@ -3338,7 +3432,6 @@ void Knight::GuardBack(float elapsed_time)
 		else
 		{
 			act_state = ActState::JUMP;
-			hit_state_n_set = false;
 			//描画をセット
 			max_jump_flag = true;
 			jumpflag = true;
@@ -4503,6 +4596,7 @@ void Knight::AttackDetailsSet(const AttackState& attack_state)
 		GetSound().SESinglePlay(SEKind::SPECIAL_ATTACK);
 		YRGetEffect().PlayEffect(EffectKind::WIND, DirectX::XMFLOAT3(pos.x, pos.y - 5.0f, pos.z), DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
 		YRGetEffect().PlayEffect(EffectKind::WIND, DirectX::XMFLOAT3(pos.x, pos.y - 5.0f, pos.z), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+		cut_in_timer = 0.0f;
 		break;
 	case AttackState::DESIRE_SPECIAL:
 		break;

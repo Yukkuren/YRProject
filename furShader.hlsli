@@ -22,7 +22,15 @@ cbuffer CBPerMesh : register(b0)
 	float4 ambient_color;
 
 	row_major float4x4 bone_transforms[MAX_BONES];
-	//float4 EyePos;				//カメラ座標
+	float4 eyepos;				//カメラ座標
+	float4x4 view;
+	float4x4 projection;
+	float3 at;
+	float lumi_factor;
+	float offset_X;
+	float offset_Y;
+	float dummy00;
+	float dummy01;
 };
 cbuffer CBPerFrame : register(b2)
 {
@@ -30,7 +38,7 @@ cbuffer CBPerFrame : register(b2)
 	float4	LightDir;		//ライトの方向
 	float4  AmbientColor;	//環境光
 	float4	EyePos;			//カメラ位置
-	float	Density;			//毛の密度
+	float	Density;		//毛の密度
 	float	Distance;		//毛の長さ
 	float	dummy1;
 	float	dummy2;
@@ -52,7 +60,7 @@ struct VSInput
 
 struct GSInput
 {
-	float4 Position : SV_POSITION;
+	float4 Position : POSITION;
 	float3 Normal   : NORMAL;
 	float2 Tex : TEXCOORD;
 	float4 Color : COLOR;

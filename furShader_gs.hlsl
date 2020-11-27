@@ -11,18 +11,19 @@ void main(triangle GSInput input[3],		//入力プリミティブタイプ
 	float3 Normal = cross(vec1, vec2);
 	float3 N = normalize(Normal);
 
+
 	for (int j = 0; j < LAYER; j++) {
 		for (int i = 0; i < 3; i++) {
 			PSInput data = (PSInput)0;
 			float4 P = input[i].Position;
-			P.xyz += Normal * Distance * j;
+			P.xyz += input[i].Normal * Distance * j;
 			data.Position = mul(P, world_view_projection);
 			data.wNormal = normalize(mul(input[i].Normal,(float3x3)world));
-			data.Tex = input[i].Tex * Density;
-			data.Color = input[i].Color;
-			//data.Color.rgb = input[i].Color.rgb * ((float)j / (float)LAYER);
-			//data.Color.a = input[i].Color.a * (1.0 - (float)j / (float)LAYER);
-			data.wPos = input[i].wPos;
+			data.Tex = input[i].Tex;
+			//data.Color = input[i].Color;
+			data.Color.rgb = input[i].Color.rgb * (sqrt((float)j / (float)LAYER));
+			data.Color.a = input[i].Color.a * (1.0 - ((float)j / (float)LAYER));
+			data.wPos = mul(P, world).xyz;
 			Stream.Append(data);
 		}
 
