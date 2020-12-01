@@ -119,6 +119,7 @@ std::array<bool, scastI(AttackState::ATTACK_END)> linkage_stick_on = { false };
 
 std::array<std::string, scastI(KNIGHTHIT::END)> hit_name_list =
 {
+	u8"頭",
 	u8"ボディ",
 	u8"足",
 };
@@ -163,6 +164,7 @@ std::array<std::string, scastI(AttackKind::END)> attack_kind_name_list =
 	u8"上段攻撃と相殺しない攻撃",
 	u8"ダウン攻撃",
 };
+
 #endif // USE_IMGUI
 
 bool Knight::DEBUGAttackLoad()
@@ -226,7 +228,7 @@ bool Knight::DEBUGAttackLoad()
 	attack_list[scastI(AttackState::SPECIAL_ATTACK)].need_power = 0;
 	attack_list[scastI(AttackState::SPECIAL_ATTACK)].aid_attack_name = AttackState::NONE;
 	attack_list[scastI(AttackState::SPECIAL_ATTACK)].real_attack = attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_name;
-	
+
 	for (int i = 0; i < attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_max; i++)
 	{
 		attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].fream = 2.0f;
@@ -317,7 +319,7 @@ bool Knight::AttackLoad()
 
 
 
-		//攻撃回数ごとのパラメータ書き出し
+		//攻撃回数ごとのパラメータ読み込み
 		if (!attack_list[list].attack_single.empty())
 		{
 			for (int sin = 0; sin < attack_list[list].attack_single.size(); sin++)
@@ -329,7 +331,7 @@ bool Knight::AttackLoad()
 				{
 					for (int para = 0; para < attack_list[list].attack_single[sin].parameter.size(); para++)
 					{
-						//攻撃判定内部パラメーター書き出し
+						//攻撃判定内部パラメーター読み込み
 						ifs >> attack_list[list].attack_single[sin].parameter[para].distance.x;
 						ifs >> attack_list[list].attack_single[sin].parameter[para].distance.y;
 						ifs >> attack_list[list].attack_single[sin].parameter[para].size.x;
@@ -451,7 +453,7 @@ bool Knight::AttackLoad()
 	combo_Y_ifs.close();
 
 
-	//Yボタンコンボリストを読み込む
+	//Bボタンコンボリストを読み込む
 	std::ifstream combo_B_ifs("./Data/CharaParameter/Knight/Combo_B.txt");
 	int size_b = -1;
 	int  com_b = 0;
@@ -489,9 +491,6 @@ bool Knight::AttackLoad()
 			hit_ifs >> hitparam_list[list].act_parameter[act].distance.y;
 			hit_ifs >> hitparam_list[list].act_parameter[act].size.x;
 			hit_ifs >> hitparam_list[list].act_parameter[act].size.y;
-			/*int state;
-			hit_ifs >> state;*/
-			//hitparam_list[list].act_parameter[act].state = static_cast<HitBoxState>(state);
 		}
 		for (int atk = 0; atk < hitparam_list[list].attack_parameter.size(); atk++)
 		{
@@ -500,9 +499,6 @@ bool Knight::AttackLoad()
 			hit_ifs >> hitparam_list[list].attack_parameter[atk].distance.y;
 			hit_ifs >> hitparam_list[list].attack_parameter[atk].size.x;
 			hit_ifs >> hitparam_list[list].attack_parameter[atk].size.y;
-			/*int state;
-			hit_ifs >> state;*/
-			//hitparam_list[list].attack_parameter[atk].state = static_cast<HitBoxState>(state);
 		}
 	}
 	//もし落ちたらエラーを出す
@@ -612,7 +608,7 @@ bool Knight::AttackWrite()
 {
 	//AttackStateの順に保存する
 	std::ofstream outputfile("./Data/CharaParameter/Knight/AttackParam.txt");
-	
+
 	outputfile << jump_later << std::endl;
 	outputfile << dash_later << std::endl;
 
@@ -711,7 +707,6 @@ bool Knight::AttackWrite()
 			hitout << hitparam_list[list].act_parameter[act].distance.y << std::endl;
 			hitout << hitparam_list[list].act_parameter[act].size.x << std::endl;
 			hitout << hitparam_list[list].act_parameter[act].size.y << std::endl;
-			//hitout << scastI(hitparam_list[list].act_parameter[act].state) << std::endl;
 		}
 		for (int atk = 0; atk < hitparam_list[list].attack_parameter.size(); atk++)
 		{
@@ -720,7 +715,6 @@ bool Knight::AttackWrite()
 			hitout << hitparam_list[list].attack_parameter[atk].distance.y << std::endl;
 			hitout << hitparam_list[list].attack_parameter[atk].size.x << std::endl;
 			hitout << hitparam_list[list].attack_parameter[atk].size.y << std::endl;
-			//hitout << scastI(hitparam_list[list].attack_parameter[atk].state) << std::endl;
 		}
 	}
 	hitout.close();
@@ -812,7 +806,7 @@ void Knight::DrawDEBUG(
 
 	//攻撃リスト作成用処理
 #ifdef EXIST_IMGUI
-	if(Get_Use_ImGui())
+	if (Get_Use_ImGui())
 	{
 
 		std::string p1_hp = std::to_string(hp);
@@ -830,7 +824,7 @@ void Knight::DrawDEBUG(
 				static_cast<float>(FRAMEWORK.SCREEN_WIDTH / 2.0f) - 500.0f,
 				100.0f, p1_hp.c_str());
 		}
-		
+
 		FRAMEWORK.font->End(FRAMEWORK.context.Get());
 
 		std::string now_play = std::to_string(now_player);
@@ -849,21 +843,21 @@ void Knight::DrawDEBUG(
 
 		if (ImGui::TreeNode(u8"プレイヤー当たり判定調整"))
 		{
-			for (int list = 0; list < hitparam_list.size(); list++)
+			if (ImGui::TreeNode(u8"行動当たり判定"))
 			{
-				//プレイヤーの当たり判定をそれぞれ出す
-				if (ImGui::TreeNode(hit_name_list[list].c_str()))
+				for (int act = 0; act < scastI(ActState::ACT_END); act++)
 				{
-					if (ImGui::TreeNode(u8"行動当たり判定"))
+					if (ImGui::TreeNode(act_name_list[act].c_str()))
 					{
-						for (int act = 0; act < hitparam_list[list].act_parameter.size(); act++)
+						for (int list = 0; list < hitparam_list.size(); list++)
 						{
-							if (ImGui::TreeNode(act_name_list[act].c_str()))
+							//プレイヤーの当たり判定をそれぞれ出す
+							if (ImGui::TreeNode(hit_name_list[list].c_str()))
 							{
-								ImGui::SliderFloat(u8"プレイヤーとの距離X", &hitparam_list[list].act_parameter[act].distance.x, -200.0f, 200.0f);
-								ImGui::SliderFloat(u8"プレイヤーとの距離Y", &hitparam_list[list].act_parameter[act].distance.y, -200.0f, 200.0f);
-								ImGui::SliderFloat(u8"大きさX", &hitparam_list[list].act_parameter[act].size.x, 0.0f, 500.0f);
-								ImGui::SliderFloat(u8"大きさY", &hitparam_list[list].act_parameter[act].size.y, 0.0f, 500.0f);
+								ImGui::SliderFloat(u8"プレイヤーとの距離X", &hitparam_list[list].act_parameter[act].distance.x, -50.0f, 50.0f);
+								ImGui::SliderFloat(u8"プレイヤーとの距離Y", &hitparam_list[list].act_parameter[act].distance.y, -50.0f, 50.0f);
+								ImGui::SliderFloat(u8"大きさX", &hitparam_list[list].act_parameter[act].size.x, 0.0f, 50.0f);
+								ImGui::SliderFloat(u8"大きさY", &hitparam_list[list].act_parameter[act].size.y, 0.0f, 50.0f);
 								//int state = scastI(hitparam_list[list].act_parameter[act].state);
 								//ImGui::SliderInt(u8"状態", &state, 0, scastI(HitBoxState::END)-1);
 								//hitparam_list[list].act_parameter[act].state = static_cast<HitBoxState>(state);
@@ -877,30 +871,32 @@ void Knight::DrawDEBUG(
 						}
 						ImGui::TreePop();
 					}
+				}
+				ImGui::TreePop();
+			}
 
-					if (ImGui::TreeNode(u8"攻撃当たり判定"))
+			if (ImGui::TreeNode(u8"攻撃当たり判定"))
+			{
+				for (int atk = 0; atk < scastI(AttackState::ATTACK_END); atk++)
+				{
+					if (ImGui::TreeNode(attack_name_list[atk].c_str()))
 					{
-						for (int atk = 0; atk < hitparam_list[list].attack_parameter.size(); atk++)
+						for (int list = 0; list < hitparam_list.size(); list++)
 						{
-							if (ImGui::TreeNode(attack_name_list[atk].c_str()))
+							if (ImGui::TreeNode(hit_name_list[list].c_str()))
 							{
-								ImGui::SliderFloat(u8"プレイヤーとの距離X", &hitparam_list[list].attack_parameter[atk].distance.x, -200.0f, 200.0f);
-								ImGui::SliderFloat(u8"プレイヤーとの距離Y", &hitparam_list[list].attack_parameter[atk].distance.y, -200.0f, 200.0f);
-								ImGui::SliderFloat(u8"大きさX", &hitparam_list[list].attack_parameter[atk].size.x, 0.0f, 500.0f);
-								ImGui::SliderFloat(u8"大きさY", &hitparam_list[list].attack_parameter[atk].size.y, 0.0f, 500.0f);
-								//int state = scastI(hitparam_list[list].attack_parameter[atk].state);
-								//ImGui::SliderInt(u8"状態", &state, 0, scastI(HitBoxState::END));
-								//hitparam_list[list].attack_parameter[atk].state = static_cast<HitBoxState>(state);
-								//ImGui::Text(hitstate_name_list[state].c_str());
+								ImGui::SliderFloat(u8"プレイヤーとの距離X", &hitparam_list[list].attack_parameter[atk].distance.x, -50.0f, 50.0f);
+								ImGui::SliderFloat(u8"プレイヤーとの距離Y", &hitparam_list[list].attack_parameter[atk].distance.y, -50.0f, 50.0f);
+								ImGui::SliderFloat(u8"大きさX", &hitparam_list[list].attack_parameter[atk].size.x, 0.0f, 50.0f);
+								ImGui::SliderFloat(u8"大きさY", &hitparam_list[list].attack_parameter[atk].size.y, 0.0f, 50.0f);
 								ImGui::TreePop();
 							}
 						}
 						ImGui::TreePop();
 					}
-					ImGui::TreePop();
 				}
+				ImGui::TreePop();
 			}
-
 			ImGui::TreePop();
 		}
 		ImGui::InputFloat("eye_offset.x", &eye_offset.x, 0.01f, 0.01f);
@@ -1001,10 +997,10 @@ void Knight::DrawDEBUG(
 			}
 			ImGui::EndPopup();
 		}
-		if (pad->x_input[scastI(PAD::SELECT)] == 1)
+		/*if (pad->x_input[scastI(PAD::SELECT)] == 1)
 		{
 			ImGui::OpenPopup("Load");
-		}
+		}*/
 
 		if (ImGui::Button(u8"ロード"))
 		{
@@ -1229,7 +1225,7 @@ void Knight::DrawDEBUG(
 
 		static int combo_flg = 0;
 
-		
+
 		std::string now_com = std::to_string(now_player);
 		now_com += std::string(":X_Combolist");
 		ImGui::Begin(now_com.c_str());
@@ -1342,7 +1338,7 @@ void Knight::DrawDEBUG(
 		default:
 			break;
 		}
-		
+
 
 		ImGui::End();
 
@@ -1351,7 +1347,7 @@ void Knight::DrawDEBUG(
 		ImGui::Begin(now_pro.c_str());
 
 		ImGui::BeginChild(ImGui::GetID((void*)0), ImVec2(500, 500), ImGuiWindowFlags_NoTitleBar);
-		
+
 		if (!projectile_atk.empty())
 		{
 			for (int i = 0; i < projectile_atk.size(); i++)

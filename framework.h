@@ -29,7 +29,7 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wparam
 
 //#define SPRITE_MAX	(1024)
 #ifdef  _DEBUG
-#endif // 
+#endif //
 
 
 //ImGuiを完全に出さない場合はこの定義をコメントアウトする
@@ -131,7 +131,7 @@ public:
 		{
 			Nscene = scene_tbl[next];
 		}
-		
+
 		if (Nscene) {
 			scene = Nscene;
 			Nscene = nullptr;
@@ -165,7 +165,7 @@ public:
 		depth->Release();*/
 		scene->UnInit();
 
-		
+
 		YRBlend.Uninit();
 #ifdef EXIST_IMGUI
 		ImGui_ImplDX11_Shutdown();

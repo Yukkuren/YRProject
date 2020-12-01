@@ -510,7 +510,36 @@ void Knight::Update(float decision, float elapsed_time)
 	{
 		if (act_state == ActState::ATTACK)
 		{
-			hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(attack_state)], elapsed_time);
+			switch (attack_state)
+			{
+			case AttackState::COMBO_X:
+			{
+				AttackState truth = combolist_X.combolist[combolist_X.now_pos];
+				int truth_num = scastI(truth);
+				AttackState real_state = attack_list[truth_num].real_attack;
+				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(real_state)], elapsed_time);
+			}
+				break;
+			case AttackState::COMBO_Y:
+			{
+				AttackState truth = combolist_Y.combolist[combolist_Y.now_pos];
+				int truth_num = scastI(truth);
+				AttackState real_state = attack_list[truth_num].real_attack;
+				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(real_state)], elapsed_time);
+			}
+				break;
+			case AttackState::COMBO_B:
+			{
+				AttackState truth = combolist_B.combolist[combolist_B.now_pos];
+				int truth_num = scastI(truth);
+				AttackState real_state = attack_list[truth_num].real_attack;
+				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(real_state)], elapsed_time);
+			}
+				break;
+			default:
+				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(attack_state)], elapsed_time);
+				break;
+			}
 		}
 		else
 		{
@@ -545,9 +574,55 @@ void Knight::Update(float decision, float elapsed_time)
 	FaceAnimation(elapsed_time);
 }
 
+
+void Knight::DebugHitParamUpdate()
+{
+	for (int list = 0; list < hit.size(); list++)
+	{
+		if (act_state == ActState::ATTACK)
+		{
+			switch (attack_state)
+			{
+			case AttackState::COMBO_X:
+			{
+				AttackState truth = combolist_X.combolist[combolist_X.now_pos];
+				int truth_num = scastI(truth);
+				AttackState real_state = attack_list[truth_num].real_attack;
+				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(real_state)], 0.0f);
+			}
+			break;
+			case AttackState::COMBO_Y:
+			{
+				AttackState truth = combolist_Y.combolist[combolist_Y.now_pos];
+				int truth_num = scastI(truth);
+				AttackState real_state = attack_list[truth_num].real_attack;
+				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(real_state)], 0.0f);
+			}
+			break;
+			case AttackState::COMBO_B:
+			{
+				AttackState truth = combolist_B.combolist[combolist_B.now_pos];
+				int truth_num = scastI(truth);
+				AttackState real_state = attack_list[truth_num].real_attack;
+				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(real_state)], 0.0f);
+			}
+			break;
+			default:
+				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(attack_state)], 0.0f);
+				break;
+			}
+		}
+		else
+		{
+			hit[list].Update(pos, hitparam_list[list].act_parameter[scastI(act_state)], 0.0f);
+		}
+	}
+}
+
+
 void Knight::AttackInput()
 {
-	
+
 	//-------------------------------------------------------------------
 	// *概要*
 	//・コマンドは二種類のみ
@@ -640,7 +715,7 @@ void Knight::AttackInput()
 					}
 				}
 
-				
+
 				//int next = scastI(attack_list[list].real_attack);
 				if (attack_list[real].need_power <= power)
 				{
@@ -941,7 +1016,7 @@ void Knight::Attack(float decision, float elapsed_time)
 		{
 			if (act_state != ActState::WAIT)
 			{
-				
+
 				if (pad->x_input[scastI(PAD::STICK_D)] > 0 || pad->x_input[scastI(PAD::STICK_RDown)] > 0 || pad->x_input[scastI(PAD::STICK_LDown)] > 0)
 				{
 					act_state = ActState::SQUAT;
@@ -954,7 +1029,7 @@ void Knight::Attack(float decision, float elapsed_time)
 					{
 						anim->NodeChange(model_motion.squat_L);
 					}
-					
+
 				}
 				else
 				{
@@ -1356,12 +1431,12 @@ void Knight::DrawFastMove(YR_Vector3 position)
 	//右
 	if (rightOrleft < 0)
 	{
-		
+
 	}
 	//左
 	else
 	{
-		
+
 	}
 	fast = false;
 }
@@ -2005,7 +2080,7 @@ void Knight::Move(float decision)
 		}
 		//if (rightOrleft < 0)
 		//{
-		//	
+		//
 		//}
 		//else
 		//{
@@ -2351,7 +2426,7 @@ void Knight::Jump()
 				if (speed.x > -walkspeed)
 				{
 					speed.x = -walkspeed;
-					
+
 				}
 				return;
 			}
@@ -2500,7 +2575,7 @@ void Knight::JumpUpdate(float decision, float elapsed_time)
 			{
 				speed.y -= (down_force * elapsed_time);
 			}
-			
+
 		}
 		if (hightrigger)
 		{
@@ -2963,7 +3038,7 @@ void Knight::SlamUpdate(float elapsed_time)
 	angle.z = 0.0f;
 	knocktimer -= elapsed_time;
 
-	
+
 	//地面についた時
 	if (pos.y < POS_Y)
 	{
@@ -3143,7 +3218,7 @@ void Knight::DownHitUpdate(float elapsed_time)
 	}
 	//角度を戻す
 	angle.z = 0.0f;
-	
+
 	if (knocktimer > 0.0f)
 	{
 		knocktimer -= elapsed_time;
@@ -3221,7 +3296,7 @@ void Knight::DownHitUpdate(float elapsed_time)
 
 void Knight::Guard(float decision)
 {
-	
+
 	if (step || attack || act_state == ActState::PASSIVE|| act_state == ActState::WAKE)
 	{
 		//攻撃中、またはステップ中、受け身中なら入らない
@@ -3350,7 +3425,7 @@ void Knight::Guard(float decision)
 			{
 				YRGetEffect().PlayEffect(EffectKind::GUARD, DirectX::XMFLOAT3(pos.x - draw_guarf_effect_add_pos_x, pos.y, -2.0f), DirectX::XMFLOAT3(0.7f, 0.7f, 0.7f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -5.5f);
 			}
-			
+
 		}
 	}
 
@@ -3584,7 +3659,7 @@ void Knight::FallUpdate(float elapsed_time)
 
 void Knight::DownUpdate()
 {
-	
+
 	if (ground)
 	{
 		//ダウン中特定の入力があればステートを切り替える
@@ -3704,7 +3779,7 @@ void Knight::PassiveUpdate(float elapsed_time)
 		//左向き
 		angle.z -= 20.0f * elapsed_time;
 	}
-	
+
 	if (pos.y < POS_Y)
 	{
 		pos.y = POS_Y;
@@ -4515,7 +4590,7 @@ void Knight::FaceLipSync(float elapsed_time)
 				break;
 			}
 		}
-		
+
 		lip_sync_time = 0.0f;
 	}
 }
@@ -4618,7 +4693,7 @@ void Knight::AttackDetailsSet(const AttackState& attack_state)
 std::wstring Knight::RandTextSelect()
 {
 	TextList rnd = static_cast<TextList>(rand() % scastI(TextList::TEXT_END));
-	
+
 	switch (rnd)
 	{
 	case Knight::TextList::NORMAL://通常
@@ -4635,7 +4710,7 @@ std::wstring Knight::RandTextSelect()
 	default:
 		break;
 	}
-	
+
 }
 
 void Knight::TextDraw()

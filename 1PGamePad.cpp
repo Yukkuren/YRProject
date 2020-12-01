@@ -429,6 +429,24 @@ void GamePad1::Update(float elapsed_time)
 			x_input[static_cast<int>(PAD::SELECT)] = 0;
 		}
 
+		if (pKeyState.uflg > 0)
+		{
+			x_input[static_cast<int>(PAD::RB)]++;
+		}
+		else
+		{
+			x_input[static_cast<int>(PAD::RB)] = 0;
+		}
+
+		if (pKeyState.rflg > 0)
+		{
+			x_input[static_cast<int>(PAD::LB)]++;
+		}
+		else
+		{
+			x_input[static_cast<int>(PAD::LB)] = 0;
+		}
+
 
 
 		if (pKeyState.wflg > 0)

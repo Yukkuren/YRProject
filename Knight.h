@@ -11,21 +11,12 @@
 
 enum class KNIGHTHIT :int
 {
+	HEAD,
 	BODY,
 	LEG,
 	END
 };
 
-enum class KNIGHTATK :int
-{
-	ONE,
-	TWO,
-	END,
-	HADOU,
-	THU_HADOU,
-	KYO_HADOU,
-	ATKEND
-};
 
 //個別モーションデータ格納構造体
 struct Model_MotionData
@@ -136,7 +127,7 @@ private:
 	const float passive_brake = 200.0f;		//受け身中に減速する速度
 
 	float		production_time = 0.0f;	//カメラ演出に使う変数
-	
+
 	std::shared_ptr<Model>			main = nullptr;	//モデルメインデータ(メッシュのみ。アニメーション無し)
 	std::unique_ptr<ModelAnim>		anim = nullptr;	//モデル描画&アニメーション適用変数
 
@@ -151,11 +142,11 @@ public:
 	float hadouspeed;
 
 	Model::Material_Attribute		lumi_material;
-	
+
 	//std::array< HitBox, static_cast<int>(KNIGHTHIT::END)> hit;
 	//std::array<YR_Vector3, scastI(KNIGHTHIT::END)> Hitplus;
 	//std::array<YR_Vector3, scastI(KNIGHTHIT::END)> HitSize;
-	
+
 	//カラーチェンジ用テクスチャ
 	std::shared_ptr<Texture>	color_texture_main = nullptr;
 	std::shared_ptr<Texture>	color_texture_face = nullptr;
@@ -240,7 +231,7 @@ public:
 	void Jaku_Rhurf(float elapsed_time);
 	void Thu_Rhurf(float elapsed_time);
 	void Kyo_Rhurf(float elapsed_time);
-	
+
 	void TrackDash(float decision, float elapsed_time);
 	void Steal(float elapsed_time);
 	void Slow(float elapsed_time);
@@ -267,6 +258,8 @@ public:
 	AttackBox* GetAttack();
 	int GetMax(int n);
 	//float& GetPosX2();
+
+	void DebugHitParamUpdate();
 
 	void NoneChange();
 

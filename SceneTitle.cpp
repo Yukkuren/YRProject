@@ -614,14 +614,14 @@ void SceneTitle::Draw(float elapsed_time)
 		switch (state)
 		{
 		case SceneTitle::STATE::HOME:
-			choice_img->DrawRotaDivGraph(
+			/*choice_img->DrawRotaDivGraph(
 				spriteShader.get(),
 				static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
 				static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f + (sinf(timer) * 100.0f),
 				0.0f,
 				0.5f,
 				0
-			);
+			);*/
 			break;
 		case SceneTitle::STATE::SELECT:
 			if (vs_mode == VS_MODE::CPU)

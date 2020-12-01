@@ -367,7 +367,7 @@ public:
 	std::vector<AttackBox> atk;			//攻撃当たり判定
 	std::vector<AttackBox> projectile_atk;//飛び道具当たり判定
 	std::vector<HitBox>	hit;			//当たり判定
-	
+
 	std::array<Animation_Coordinate, scastI(AttackState::ATTACK_END)>	ac_attack;	//攻撃ごとのアニメーション調整値
 	std::array<Animation_Coordinate, scastI(ActState::ACT_END)>			ac_act;		//行動ごとのアニメーション調整値
 
@@ -440,7 +440,7 @@ public:
 
 public:
 	//行動系関数
-	
+
 	virtual void Move(float decision) = 0;
 	virtual bool Step(float elapsed_time) = 0;
 	virtual void AirDash(float elapsed_time) = 0;
@@ -493,6 +493,8 @@ public:
 
 	virtual bool ComboSet() = 0;					//コンボ開始時、どの攻撃をしているかを確認してその後のコンボをセットする
 	virtual void ComboUpdate() = 0;					//コンボ更新。ステートを設定する
+
+	virtual void DebugHitParamUpdate() = 0;
 
 public:
 	virtual bool AttackEndCheck() = 0;								//攻撃当たり判定が全て終了しているか確認する

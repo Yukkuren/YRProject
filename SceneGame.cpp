@@ -99,7 +99,7 @@ void SceneGame::Init()
 	//カメラ初期設定
 	StartSet();
 	YRCamera.camera_state = Camera::CAMERA_STATE::MAIN;
-	
+
 	//画像選択位置初期化
 	for (int i = 0; i < static_cast<int>(p1combo.size()); i++)
 	{
@@ -191,7 +191,7 @@ void SceneGame::LoadData()
 
 	//コンスタントバッファ作成
 	FRAMEWORK.CreateConstantBuffer(constantBuffer.GetAddressOf(), sizeof(GaussParamManager::GaussBlurParam));
-	
+
 	//テクスチャロード
 	if (color_texture == nullptr)
 	{
@@ -324,11 +324,11 @@ void SceneGame::LoadData()
 		spriteEx = std::make_unique<YRShader>(ShaderType::SPRITE_EX);
 		spriteEx->Create("./Data/Shader/SpriteEx_vs.cso", "./Data/Shader/SpriteEx_ps.cso");
 	}
-	
+
 
 	//ステージの選択
 	stage.Init(Stage::StageType::NORMAL);
-	
+
 
 	//選択したキャラクターをそれぞれ生成する
 	SetPlayerCharacter(&player1p, FRAMEWORK.sceneselect.select_p1);
@@ -345,7 +345,7 @@ void SceneGame::LoadData()
 	player1p->Init(PL.pos1P);
 	player2p->Init(PL.pos2P);
 	//キャラにどのプレイヤーが操作しているかの情報を与える
-	
+
 	PL.HP_MAX1P = player1p->hp;
 	PL.HP_MAX2P = player2p->hp;
 	PL.ratio1P = player1p->hp / PL.HP_MAX1P * 800.0f;
@@ -648,7 +648,7 @@ void SceneGame::Update(float elapsed_time)
 			if (start)
 			{
 				//イントロがすべて終わり、カウントも終えゲームが開始された
-				
+
 				if (!end)
 				{
 					//パッド更新
@@ -656,12 +656,15 @@ void SceneGame::Update(float elapsed_time)
 					Control2PState(game_speed);
 					timer += elapsed_time;
 #ifdef EXIST_IMGUI
-					if (pKeyState.oflg == 1)
+					if (Get_Use_ImGui())
 					{
-						//player1p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
-						//player2p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
-						//player1p->pad->x_input[scastI(PAD::X)] = 1;
-						//player2p->pad->x_input[scastI(PAD::X)] = 1;
+						if (pKeyState.oflg == 1)
+						{
+							player1p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
+							//player2p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
+							player1p->pad->x_input[scastI(PAD::X)] = 1;
+							//player2p->pad->x_input[scastI(PAD::X)] = 1;
+						}
 					}
 #endif
 				}
@@ -928,27 +931,32 @@ void SceneGame::Update(float elapsed_time)
 				default:
 					break;
 				}
-				
+
 			}
 			break;
 		case MAIN_LOOP::WIN1P:
-			
+
 			YRCamera.camera_state = Camera::CAMERA_STATE::PLAYER1P;
 			//パッドの更新
 			player1p->pad->Update(game_speed);
 			player2p->pad->Update(game_speed);
 
-			if (player1p->pad->x_input[scastI(PAD::START)] == 1 || player2p->pad->x_input[scastI(PAD::START)] == 1)
+#ifdef EXIST_IMGUI
+			if (Get_Use_ImGui())
 			{
-				//ポーズボタンが押された
-				pause = !pause;
-			}
+				if (player1p->pad->x_input[scastI(PAD::START)] == 1 || player2p->pad->x_input[scastI(PAD::START)] == 1)
+				{
+					//ポーズボタンが押された
+					pause = !pause;
+				}
 
-			//1Pイントロ更新
-			if (pause)
-			{
-				game_speed = 0.0f;
+				//1Pイントロ更新
+				if (pause)
+				{
+					game_speed = 0.0f;
+				}
 			}
+#endif // EXIST_IMGUI
 
 			if (player1p->WinPerformance(game_speed))
 			{
@@ -1136,10 +1144,10 @@ void SceneGame::Draw(float elapsed_time)
 
 	//材質カラー
 	DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(1, 1, 1, 1);
-	
+
 	//仮背景
 	//test->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 0.5f);
-	
+
 	////テスト描画(赤ポリ)
 	//geo->render(
 	//	geoShader.get(),
@@ -1284,7 +1292,7 @@ void SceneGame::Draw(float elapsed_time)
 		//プレイヤー描画
 		player1p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, lightColor, ambient_color, game_speed*p1_elapsed_time);
 		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, lightColor, ambient_color, game_speed*p2_elapsed_time);
-		
+
 		//エフェクト
 		YRGetEffect().CameraSet();
 
@@ -1318,7 +1326,6 @@ void SceneGame::Draw(float elapsed_time)
 			FRAMEWORK.context->OMSetDepthStencilState(m_depth_stencil_state.Get(), 1);
 		}
 #endif // USE_IMGUI
-		
 
 		//ゲージ描画
 		PL.gauge1P = (player1p->gauge / GAUGE_MAX) * 640.0f;
@@ -1409,8 +1416,8 @@ void SceneGame::Draw(float elapsed_time)
 				);
 			}
 		}
-		
-		if (end) 
+
+		if (end)
 		{
 			//ゲームの決着がついた後
 			if (endtimer < end_slow_time)
@@ -1671,6 +1678,13 @@ void SceneGame::PauseUpdate()
 		Init();
 		pause = false;
 	}
+#ifdef EXIST_IMGUI
+	if (Get_Use_ImGui())
+	{
+		player1p->DebugHitParamUpdate();
+	}
+#endif // EXIST_IMGUI
+
 }
 
 
@@ -1797,12 +1811,12 @@ void SceneGame::CameraRequest(float elapsed_time)
 		DirectX::XMVECTOR focus_vector = DirectX::XMLoadFloat3(&focus);
 		DirectX::XMVECTOR scene_fov_vector = DirectX::XMLoadFloat(&Scene_fov);
 		DirectX::XMVECTOR fov_vector = DirectX::XMLoadFloat(&fov);
-		
+
 		DirectX::XMVECTOR eye_larp = DirectX::XMVectorLerp(eye_vector, scene_eye_vector, 0.05f);
 		DirectX::XMVECTOR focus_larp = DirectX::XMVectorLerp(focus_vector, scene_focus_vector, 0.05f);
 		DirectX::XMVECTOR fov_larp = DirectX::XMVectorLerp(fov_vector, scene_fov_vector, 0.1f);
 
-		
+
 		DirectX::XMStoreFloat3(&eye, eye_larp);
 		DirectX::XMStoreFloat3(&focus, focus_larp);
 		DirectX::XMStoreFloat(&fov, fov_larp);
@@ -1879,7 +1893,7 @@ void SceneGame::CameraRequest(float elapsed_time)
 				eye.x -= 50.0f;
 			}
 		}
-		
+
 		eye.z = focus.z - 100.0f;
 
 		YRCamera.viblate_timer = 0.5f;
@@ -1934,7 +1948,7 @@ void SceneGame::SetRenderTexture()
 	FRAMEWORK.framebuffer.SetRenderTexture(luminance_texture->GetRenderTargetView());
 
 	ID3D11DepthStencilView* dsv = color_texture->GetDepthStencilView();
-	
+
 	//画面クリア
 	FRAMEWORK.framebuffer.Clear();
 	FRAMEWORK.context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
@@ -2096,7 +2110,7 @@ void SceneGame::RenderBlur()
 				FRAMEWORK.context->UpdateSubresource(constantBuffer.Get(), 0, NULL, &gauss.param, 0, 0);
 				FRAMEWORK.context->PSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
 			}
-			
+
 
 
 			//レンダーターゲットビューの設定
@@ -2198,11 +2212,10 @@ void SceneGame::Control2PState(float elapsed_time)
 		break;
 	case SceneGame::Player2PControl::SUSPENSION:
 		//操作不能
+		player1p->hp = 1000.0f;
 		player2p->hp = 1000.0f;
-		if (pKeyState.oflg == 1)
-		{
-			player1p->power++;
-		}
+		player1p->power = 5;
+		player2p->power = 5;
 		break;
 	case SceneGame::Player2PControl::AI:
 		//AI

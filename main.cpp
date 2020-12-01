@@ -20,6 +20,7 @@
 
 #pragma comment(lib,"runtimeobject.lib")
 
+
 LRESULT CALLBACK fnWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	framework *f = reinterpret_cast<framework*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
@@ -63,7 +64,8 @@ INT WINAPI wWinMain(HINSTANCE instance, HINSTANCE prev_instance, LPWSTR cmd_line
 
 	RECT rc = { 0, 0, framework::SCREEN_WIDTH, framework::SCREEN_HEIGHT };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-	HWND hwnd = CreateWindow(_T("Desastal"), _T(""), WS_OVERLAPPEDWINDOW ^ WS_MAXIMIZEBOX ^ WS_THICKFRAME | WS_VISIBLE, -8, 0, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, instance, NULL);
+	HWND hwnd = CreateWindow(_T("Desastal"), _T(""), WS_OVERLAPPEDWINDOW | WS_VISIBLE ^ (WS_THICKFRAME | WS_MAXIMIZEBOX), -8, 0, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, instance, NULL);
+	//HWND hwnd = CreateWindow(_T("Desastal"), _T(""), WS_VISIBLE | WS_POPUP, -8, 0, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, instance, NULL);
 	ShowWindow(hwnd, cmd_show);
 	UpdateWindow(hwnd);
 
