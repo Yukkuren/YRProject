@@ -259,7 +259,7 @@ public:
 	int GetMax(int n);
 	//float& GetPosX2();
 
-	void DebugHitParamUpdate();
+	void StopHitParamUpdate();
 
 	void NoneChange();
 

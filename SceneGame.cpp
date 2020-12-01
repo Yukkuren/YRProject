@@ -687,7 +687,7 @@ void SceneGame::Update(float elapsed_time)
 					if (player1p->act_state != ActState::STATENONE && player2p->act_state != ActState::STATENONE)
 					{
 						//プレイヤーのステートが奪われた状態以外は押し出しを行う
-						Hitcheak::HitPlayer(player1p->GetHit(), player1p->pos.x, player2p->GetHit(), player2p->pos.x, game_speed);
+						Hitcheak::HitPlayer(player1p->hit, player1p->pos.x, player2p->hit, player2p->pos.x, game_speed);
 					}
 
 					//攻撃同士の判定
@@ -760,6 +760,8 @@ void SceneGame::Update(float elapsed_time)
 								{
 									player2p->StopUpdate();
 								}
+								player1p->StopHitParamUpdate();
+								player2p->StopHitParamUpdate();
 								hit_stop_elapsed = 0.0f;
 							}
 							return;
@@ -1681,7 +1683,7 @@ void SceneGame::PauseUpdate()
 #ifdef EXIST_IMGUI
 	if (Get_Use_ImGui())
 	{
-		player1p->DebugHitParamUpdate();
+		player1p->StopHitParamUpdate();
 	}
 #endif // EXIST_IMGUI
 

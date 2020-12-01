@@ -93,8 +93,8 @@ public:
 	Effekseer::Handle	handle;		//エフェクトのハンドル
 	EffectKind			effect_kind;//エフェクトの種類
 
-	AttackBox() 
-	{ 
+	AttackBox()
+	{
 		effect_kind = EffectKind::NONE;
 
 	};

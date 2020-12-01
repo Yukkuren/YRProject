@@ -517,7 +517,7 @@ void Knight::Update(float decision, float elapsed_time)
 				AttackState truth = combolist_X.combolist[combolist_X.now_pos];
 				int truth_num = scastI(truth);
 				AttackState real_state = attack_list[truth_num].real_attack;
-				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(real_state)], elapsed_time);
+				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(real_state)], rightOrleft, elapsed_time);
 			}
 				break;
 			case AttackState::COMBO_Y:
@@ -525,7 +525,7 @@ void Knight::Update(float decision, float elapsed_time)
 				AttackState truth = combolist_Y.combolist[combolist_Y.now_pos];
 				int truth_num = scastI(truth);
 				AttackState real_state = attack_list[truth_num].real_attack;
-				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(real_state)], elapsed_time);
+				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(real_state)], rightOrleft, elapsed_time);
 			}
 				break;
 			case AttackState::COMBO_B:
@@ -533,17 +533,31 @@ void Knight::Update(float decision, float elapsed_time)
 				AttackState truth = combolist_B.combolist[combolist_B.now_pos];
 				int truth_num = scastI(truth);
 				AttackState real_state = attack_list[truth_num].real_attack;
-				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(real_state)], elapsed_time);
+				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(real_state)], rightOrleft, elapsed_time);
 			}
 				break;
+			case AttackState::VERSATILE_ATTACK:
+			{
+				AttackState truth = attack_list[scastI(AttackState::VERSATILE_ATTACK)].real_attack;
+				int truth_num = scastI(truth);
+				hit[list].Update(pos, hitparam_list[list].attack_parameter[truth_num], rightOrleft, elapsed_time);
+			}
+			break;
+			case AttackState::A_VERSATILE_ATTACK:
+			{
+				AttackState truth = attack_list[scastI(AttackState::A_VERSATILE_ATTACK)].real_attack;
+				int truth_num = scastI(truth);
+				hit[list].Update(pos, hitparam_list[list].attack_parameter[truth_num], rightOrleft, elapsed_time);
+			}
+			break;
 			default:
-				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(attack_state)], elapsed_time);
+				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(attack_state)], rightOrleft, elapsed_time);
 				break;
 			}
 		}
 		else
 		{
-			hit[list].Update(pos, hitparam_list[list].act_parameter[scastI(act_state)], elapsed_time);
+			hit[list].Update(pos, hitparam_list[list].act_parameter[scastI(act_state)], rightOrleft, elapsed_time);
 		}
 	}
 
@@ -575,7 +589,7 @@ void Knight::Update(float decision, float elapsed_time)
 }
 
 
-void Knight::DebugHitParamUpdate()
+void Knight::StopHitParamUpdate()
 {
 	for (int list = 0; list < hit.size(); list++)
 	{
@@ -588,7 +602,7 @@ void Knight::DebugHitParamUpdate()
 				AttackState truth = combolist_X.combolist[combolist_X.now_pos];
 				int truth_num = scastI(truth);
 				AttackState real_state = attack_list[truth_num].real_attack;
-				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(real_state)], 0.0f);
+				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(real_state)], rightOrleft, 0.0f);
 			}
 			break;
 			case AttackState::COMBO_Y:
@@ -596,7 +610,7 @@ void Knight::DebugHitParamUpdate()
 				AttackState truth = combolist_Y.combolist[combolist_Y.now_pos];
 				int truth_num = scastI(truth);
 				AttackState real_state = attack_list[truth_num].real_attack;
-				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(real_state)], 0.0f);
+				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(real_state)], rightOrleft, 0.0f);
 			}
 			break;
 			case AttackState::COMBO_B:
@@ -604,17 +618,31 @@ void Knight::DebugHitParamUpdate()
 				AttackState truth = combolist_B.combolist[combolist_B.now_pos];
 				int truth_num = scastI(truth);
 				AttackState real_state = attack_list[truth_num].real_attack;
-				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(real_state)], 0.0f);
+				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(real_state)], rightOrleft, 0.0f);
+			}
+			break;
+			case AttackState::VERSATILE_ATTACK:
+			{
+				AttackState truth = attack_list[scastI(AttackState::VERSATILE_ATTACK)].real_attack;
+				int truth_num = scastI(truth);
+				hit[list].Update(pos, hitparam_list[list].attack_parameter[truth_num], rightOrleft, 0.0f);
+			}
+			break;
+			case AttackState::A_VERSATILE_ATTACK:
+			{
+				AttackState truth = attack_list[scastI(AttackState::A_VERSATILE_ATTACK)].real_attack;
+				int truth_num = scastI(truth);
+				hit[list].Update(pos, hitparam_list[list].attack_parameter[truth_num], rightOrleft, 0.0f);
 			}
 			break;
 			default:
-				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(attack_state)], 0.0f);
+				hit[list].Update(pos, hitparam_list[list].attack_parameter[scastI(attack_state)], rightOrleft, 0.0f);
 				break;
 			}
 		}
 		else
 		{
-			hit[list].Update(pos, hitparam_list[list].act_parameter[scastI(act_state)], 0.0f);
+			hit[list].Update(pos, hitparam_list[list].act_parameter[scastI(act_state)], rightOrleft, 0.0f);
 		}
 	}
 }

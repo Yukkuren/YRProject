@@ -494,7 +494,7 @@ public:
 	virtual bool ComboSet() = 0;					//コンボ開始時、どの攻撃をしているかを確認してその後のコンボをセットする
 	virtual void ComboUpdate() = 0;					//コンボ更新。ステートを設定する
 
-	virtual void DebugHitParamUpdate() = 0;
+	virtual void StopHitParamUpdate() = 0;
 
 public:
 	virtual bool AttackEndCheck() = 0;								//攻撃当たり判定が全て終了しているか確認する

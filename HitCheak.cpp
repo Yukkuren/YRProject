@@ -6,6 +6,7 @@
 
 #include "Effect.h"
 #include "YRSound.h"
+#include "framework.h"
 //#include "Music.h"
 
 const float guard_gauge_get = 3.0f;
@@ -801,18 +802,21 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 //	}
 //}
 
-void Hitcheak::HitPlayer(HitBox* pl1, float& pos1, HitBox* pl2, float& pos2,float elapsed_time)
+void Hitcheak::HitPlayer(std::vector <HitBox>& pl1, float& pos1, std::vector <HitBox>& pl2, float& pos2, float elapsed_time)
 {
-	//0‚ª•K‚¸‘Ì‚Ì“–‚½‚è”»’è‚É‚È‚éˆ×0‚¾‚¯‚Å”»’è‚µ‚Ä‚¢‚é
-	if (pl1[0].center.x - pl1[0].parameter.size.x<pl2[0].center.x + pl2[0].parameter.size.x &&
-		pl1[0].center.x + pl1[0].parameter.size.x>pl2[0].center.x - pl2[0].parameter.size.x)
+	//‘Ì‚Ì“–‚½‚è”»’è‚Í1‚ÅŒÅ’è‚·‚éˆ×A1‚¾‚¯‚Å”»’è‚·‚é
+	int p1_h = 1;
+	int p2_h = 1;
+
+	if (pl1[p1_h].center.x - pl1[p1_h].parameter.size.x<pl2[p2_h].center.x + pl2[p2_h].parameter.size.x &&
+		pl1[p1_h].center.x + pl1[p1_h].parameter.size.x>pl2[p2_h].center.x - pl2[p2_h].parameter.size.x)
 	{
-		if (pl1[0].center.y - pl1[0].parameter.size.y<pl2[0].center.y + pl2[0].parameter.size.y &&
-			pl1[0].center.y + pl1[0].parameter.size.y>pl2[0].center.y - pl2[0].parameter.size.y)
+		if (pl1[p1_h].center.y - pl1[p1_h].parameter.size.y<pl2[p2_h].center.y + pl2[p2_h].parameter.size.y &&
+			pl1[p1_h].center.y + pl1[p1_h].parameter.size.y>pl2[p2_h].center.y - pl2[p2_h].parameter.size.y)
 		{
 			//pl1[0].hitother = true;
 			//pl2[0].hitother = true;
-			float moving_correction = (pl1[0].parameter.size.x / 2.0f) + (pl2[0].parameter.size.x / 2.0f);
+			float moving_correction = (pl1[p1_h].parameter.size.x / 2.0f) + (pl2[p2_h].parameter.size.x / 2.0f);
 			if (pos1 < pos2)
 			{
 				//while (1)
@@ -886,9 +890,13 @@ void Hitcheak::HitPlayer(HitBox* pl1, float& pos1, HitBox* pl2, float& pos2,floa
 					}
 				}
 			}
+
+			FRAMEWORK.scenegame.player1p->StopHitParamUpdate();
+			FRAMEWORK.scenegame.player2p->StopHitParamUpdate();
 			return;
 		}
 	}
+
 	//pl1[0].hitother = false;
 	//pl2[0].hitother = false;
 }

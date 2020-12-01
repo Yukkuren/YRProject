@@ -16,10 +16,11 @@ void HitBox::Init()
 	steal_timer = 0.0f;
 }
 
-void HitBox::Update(YR_Vector3 pl_pos, HitParameter& param, float elapsed_time)
+void HitBox::Update(YR_Vector3 pl_pos, HitParameter& param, float rightOrleft, float elapsed_time)
 {
 	parameter = param;
-	center = pl_pos + parameter.distance;
+	center.x = pl_pos.x + (parameter.distance.x * rightOrleft);
+	center.y = pl_pos.y + parameter.distance.y;
 	//size = range;
 	//if (DEBUG_MODE)Draw();
 	if (timer > 0.0f)
@@ -64,11 +65,12 @@ void HitBox::Update(YR_Vector3 pl_pos, HitParameter& param, float elapsed_time)
 	}
 }
 
-void HitBox::Update(YR_Vector3 pl_pos, YR_Vector3& distance, YR_Vector3& size, float elapsed_time)
+void HitBox::Update(YR_Vector3 pl_pos, YR_Vector3& distance, YR_Vector3& size, float rightOrleft, float elapsed_time)
 {
 	parameter.size = size;
 	parameter.distance = distance;
-	center = pl_pos + parameter.distance;
+	center.x = pl_pos.x + (parameter.distance.x * rightOrleft);
+	center.y = pl_pos.y + parameter.distance.y;
 	//size = range;
 	//if (DEBUG_MODE)Draw();
 	if (timer > 0.0f)
@@ -114,7 +116,7 @@ void HitBox::Update(YR_Vector3 pl_pos, YR_Vector3& distance, YR_Vector3& size, f
 }
 
 void HitBox::Draw(
-	YRShader *shader, 
+	YRShader *shader,
 	const DirectX::XMMATRIX& view,
 	const DirectX::XMMATRIX& projection,
 	const DirectX::XMFLOAT4& light_direction,
