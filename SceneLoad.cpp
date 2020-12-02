@@ -182,6 +182,13 @@ void SceneLoad::Update(float elapsedTime)
 			load_state = 9;
 			break;
 		case 9:
+#ifdef EXIST_IMGUI
+			if (Get_Use_ImGui())
+			{
+				Game_load_fin = true;
+			}
+#endif // EXIST_IMGUI
+
 			if (timer > 10.0f)
 			{
 				Game_load_fin = true;

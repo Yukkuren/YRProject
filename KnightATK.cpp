@@ -59,14 +59,14 @@ void Knight::AttackDefault(float elapsed_time)
 			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos);
 		}
 		fream = non_target;
-		
+
 
 		//持続時間を設定
 		timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
 
-	
+
 
 	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
 	if (!atk.empty())
@@ -185,7 +185,7 @@ void Knight::AttackProjectileDefault(float elapsed_time)
 				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::TIMER));
 			}
 		}
-		
+
 		attack_list[now_at_list].SetAttack(&projectile_atk, rightOrleft, pos, attack_list[now_at_list].speed);
 
 		YRGetEffect().PlayEffect(EffectKind::DRILL, projectile_atk.back().handle, projectile_atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -90.0f*rightOrleft);
@@ -485,7 +485,7 @@ void Knight::U_Kyo(float elapsed_time)
 	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
 	//	return;
 	//}
-	
+
 	//持続時間が全て終了したことを確認する
 	if (timer < 0.0f)
 	{
@@ -641,7 +641,7 @@ void Knight::A_UKyo(float elapsed_time)
 	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
 	//	return;
 	//}
-	
+
 	//持続時間が全て終了したことを確認する
 	if (timer < 0.0f)
 	{
@@ -809,7 +809,7 @@ void Knight::Steal(float elapsed_time)
 	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
 	//	return;
 	//}
-	
+
 	//持続時間が全て終了したことを確認する
 	if (timer < 0.0f)
 	{
@@ -993,7 +993,7 @@ void Knight::Slow(float elapsed_time)
 	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
 	//	return;
 	//}
-	
+
 	//持続時間が全て終了したことを確認する
 	if (timer < 0.0f)
 	{
@@ -1090,7 +1090,7 @@ void Knight::Thu_Rhurf(float elapsed_time)
 		YRGetEffect().PlayEffect(EffectKind::FIRE_DRILL, projectile_atk.back().handle, projectile_atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -90.0f * rightOrleft);
 
 		projectile_atk.back().effect_kind = EffectKind::FIRE_DRILL;
-		
+
 		//SE再生
 		GetSound().SESinglePlay(SEKind::PROJECTILE);
 
@@ -1950,7 +1950,7 @@ void Knight::SpecialAttack(float elapsed_time)
 		{
 			YRCamera.camera_state = Camera::CAMERA_STATE::PLAYER1P;
 		}
-		
+
 		hit_result = HitResult::NOT_OCCURRENCE;
 		fream -= elapsed_time;
 
@@ -1958,7 +1958,7 @@ void Knight::SpecialAttack(float elapsed_time)
 		//YR_Vector3	origin_eye;
 		YR_Vector3	focus;
 		YR_Vector3	eye;
-		
+
 		//YRCamera.SetEye(eye.GetDXFLOAT3());
 		//YRCamera.SetFocus(focus.GetDXFLOAT3());
 
@@ -2122,7 +2122,7 @@ void Knight::SpecialAttack(float elapsed_time)
 	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
 	//	return;
 	//}
-	
+
 	//持続時間が全て終了したことを確認する
 	if (timer < 0.0f)
 	{
@@ -2290,6 +2290,19 @@ bool Knight::ComboSet()
 	anim_ccodinate = ac_attack[real_num].fream;
 	//攻撃番号を初期化
 	attack_list[real_num].now_attack_num = 0;
+	//当たり判定を初期化
+	if (attack_list[real_num].attack_single[0].parameter[0].type == AttackKind::NO_TO_OFFSET_UP)
+	{
+		HitBoxTransition(HitBoxState::UP_INVINCIBLE);
+	}
+	else if (attack_list[real_num].attack_single[0].parameter[0].type == AttackKind::NO_TO_OFFSET)
+	{
+		HitBoxTransition(HitBoxState::INVINCIBLE);
+	}
+	else
+	{
+		HitBoxTransition(HitBoxState::NOGUARD);
+	}
 	//攻撃発生前の前進距離を設定する(地上攻撃のみ)
 	if (attack_list[real_num].ground_on == Ground_C::GROUND)
 	{
@@ -2421,6 +2434,19 @@ void Knight::ComboUpdate()
 	anim_ccodinate = ac_attack[real_num].fream;
 	//攻撃番号を初期化
 	attack_list[real_num].now_attack_num = 0;
+	//当たり判定を初期化
+	if (attack_list[real_num].attack_single[0].parameter[0].type == AttackKind::NO_TO_OFFSET_UP)
+	{
+		HitBoxTransition(HitBoxState::UP_INVINCIBLE);
+	}
+	else if (attack_list[real_num].attack_single[0].parameter[0].type == AttackKind::NO_TO_OFFSET)
+	{
+		HitBoxTransition(HitBoxState::INVINCIBLE);
+	}
+	else
+	{
+		HitBoxTransition(HitBoxState::NOGUARD);
+	}
 	//攻撃発生前の前進距離を設定する(地上攻撃のみ)
 	if (attack_list[real_num].ground_on == Ground_C::GROUND)
 	{

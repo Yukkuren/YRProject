@@ -2684,6 +2684,26 @@ void Knight::DamageCheck(float decision)
 				}
 				ChangeFace(FaceAnim::Damage);
 				anim_ccodinate = 5.0f;
+				if (hit[i].hitback.y < 0.0f)
+				{
+					//吹っ飛びベクトルがマイナスの場合
+					if (pos.y <= POS_Y)
+					{
+						//下方向の3分の1の速度をXに渡す
+						if (hit[i].hitback.x >= 0.0f)
+						{
+							hit[i].hitback.x += (-hit[i].hitback.y * 0.3f);
+						}
+						else
+						{
+							hit[i].hitback.x += (hit[i].hitback.y * 0.3f);
+						}
+						//地面についている場合は下方向の速度を0にする
+						hit[i].hitback.y = 0.0f;
+						//のけぞり時間を3分の1にする
+						hit[i].timer *= 0.3f;
+					}
+				}
 				break;
 			case HitStateKind::STEAL:
 				//掴み攻撃
@@ -3104,6 +3124,7 @@ void Knight::SlamUpdate(float elapsed_time)
 	if (ground)
 	{
 		GetSound().SEPlay(SEKind::SLIDE);
+		HitBoxTransition(HitBoxState::SLIDE);
 		if (speed.x > 0.0f)
 		{
 			speed.x -= (attenuation_slam * elapsed_time);

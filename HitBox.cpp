@@ -162,6 +162,19 @@ void HitBox::Draw(
 			DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.5f)
 		);
 	}
+	else if (state == HitBoxState::SLIDE)
+	{
+		//ŠŠ‚èŽž
+		FRAMEWORK.scenegame.geo->render(
+			shader,
+			center.GetDXFLOAT3(),
+			DirectX::XMFLOAT3(parameter.size.x, parameter.size.y, 0.0f),
+			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+			view,
+			projection,
+			DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 0.5f)
+		);
+	}
 	else
 	{
 		if (timer == 0.0f)

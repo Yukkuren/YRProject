@@ -38,7 +38,7 @@ void Stage::Init(StageType type)
 			if (stage_data == nullptr)
 			{
 				stage_data = std::make_shared<Model>("./Data/FBX/SKY/castle.fbx");
-			} 
+			}
 
 			/*if (sky_draw == nullptr)
 			{
@@ -59,7 +59,7 @@ void Stage::Init(StageType type)
 
 	Stage_Pos = YR_Vector3(0.0f, -9.0f, -30.0f);
 	Stage_Scale = YR_Vector3(10.5f, 10.5f,10.5f);
-	Stage_Angle = YR_Vector3(DirectX::XMConvertToRadians(-90.0f), 0.0f, 0.0f);
+	Stage_Angle = YR_Vector3(0.0f, 0.0f, 0.0f);
 	//Stage_Angle = YR_Vector3(0.0f, 0.0f, 0.0f);
 }
 
@@ -95,7 +95,6 @@ void Stage::Draw(
 #ifdef EXIST_IMGUI
 	if(Get_Use_ImGui())
 	{
-		
 		bool show_another_window = false;
 		ImGui::SetNextWindowSize(ImVec2(400, 400), 2);
 		ImGui::Begin("SkyMap&Stage", &show_another_window);

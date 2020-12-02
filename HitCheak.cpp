@@ -69,6 +69,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
+							else if (hit[hitnum].state == HitBoxState::SLIDE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
 							else
 							{
 								flag = HitResultState::HIT;
@@ -92,6 +96,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
+							else if (hit[hitnum].state == HitBoxState::SLIDE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
 							else
 							{
 								flag = HitResultState::HIT;
@@ -111,6 +119,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							{
 								flag = HitResultState::GUARD_OK;
 							}
+							else if (hit[hitnum].state == HitBoxState::SLIDE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
 							else
 							{
 								flag = HitResultState::HIT;
@@ -119,6 +131,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 						case AttackKind::STEAL:
 							//投げ攻撃
 							if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
+							else if (hit[hitnum].state == HitBoxState::SLIDE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
@@ -142,6 +158,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 								flag = HitResultState::AVOIDANCE;
 							}
 							else if (hit[hitnum].state == HitBoxState::UP_INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
+							else if (hit[hitnum].state == HitBoxState::SLIDE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
@@ -172,6 +192,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							{
 								flag = HitResultState::ARMOR;
 							}
+							else if (hit[hitnum].state == HitBoxState::SLIDE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
 							else
 							{
 								flag = HitResultState::HIT;
@@ -199,6 +223,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
+							else if (hit[hitnum].state == HitBoxState::SLIDE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
 							else
 							{
 								flag = HitResultState::HIT;
@@ -222,6 +250,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							{
 								flag = HitResultState::GUARD_OK;
 							}
+							else if (hit[hitnum].state == HitBoxState::SLIDE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
 							else
 							{
 								flag = HitResultState::HIT;
@@ -244,6 +276,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							else if (hit[hitnum].state == HitBoxState::DOWN)
 							{
 								flag = HitResultState::GUARD_OK;
+							}
+							else if (hit[hitnum].state == HitBoxState::SLIDE)
+							{
+								flag = HitResultState::AVOIDANCE;
 							}
 							else
 							{
@@ -525,7 +561,7 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							}
 							//攻撃が当たったことを保存する
 
-							if (attack[atknum].pos.y > slam_up_line)
+							if (pos.y > slam_up_line)
 							{
 								//高さが一定以上だった場合、叩きつけ攻撃に移行しカメラズームを行う
 								hit[hitnum].hit_state = HitStateKind::SLAM;
@@ -534,7 +570,7 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 								//SE再生
 								GetSound().SESinglePlay(SEKind::UP_ATTACK);
 							}
-							else if (attack[atknum].pos.y > slam_zoom_line)
+							else if (pos.y > slam_zoom_line)
 							{
 								//高さが一定以上だった場合、通常の攻撃でカメラズームを行う
 								hit[hitnum].hit_state = HitStateKind::NORMAL;
@@ -931,74 +967,125 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 						if (atk1p.pos.y - atk1p.parameter.size.y<atk2p.pos.y + atk2p.parameter.size.y &&
 							atk1p.pos.y + atk1p.parameter.size.y>atk2p.pos.y - atk2p.parameter.size.y)
 						{
-							if(atk1p.parameter.type == AttackKind::NO_TO_OFFSET &&
-								atk2p.parameter.type != AttackKind::NO_TO_OFFSET)
-							{
-								//1pの攻撃が相殺しない攻撃だった
-								continue;
-							}
-							if (atk2p.parameter.type == AttackKind::NO_TO_OFFSET &&
-								atk1p.parameter.type != AttackKind::NO_TO_OFFSET)
-							{
-								//2pの攻撃が相殺しない攻撃だった
-								continue;
-							}
-							//両方とも相殺しない攻撃なら相殺させる
 
-							if (atk1p.parameter.type == AttackKind::NO_TO_OFFSET_UP)
-							{
-								//1pの攻撃が上段とは相殺しない攻撃だった
-								if (atk2p.parameter.type == AttackKind::UP||
-									atk2p.parameter.type == AttackKind::TRACK)
-								{
-									//2Pの攻撃が上段、またはホーミングダッシュだった場合
-									continue;
-								}
-							}
-							if (atk2p.parameter.type == AttackKind::NO_TO_OFFSET_UP)
-							{
-								//2pの攻撃が上段とは相殺しない攻撃だった
-								if (atk1p.parameter.type == AttackKind::UP ||
-									atk1p.parameter.type == AttackKind::TRACK)
-								{
-									//1Pの攻撃が上段、またはホーミングダッシュだった場合
-									continue;
-								}
-							}
+							HitResultAttack result = HitResultAttack::OFFSET;
 
-							if (atk1p.parameter.type == AttackKind::TRACK)
+
+							//1P側のステート確認
+							switch (atk1p.parameter.type)
 							{
-								//1pの攻撃がホーミングダッシュ
+							case AttackKind::LOCK:
+								//ロック技
+								continue;
+								break;
+							case AttackKind::PROJECTILE:
+								//飛び道具
+								break;
+							case AttackKind::TRACK:
+								//ホーミングダッシュ
 								if (atk2p.parameter.type == AttackKind::PROJECTILE)
 								{
-									//2Pの攻撃が飛び道具だった場合
-									continue;
+									//飛び道具には一方的に打ち勝つ
+									result = HitResultAttack::P2_OFFSET;
 								}
-							}
-							if (atk2p.parameter.type == AttackKind::TRACK)
-							{
-								//2pの攻撃がホーミングダッシュ
-								if (atk1p.parameter.type == AttackKind::PROJECTILE)
+								break;
+							case AttackKind::NO_TO_OFFSET:
+								//相殺しない攻撃
+								if (atk2p.parameter.type != AttackKind::NO_TO_OFFSET)
 								{
-									//1Pの攻撃が飛び道具だった場合
+									//相殺攻撃以外とは相殺しない
 									continue;
 								}
-							}
-
-							if (atk1p.parameter.type == AttackKind::DOWN_ATTACK)
-							{
+								break;
+							case AttackKind::NO_TO_OFFSET_UP:
+								//上段攻撃とは相殺しない攻撃
+								if (atk2p.parameter.type == AttackKind::UP||
+									atk2p.parameter.type == AttackKind::TRACK ||
+									atk2p.parameter.type == AttackKind::SLAM)
+								{
+									//上段、ホーミングダッシュまたは叩きつけ攻撃とは相殺しない
+									continue;
+								}
+								break;
+							case AttackKind::DOWN_ATTACK:
+								//ダウン攻撃
 								if (atk2p.parameter.type != AttackKind::DOWN_ATTACK)
 								{
+									if (atk2p.parameter.type == AttackKind::PROJECTILE)
+									{
+										//飛び道具には一方的に打ち勝つ
+										result = HitResultAttack::P2_OFFSET;
+									}
+									else
+									{
+										//ダウン攻撃以外とは相殺しない
+										continue;
+									}
+								}
+								break;
+							default:
+								result = HitResultAttack::OFFSET;
+								break;
+							}
+
+							//2P側のステート確認
+							switch (atk2p.parameter.type)
+							{
+							case AttackKind::LOCK:
+								//ロック技
+								continue;
+								break;
+							case AttackKind::PROJECTILE:
+								//飛び道具
+								break;
+							case AttackKind::TRACK:
+								//ホーミングダッシュ
+								if (atk1p.parameter.type == AttackKind::PROJECTILE)
+								{
+									//飛び道具には一方的に打ち勝つ
+									result = HitResultAttack::P1_OFFSET;
+								}
+								break;
+							case AttackKind::NO_TO_OFFSET:
+								//相殺しない攻撃
+								if (atk1p.parameter.type != AttackKind::NO_TO_OFFSET)
+								{
+									//相殺攻撃以外とは相殺しない
 									continue;
 								}
-							}
-							if (atk2p.parameter.type == AttackKind::DOWN_ATTACK)
-							{
+								break;
+							case AttackKind::NO_TO_OFFSET_UP:
+								//上段攻撃とは相殺しない攻撃
+								if (atk1p.parameter.type == AttackKind::UP ||
+									atk1p.parameter.type == AttackKind::TRACK ||
+									atk1p.parameter.type == AttackKind::SLAM)
+								{
+									//上段、ホーミングダッシュまたは叩きつけ攻撃とは相殺しない
+									continue;
+								}
+								break;
+							case AttackKind::DOWN_ATTACK:
+								//ダウン攻撃
 								if (atk1p.parameter.type != AttackKind::DOWN_ATTACK)
 								{
-									continue;
+									if (atk1p.parameter.type == AttackKind::PROJECTILE)
+									{
+										//飛び道具には一方的に打ち勝つ
+										result = HitResultAttack::P1_OFFSET;
+									}
+									else
+									{
+										//ダウン攻撃以外とは相殺しない
+										continue;
+									}
 								}
+								break;
+							default:
+								result = HitResultAttack::OFFSET;
+								break;
 							}
+
+
 
 
 							clash = true;
@@ -1042,85 +1129,163 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 								break;
 							}
 
-							add1P = atk1p.parameter.damege;
-							add2P = atk2p.parameter.damege;
-							if (atk1p.pos.x >= atk2p.pos.x)
-							{
-								float dis = atk1p.pos.x - atk2p.pos.x;
-								dis *= 0.5f;
-								clashpos.x = atk2p.pos.x + dis;
-							}
-							if (atk2p.pos.x > atk1p.pos.x)
-							{
-								float dis = atk2p.pos.x - atk1p.pos.x;
-								dis *= 0.5f;
-								clashpos.x = atk1p.pos.x + dis;
-							}
 
-							if (atk1p.pos.y >= atk2p.pos.y)
+							switch (result)
 							{
-								float dis = atk1p.pos.y - atk2p.pos.y;
-								dis *= 0.5f;
-								clashpos.y = atk2p.pos.y + dis;
-							}
-							if (atk2p.pos.y > atk1p.pos.y)
+							case HitResultAttack::OFFSET:
+								//相殺
 							{
-								float dis = atk2p.pos.y - atk1p.pos.y;
-								dis *= 0.5f;
-								clashpos.y = atk1p.pos.y + dis;
-							}
-
-							//エフェクト再生
-							YRGetEffect().PlayEffect(EffectKind::OFFSET, clashpos.GetDXFLOAT3(), DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
-
-							//SE再生
-							GetSound().SESinglePlay(SEKind::OFFSET);
-
-							atk2p.parameter.damege = 0;
-							atk2p.hit_ok = false;
-							atk2p.knock_start = true;
-							atk1p.parameter.damege = 0;
-							atk1p.hit_ok = false;
-							atk1p.knock_start = true;
-
-							if (atk1p.parameter.type != AttackKind::PROJECTILE)
-							{
-								for (int n = 0; n < attack1p.size(); n++)
+								add1P = atk1p.parameter.damege;
+								add2P = atk2p.parameter.damege;
+								if (atk1p.pos.x >= atk2p.pos.x)
 								{
-									attack1p[n].parameter.damege = 0;
-									//attack[n].HB_timer = 0;
-									attack1p[n].parameter.hitback = YR_Vector3(0.0f, 0.0f);
-									attack1p[n].hit_ok = false;
+									float dis = atk1p.pos.x - atk2p.pos.x;
+									dis *= 0.5f;
+									clashpos.x = atk2p.pos.x + dis;
 								}
-							}
-							else
-							{
+								if (atk2p.pos.x > atk1p.pos.x)
+								{
+									float dis = atk2p.pos.x - atk1p.pos.x;
+									dis *= 0.5f;
+									clashpos.x = atk1p.pos.x + dis;
+								}
+
+								if (atk1p.pos.y >= atk2p.pos.y)
+								{
+									float dis = atk1p.pos.y - atk2p.pos.y;
+									dis *= 0.5f;
+									clashpos.y = atk2p.pos.y + dis;
+								}
+								if (atk2p.pos.y > atk1p.pos.y)
+								{
+									float dis = atk2p.pos.y - atk1p.pos.y;
+									dis *= 0.5f;
+									clashpos.y = atk1p.pos.y + dis;
+								}
+
+								//エフェクト再生
+								YRGetEffect().PlayEffect(EffectKind::OFFSET, clashpos.GetDXFLOAT3(), DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+
+								//SE再生
+								GetSound().SESinglePlay(SEKind::OFFSET);
+
 								atk1p.parameter.damege = 0;
+								atk1p.hit_ok = false;
+								atk1p.knock_start = true;
 								//attack[n].HB_timer = 0;
 								atk1p.parameter.hitback = YR_Vector3(0.0f, 0.0f);
-								atk1p.hit_ok = false;
-							}
-							if (atk2p.parameter.type != AttackKind::PROJECTILE)
-							{
-								for (int n = 0; n < attack2p.size(); n++)
-								{
-									attack2p[n].parameter.damege = 0;
-									//attack[n].HB_timer = 0;
-									attack2p[n].parameter.hitback = YR_Vector3(0.0f, 0.0f);
-									attack2p[n].hit_ok = false;
-								}
-							}
-							else
-							{
+
 								atk2p.parameter.damege = 0;
 								//attack[n].HB_timer = 0;
 								atk2p.parameter.hitback = YR_Vector3(0.0f, 0.0f);
 								atk2p.hit_ok = false;
+								atk2p.knock_start = true;
+
+								atk1p.hit_result = HitResult::GUARD;
+								atk2p.hit_result = HitResult::GUARD;
 							}
-							atk1p.hit_result = HitResult::GUARD;
-							atk2p.hit_result = HitResult::GUARD;
+								break;
+							case HitResultAttack::P1_OFFSET:
+								//1Pだけ相殺
+							{
+								add1P = 0.0f;
+								add2P = atk2p.parameter.damege;
+								if (atk1p.pos.x >= atk2p.pos.x)
+								{
+									float dis = atk1p.pos.x - atk2p.pos.x;
+									dis *= 0.5f;
+									clashpos.x = atk2p.pos.x + dis;
+								}
+								if (atk2p.pos.x > atk1p.pos.x)
+								{
+									float dis = atk2p.pos.x - atk1p.pos.x;
+									dis *= 0.5f;
+									clashpos.x = atk1p.pos.x + dis;
+								}
+
+								if (atk1p.pos.y >= atk2p.pos.y)
+								{
+									float dis = atk1p.pos.y - atk2p.pos.y;
+									dis *= 0.5f;
+									clashpos.y = atk2p.pos.y + dis;
+								}
+								if (atk2p.pos.y > atk1p.pos.y)
+								{
+									float dis = atk2p.pos.y - atk1p.pos.y;
+									dis *= 0.5f;
+									clashpos.y = atk1p.pos.y + dis;
+								}
+
+								//エフェクト再生
+								YRGetEffect().PlayEffect(EffectKind::OFFSET, clashpos.GetDXFLOAT3(), DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+
+								//SE再生
+								GetSound().SESinglePlay(SEKind::OFFSET);
+
+								atk1p.parameter.damege = 0;
+								atk1p.knock_start = true;
+								atk1p.parameter.hitback = YR_Vector3(0.0f, 0.0f);
+								atk1p.hit_ok = false;
+
+								atk1p.hit_result = HitResult::GUARD;
+							}
+								break;
+							case HitResultAttack::P2_OFFSET:
+								//2Pだけ相殺
+							{
+								add1P = atk1p.parameter.damege;
+								add2P = 0.0f;
+								if (atk1p.pos.x >= atk2p.pos.x)
+								{
+									float dis = atk1p.pos.x - atk2p.pos.x;
+									dis *= 0.5f;
+									clashpos.x = atk2p.pos.x + dis;
+								}
+								if (atk2p.pos.x > atk1p.pos.x)
+								{
+									float dis = atk2p.pos.x - atk1p.pos.x;
+									dis *= 0.5f;
+									clashpos.x = atk1p.pos.x + dis;
+								}
+
+								if (atk1p.pos.y >= atk2p.pos.y)
+								{
+									float dis = atk1p.pos.y - atk2p.pos.y;
+									dis *= 0.5f;
+									clashpos.y = atk2p.pos.y + dis;
+								}
+								if (atk2p.pos.y > atk1p.pos.y)
+								{
+									float dis = atk2p.pos.y - atk1p.pos.y;
+									dis *= 0.5f;
+									clashpos.y = atk1p.pos.y + dis;
+								}
+
+								//エフェクト再生
+								YRGetEffect().PlayEffect(EffectKind::OFFSET, clashpos.GetDXFLOAT3(), DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+
+								//SE再生
+								GetSound().SESinglePlay(SEKind::OFFSET);
+
+								atk2p.parameter.damege = 0;
+								//attack[n].HB_timer = 0;
+								atk2p.parameter.hitback = YR_Vector3(0.0f, 0.0f);
+								atk2p.hit_ok = false;
+								atk2p.knock_start = true;
+
+								atk2p.hit_result = HitResult::GUARD;
+							}
+								break;
+							default:
+								break;
+							}
 						}
 					}
+				}
+
+				if (!atk1p.hit_ok)
+				{
+					break;
 				}
 			}
 		}

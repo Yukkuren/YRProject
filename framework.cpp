@@ -9,7 +9,7 @@
 #include "Effect.h"
 
 //‚±‚Ì•Ï”‚Å•\¦A”ñ•\¦‚ğØ‚è‘Ö‚¦‚é
-static bool use_ImGui = true;
+static bool use_ImGui = false;
 
 bool Get_Use_ImGui()
 {

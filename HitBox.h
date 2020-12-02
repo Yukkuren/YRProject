@@ -16,6 +16,7 @@ enum class HitBoxState : int
 	ALL,				//空中ガード(掴み、ガード不可以外を全てガードできる)
 	UP_INVINCIBLE,		//上段攻撃に対して無敵
 	PROJECTILE_ARMOR,	//飛び道具に対してアーマー
+	SLIDE,				//滑っている状態
 	END,
 };
 
