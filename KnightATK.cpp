@@ -2267,6 +2267,28 @@ bool Knight::ComboSet()
 	int truth_num = scastI(truth);
 	int real_num = scastI(attack_list[truth_num].real_attack);
 
+	//地上判定を確認する
+	switch (attack_list[real_num].ground_on)
+	{
+	case Ground_C::AIR:
+		if (ground)
+		{
+			return false;
+		}
+		break;
+	case Ground_C::GROUND:
+		if (!ground)
+		{
+			return false;
+		}
+		break;
+	case Ground_C::EITHER:
+		break;
+	default:
+		return false;
+		break;
+	}
+
 	//攻撃を決定する
 	//現在攻撃判定が出ているなら全て消去する
 	AllAttackClear();
@@ -2320,6 +2342,9 @@ bool Knight::ComboSet()
 	timer = non_target;
 	//カメラ処理用変数を初期化
 	production_time = 0.0f;
+	//角度を元に戻す
+	angle.y = 0.0f;
+	angle.z = 0.0f;
 	//描画をセット
 	if (rightOrleft > 0)
 	{
@@ -2411,6 +2436,28 @@ void Knight::ComboUpdate()
 	int truth_num = scastI(truth);
 	int real_num = scastI(attack_list[truth_num].real_attack);
 
+	//地上判定を確認する
+	switch (attack_list[real_num].ground_on)
+	{
+	case Ground_C::AIR:
+		if (ground)
+		{
+			return;
+		}
+		break;
+	case Ground_C::GROUND:
+		if (!ground)
+		{
+			return;
+		}
+		break;
+	case Ground_C::EITHER:
+		break;
+	default:
+		return;
+		break;
+	}
+
 	//攻撃を決定する
 	//現在攻撃判定が出ているなら全て消去する
 	AllAttackClear();
@@ -2464,6 +2511,9 @@ void Knight::ComboUpdate()
 	timer = non_target;
 	//カメラ処理用変数を初期化
 	production_time = 0.0f;
+	//角度を元に戻す
+	angle.y = 0.0f;
+	angle.z = 0.0f;
 	//描画をセット
 	if (rightOrleft > 0)
 	{

@@ -506,6 +506,18 @@ void SceneGame::Update(float elapsed_time)
 				player1p->ReadySet();
 				player2p->ReadySet();
 				fado_start = false;
+				YR_Vector3 camera_screen = Limit::Set(player1p->pos, player2p->pos, Start_Scene_eye);
+				Scene_eye.x = camera_screen.x;
+				Scene_eye.y = camera_screen.y;
+				Scene_eye.z = camera_screen.z;
+				Scene_focus.x = camera_screen.x;
+				Scene_focus.y = camera_screen.y;
+
+				player1p->pad->Init();
+				player2p->pad->Init();
+
+				//カメラの挙動をステートごとに処理
+				CameraUpdate(elapsed_time);
 			}
 			break;
 		case MAIN_LOOP::READY:
@@ -595,7 +607,7 @@ void SceneGame::Update(float elapsed_time)
 			{
 				game_speed = 0.0f;
 			}*/
-			if (fado_alpha > 0.0f)
+			if (fado_alpha > 0.8f)
 			{
 				game_speed = 0.0f;
 			}
@@ -620,20 +632,26 @@ void SceneGame::Update(float elapsed_time)
 			player1p->pad->Update(game_speed);
 			player2p->pad->Update(game_speed);
 
+			if (fado_alpha > 0.8f)
+			{
+				game_speed = 0.0f;
+			}
+
 			//2Pイントロ更新
-			if (player2p->Intro(elapsed_time))
+			if (player2p->Intro(game_speed))
 			{
 				fado_start = true;
 				main_loop = MAIN_LOOP::INTRO2P;
 			}
-
-			//途中ボタンが押されたらスキップ
+						//途中ボタンが押されたらスキップ
 			if (player1p->pad->x_input[scastI(PAD::X)] == 1 ||
 				player2p->pad->x_input[scastI(PAD::X)] == 1)
 			{
 				fado_start = true;
 				main_loop = MAIN_LOOP::INTRO2P;
 				GetSound().SEStop(SEKind::INTRO_WIND);
+				player1p->pad->Init();
+				player2p->pad->Init();
 			}
 			break;
 		case MAIN_LOOP::READY:
@@ -854,6 +872,8 @@ void SceneGame::Update(float elapsed_time)
 						switch (YRCamera.camera_state)
 						{
 						case Camera::CAMERA_STATE::MAIN:
+							p1_elapsed_time = 1.0f;
+							p2_elapsed_time = 1.0f;
 							player1p->Update(pl1_rightorleft, game_speed * p1_elapsed_time);
 							player2p->Update(pl2_rightorleft, game_speed* p2_elapsed_time);
 							break;
@@ -883,6 +903,8 @@ void SceneGame::Update(float elapsed_time)
 						if (judge != JUDGE_VICTORY::NO_VICTORY)
 						{
 							end = true;
+							player1p->pad->Init();
+							player2p->pad->Init();
 						}
 					}
 
@@ -890,6 +912,24 @@ void SceneGame::Update(float elapsed_time)
 			}
 			else
 			{
+				float pl1_rightorleft = 0.0f;
+				float pl2_rightorleft = 0.0f;
+				p1_elapsed_time = 1.0f;
+				p2_elapsed_time = 1.0f;
+				if (player1p->pos.x < player2p->pos.x)
+				{
+					pl1_rightorleft = 1.0f;
+					pl2_rightorleft = -1.0f;
+				}
+				//2Pが左
+				else
+				{
+					pl1_rightorleft = -1.0f;
+					pl2_rightorleft = 1.0f;
+				}
+				player1p->Update(pl1_rightorleft, game_speed * p1_elapsed_time);
+				player2p->Update(pl2_rightorleft, game_speed * p2_elapsed_time);
+
 				//カウント中
 				if (start_timer < start_time)
 				{

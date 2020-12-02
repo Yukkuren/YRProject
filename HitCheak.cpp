@@ -985,8 +985,8 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 								//ホーミングダッシュ
 								if (atk2p.parameter.type == AttackKind::PROJECTILE)
 								{
-									//飛び道具には一方的に打ち勝つ
-									result = HitResultAttack::P2_OFFSET;
+									//飛び道具とは相殺しない
+									continue;
 								}
 								break;
 							case AttackKind::NO_TO_OFFSET:
@@ -1042,8 +1042,8 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 								//ホーミングダッシュ
 								if (atk1p.parameter.type == AttackKind::PROJECTILE)
 								{
-									//飛び道具には一方的に打ち勝つ
-									result = HitResultAttack::P1_OFFSET;
+									//飛び道具には相殺しない
+									continue;
 								}
 								break;
 							case AttackKind::NO_TO_OFFSET:
@@ -1135,8 +1135,16 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 							case HitResultAttack::OFFSET:
 								//相殺
 							{
-								add1P = atk1p.parameter.damege;
-								add2P = atk2p.parameter.damege;
+								add1P = atk1p.parameter.gauge_get;
+								add2P = atk2p.parameter.gauge_get;
+								if (atk1p.parameter.type == AttackKind::DOWN_ATTACK)
+								{
+									add1P = atk1p.parameter.damege;
+								}
+								if (atk1p.parameter.type == AttackKind::DOWN_ATTACK)
+								{
+									add2P = atk2p.parameter.damege;
+								}
 								if (atk1p.pos.x >= atk2p.pos.x)
 								{
 									float dis = atk1p.pos.x - atk2p.pos.x;
@@ -1189,7 +1197,7 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 								//1Pだけ相殺
 							{
 								add1P = 0.0f;
-								add2P = atk2p.parameter.damege;
+								add2P = atk2p.parameter.gauge_get;
 								if (atk1p.pos.x >= atk2p.pos.x)
 								{
 									float dis = atk1p.pos.x - atk2p.pos.x;
@@ -1233,7 +1241,7 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 							case HitResultAttack::P2_OFFSET:
 								//2Pだけ相殺
 							{
-								add1P = atk1p.parameter.damege;
+								add1P = atk1p.parameter.gauge_get;
 								add2P = 0.0f;
 								if (atk1p.pos.x >= atk2p.pos.x)
 								{

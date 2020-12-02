@@ -17,6 +17,8 @@ void SceneGame::AIControll(float elapsed_time)
 		player2p->pad->x_input[scastI(PAD::STICK_RDown)] = 0;
 		player2p->pad->x_input[scastI(PAD::STICK_LDown)] = 0;
 		player2p->pad->x_input[scastI(PAD::STICK_U)] = 0;
+		player2p->pad->x_input[scastI(PAD::R_DASH)] = 0;
+		player2p->pad->x_input[scastI(PAD::L_DASH)] = 0;
 	}
 	if (player2p->hp == 0.0f)
 	{
@@ -34,6 +36,8 @@ void SceneGame::AIControll(float elapsed_time)
 		player2p->pad->x_input[scastI(PAD::STICK_RDown)] = 0;
 		player2p->pad->x_input[scastI(PAD::STICK_LDown)] = 0;
 		player2p->pad->x_input[scastI(PAD::STICK_U)] = 0;
+		player2p->pad->x_input[scastI(PAD::R_DASH)] = 0;
+		player2p->pad->x_input[scastI(PAD::L_DASH)] = 0;
 	}
 
 	switch (AI2P.state)
@@ -50,6 +54,8 @@ void SceneGame::AIControll(float elapsed_time)
 		player2p->pad->x_input[scastI(PAD::STICK_LDown)] = 0;
 		player2p->pad->x_input[scastI(PAD::STICK_U)] = 0;
 		AI2P.state = AI_Controller::AI_State::RAND_SELECT;
+		player2p->pad->x_input[scastI(PAD::R_DASH)] = 0;
+		player2p->pad->x_input[scastI(PAD::L_DASH)] = 0;
 		AI2P.timer = 0.0f;
 		break;
 	case AI_Controller::AI_State::RAND_SELECT:
@@ -143,13 +149,15 @@ void SceneGame::AIControll(float elapsed_time)
 		{
 			//‰EŒü‚«
 			player2p->pad->x_input[scastI(PAD::STICK_R)] = 0;
-			player2p->pad->x_input[scastI(PAD::STICK_L)]++;
+			player2p->pad->x_input[scastI(PAD::STICK_L)] = 1;
+			player2p->pad->x_input[scastI(PAD::L_DASH)] = 1;
 		}
 		else
 		{
 			//¶Œü‚«
 			player2p->pad->x_input[scastI(PAD::STICK_L)] = 0;
-			player2p->pad->x_input[scastI(PAD::STICK_R)]++;
+			player2p->pad->x_input[scastI(PAD::STICK_R)] = 1;
+			player2p->pad->x_input[scastI(PAD::R_DASH)] = 1;
 		}
 
 		if (AI2P.timer > AI2P.timer_max)
@@ -157,6 +165,8 @@ void SceneGame::AIControll(float elapsed_time)
 			//ˆê’èŽžŠÔ‚É‚È‚Á‚½‚çs“®‚ð‰Šú‰»
 			player2p->pad->x_input[scastI(PAD::STICK_L)] = 0;
 			player2p->pad->x_input[scastI(PAD::STICK_R)] = 0;
+			player2p->pad->x_input[scastI(PAD::R_DASH)] = 0;
+			player2p->pad->x_input[scastI(PAD::L_DASH)] = 0;
 			AI2P.state = AI_Controller::AI_State::INIT;
 		}
 		break;

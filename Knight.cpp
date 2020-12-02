@@ -1018,7 +1018,6 @@ void Knight::Attack(float decision, float elapsed_time)
 		Jump();
 	}
 
-	//後隙中にキャンセルして技を行えるかチェックする
 	if (later > 0 && later < target_max)
 	{
 		later -= elapsed_time;
@@ -2635,6 +2634,7 @@ void Knight::JumpUpdate(float decision, float elapsed_time)
 		attack = true;
 		later = jump_later;
 		//攻撃でキャンセルできるように
+		hit_result = HitResult::NOT_OCCURRENCE;
 		atk_result = HitResult::NOT_OCCURRENCE;
 		rightOrleft = decision;
 		angle.y = 0.0f;
@@ -2701,7 +2701,7 @@ void Knight::DamageCheck(float decision)
 						//地面についている場合は下方向の速度を0にする
 						hit[i].hitback.y = 0.0f;
 						//のけぞり時間を3分の1にする
-						hit[i].timer *= 0.3f;
+						hit[i].timer *= 0.25f;
 					}
 				}
 				break;
@@ -3997,17 +3997,23 @@ void Knight::NoneChange()
 void Knight::GaugeUp(float add)
 {
 	gauge += add;
-	if (gauge > GAUGE_MAX)
-	{
-		float away = gauge - GAUGE_MAX;
-		power++;
-		gauge = 0;
-		gauge = away;
-	}
 	if (power > 4)
 	{
 		power = 5;
-		gauge = GAUGE_MAX;
+		if (gauge > GAUGE_MAX)
+		{
+			gauge = GAUGE_MAX;
+		}
+	}
+	else
+	{
+		if (gauge > GAUGE_MAX)
+		{
+			float away = gauge - GAUGE_MAX;
+			power++;
+			gauge = 0;
+			gauge = away;
+		}
 	}
 }
 

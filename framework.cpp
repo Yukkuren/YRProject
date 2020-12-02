@@ -373,7 +373,12 @@ bool framework::initialize()
 	swap_chain_desc.SampleDesc.Count = enable_4x_msaa ? 4 : 1;
 	swap_chain_desc.SampleDesc.Quality = enable_4x_msaa ? msaa_quality_level - 1 : 0;
 	//ここを変えればフルスクリーン
+#ifdef _DEBUG
 	swap_chain_desc.Windowed = TRUE;
+#else
+	swap_chain_desc.Windowed = FALSE;
+#endif // _DEBUG
+
 	swap_chain_desc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	swap_chain_desc.Flags = 0;
 
@@ -501,7 +506,7 @@ bool framework::initialize()
 	}*/
 	//sprite[0] = new Sprite(device, L"logos.jpg");
 	//sprite[1] = new Sprite(device, L"n64.png");
-	
+
 
 	//シェーダー
 
@@ -562,13 +567,13 @@ void framework::update(float elapsed_time/*Elapsed seconds from last frame*/)
 }
 void framework::render(float elapsed_time/*Elapsed seconds from last frame*/)
 {
-	
+
 	HRESULT hr = S_OK;
 
 	UINT m4xMsaaQuality;
 	device.Get()->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, 4, &m4xMsaaQuality);
 	//assert(m4xMsaaQuality > 0);
-	
+
 
 
 	FLOAT ClearColor[] = { 0.2f, 0.2f, 0.2f, 1.0f }; //red,green,blue,alpha
@@ -626,7 +631,7 @@ void framework::render(float elapsed_time/*Elapsed seconds from last frame*/)
 	//if (GetAsyncKeyState('Q') < 0)
 	//{
 	//	scall+= 0.01f;
-	//	
+	//
 	//}
 	//if (GetAsyncKeyState('W') < 0)
 	//{
@@ -736,7 +741,7 @@ void framework::render(float elapsed_time/*Elapsed seconds from last frame*/)
 	////anim_count += elapsed_time;
 	///*for (int hei = 0; hei < 10; hei++)
 	//{
-	//	
+	//
 	//}*/
 	//
 	//DirectX::XMFLOAT3 pos[10];
@@ -818,11 +823,11 @@ void framework::render(float elapsed_time/*Elapsed seconds from last frame*/)
 	//			state[i] = true;
 	//		}
 	//	}
-	//	
+	//
 	//}
 		//skin->Render(context.Get(), world_view_projection, world, light_direction, color, lightColor, ambient_color, viewFlag, elapsed_time);
 
-	
+
 		//skin2->Render(context.Get(), world_view_projection, world, light_direction, color, lightColor, ambient_color, viewFlag, elapsed_time);
 		/*if (skin2->AnimFinCheck())
 		{
@@ -841,7 +846,11 @@ void framework::render(float elapsed_time/*Elapsed seconds from last frame*/)
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 #endif
 	//0:可変フレーム。1:60FPS固定。2:30FPS固定
+#ifdef _DEBUG
 	chain.Get()->Present(0, 0);
+#else
+	chain.Get()->Present(1, 0);
+#endif // _DEBUG
 }
 
 void framework::SetViewPort(float width, float height)
