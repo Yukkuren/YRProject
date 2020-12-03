@@ -167,13 +167,21 @@ public:
 
 	struct Input_list_pad
 	{
-		int button_input = -1;	//ボタンの種類
-		int stick_input = -1;	//スティックの種類
-		int kind = -1;			//キューから受け取った値の一時入力
+		std::vector<int> button_input;	//ボタンの種類
+		int stick_input = -1;			//スティックの種類
+		bool pushed = false;			//押されていた入力を取った場合true
+
+		Input_list_pad() {
+			stick_input = -1;
+		};
+		~Input_list_pad() {};
 	};
 
-	std::array<Input_list_pad,10>		p1_input_list;
-	std::array<Input_list_pad,10>		p2_input_list;
+	std::list<Input_list_pad>		p1_input_list;
+	std::list<Input_list_pad>		p2_input_list;
+
+	std::unique_ptr<Sprite> button_img = nullptr;
+	std::unique_ptr<Sprite> stick_img = nullptr;
 
 	const std::array<int, 8>	button_img_list =
 	{
@@ -202,8 +210,14 @@ public:
 	};
 
 	void Init();
-	void Update(std::list<InputListor>que1, std::list<InputListor>que2);
+	void Load();
+	void Update(Player* player1p, Player* player2p);
 	void Draw(YRShader* shader);
+
+	int GetButtonNum(int button);
+	int GetStickNum(int stick);
+
+	void UnInit();
 };
 
 
@@ -292,14 +306,13 @@ public:
 	std::unique_ptr<Sprite> call_img = nullptr;
 	std::unique_ptr<Sprite> effect_img = nullptr;
 	std::unique_ptr<Sprite> pause_img = nullptr;
-	std::unique_ptr<Sprite> button_img = nullptr;
-	std::unique_ptr<Sprite> stick_img = nullptr;
 	std::array<int, 3>		p1combo;
 	std::array<int, 3>		p2combo;
 
 
 	//画面描画用テクスチャ
 	std::unique_ptr<Texture> color_texture = nullptr;
+	std::unique_ptr<Texture> UI_texture = nullptr;
 	//std::unique_ptr<Texture> normal_texture = nullptr;
 	//std::unique_ptr<Texture> position_texture = nullptr;
 	std::unique_ptr<Texture> luminance_texture = nullptr;
@@ -363,6 +376,8 @@ public:
 	void				ScoreImageSet();
 
 	void				Control2PState(float elapsed_time);
+	void				UI_Draw();
+	void				SetUITexture();
 
 public:
 	//ゲーム処理関数
@@ -383,6 +398,8 @@ public:
 	void RenderTexture();
 
 	void RenderBlur();
+
+	void RenderUI();
 
 	void AIControll(float elapsed_time);
 

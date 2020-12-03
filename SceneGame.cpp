@@ -201,6 +201,12 @@ void SceneGame::LoadData()
 		color_texture->Create(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM);
 		color_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
 	}
+	if (UI_texture == nullptr)
+	{
+		UI_texture = std::make_unique<Texture>();
+		UI_texture->Create(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM);
+		UI_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
+	}
 	/*if (normal_texture == nullptr)
 	{
 		normal_texture = std::make_unique<Texture>();
@@ -311,14 +317,6 @@ void SceneGame::LoadData()
 	{
 		pause_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/pause.png", 384.0f, 128.0f);
 	}
-	if (button_img == nullptr)
-	{
-		button_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/button.png", 1280.0f, 2560.0f, 2, 4, 640.0f, 640.0f);
-	}
-	if (stick_img == nullptr)
-	{
-		stick_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/stick.png", 1280.0f, 3200.0f, 2, 5, 640.0f, 640.0f);
-	}
 	if (gaussShader == nullptr)
 	{
 		gaussShader = std::make_unique<YRShader>(ShaderType::GAUSS);
@@ -335,6 +333,8 @@ void SceneGame::LoadData()
 		spriteEx->Create("./Data/Shader/SpriteEx_vs.cso", "./Data/Shader/SpriteEx_ps.cso");
 	}
 
+
+	input_pad.Load();
 
 	//ステージの選択
 	stage.Init(Stage::StageType::NORMAL);
@@ -402,8 +402,6 @@ void SceneGame::UnInit()
 	call_img.reset();
 	effect_img.reset();
 	pause_img.reset();
-	button_img.reset();
-	stick_img.reset();
 	test = nullptr;
 	geo = nullptr;
 	HP_img = nullptr;
@@ -418,8 +416,6 @@ void SceneGame::UnInit()
 	call_img = nullptr;
 	effect_img = nullptr;
 	pause_img = nullptr;
-	button_img = nullptr;
-	stick_img = nullptr;
 
 	//シェーダー解放
 	spriteShader.reset();
@@ -432,6 +428,8 @@ void SceneGame::UnInit()
 	ParallelToonShader = nullptr;
 	ToonShader.reset();
 	ToonShader = nullptr;
+
+	input_pad.UnInit();
 
 	//BGMを止める
 	GetSound().BGMStop(BGMKind::GAME);
@@ -917,8 +915,12 @@ void SceneGame::Update(float elapsed_time)
 							player1p->pad->Init();
 							player2p->pad->Init();
 						}
-
-						input_pad.Update(player1p->pad->que, player2p->pad->que);
+						#ifdef EXIST_IMGUI
+						if (Get_Use_ImGui())
+						{
+							input_pad.Update(player1p.get(), player2p.get());
+						}
+						#endif // EXIST_IMGUI
 					}
 
 				}
@@ -1385,6 +1387,187 @@ void SceneGame::Draw(float elapsed_time)
 		}
 #endif // USE_IMGUI
 
+//		//UI描画
+//
+//		//ゲージ描画
+//		PL.gauge1P = (player1p->gauge / GAUGE_MAX) * 640.0f;
+//		PL.gauge2P = (player2p->gauge / GAUGE_MAX) * 640.0f;
+//
+//		PL.power1P = ColorSet(player1p->power);
+//		gauge_img->DrawExtendGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + PL.gauge1P, 1064.0f, SpriteMask::NONE, PL.power1P);
+//		PL.power2P = ColorSet(player2p->power);
+//		gauge_img->DrawExtendGraph(spriteShader.get(), 1800.0f - PL.gauge2P, 1000.0f, 1800.0f, 1064.0f, SpriteMask::NONE, PL.power2P);
+//
+//		//ゲージケース
+//		gaugecase_img->DrawExtendGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + 640.0f, 1064.0f);
+//		gaugecase_img->DrawExtendGraph(spriteShader.get(), 1800.0f - 640.0f, 1000.0f, 1800.0f, 1064.0f);
+//
+//		//ゲージの数字描画
+//		font_img->DrawRotaDivGraph
+//		(
+//			spriteShader.get(),
+//			70.0f,
+//			950.0f,
+//			0.0f,
+//			2.0f,
+//			player1p->power,
+//			SpriteMask::NONE,
+//			PL.power1P
+//		);
+//		font_img->DrawRotaDivGraph
+//		(
+//			spriteShader.get(),
+//			1800.0f,
+//			950.0f,
+//			0.0f,
+//			2.0f,
+//			player2p->power,
+//			SpriteMask::NONE,
+//			PL.power2P
+//		);
+//
+//
+//		switch (YRCamera.camera_state)
+//		{
+//		case Camera::CAMERA_STATE::PLAYER1P:
+//			player1p->DrawCutIn(spriteShader.get(), game_speed);
+//			break;
+//		case Camera::CAMERA_STATE::PLAYER2P:
+//			player2p->DrawCutIn(spriteShader.get(), game_speed);
+//			break;
+//		default:
+//			break;
+//		}
+//
+//#ifdef EXIST_IMGUI
+//		if (Get_Use_ImGui())
+//		{
+//			input_pad.Draw(spriteShader.get());
+//		}
+//#endif // EXIST_IMGUI
+//
+//
+//		if (pause)
+//		{
+//			pause_img->DrawGraph(
+//				spriteShader.get(),
+//				static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
+//				static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f + (sinf(timer)*100.0f)
+//			);
+//		}
+//
+//		//カウント表示
+//		if (!start)
+//		{
+//			//Are You Ready?
+//			if (start_timer < ready_time)
+//			{
+//				call_img->DrawRotaDivGraph
+//				(
+//					spriteShader.get(),
+//					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
+//					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f,
+//					0.0f,
+//					1.0f,
+//					0
+//				);
+//			}
+//			else
+//			{
+//				//Go!!
+//				call_img->DrawRotaDivGraph
+//				(
+//					spriteShader.get(),
+//					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
+//					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f,
+//					0.0f,
+//					1.0f,
+//					1
+//				);
+//			}
+//		}
+//
+//		if (end)
+//		{
+//			//ゲームの決着がついた後
+//			if (endtimer < end_slow_time)
+//			{
+//				//「KO」
+//				KO_img->DrawGraph(
+//					spriteShader.get(),
+//					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
+//					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f
+//				);
+//			}
+//
+//			if (endtimer > end_slow_time)
+//			{
+//				if (judge == JUDGE_VICTORY::DRAW)
+//				{
+//					//「DROW」画像
+//					draw_img->DrawGraph(
+//						spriteShader.get(),
+//						static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
+//						static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f
+//					);
+//				}
+//			}
+//		}
+
+		break;
+	case MAIN_LOOP::WIN1P:
+	{
+		//プレイヤー描画
+		player1p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, lightColor, ambient_color, game_speed);
+		player1p->WinDEBUG();
+	}
+		break;
+	case MAIN_LOOP::WIN2P:
+	{
+		//プレイヤー描画
+		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, lightColor, ambient_color, game_speed);
+	}
+		break;
+	case MAIN_LOOP::GAME_FIN:
+		break;
+	default:
+		break;
+	}
+
+	//フェード用画像描画
+	//FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
+	UI_Draw();
+
+	NullSetRenderTexture();
+	RenderTexture();
+	RenderBlur();
+	RenderUI();
+	FRAMEWORK.framebuffer.Deactivate();
+	//FRAMEWORK.framebuffer.SetDefaultRTV();
+	//player1p->TextDraw();
+	//player2p->TextDraw();
+
+}
+
+
+void SceneGame::UI_Draw()
+{
+	NullSetRenderTexture();
+
+	SetUITexture();
+	//UIの描画
+	switch (main_loop)
+	{
+	case MAIN_LOOP::INTRO1P:
+		break;
+	case MAIN_LOOP::INTRO2P:
+		break;
+	case MAIN_LOOP::READY:
+	case MAIN_LOOP::MAIN:
+	case MAIN_LOOP::FINISH:
+	case MAIN_LOOP::DRAW:
+		//内部処理ではフェードをしているだけで画面に変化はない為一括
+
 		//UI描画
 
 		//ゲージ描画
@@ -1437,15 +1620,20 @@ void SceneGame::Draw(float elapsed_time)
 			break;
 		}
 
+#ifdef EXIST_IMGUI
+		if (Get_Use_ImGui())
+		{
+			input_pad.Draw(spriteShader.get());
+		}
+#endif // EXIST_IMGUI
 
-		input_pad.Draw(spriteShader.get());
 
 		if (pause)
 		{
 			pause_img->DrawGraph(
 				spriteShader.get(),
 				static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
-				static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f + (sinf(timer)*100.0f)
+				static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f + (sinf(timer) * 100.0f)
 			);
 		}
 
@@ -1510,23 +1698,18 @@ void SceneGame::Draw(float elapsed_time)
 		break;
 	case MAIN_LOOP::WIN1P:
 	{
-		//プレイヤー描画
-		player1p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, lightColor, ambient_color, game_speed);
 		float x_pos = static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.7f;
 		float y_pos = static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f;
 		win1P_img->DrawGraph(spriteShader.get(), x_pos, y_pos);
-		player1p->WinDEBUG();
 	}
-		break;
+	break;
 	case MAIN_LOOP::WIN2P:
 	{
-		//プレイヤー描画
-		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, lightColor, ambient_color, game_speed);
 		float x_pos = static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.7f;
 		float y_pos = static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f;
 		win2P_img->DrawGraph(spriteShader.get(), x_pos, y_pos);
 	}
-		break;
+	break;
 	case MAIN_LOOP::GAME_FIN:
 		break;
 	default:
@@ -1535,15 +1718,9 @@ void SceneGame::Draw(float elapsed_time)
 
 	//フェード用画像描画
 	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
-	NullSetRenderTexture();
-	RenderTexture();
-	RenderBlur();
-	FRAMEWORK.framebuffer.Deactivate();
-	//FRAMEWORK.framebuffer.SetDefaultRTV();
-	//player1p->TextDraw();
-	//player2p->TextDraw();
-
 }
+
+
 
 bool SceneGame::FadeOut(float elapsed_time)
 {
@@ -2036,6 +2213,36 @@ void SceneGame::SetRenderTexture()
 }
 
 
+void SceneGame::SetUITexture()
+{
+	FRAMEWORK.framebuffer.SetRenderTexture(UI_texture->GetRenderTargetView());
+
+	ID3D11DepthStencilView* dsv = UI_texture->GetDepthStencilView();
+
+	//画面クリア
+	FRAMEWORK.framebuffer.Clear(0.0f,0.0f,0.0f,0.0f);
+	FRAMEWORK.context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	//ビュー更新
+	YRCamera.Active();
+
+	//ビューポート設定
+	//レンダーターゲットビューの設定
+	//FRAMEWORK.framebuffer.GetDefaultRTV();
+	FRAMEWORK.framebuffer.Activate(1920.0f, 1080.0f, dsv);
+
+	//ブレンドステート設定
+	FRAMEWORK.BlendSet(Blend::ALPHA);
+	//ラスタライザー設定
+	FRAMEWORK.context->RSSetState(FRAMEWORK.rasterizer_state[framework::RS_CULL_BACK].Get());
+	//デプスステンシルステート設定
+	FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[framework::DS_TRUE].Get(), 1);
+
+	//サンプラー設定
+	sampler_clamp->Set(0);
+}
+
+
 void SceneGame::NullSetRenderTexture()
 {
 	//レンダーターゲットの回復
@@ -2061,6 +2268,32 @@ void SceneGame::RenderTexture()
 		{
 			ImGui::Image((void*)(color_texture->GetShaderResource()), ImVec2(360, 360));
 			ImGui::Image((void*)(luminance_texture->GetShaderResource()), ImVec2(360, 360));
+			ImGui::TreePop();
+		}
+	}
+#endif // USE_IMGUI
+
+}
+
+void SceneGame::RenderUI()
+{
+
+	//ブレンドステート設定
+	FRAMEWORK.BlendSet(Blend::ALPHA);
+
+	//Gbuffer描画
+	sprite->render(
+		spriteEx.get(),
+		UI_texture.get(),
+		0.0f, 0.0f, 1920.0f, 1080.0f,
+		0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
+
+#ifdef EXIST_IMGUI
+	if (Get_Use_ImGui())
+	{
+		if (ImGui::TreeNode(u8"UIテクスチャ"))
+		{
+			ImGui::Image((void*)(UI_texture->GetShaderResource()), ImVec2(360, 360));
 			ImGui::TreePop();
 		}
 	}
