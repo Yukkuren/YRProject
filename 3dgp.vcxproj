@@ -182,6 +182,7 @@
     <ClCompile Include="imgui\imgui_impl_dx11.cpp" />
     <ClCompile Include="imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="InputListProcess.cpp" />
     <ClCompile Include="Knight.cpp" />
     <ClCompile Include="KnightATK.cpp" />
     <ClCompile Include="KnightIO.cpp" />

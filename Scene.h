@@ -72,7 +72,7 @@ struct PlayerALL
 	YR_Vector3			pos1P{ -8.0f,0.0f };
 	YR_Vector3			pos2P{ 8.0f,0.0f };
 
-	
+
 };
 
 //--------------------------------------------------
@@ -97,7 +97,7 @@ public:
 	std::shared_ptr<Model> stage_data = nullptr;
 	//std::unique_ptr<ModelAnim> sky_draw = nullptr;
 	std::unique_ptr<ModelAnim> stage_draw = nullptr;
-	
+
 	//シェーダー
 	std::unique_ptr<YRShader> skyShader = nullptr;
 	std::unique_ptr<YRShader> skinShader = nullptr;
@@ -161,6 +161,51 @@ public:
 
 
 
+class InputGamePadDraw
+{
+public:
+
+	struct Input_list_pad
+	{
+		int button_input = -1;	//ボタンの種類
+		int stick_input = -1;	//スティックの種類
+		int kind = -1;			//キューから受け取った値の一時入力
+	};
+
+	std::array<Input_list_pad,10>		p1_input_list;
+	std::array<Input_list_pad,10>		p2_input_list;
+
+	const std::array<int, 8>	button_img_list =
+	{
+		static_cast<int>(PAD::X),
+		static_cast<int>(PAD::Y),
+		static_cast<int>(PAD::A),
+		static_cast<int>(PAD::B),
+		static_cast<int>(PAD::RB),
+		static_cast<int>(PAD::LB),
+		static_cast<int>(PAD::R_TRIGGER),
+		static_cast<int>(PAD::L_TRIGGER)
+	};
+
+	const std::array<int, 10>	stick_img_list =
+	{
+		static_cast<int>(PAD::STICK_U),
+		static_cast<int>(PAD::STICK_RUp),
+		static_cast<int>(PAD::STICK_R),
+		static_cast<int>(PAD::STICK_RDown),
+		static_cast<int>(PAD::STICK_D),
+		static_cast<int>(PAD::STICK_LDown),
+		static_cast<int>(PAD::STICK_L),
+		static_cast<int>(PAD::STICK_LUp),
+		236,
+		214
+	};
+
+	void Init();
+	void Update(std::list<InputListor>que1, std::list<InputListor>que2);
+	void Draw(YRShader* shader);
+};
+
 
 class SceneGame : public SceneBase
 {
@@ -179,6 +224,9 @@ public:
 		AI,			//AI
 		END,		//終了コマンド
 	}; Player2PControl pl2_con = Player2PControl::OPERATION;
+
+
+	InputGamePadDraw	input_pad;
 
 	float	timer = 0.0f;
 	int		sco[6] = { 0,0,0,0,0,0 };
@@ -244,6 +292,8 @@ public:
 	std::unique_ptr<Sprite> call_img = nullptr;
 	std::unique_ptr<Sprite> effect_img = nullptr;
 	std::unique_ptr<Sprite> pause_img = nullptr;
+	std::unique_ptr<Sprite> button_img = nullptr;
+	std::unique_ptr<Sprite> stick_img = nullptr;
 	std::array<int, 3>		p1combo;
 	std::array<int, 3>		p2combo;
 
@@ -348,7 +398,7 @@ public:
 
 class SceneTitle : public SceneBase
 {
-	
+
 public:
 	std::unique_ptr<Sprite> test = nullptr;
 	std::thread* t = NULL;

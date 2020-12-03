@@ -143,6 +143,8 @@ void SceneGame::Init()
 	GetSound().BGMPlay(BGMKind::GAME);
 
 	AI2P.Init();
+
+	input_pad.Init();
 	//UnInit();
 	//FRAMEWORK.SetScene(SCENE_TABLE::SCENE_TITLE);
 }
@@ -309,6 +311,14 @@ void SceneGame::LoadData()
 	{
 		pause_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/pause.png", 384.0f, 128.0f);
 	}
+	if (button_img == nullptr)
+	{
+		button_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/button.png", 1280.0f, 2560.0f, 2, 4, 640.0f, 640.0f);
+	}
+	if (stick_img == nullptr)
+	{
+		stick_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/stick.png", 1280.0f, 3200.0f, 2, 5, 640.0f, 640.0f);
+	}
 	if (gaussShader == nullptr)
 	{
 		gaussShader = std::make_unique<YRShader>(ShaderType::GAUSS);
@@ -392,6 +402,8 @@ void SceneGame::UnInit()
 	call_img.reset();
 	effect_img.reset();
 	pause_img.reset();
+	button_img.reset();
+	stick_img.reset();
 	test = nullptr;
 	geo = nullptr;
 	HP_img = nullptr;
@@ -406,6 +418,8 @@ void SceneGame::UnInit()
 	call_img = nullptr;
 	effect_img = nullptr;
 	pause_img = nullptr;
+	button_img = nullptr;
+	stick_img = nullptr;
 
 	//シェーダー解放
 	spriteShader.reset();
@@ -903,6 +917,8 @@ void SceneGame::Update(float elapsed_time)
 							player1p->pad->Init();
 							player2p->pad->Init();
 						}
+
+						input_pad.Update(player1p->pad->que, player2p->pad->que);
 					}
 
 				}
@@ -1369,6 +1385,8 @@ void SceneGame::Draw(float elapsed_time)
 		}
 #endif // USE_IMGUI
 
+		//UI描画
+
 		//ゲージ描画
 		PL.gauge1P = (player1p->gauge / GAUGE_MAX) * 640.0f;
 		PL.gauge2P = (player2p->gauge / GAUGE_MAX) * 640.0f;
@@ -1418,6 +1436,9 @@ void SceneGame::Draw(float elapsed_time)
 		default:
 			break;
 		}
+
+
+		input_pad.Draw(spriteShader.get());
 
 		if (pause)
 		{

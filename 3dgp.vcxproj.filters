@@ -288,6 +288,9 @@
     <ClCompile Include="AIControll.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="InputListProcess.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimBoard.h">
