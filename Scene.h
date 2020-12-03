@@ -147,10 +147,13 @@ public:
 		KNOCK,			//‚Ì‚¯‚¼‚Á‚½
 		DEAPTH,			//‘Ì—Í‚ª‚È‚­‚È‚Á‚½
 		DOWN,			//ƒ_ƒEƒ“’†
+		SPECIAL,		//’´•K‚ð‘Å‚Æ‚¤‚Æ‚·‚é
 		END,
 	};
 
 	AI_State state = AI_State::INIT;
+	AI_State before_state = AI_State::INIT;
+	bool steal_escape = false;
 public:
 	void Init()
 	{

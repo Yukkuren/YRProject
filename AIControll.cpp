@@ -8,17 +8,7 @@ void SceneGame::AIControll(float elapsed_time)
 	{
 		//プレイヤーがダメージを受けた
 		AI2P.state = AI_Controller::AI_State::KNOCK;
-		player2p->pad->x_input[scastI(PAD::STICK_R)] = 0;
-		player2p->pad->x_input[scastI(PAD::STICK_L)] = 0;
-		player2p->pad->x_input[scastI(PAD::X)] = 0;
-		player2p->pad->x_input[scastI(PAD::R_TRIGGER)] = 0;
-		player2p->pad->x_input[scastI(PAD::STICK_R)] = 0;
-		player2p->pad->x_input[scastI(PAD::STICK_L)] = 0;
-		player2p->pad->x_input[scastI(PAD::STICK_RDown)] = 0;
-		player2p->pad->x_input[scastI(PAD::STICK_LDown)] = 0;
-		player2p->pad->x_input[scastI(PAD::STICK_U)] = 0;
-		player2p->pad->x_input[scastI(PAD::R_DASH)] = 0;
-		player2p->pad->x_input[scastI(PAD::L_DASH)] = 0;
+		player2p->pad->Init();
 	}
 	if (player2p->hp == 0.0f)
 	{
@@ -27,36 +17,36 @@ void SceneGame::AIControll(float elapsed_time)
 	if (player2p->act_state == ActState::DOWN)
 	{
 		AI2P.state = AI_Controller::AI_State::DOWN;
-		player2p->pad->x_input[scastI(PAD::STICK_R)] = 0;
-		player2p->pad->x_input[scastI(PAD::STICK_L)] = 0;
-		player2p->pad->x_input[scastI(PAD::X)] = 0;
-		player2p->pad->x_input[scastI(PAD::R_TRIGGER)] = 0;
-		player2p->pad->x_input[scastI(PAD::STICK_R)] = 0;
-		player2p->pad->x_input[scastI(PAD::STICK_L)] = 0;
-		player2p->pad->x_input[scastI(PAD::STICK_RDown)] = 0;
-		player2p->pad->x_input[scastI(PAD::STICK_LDown)] = 0;
-		player2p->pad->x_input[scastI(PAD::STICK_U)] = 0;
-		player2p->pad->x_input[scastI(PAD::R_DASH)] = 0;
-		player2p->pad->x_input[scastI(PAD::L_DASH)] = 0;
+		player2p->pad->Init();
+	}
+
+	if (player1p->act_state == ActState::SLAM)
+	{
+		player2p->pad->Init();
+		AI2P.state = AI_Controller::AI_State::SPECIAL;
+	}
+
+	if (player2p->steal_escape > 0.0f)
+	{
+		if (!AI2P.steal_escape)
+		{
+			int ra = rand() % 10;
+			if (ra < 5)
+			{
+				player2p->pad->x_input[scastI(PAD::RB)] = 1;
+			}
+			AI2P.steal_escape = true;
+		}
 	}
 
 	switch (AI2P.state)
 	{
 	case AI_Controller::AI_State::INIT:
 		//最初の設定
-		player2p->pad->x_input[scastI(PAD::STICK_R)] = 0;
-		player2p->pad->x_input[scastI(PAD::STICK_L)] = 0;
-		player2p->pad->x_input[scastI(PAD::X)] = 0;
-		player2p->pad->x_input[scastI(PAD::R_TRIGGER)] = 0;
-		player2p->pad->x_input[scastI(PAD::STICK_R)] = 0;
-		player2p->pad->x_input[scastI(PAD::STICK_L)] = 0;
-		player2p->pad->x_input[scastI(PAD::STICK_RDown)] = 0;
-		player2p->pad->x_input[scastI(PAD::STICK_LDown)] = 0;
-		player2p->pad->x_input[scastI(PAD::STICK_U)] = 0;
+		player2p->pad->Init();
 		AI2P.state = AI_Controller::AI_State::RAND_SELECT;
-		player2p->pad->x_input[scastI(PAD::R_DASH)] = 0;
-		player2p->pad->x_input[scastI(PAD::L_DASH)] = 0;
 		AI2P.timer = 0.0f;
+		AI2P.steal_escape = false;
 		break;
 	case AI_Controller::AI_State::RAND_SELECT:
 	{
@@ -71,40 +61,47 @@ void SceneGame::AIControll(float elapsed_time)
 		if (dis < AI2P.max_dis)
 		{
 			//プレイヤー同士の距離が一定以下なら攻撃か離れるかガードする
-			int ra = rand() % 10;
+			while (AI2P.state == AI2P.before_state)
+			{
+				int ra = rand() % 10;
 
-			if (ra < AI2P.attack_probability)
-			{
-				//Xボタン連打
-				AI2P.state = AI_Controller::AI_State::COMBO;
-			}
-			else if (ra < AI2P.guard_probability)
-			{
-				//ガードする
-				AI2P.state = AI_Controller::AI_State::GUARD;
-			}
-			else
-			{
-				//離れる
-				AI2P.state = AI_Controller::AI_State::LEAVE;
+				if (ra < AI2P.attack_probability)
+				{
+					//Xボタン連打
+					AI2P.state = AI_Controller::AI_State::COMBO;
+				}
+				else if (ra < AI2P.guard_probability)
+				{
+					//ガードする
+					AI2P.state = AI_Controller::AI_State::GUARD;
+				}
+				else
+				{
+					//離れる
+					AI2P.state = AI_Controller::AI_State::LEAVE;
+				}
 			}
 		}
 		else
 		{
-			//一定以下なら近づく又はホーミングダッシュを行う
-			int ra = rand() % 10;
+			while (AI2P.state == AI2P.before_state)
+			{
+				//一定以下なら近づく又はホーミングダッシュを行う
+				int ra = rand() % 10;
 
-			if (ra < AI2P.track_probability)
-			{
-				//ホーミングダッシュ
-				AI2P.state = AI_Controller::AI_State::TRACK_DASH;
-			}
-			else
-			{
-				//近づく
-				AI2P.state = AI_Controller::AI_State::APPROACH;
+				if (ra < AI2P.track_probability)
+				{
+					//ホーミングダッシュ
+					AI2P.state = AI_Controller::AI_State::TRACK_DASH;
+				}
+				else
+				{
+					//近づく
+					AI2P.state = AI_Controller::AI_State::APPROACH;
+				}
 			}
 		}
+		AI2P.before_state = AI2P.state;
 	}
 		break;
 	case AI_Controller::AI_State::APPROACH:
@@ -167,7 +164,8 @@ void SceneGame::AIControll(float elapsed_time)
 			player2p->pad->x_input[scastI(PAD::STICK_R)] = 0;
 			player2p->pad->x_input[scastI(PAD::R_DASH)] = 0;
 			player2p->pad->x_input[scastI(PAD::L_DASH)] = 0;
-			AI2P.state = AI_Controller::AI_State::INIT;
+			AI2P.timer = 0.0f;
+			AI2P.state = AI_Controller::AI_State::SPECIAL;
 		}
 		break;
 	case AI_Controller::AI_State::COMBO:
@@ -195,7 +193,7 @@ void SceneGame::AIControll(float elapsed_time)
 			}
 		}
 
-		if (AI2P.timer > 8.0f)
+		if (AI2P.timer > AI2P.timer_max)
 		{
 			//一定時間になったら行動を初期化
 			player2p->pad->x_input[scastI(PAD::X)] = 0;
@@ -213,9 +211,10 @@ void SceneGame::AIControll(float elapsed_time)
 			//当たってたらXボタン連打させる
 			player2p->pad->x_input[scastI(PAD::R_TRIGGER)] = 0;
 			AI2P.state = AI_Controller::AI_State::COMBO;
+			AI2P.timer = 0.0f;
 		}
 
-		if (AI2P.timer > 8.0f)
+		if (AI2P.timer > AI2P.timer_max)
 		{
 			//一定時間になったら行動を初期化
 			player2p->pad->x_input[scastI(PAD::R_TRIGGER)] = 0;
@@ -272,6 +271,14 @@ void SceneGame::AIControll(float elapsed_time)
 	case AI_Controller::AI_State::DOWN:
 		player2p->pad->x_input[scastI(PAD::STICK_U)] = 1;
 		AI2P.state = AI_Controller::AI_State::INIT;
+		break;
+	case AI_Controller::AI_State::SPECIAL:
+		AI2P.timer += elapsed_time;
+		player2p->pad->x_input[scastI(PAD::A)] = 1;
+		if (AI2P.timer > 0.5f)
+		{
+			AI2P.state = AI_Controller::AI_State::INIT;
+		}
 		break;
 	default:
 		break;

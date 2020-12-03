@@ -705,7 +705,9 @@ void Knight::AttackInput()
 					if (act_state == ActState::SQUAT || pad->x_input[scastI(PAD::STICK_D)] > 0 ||
 						pad->x_input[scastI(PAD::STICK_LDown)] > 0 || pad->x_input[scastI(PAD::STICK_RDown)] > 0)
 					{
-						if (static_cast<AttackState>(list) != AttackState::TRACK_DASH|| static_cast<AttackState>(list) != AttackState::VERSATILE_ATTACK)
+						if (static_cast<AttackState>(list) != AttackState::TRACK_DASH&&
+							static_cast<AttackState>(list) != AttackState::VERSATILE_ATTACK&&
+							static_cast<AttackState>(list) != AttackState::A_VERSATILE_ATTACK)
 						{
 							//ホーミングダッシュとプレイヤー選択技の場合はしゃがんでても出せるように判定する
 							continue;
@@ -714,20 +716,25 @@ void Knight::AttackInput()
 				}
 				if (attack_list[list].linkage_stick != PAD::BUTTOM_END)
 				{
-					//スティックの入力が指定されている場合確認する
-					if (attack_list[list].linkage_stick == PAD::STICK_D)
+					if (static_cast<AttackState>(list) != AttackState::TRACK_DASH &&
+						static_cast<AttackState>(list) != AttackState::VERSATILE_ATTACK &&
+						static_cast<AttackState>(list) != AttackState::A_VERSATILE_ATTACK)
 					{
-						//下スティック入力の場合は別の判定もとる
-						if (pad->x_input[scastI(PAD::STICK_D)] == 0&& pad->x_input[scastI(PAD::STICK_RDown)] == 0&& pad->x_input[scastI(PAD::STICK_LDown)] == 0)
+						//スティックの入力が指定されている場合確認する
+						if (attack_list[list].linkage_stick == PAD::STICK_D)
 						{
-							continue;
+							//下スティック入力の場合は別の判定もとる
+							if (pad->x_input[scastI(PAD::STICK_D)] == 0 && pad->x_input[scastI(PAD::STICK_RDown)] == 0 && pad->x_input[scastI(PAD::STICK_LDown)] == 0)
+							{
+								continue;
+							}
 						}
-					}
-					else
-					{
-						if (pad->x_input[scastI(attack_list[list].linkage_stick)] == 0)
+						else
 						{
-							continue;
+							if (pad->x_input[scastI(attack_list[list].linkage_stick)] == 0)
+							{
+								continue;
+							}
 						}
 					}
 				}
@@ -1488,6 +1495,134 @@ bool Knight::Step(float elapsed_time)
 	if (!ground)
 	{
 		//空中左ステップ
+		if (pad->x_input[scastI(PAD::L_TRIGGER)] == 1)
+		{
+			if (pad->x_input[scastI(PAD::STICK_L)] > 0)
+			{
+				//スティックを左に倒している時
+				if (air_dash_count == 1)
+				{
+					//ダッシュカウントが残っている場合は空中ダッシュを行う
+					//step = true;
+					moveflag = false;
+					jumpflag = false;
+					jumpcount = 0;
+					air_dash_count = 0;
+					GetSound().SESinglePlay(SEKind::HIGH_JUMP);
+					//スピードはどっちも同じ
+					speed.x = -stepspeed;
+					if (rightOrleft > 0)
+					{
+						//空中バックダッシュ
+						act_state = ActState::AIR_B;
+						air_dash_state = AirDashState::AIR_B;
+						//描画をセット
+						anim->NodeChange(model_motion.air_back_R, scastI(AnimAtk::FREAM));
+						anim->PlayAnimation(scastI(AnimAtk::FREAM), false);
+						anim_ccodinate = ac_act[scastI(ActState::AIR_B)].fream;
+					}
+					else
+					{
+						//空中前ダッシュ
+						act_state = ActState::AIR_F;
+						air_dash_state = AirDashState::AIR_F;
+						//描画をセット
+						anim->NodeChange(model_motion.air_dash_L, scastI(AnimAtk::FREAM));
+						anim->PlayAnimation(scastI(AnimAtk::FREAM), false);
+						anim_ccodinate = ac_act[scastI(ActState::AIR_F)].fream;
+					}
+				}
+				else
+				{
+					//ジャンプがない場合はトリガーを外す
+					pad->dash_trigger = false;
+				}
+			}
+			else if (pad->x_input[scastI(PAD::STICK_R)] > 0)
+			{
+				//スティックを右に倒している時
+				if (air_dash_count == 1)
+				{
+					//ダッシュカウントが残っている場合は空中ダッシュを行う
+					//step = true;
+					moveflag = false;
+					jumpflag = false;
+					jumpcount = 0;
+					air_dash_count = 1;
+					//スピードはどっちも同じ
+					speed.x = stepspeed;
+					GetSound().SESinglePlay(SEKind::HIGH_JUMP);
+					if (rightOrleft > 0)
+					{
+						//空中前ダッシュ
+						act_state = ActState::AIR_F;
+						air_dash_state = AirDashState::AIR_F;
+						//描画をセット
+						anim->NodeChange(model_motion.air_dash_R, scastI(AnimAtk::FREAM));
+						anim->PlayAnimation(scastI(AnimAtk::FREAM), false);
+						anim_ccodinate = ac_act[scastI(ActState::AIR_F)].fream;
+					}
+					else
+					{
+						//空中バックダッシュ
+						act_state = ActState::AIR_B;
+						air_dash_state = AirDashState::AIR_B;
+						//描画をセット
+						anim->NodeChange(model_motion.air_back_L, scastI(AnimAtk::FREAM));
+						anim->PlayAnimation(scastI(AnimAtk::FREAM), false);
+						anim_ccodinate = ac_act[scastI(ActState::AIR_B)].fream;
+					}
+				}
+				else
+				{
+					//ジャンプがない場合はトリガーを外す
+					pad->dash_trigger = false;
+				}
+			}
+			else
+			{
+				if (air_dash_count == 1)
+				{
+					//ダッシュカウントが残っている場合は空中ダッシュを行う
+					//step = true;
+					moveflag = false;
+					jumpflag = false;
+					jumpcount = 0;
+					air_dash_count = 1;
+					GetSound().SESinglePlay(SEKind::HIGH_JUMP);
+					if (rightOrleft > 0)
+					{
+						//空中前ダッシュ
+						speed.x = stepspeed;
+						act_state = ActState::AIR_F;
+						air_dash_state = AirDashState::AIR_F;
+						//描画をセット
+						anim->NodeChange(model_motion.air_dash_R, scastI(AnimAtk::FREAM));
+						anim->PlayAnimation(scastI(AnimAtk::FREAM), false);
+						anim_ccodinate = ac_act[scastI(ActState::AIR_F)].fream;
+					}
+					else
+					{
+						//空中前ダッシュ
+						//スピードはどっちも同じ
+						speed.x = -stepspeed;
+						act_state = ActState::AIR_F;
+						air_dash_state = AirDashState::AIR_F;
+						//描画をセット
+						anim->NodeChange(model_motion.air_dash_L, scastI(AnimAtk::FREAM));
+						anim->PlayAnimation(scastI(AnimAtk::FREAM), false);
+						anim_ccodinate = ac_act[scastI(ActState::AIR_F)].fream;
+					}
+				}
+				else
+				{
+					//ジャンプがない場合はトリガーを外す
+					pad->dash_trigger = false;
+				}
+			}
+		}
+
+		//空中左ステップ
 		if (pad->x_input[static_cast<int>(PAD::L_DASH)] == 1)
 		{
 			if (air_dash_count == 1)
@@ -1705,6 +1840,10 @@ bool Knight::Step(float elapsed_time)
 			return false;
 		}
 	}
+	else
+	{
+	step = false;
+ }
 
 	return false;
 }
@@ -2494,6 +2633,7 @@ void Knight::Jump()
 			attack_state = AttackState::NONE;
 			//角度を戻す
 			angle.z = 0.0f;
+			angle.y = 0.0f;
 			//最終入力内容を初期化する
 			last_attack = AttackState::NONE;
 
@@ -2560,6 +2700,7 @@ void Knight::Jump()
 			attack_state = AttackState::NONE;
 			//角度を戻す
 			angle.z = 0.0f;
+			angle.y = 0.0f;
 			//最終入力内容を初期化する
 			last_attack = AttackState::NONE;
 
@@ -2629,6 +2770,7 @@ void Knight::Jump()
 				attack_state = AttackState::NONE;
 				//角度を戻す
 				angle.z = 0.0f;
+				angle.y = 0.0f;
 				//最終入力内容を初期化する
 				last_attack = AttackState::NONE;
 
