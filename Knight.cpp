@@ -1996,10 +1996,11 @@ void Knight::Move(float decision)
 			else
 			{
 				//ダッシュ左向き
-				act_state = ActState::DASH;
-				anim->NodeChange(model_motion.dash_L, scastI(AnimAtk::FREAM));
-				anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
-				anim_ccodinate = ac_act[scastI(act_state)].fream;
+				//ダッシュの遷移は別で行うため消去
+				//act_state = ActState::DASH;
+				//anim->NodeChange(model_motion.dash_L, scastI(AnimAtk::FREAM));
+				//anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
+				//anim_ccodinate = ac_act[scastI(act_state)].fream;
 			}
 		}
 	}
@@ -2025,31 +2026,41 @@ void Knight::Move(float decision)
 			else
 			{
 				//ダッシュ右向き
-				act_state = ActState::DASH;
-				anim->NodeChange(model_motion.dash_R,scastI(AnimAtk::FREAM));
-				anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
-				anim_ccodinate = ac_act[scastI(act_state)].fream;
+				//ダッシュの遷移は別で行うため消去
+				//act_state = ActState::DASH;
+				//anim->NodeChange(model_motion.dash_R,scastI(AnimAtk::FREAM));
+				//anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
+				//anim_ccodinate = ac_act[scastI(act_state)].fream;
 			}
 		}
 	}
 
 
 	//左移動
-	if (pad->x_input[scastI(PAD::L_DASH)] > 0)
+	if (pad->x_input[scastI(PAD::STICK_L)] > 0)
 	{
 		if (!step)
 		{
-			speed.x = -dashspeed;
-			act_state = ActState::DASH;
-			if (!anim->GetLoopAnim())
+			if (rightOrleft < 0)
 			{
-				//現在のアニメーションがダッシュの開始アニメーションだった場合
-				if (anim->GetEndAnim() == -1)
+				//左向き
+				speed.x = -dashspeed;
+				act_state = ActState::DASH;
+				if (!anim->GetLoopAnim())
 				{
-					//アニメーションが終了したら持続アニメーションに切り替える
-					anim->NodeChange(model_motion.dash_L, scastI(AnimAtk::TIMER));
-					anim_ccodinate = ac_act[scastI(act_state)].timer;
+					//現在のアニメーションがダッシュの開始アニメーションだった場合
+					if (anim->GetEndAnim() == -1)
+					{
+						//アニメーションが終了したら持続アニメーションに切り替える
+						anim->NodeChange(model_motion.dash_L, scastI(AnimAtk::TIMER));
+						anim_ccodinate = ac_act[scastI(act_state)].timer;
+					}
 				}
+			}
+			else
+			{
+				speed.x = -walkspeed;
+				act_state = ActState::RETREAT;
 			}
 		}
 		//if (rightOrleft > 0)
@@ -2077,32 +2088,42 @@ void Knight::Move(float decision)
 	}
 	else
 	{
-		if (pad->x_input[scastI(PAD::STICK_L)] > 0)
+		/*if (pad->x_input[scastI(PAD::STICK_L)] > 0)
 		{
 			speed.x = -walkspeed;
 			act_state = ActState::MOVEL;
-		}
+		}*/
 	}
 
 
 
 
 	//右移動
-	if (pad->x_input[scastI(PAD::R_DASH)] > 0)
+	if (pad->x_input[scastI(PAD::STICK_R)] > 0)
 	{
 		if (!step)
 		{
-			speed.x = dashspeed;
-			act_state = ActState::DASH;
-			if (!anim->GetLoopAnim())
+			if (rightOrleft > 0)
 			{
-				//現在のアニメーションがダッシュの開始アニメーションだった場合
-				if (anim->GetEndAnim() == -1)
+				//右向き
+				speed.x = dashspeed;
+				act_state = ActState::DASH;
+				if (!anim->GetLoopAnim())
 				{
-					//アニメーションが終了したら持続アニメーションに切り替える
-					anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::TIMER));
-					anim_ccodinate = ac_act[scastI(act_state)].timer;
+					//現在のアニメーションがダッシュの開始アニメーションだった場合
+					if (anim->GetEndAnim() == -1)
+					{
+						//アニメーションが終了したら持続アニメーションに切り替える
+						anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::TIMER));
+						anim_ccodinate = ac_act[scastI(act_state)].timer;
+					}
 				}
+			}
+			else
+			{
+				//左向き
+				speed.x = walkspeed;
+				act_state = ActState::RETREAT;
 			}
 		}
 		//if (rightOrleft < 0)
@@ -2130,83 +2151,171 @@ void Knight::Move(float decision)
 	}
 	else
 	{
-		if (pad->x_input[scastI(PAD::STICK_R)] > 0)
+		/*if (pad->x_input[scastI(PAD::STICK_R)] > 0)
 		{
 			speed.x = walkspeed;
 			act_state = ActState::MOVER;
+		}*/
+	}
+
+	MoveStop();
+}
+
+
+
+void Knight::MoveStop()
+{
+	//移動停止時処理
+	//以前は後隙を設定していたが操作の都合上削除
+
+	//スティックを何も倒していない場合
+	if (pad->x_input[static_cast<int>(PAD::STICK_L)] == 0 && pad->x_input[static_cast<int>(PAD::STICK_R)] == 0)
+	{
+		if (pad->x_input[static_cast<int>(PAD::L_DASH)] == 0 && pad->x_input[static_cast<int>(PAD::R_DASH)] == 0)
+		{
+			speed.x = 0.0f;
+			act_state = ActState::NONE;
+			moveflag = false;
 		}
 	}
 
-	if (pad->x_input[static_cast<int>(PAD::L_DASH)] == 0 && pad->x_input[static_cast<int>(PAD::R_DASH)] == 0)
+	//スティックを両方とも倒している場合
+	if (pad->x_input[static_cast<int>(PAD::STICK_L)] > 0 && pad->x_input[static_cast<int>(PAD::STICK_R)] > 0)
 	{
-
+		speed.x = 0.0f;
+		act_state = ActState::NONE;
+		moveflag = false;
 	}
 	if (pad->x_input[static_cast<int>(PAD::L_DASH)] > 0 && pad->x_input[static_cast<int>(PAD::R_DASH)] > 0)
 	{
-
-	}
-
-	//どちらも押されているor押されていないなら元に戻す
-	if (pad->x_input[static_cast<int>(PAD::STICK_L)] == 0 && pad->x_input[static_cast<int>(PAD::STICK_R)] == 0)
-	{
-		if (act_state == ActState::DASH)
-		{
-			//現在のステートがダッシュだった場合
-			act_state = ActState::ATTACK;
-			attack_state = AttackState::NONE;
-			attack = true;
-			later = dash_later;
-			atk_result = HitResult::NOT_OCCURRENCE;
-			if (rightOrleft > 0)
-			{
-				anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::LATER));
-			}
-			else
-			{
-				anim->NodeChange(model_motion.dash_L, scastI(AnimAtk::LATER));
-			}
-			anim->PlayAnimation(scastI(AnimAtk::LATER), false);
-			moveflag = false;
-		}
-		else
-		{
-			act_state = ActState::NONE;
-		}
+		speed.x = 0.0f;
+		act_state = ActState::NONE;
 		moveflag = false;
-		//speed.x = 0.0f;
 	}
-	if (pad->x_input[static_cast<int>(PAD::STICK_L)] > 0 && pad->x_input[static_cast<int>(PAD::STICK_R)] > 0)
+	if (pad->x_input[static_cast<int>(PAD::L_DASH)] > 0 && pad->x_input[static_cast<int>(PAD::STICK_R)] > 0)
 	{
-		if (act_state == ActState::DASH)
-		{
-			//現在のステートがダッシュだった場合
-			act_state = ActState::ATTACK;
-			attack_state = AttackState::NONE;
-			attack = true;
-			later = dash_later;
-			atk_result = HitResult::NOT_OCCURRENCE;
-			if (rightOrleft > 0)
-			{
-				anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::LATER));
-			}
-			else
-			{
-				anim->NodeChange(model_motion.dash_L, scastI(AnimAtk::LATER));
-			}
-			anim->PlayAnimation(scastI(AnimAtk::LATER), false);
-			moveflag = false;
-		}
-		else
-		{
-			act_state = ActState::NONE;
-		}
+		speed.x = 0.0f;
+		act_state = ActState::NONE;
 		moveflag = false;
-		//speed.x = 0.0f;
 	}
+	if (pad->x_input[static_cast<int>(PAD::R_DASH)] > 0 && pad->x_input[static_cast<int>(PAD::STICK_L)] > 0)
+	{
+		speed.x = 0.0f;
+		act_state = ActState::NONE;
+		moveflag = false;
+	}
+
+	//if (pad->x_input[static_cast<int>(PAD::L_DASH)] == 0 && pad->x_input[static_cast<int>(PAD::R_DASH)] == 0)
+	//{
+	//	speed.x = 0.0f;
+	//	//if (act_state == ActState::DASH)
+	//	//{
+	//	//	//現在のステートがダッシュだった場合
+	//	//	act_state = ActState::ATTACK;
+	//	//	attack_state = AttackState::NONE;
+	//	//	attack = true;
+	//	//	later = dash_later;
+	//	//	atk_result = HitResult::NOT_OCCURRENCE;
+	//	//	if (rightOrleft > 0)
+	//	//	{
+	//	//		anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::LATER));
+	//	//	}
+	//	//	else
+	//	//	{
+	//	//		anim->NodeChange(model_motion.dash_L, scastI(AnimAtk::LATER));
+	//	//	}
+	//	//	anim->PlayAnimation(scastI(AnimAtk::LATER), false);
+	//	//	moveflag = false;
+	//	//}
+	//	//else
+	//	//{
+	//		act_state = ActState::NONE;
+	//	//}
+	//	moveflag = false;
+	//}
+	//if (pad->x_input[static_cast<int>(PAD::L_DASH)] > 0 && pad->x_input[static_cast<int>(PAD::R_DASH)] > 0)
+	//{
+	//	speed.x = 0.0f;
+	//	//if (act_state == ActState::DASH)
+	//	//{
+	//	//	//現在のステートがダッシュだった場合
+	//	//	act_state = ActState::ATTACK;
+	//	//	attack_state = AttackState::NONE;
+	//	//	attack = true;
+	//	//	later = dash_later;
+	//	//	atk_result = HitResult::NOT_OCCURRENCE;
+	//	//	if (rightOrleft > 0)
+	//	//	{
+	//	//		anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::LATER));
+	//	//	}
+	//	//	else
+	//	//	{
+	//	//		anim->NodeChange(model_motion.dash_L, scastI(AnimAtk::LATER));
+	//	//	}
+	//	//	anim->PlayAnimation(scastI(AnimAtk::LATER), false);
+	//	//	moveflag = false;
+	//	//}
+	//	//else
+	//	//{
+	//		act_state = ActState::NONE;
+	//	//}
+	//	moveflag = false;
+	//}
+
+	////どちらも押されているor押されていないなら元に戻す
+	//if (pad->x_input[static_cast<int>(PAD::STICK_L)] == 0 && pad->x_input[static_cast<int>(PAD::STICK_R)] == 0)
+	//{
+	//	speed.x = 0.0f;
+	//	//if (act_state == ActState::DASH)
+	//	//{
+	//	//	//現在のステートがダッシュだった場合
+	//	//	act_state = ActState::ATTACK;
+	//	//	attack_state = AttackState::NONE;
+	//	//	attack = true;
+	//	//	later = dash_later;
+	//	//	atk_result = HitResult::NOT_OCCURRENCE;
+	//	//	if (rightOrleft > 0)
+	//	//	{
+	//	//		anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::LATER));
+	//	//	}
+	//	//	else
+	//	//	{
+	//	//		anim->NodeChange(model_motion.dash_L, scastI(AnimAtk::LATER));
+	//	//	}
+	//	//	anim->PlayAnimation(scastI(AnimAtk::LATER), false);
+	//	//	moveflag = false;
+	//	//}
+	//	//else
+	//	//{
+	//		act_state = ActState::NONE;
+	//	//}
+	//	moveflag = false;
+	//	//speed.x = 0.0f;
+	//}
 }
+
+
 
 void Knight::MoveAnimSet()
 {
+	//スティックを両方とも倒している場合
+	if (pad->x_input[static_cast<int>(PAD::STICK_L)] > 0 && pad->x_input[static_cast<int>(PAD::STICK_R)] > 0)
+	{
+		return;
+	}
+	if (pad->x_input[static_cast<int>(PAD::L_DASH)] > 0 && pad->x_input[static_cast<int>(PAD::R_DASH)] > 0)
+	{
+		return;
+	}
+	if (pad->x_input[static_cast<int>(PAD::L_DASH)] > 0 && pad->x_input[static_cast<int>(PAD::STICK_R)] > 0)
+	{
+		return;
+	}
+	if (pad->x_input[static_cast<int>(PAD::R_DASH)] > 0 && pad->x_input[static_cast<int>(PAD::STICK_L)] > 0)
+	{
+		return;
+	}
+
 	if (pad->x_input[static_cast<int>(PAD::STICK_L)] > 0)
 	{
 		moveflag = true;
@@ -2215,15 +2324,22 @@ void Knight::MoveAnimSet()
 		{
 			//描画をセット
 			//右向き
+			//後退
 			anim->NodeChange(model_motion.back_R);
-			anim_ccodinate = ac_act[scastI(ActState::MOVEL)].fream;
+			anim_ccodinate = ac_act[scastI(ActState::RETREAT)].fream;
 		}
+		//歩きは削除(ダッシュのみ)
 		else
 		{
 			//描画をセット
 			//左向き
-			anim->NodeChange(model_motion.walk_L);
-			anim_ccodinate = ac_act[scastI(ActState::MOVEL)].fream;
+			/*anim->NodeChange(model_motion.walk_L);
+			anim_ccodinate = ac_act[scastI(ActState::MOVEL)].fream;*/
+			//ダッシュ左向き
+			act_state = ActState::DASH;
+			anim->NodeChange(model_motion.dash_L, scastI(AnimAtk::FREAM));
+			anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
+			anim_ccodinate = ac_act[scastI(act_state)].fream;
 		}
 	}
 	if (pad->x_input[static_cast<int>(PAD::STICK_R)] > 0)
@@ -2234,15 +2350,22 @@ void Knight::MoveAnimSet()
 		{
 			//描画をセット
 			//左向き
+			//後退
 			anim->NodeChange(model_motion.back_L);
-			anim_ccodinate = ac_act[scastI(ActState::MOVER)].fream;
+			anim_ccodinate = ac_act[scastI(ActState::RETREAT)].fream;
 		}
+		//歩きは削除(ダッシュのみ)
 		else
 		{
 			//描画をセット
 			//右向き
-			anim->NodeChange(model_motion.walk_R);
-			anim_ccodinate = ac_act[scastI(ActState::MOVER)].fream;
+			/*anim->NodeChange(model_motion.walk_R);
+			anim_ccodinate = ac_act[scastI(ActState::MOVER)].fream;*/
+			//ダッシュ右向き
+			act_state = ActState::DASH;
+			anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::FREAM));
+			anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
+			anim_ccodinate = ac_act[scastI(act_state)].fream;
 		}
 	}
 }

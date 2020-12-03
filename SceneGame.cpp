@@ -513,9 +513,6 @@ void SceneGame::Update(float elapsed_time)
 				Scene_focus.x = camera_screen.x;
 				Scene_focus.y = camera_screen.y;
 
-				player1p->pad->Init();
-				player2p->pad->Init();
-
 				//カメラの挙動をステートごとに処理
 				CameraUpdate(elapsed_time);
 			}
@@ -912,6 +909,8 @@ void SceneGame::Update(float elapsed_time)
 			}
 			else
 			{
+				player1p->pad->Init();
+				player2p->pad->Init();
 				float pl1_rightorleft = 0.0f;
 				float pl2_rightorleft = 0.0f;
 				p1_elapsed_time = 1.0f;
@@ -927,6 +926,7 @@ void SceneGame::Update(float elapsed_time)
 					pl1_rightorleft = -1.0f;
 					pl2_rightorleft = 1.0f;
 				}
+
 				player1p->Update(pl1_rightorleft, game_speed * p1_elapsed_time);
 				player2p->Update(pl2_rightorleft, game_speed * p2_elapsed_time);
 

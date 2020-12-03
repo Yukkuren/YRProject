@@ -111,8 +111,8 @@ public:
 class Knight : public Player
 {
 private:
-	const float walkspeed = 10.1f;		//歩く速度(代入)
-	const float dashspeed = 40.1f;		//ダッシュ速度
+	const float walkspeed = 20.0f;		//歩く速度(代入)
+	const float dashspeed = 40.0f;		//ダッシュ速度
 	const float backstepS = 116.0f;		//バックステップの速度
 	const float backstepD = 500.0f;		//バックステップの減少速度
 	const float stepspeed = 100.0f;		//空中ステップの速度
@@ -181,6 +181,7 @@ public:
 	);
 
 	void Move(float decision);
+	void MoveStop();
 	bool Step(float elapsed_time);
 	void AirDash(float elapsed_time);
 	void MoveAnimSet();

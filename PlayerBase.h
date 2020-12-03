@@ -109,8 +109,8 @@ enum class ActState : int
 	WAIT,			//待機(default)m
 	GUARD,			//ガード(default)
 	SQUAT,			//しゃがみ(default)m
-	MOVER,			//右移動(default)m
-	MOVEL,			//左移動(default)m
+	RETREAT,		//後退(default)m
+	DUMMY,			//ダミー(数値補間用)
 	DASH,			//ダッシュ(default)m
 	BACK,			//バックステップ(default)m
 	JUMP,			//ジャンプ(default)m
@@ -359,7 +359,7 @@ public:
 	int					now_player;		//どのプレイヤーがこのキャラを操作しているか(1:1P、2:2P)
 	float				anim_ccodinate;	//アニメーション速度を調整する変数
 	int					stop_state;		//ヒットストップ中の処理で使用
-	//bool				hit_state_n_set;//当たり判定のパラメータをセットしたくないときはtrue	
+	//bool				hit_state_n_set;//当たり判定のパラメータをセットしたくないときはtrue
 	float				cut_in_timer;	//カットインの表示時間
 	DirectX::XMFLOAT4	light_direction;//ライトの進む方向
 	HitResult			hit_result;		//攻撃が当たった場合の結果を保存する
@@ -442,6 +442,7 @@ public:
 	//行動系関数
 
 	virtual void Move(float decision) = 0;
+	virtual void MoveStop() = 0;
 	virtual bool Step(float elapsed_time) = 0;
 	virtual void AirDash(float elapsed_time) = 0;
 	virtual void Jump() = 0;
