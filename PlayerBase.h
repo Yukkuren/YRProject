@@ -355,12 +355,13 @@ public:
 	float				gauge = 0.0f;							//ゲージ
 	int					power = 1;								//ゲージが最大になると1増える。特殊技はこっちを消費する
 	float				steal_escape = 0.0f;					//投げ抜け可能時間
-	int					combo_count = 0;						//コンボカウント
+	int					combo_count = 0;						//コンボカウント。こっちは攻撃を受けた際に増え、相手に送るカウント
 	int					now_player = 0;							//どのプレイヤーがこのキャラを操作しているか(1:1P、2:2P)
 	float				anim_ccodinate = 1.0f;					//アニメーション速度を調整する変数
 	int					stop_state = 0;							//ヒットストップ中の処理で使用
 	float				cut_in_timer = 0.0f;					//カットインの表示時間
 	float				passive_timer = 0.0f;					//受け身中の無敵時間測定変数
+	int					combo_count_player = 0;					//コンボカウント。こちらは相手から受け取る
 	DirectX::XMFLOAT4	light_direction =
 		DirectX::XMFLOAT4(-1.0f, -0.1, 1.0f, 0.0f);				//ライトの進む方向
 	HitResult			hit_result = HitResult::NOT_OCCURRENCE;	//攻撃が当たった場合の結果を保存する

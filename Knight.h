@@ -251,6 +251,8 @@ public:
 	void DrawFastMove(YR_Vector3 position);
 	void FastSet(YR_Vector3 position);
 
+	void PosKnockPlus(float vec);
+
 
 
 	//åpè≥

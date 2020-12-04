@@ -751,6 +751,10 @@ void Knight::AttackInput()
 					}
 				}
 
+				if (attack_list[real].attack_name == AttackState::TRACK_DASH && trackgauge < 1)
+				{
+					continue;
+				}
 
 				//int next = scastI(attack_list[list].real_attack);
 				if (attack_list[real].need_power <= power)
@@ -782,10 +786,6 @@ void Knight::AttackInput()
 					//next = scastI(attack_list[list].next_attack);
 				}
 
-				if (attack_state == AttackState::TRACK_DASH && trackgauge < 1)
-				{
-					continue;
-				}
 
 				//UŒ‚‚ðŒˆ’è‚·‚é
 				//pad->com_list.Reset();

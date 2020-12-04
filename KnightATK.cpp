@@ -7,6 +7,14 @@
 #include "YRSound.h"
 #include "framework.h"
 
+
+void Knight::PosKnockPlus(float vec)
+{
+	//プレイヤーの位置に引数で受け取った値を与える(ノックバック)
+	pos.x -= vec * (rightOrleft + (combo_count_player * 0.1f));
+}
+
+
 //------------------------------------------------------
 //				攻撃関数
 
@@ -81,7 +89,7 @@ void Knight::AttackDefault(float elapsed_time)
 			}
 			if (a.knock_start)
 			{
-				pos.x -= a.parameter.knockback * rightOrleft;
+				PosKnockPlus(a.parameter.knockback);
 				a.parameter.knockback = 0.0f;
 				knock = true;
 				a.knock_start = false;
@@ -336,7 +344,7 @@ void Knight::Kyo(float elapsed_time)
 			}
 			if (a.knock_start)
 			{
-				pos.x -= a.parameter.knockback * rightOrleft;
+				PosKnockPlus(a.parameter.knockback);
 				a.parameter.knockback = 0.0f;
 				knock = true;
 			}
@@ -468,7 +476,7 @@ void Knight::U_Kyo(float elapsed_time)
 			}
 			if (a.knock_start)
 			{
-				pos.x -= a.parameter.knockback * rightOrleft;
+				PosKnockPlus(a.parameter.knockback);
 				a.parameter.knockback = 0.0f;
 				knock = true;
 			}
@@ -623,7 +631,7 @@ void Knight::A_UKyo(float elapsed_time)
 			}
 			if (a.knock_start)
 			{
-				pos.x -= a.parameter.knockback * rightOrleft;
+				PosKnockPlus(a.parameter.knockback);
 				a.parameter.knockback = 0.0f;
 				knock = true;
 				a.knock_start = false;
@@ -760,7 +768,7 @@ void Knight::Steal(float elapsed_time)
 			}
 			if (a.knock_start)
 			{
-				pos.x -= a.parameter.knockback * rightOrleft;
+				PosKnockPlus(a.parameter.knockback);
 				a.parameter.knockback = 0.0f;
 				knock = true;
 				a.knock_start = false;
@@ -997,7 +1005,7 @@ void Knight::Slow(float elapsed_time)
 			}
 			if (a.knock_start)
 			{
-				pos.x -= a.parameter.knockback * rightOrleft;
+				PosKnockPlus(a.parameter.knockback);
 				a.parameter.knockback = 0.0f;
 				knock = true;
 				a.knock_start = false;
@@ -1376,7 +1384,7 @@ void Knight::Jaku_Lhurf(float elapsed_time)
 			}
 			if (a.knock_start)
 			{
-				pos.x -= a.parameter.knockback * rightOrleft;
+				PosKnockPlus(a.parameter.knockback);
 				a.parameter.knockback = 0.0f;
 				knock = true;
 				a.knock_start = false;
@@ -1520,7 +1528,7 @@ void Knight::A_Jaku_Lhurf(float elapsed_time)
 			}
 			if (a.knock_start)
 			{
-				pos.x -= a.parameter.knockback * rightOrleft;
+				PosKnockPlus(a.parameter.knockback);
 				a.parameter.knockback = 0.0f;
 				knock = true;
 				a.knock_start = false;
@@ -1658,7 +1666,7 @@ void Knight::Thu_Lhurf(float elapsed_time)
 			}
 			if (a.knock_start)
 			{
-				pos.x -= a.parameter.knockback * rightOrleft;
+				PosKnockPlus(a.parameter.knockback);
 				a.parameter.knockback = 0.0f;
 				knock = true;
 				a.knock_start = false;
@@ -1755,6 +1763,9 @@ void Knight::TrackDash(float decision, float elapsed_time)
 	{
 		return;
 	}
+
+	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
+
 	jumpflag = false;
 
 	//重力の逆数を付与する
@@ -1772,7 +1783,6 @@ void Knight::TrackDash(float decision, float elapsed_time)
 		//ちょっとずつ浮かせていく
 		pos.y += 5.0f * elapsed_time;
 	}
-	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
 	//発生フレームになったら攻撃判定を生成する
 	if (fream < 0.0f)
 	{
@@ -1830,7 +1840,7 @@ void Knight::TrackDash(float decision, float elapsed_time)
 			}
 			if (a.knock_start && a.attack_name == scastI(attack_state))
 			{
-				pos.x -= a.parameter.knockback * rightOrleft;
+				PosKnockPlus(a.parameter.knockback);
 				a.parameter.knockback = 0.0f;
 				knock = true;
 			}
@@ -1929,7 +1939,7 @@ void Knight::TrackDash(float decision, float elapsed_time)
 	//}
 
 	//持続時間が全て終了したことを確認する
-	if (timer < 0.0f)
+	if (timer < 0.0f&&timer<target_max)
 	{
 	////攻撃が全て終了したことを確認する
 	//if (AttackEndCheck())
@@ -2170,7 +2180,7 @@ void Knight::SpecialAttack(float elapsed_time)
 			}
 			if (a.knock_start)
 			{
-				pos.x -= a.parameter.knockback;
+				PosKnockPlus(a.parameter.knockback);
 				a.parameter.knockback = 0.0f;
 				knock = true;
 			}
@@ -2365,6 +2375,14 @@ bool Knight::ComboSet()
 		break;
 	}
 
+	if (attack_list[real_num].attack_name == AttackState::TRACK_DASH)
+	{
+		if (trackgauge < 1)
+		{
+			return false;
+		}
+	}
+
 	//攻撃を決定する
 	//現在攻撃判定が出ているなら全て消去する
 	AllAttackClear();
@@ -2535,6 +2553,13 @@ void Knight::ComboUpdate()
 	}
 
 	//攻撃を決定する
+	if (attack_list[real_num].attack_name == AttackState::TRACK_DASH)
+	{
+		if (trackgauge < 1)
+		{
+			return;
+		}
+	}
 	//現在攻撃判定が出ているなら全て消去する
 	AllAttackClear();
 	//この攻撃をキャンセルするための条件を保存する

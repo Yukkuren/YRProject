@@ -64,6 +64,8 @@ struct PlayerALL
 	float				HP_MAX2P = 0.0f;
 	float				ratio1P	= 0.0f;
 	float				ratio2P = 0.0f;
+	float				Damage_ratio1P = 0.0f;
+	float				Damage_ratio2P = 0.0f;
 	DirectX::XMFLOAT4	power1P = { 0.0f,0.0f,0.0f,0.0f };
 	DirectX::XMFLOAT4	power2P = { 0.0f,0.0f,0.0f,0.0f };
 	float				correction_value = 0.0f;
@@ -302,6 +304,7 @@ public:
 	std::unique_ptr<Sprite> win2P_img = nullptr;
 	std::unique_ptr<Sprite> draw_img = nullptr;
 	std::unique_ptr<Sprite> HPbar_img = nullptr;
+	std::unique_ptr<Sprite> HPDamagebar_img = nullptr;
 	std::unique_ptr<Sprite> KO_img = nullptr;
 	std::unique_ptr<Sprite> gauge_img = nullptr;
 	std::unique_ptr<Sprite> gaugecase_img = nullptr;
@@ -311,6 +314,12 @@ public:
 	std::unique_ptr<Sprite> pause_img = nullptr;
 	std::array<int, 3>		p1combo;
 	std::array<int, 3>		p2combo;
+	std::shared_ptr<Texture> p1_icon_img = nullptr;
+	std::shared_ptr<Texture> p2_icon_img = nullptr;
+	std::shared_ptr<Texture> arrow_icon_img = nullptr;
+	std::unique_ptr<AnimBoard>	p1_icon_board = nullptr;
+	std::unique_ptr<AnimBoard>	p2_icon_board = nullptr;
+	std::unique_ptr<AnimBoard>	arrow_icon_board = nullptr;
 
 
 	//画面描画用テクスチャ
@@ -330,6 +339,7 @@ public:
 
 	//シェーダー
 	std::unique_ptr<YRShader> skinShader = nullptr;
+	std::unique_ptr<YRShader> animShader = nullptr;
 	std::unique_ptr<YRShader> spriteShader = nullptr;
 	std::unique_ptr<YRShader> geoShader = nullptr;
 	std::unique_ptr<YRShader> ParallelToonShader = nullptr;
@@ -346,6 +356,9 @@ public:
 	std::unique_ptr<Player>			player2p = nullptr;
 	std::unique_ptr<GamepadBase>	pad1 = nullptr;
 	std::unique_ptr<GamepadBase>	pad2 = nullptr;
+
+	float							pl1_before_hp = 0.0f;
+	float							pl2_before_hp = 0.0f;
 
 	//ゲームループ制御変数
 	bool			pause = false;						//ポーズ中
@@ -384,6 +397,11 @@ public:
 
 	void				PlayerMoveReq(int req_player_num, YR_Vector3 pos);
 	void				PlayerMoveReq(int req_player_num, YR_Vector3 vec, float speed);
+
+	void				IconDraw(
+							const DirectX::XMMATRIX& view,
+							const DirectX::XMMATRIX& projection,
+							float					elapsed_time);
 
 public:
 	//ゲーム処理関数

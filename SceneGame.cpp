@@ -190,6 +190,11 @@ void SceneGame::LoadData()
 		ToonShader = std::make_unique<YRShader>(ShaderType::TOON);
 		ToonShader->Create("./Data/Shader/ToonShader_vs.cso", "./Data/Shader/ToonShader_ps.cso", "./Data/Shader/ToonShader_gs.cso");
 	}
+	if (animShader == nullptr)
+	{
+		animShader = std::make_unique<YRShader>(ShaderType::ANIM);
+		animShader->Create("./Data/Shader/AnimShader_vs.cso", "./Data/Shader/AnimShader_ps.cso", "./Data/Shader/AnimShader_gs.cso");
+	}
 
 	//コンスタントバッファ作成
 	FRAMEWORK.CreateConstantBuffer(constantBuffer.GetAddressOf(), sizeof(GaussParamManager::GaussBlurParam));
@@ -273,6 +278,10 @@ void SceneGame::LoadData()
 	{
 		HP_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/HP.png", 800.0f, 100.0f);
 	}
+	if (HPDamagebar_img == nullptr)
+	{
+		HPDamagebar_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/HP_Damage.png", 800.0f, 100.0f);
+	}
 	if (win1P_img == nullptr)
 	{
 		win1P_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/1PWIN.png", 960.0f, 384.0f);
@@ -317,6 +326,33 @@ void SceneGame::LoadData()
 	{
 		pause_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/pause.png", 384.0f, 128.0f);
 	}
+	if (p1_icon_img == nullptr)
+	{
+		p1_icon_img = std::make_shared<Texture>(L"./Data/Image/UI/GameScene/icon1.png");
+	}
+	if (p2_icon_img == nullptr)
+	{
+		p2_icon_img = std::make_shared<Texture>(L"./Data/Image/UI/GameScene/icon2.png");
+	}
+	if (arrow_icon_img == nullptr)
+	{
+		arrow_icon_img = std::make_shared<Texture>(L"./Data/Image/UI/GameScene/arrow_icon.png");
+	}
+	if (p1_icon_board == nullptr)
+	{
+		p1_icon_board = std::make_unique<AnimBoard>(p1_icon_img, 1, DirectX::XMFLOAT2(640.0f, 640.0f), DirectX::XMINT2(1, 1), DirectX::XMFLOAT2(640.0f, 640.0f));
+	}
+	if (p2_icon_board == nullptr)
+	{
+		p2_icon_board = std::make_unique<AnimBoard>(p2_icon_img, 1, DirectX::XMFLOAT2(640.0f, 640.0f), DirectX::XMINT2(1, 1), DirectX::XMFLOAT2(640.0f, 640.0f));
+	}
+	if (arrow_icon_board == nullptr)
+	{
+		arrow_icon_board = std::make_unique<AnimBoard>(arrow_icon_img, 1, DirectX::XMFLOAT2(640.0f, 640.0f), DirectX::XMINT2(1, 1), DirectX::XMFLOAT2(640.0f, 640.0f));
+	}
+
+
+
 	if (gaussShader == nullptr)
 	{
 		gaussShader = std::make_unique<YRShader>(ShaderType::GAUSS);
@@ -402,6 +438,7 @@ void SceneGame::UnInit()
 	call_img.reset();
 	effect_img.reset();
 	pause_img.reset();
+	HPDamagebar_img.reset();
 	test = nullptr;
 	geo = nullptr;
 	HP_img = nullptr;
@@ -416,6 +453,7 @@ void SceneGame::UnInit()
 	call_img = nullptr;
 	effect_img = nullptr;
 	pause_img = nullptr;
+	HPDamagebar_img = nullptr;
 
 	//シェーダー解放
 	spriteShader.reset();
@@ -675,7 +713,6 @@ void SceneGame::Update(float elapsed_time)
 			if (start)
 			{
 				//イントロがすべて終わり、カウントも終えゲームが開始された
-
 				if (!end)
 				{
 					//パッド更新
@@ -813,6 +850,11 @@ void SceneGame::Update(float elapsed_time)
 					YRGetEffect().Update();
 					if (end)
 					{
+						/*if (pKeyState.pflg == 1)
+						{
+							pause = !pause;
+						}*/
+
 						//勝敗がついた
 						endtimer += elapsed_time;
 
@@ -851,6 +893,8 @@ void SceneGame::Update(float elapsed_time)
 							player1p->Update(-1.0f, game_speed);
 							player2p->Update(1.0f, game_speed);
 						}
+						//プレイヤーの移動距離制限
+						Limit::Stop(player1p->pos.x, player2p->pos.x);
 					}
 					else
 					{
@@ -898,7 +942,7 @@ void SceneGame::Update(float elapsed_time)
 							break;
 						}
 
-						//プレイヤーの移動距離制限(※要変更)
+						//プレイヤーの移動距離制限
 						if (player1p->act_state != ActState::STATENONE && player2p->act_state != ActState::STATENONE)
 						{
 							Limit::Stop(player1p->pos.x, player2p->pos.x);
@@ -1258,8 +1302,45 @@ void SceneGame::Draw(float elapsed_time)
 
 		HPbar_img->DrawExtendGraph(spriteShader.get(), 75.0f, 75.0f, 925.0f, 225.0f);
 		HPbar_img->DrawExtendGraph(spriteShader.get(), 975.0f, 75.0f, 1825.0f, 225.0f);
+
+		if (player1p->combo_count == 1 && pl1_before_hp != player1p->hp)
+		{
+			PL.Damage_ratio1P = pl1_before_hp / PL.HP_MAX1P * 800.0f;
+		}
+
+		if (player2p->combo_count == 1 && pl2_before_hp != player2p->hp)
+		{
+			PL.Damage_ratio2P = pl2_before_hp / PL.HP_MAX2P * 800.0f;
+		}
+
+		if (player1p->combo_count == 0)
+		{
+			if (PL.Damage_ratio1P >= PL.ratio1P)
+			{
+				PL.Damage_ratio1P -= elapsed_time * 10.0f;
+			}
+		}
+
+		if (player2p->combo_count == 0)
+		{
+			if (PL.Damage_ratio2P >= PL.ratio2P)
+			{
+				PL.Damage_ratio2P -= elapsed_time * 10.0f;
+			}
+		}
+
+
+		//1PのHP
+		HPDamagebar_img->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.Damage_ratio1P, 100.0f);
 		HP_img->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f);
+
+		//2PのHP
+		HPDamagebar_img->DrawRectGraph(spriteShader.get(), 1000.0f, 100.0f, 0.0f, 0.0f, PL.Damage_ratio2P, 100.0f);
 		HP_img->DrawRectGraph(spriteShader.get(), 1000.0f, 100.0f, 0.0f, 0.0f, PL.ratio2P, 100.0f);
+
+		//このフレームでのHPを保存する
+		pl1_before_hp = player1p->hp;
+		pl2_before_hp = player2p->hp;
 
 		//コンボ表示
 
@@ -1358,6 +1439,8 @@ void SceneGame::Draw(float elapsed_time)
 
 		//エフェクト描画
 		YRGetEffect().Draw();
+
+		IconDraw(V, P, elapsed_time);
 
 		/*skin->Render(
 			skinShader.get(), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
@@ -1548,6 +1631,83 @@ void SceneGame::Draw(float elapsed_time)
 	//player2p->TextDraw();
 
 }
+
+
+
+void SceneGame::IconDraw(
+	const DirectX::XMMATRIX& view,
+	const DirectX::XMMATRIX& projection,
+	float					elapsed_time)
+{
+
+	//片方のキャラが画面下に消えた際、アイコンと向いている方向の矢印を描画する
+
+	YR_Vector3 focus = YRCamera.GetFocus();
+
+	if (player2p->pos.y >player1p->pos.y)
+	{
+		float dis =  player2p->pos.y -player1p->pos.y;
+
+		if (dis > 30.0f)
+		{
+			p1_icon_board->Render(
+				animShader.get(),
+				DirectX::XMFLOAT3(player1p->pos.x, focus.y - 10.0f, focus.z),
+				DirectX::XMFLOAT2(1.5f, 1.5f),
+				DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+				0.0f,
+				view,
+				projection,
+				elapsed_time);
+
+			float adjust = 0.0f;
+			adjust = (-player1p->rightOrleft + 1.0f) / 2.0f;
+
+			arrow_icon_board->Render(
+				animShader.get(),
+				DirectX::XMFLOAT3(player1p->pos.x + (3.5f * player1p->rightOrleft), focus.y - 10.0f, focus.z),
+				DirectX::XMFLOAT2(1.0f, 1.0f),
+				DirectX::XMFLOAT3(0.0f, 0.0f, DirectX::XMConvertToRadians(180.0f*adjust)),
+				0.0f,
+				view,
+				projection,
+				elapsed_time);
+		}
+	}
+
+
+	if (player1p->pos.y>player2p->pos.y)
+	{
+		float dis = player1p->pos.y - player2p->pos.y;
+
+		if (dis > 30.0f)
+		{
+			p2_icon_board->Render(
+				animShader.get(),
+				DirectX::XMFLOAT3(player2p->pos.x, focus.y - 10.0f, focus.z),
+				DirectX::XMFLOAT2(1.5f, 1.5f),
+				DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+				0.0f,
+				view,
+				projection,
+				elapsed_time);
+
+			float adjust = 0.0f;
+			adjust = (-player2p->rightOrleft + 1.0f) / 2.0f;
+
+			arrow_icon_board->Render(
+				animShader.get(),
+				DirectX::XMFLOAT3(player2p->pos.x + (3.5f * player2p->rightOrleft), focus.y - 10.0f, focus.z),
+				DirectX::XMFLOAT2(1.0f, 1.0f),
+				DirectX::XMFLOAT3(0.0f, 0.0f, DirectX::XMConvertToRadians(180.0f * adjust)),
+				0.0f,
+				view,
+				projection,
+				elapsed_time);
+		}
+	}
+}
+
 
 
 void SceneGame::UI_Draw()
@@ -1919,6 +2079,10 @@ void SceneGame::PauseUpdate()
 		pause = false;
 	}
 #ifdef EXIST_IMGUI
+	if (pKeyState.pflg == 1)
+	{
+		pause = !pause;
+	}
 	if (Get_Use_ImGui())
 	{
 		player1p->StopHitParamUpdate();
@@ -1938,6 +2102,9 @@ void SceneGame::TrackSet()
 	//相手のステートも送る
 	player1p->rival_state = player2p->act_state;
 	player2p->rival_state = player1p->act_state;
+	//コンボカウントも送る
+	player1p->combo_count_player = player2p->combo_count;
+	player2p->combo_count_player = player1p->combo_count;
 }
 
 

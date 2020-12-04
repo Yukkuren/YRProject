@@ -22,7 +22,6 @@ protected:
 
 	//テクスチャ情報
 	D3D11_TEXTURE2D_DESC	texture2d_desc;
-	
 
 public:
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>		RenderTargetView = nullptr;

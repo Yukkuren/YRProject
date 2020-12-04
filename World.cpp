@@ -36,7 +36,6 @@ YR_Vector3 Limit::Set(YR_Vector3 p1, YR_Vector3 p2, YR_Vector3 start_eye)
 		float correction = p2.x + distance_x;
 		//ÉJÉÅÉâÇÃí≤êÆ
 		camera_pos.x = correction;
-		
 
 		//camera_pos.z = start_eye.z - distance + adjustment_eye;
 		//camera_pos.y = start_eye.y + (distance_x*0.1f) - (adjustment_eye*0.1f);
@@ -46,7 +45,6 @@ YR_Vector3 Limit::Set(YR_Vector3 p1, YR_Vector3 p2, YR_Vector3 start_eye)
 		distance_x = (p2.x - p1.x) / 2;
 		float correction = p1.x + distance_x;
 		camera_pos.x = correction;
-		
 		//camera_pos.z = start_eye.z - distance + adjustment_eye;
 		//camera_pos.y = start_eye.y + (distance_x*0.1f) - (adjustment_eye * 0.1f);
 	}
@@ -56,7 +54,6 @@ YR_Vector3 Limit::Set(YR_Vector3 p1, YR_Vector3 p2, YR_Vector3 start_eye)
 		//float distance = (p2 - p1) / 2;
 		float correction = p1.x;
 		camera_pos.x = correction;
-		
 		//camera_pos.z = start_eye.z + adjustment_eye;
 		camera_pos.y = start_eye.y - (adjustment_eye * 0.1f);
 	}
