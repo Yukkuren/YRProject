@@ -5,6 +5,7 @@
 #include "camera.h"
 #include "Effect.h"
 #include "YRSound.h"
+#include "framework.h"
 
 //------------------------------------------------------
 //				攻撃関数
@@ -559,7 +560,10 @@ void Knight::A_UKyo(float elapsed_time)
 		fream -= elapsed_time;
 	}
 	//重力の逆数を付与する
-	pos.y += gravity * elapsed_time;
+	if (speed.y < 30.0f)
+	{
+		pos.y += gravity * elapsed_time;
+	}
 	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
 	//発生フレームになったら攻撃判定を生成する
 	if (fream < 0.0f)
@@ -569,7 +573,10 @@ void Knight::A_UKyo(float elapsed_time)
 		//前進しないようにする
 		speed_X.Set(0.0f);
 
-		speed_Y.Set(attack_list[now_at_list].advance_speed);
+		if (speed.y < 30.0f)
+		{
+			speed_Y.Set(attack_list[now_at_list].advance_speed);
+		}
 
 		//int attack_num = attack_list[real].now_attack_num;
 		anim_ccodinate = ac_attack[now_at_list].timer;
@@ -857,6 +864,7 @@ void Knight::Slow(float elapsed_time)
 		return;
 	}
 
+	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
 	if (steal_escape > 0.0f && steal_escape < target_max)
 	{
 		steal_escape -= elapsed_time;
@@ -879,6 +887,8 @@ void Knight::Slow(float elapsed_time)
 			{
 				anim->NodeChange(model_motion.model_L[scastI(attack_list[scastI(attack_state)].real_attack)], scastI(AnimAtk::LATER));
 			}
+			//掴み抜けされたらはじかれるようにする
+			speed.x = (-300.0f * rightOrleft);
 			steal_escape = non_target;
 			//行動終了フラグをオンに
 			finish = true;
@@ -887,9 +897,30 @@ void Knight::Slow(float elapsed_time)
 		if (steal_escape < 0.0f)
 		{
 			steal_escape = non_target;
+			int steal = scastI(AttackState::STEAL);
+
+			if (rightOrleft > 0)
+			{
+				if (pad->x_input[scastI(PAD::STICK_L)] > 0)
+				{
+					FRAMEWORK.scenegame.PlayerMoveReq(now_player, pos);
+					pos = tracking.rival_Pos;
+					rightOrleft = -rightOrleft;
+				}
+			}
+			else
+			{
+				if (pad->x_input[scastI(PAD::STICK_R)] > 0)
+				{
+					FRAMEWORK.scenegame.PlayerMoveReq(now_player, pos);
+					pos = tracking.rival_Pos;
+					rightOrleft = -rightOrleft;
+				}
+			}
 			int slow = scastI(AttackState::SLOW);
 			//アニメーション速度を指定
 			anim_ccodinate = ac_attack[slow].fream;
+
 			//描画をセット
 			if (rightOrleft > 0)
 			{
@@ -914,13 +945,11 @@ void Knight::Slow(float elapsed_time)
 		hit_result = HitResult::NOT_OCCURRENCE;
 		fream -= elapsed_time;
 	}
-	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
 	//発生フレームになったら攻撃判定を生成する
 	if (fream < 0.0f)
 	{
 		//攻撃発生の結果を保存する
 		hit_result = HitResult::NONE;
-		//前進しないようにする
 		speed_X.Set(attack_list[now_at_list].advance_speed);
 
 		//int attack_num = attack_list[real].now_attack_num;
@@ -1609,7 +1638,7 @@ void Knight::Thu_Lhurf(float elapsed_time)
 		fream = non_target;
 
 		GetSound().SESinglePlay(SEKind::TORNADO);
-		speed.x = attack_list[now_at_list].advance_speed * rightOrleft;
+		//speed.x = attack_list[now_at_list].advance_speed * rightOrleft;
 
 		//持続時間を設定
 		timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
@@ -1620,9 +1649,6 @@ void Knight::Thu_Lhurf(float elapsed_time)
 	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
 	if (!atk.empty())
 	{
-		//攻撃判定時前進させて回転させる
-		angle.y += elapsed_time * (50.0f * rightOrleft);
-
 		for (auto& a : atk)
 		{
 			if (knock)
@@ -1636,6 +1662,8 @@ void Knight::Thu_Lhurf(float elapsed_time)
 				a.parameter.knockback = 0.0f;
 				knock = true;
 				a.knock_start = false;
+				//持続時間再設定
+				timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
 			}
 		}
 	}
@@ -1644,6 +1672,18 @@ void Knight::Thu_Lhurf(float elapsed_time)
 	{
 		//持続フレームを減らしていく
 		timer -= elapsed_time;
+		if (atk.empty())
+		{
+			//当たるかガードされたら後退させながら回転させる
+			speed.x = -attack_list[now_at_list].advance_speed * rightOrleft;
+			angle.y -= elapsed_time * (50.0f * rightOrleft);
+		}
+		else
+		{
+			//攻撃判定時前進させて回転させる
+			speed.x = attack_list[now_at_list].advance_speed * rightOrleft;
+			angle.y += elapsed_time * (50.0f * rightOrleft);
+		}
 	}
 
 	//if (atk.empty())
@@ -1804,7 +1844,7 @@ void Knight::TrackDash(float decision, float elapsed_time)
 		pos.y = tracking.rival_Pos.y;
 		//X座標も追撃可能な位置に固定する
 		pos.x = tracking.rival_Pos.x + (track_adjust_x * (-decision));
-		//上方向への速度を入力する(ちょっとホップさせる)
+		//上方向への速度を入力する
 		speed_X.Set(0.0f);
 		//speed_Y.Set(attack_list[now_at_list].advance_speed);
 		speed.y = attack_list[now_at_list].advance_speed;
@@ -1854,6 +1894,26 @@ void Knight::TrackDash(float decision, float elapsed_time)
 		jumpflag = true;
 		max_jump_flag = true;
 	}
+	else
+	{
+		if (timer > 0.0f && timer < target_max)
+		{
+			//最低保障として1フレームは持たせる
+			if (timer < attack_list[now_at_list].attack_single[0].parameter[0].timer - elapsed_time)
+			{
+				YR_Vector3 dis = tracking.rival_Pos - pos;
+				if (dis.Length() < attack_list[now_at_list].attack_single[0].parameter[0].size.x)
+				{
+					//当たらなかった場合、一定の距離以上に近づいていれば強制的に終了させる
+
+					//攻撃をすべて消去する
+					AllAttackClear();
+					//タイマーをマイナスにする
+					timer = -0.1f;
+				}
+			}
+		}
+	}
 
 
 	if (timer > 0.0f && timer < target_max)
@@ -1885,6 +1945,11 @@ void Knight::TrackDash(float decision, float elapsed_time)
 			//上方向への速度を入力する(ちょっとホップさせる)
 			speed_X.Set(0.0f);
 			speed.y = 0.0f;
+			if (plusVec.y > 0.5f)
+			{
+				//上に向かって飛んでいる場合は速度を入れる
+				speed.y = attack_list[now_at_list].advance_speed;
+			}
 			//攻撃番号を初期化
 			attack_list[now_at_list].now_attack_num = 0;
 			//後隙を設定
@@ -1915,9 +1980,12 @@ void Knight::TrackDash(float decision, float elapsed_time)
 			}
 			//ホーミングダッシュ回数を減らす
 			trackgauge--;
-			//ジャンプ状態にする
-			jumpflag = true;
-			max_jump_flag = true;
+			if (pos.y > POS_Y)
+			{
+				//ジャンプ状態にする
+				jumpflag = true;
+				max_jump_flag = true;
+			}
 		}
 	}
 
@@ -2107,14 +2175,22 @@ void Knight::SpecialAttack(float elapsed_time)
 				knock = true;
 			}
 		}
-		//pos.x += elapsed_time * Getapply(50.0f);
-		pos.x += elapsed_time * Getapply(150.0f);
 	}
 
 	if (timer > 0.0f && timer < target_max)
 	{
 		//持続フレームを減らしていく
 		timer -= elapsed_time;
+		if (hit_result != HitResult::GUARD)
+		{
+			//攻撃中は前に移動させる
+			pos.x += elapsed_time * Getapply(150.0f);
+		}
+		else
+		{
+			//無敵を消す
+			HitBoxTransition(HitBoxState::NOGUARD);
+		}
 	}
 
 	//if (atk.empty())

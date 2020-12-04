@@ -43,7 +43,6 @@ void Knight::Init(YR_Vector3 InitPos)
 	ground = true;
 	jumpflag = false;
 	drawset = false;
-	specialfream = 0.0f;
 	fast = false;
 	finish = false;
 	stop_pos = { 0.0f,0.0f };
@@ -102,6 +101,7 @@ void Knight::Init(YR_Vector3 InitPos)
 	eye_plus = YR_Vector3(0.0f, 0.0f, -10.0f);
 	focus_plus = YR_Vector3(0.0f, 0.0f, 0.0f);
 	face_mouth_num = FaceMouth_Num::NORMAL_MOUSE;
+	passive_timer = 0.0f;
 	ChangeFace(FaceAnim::NORMAL_LIP_SYNC);
 
 	text_on = false;
@@ -582,6 +582,7 @@ void Knight::Update(float decision, float elapsed_time)
 
 	hit[scastI(KNIGHTHIT::BODY)].Update(pos,elapsed_time);
 	hit[scastI(KNIGHTHIT::LEG)].Update(pos, elapsed_time);*/
+
 
 	EndAttackErase();			//攻撃判定の消去
 
@@ -3175,6 +3176,8 @@ void Knight::KnockUpdate(float elapsed_time)
 			//何も入力していない場合は自動的に受け身を取る
 			speed.x = Getapply(-passive_speed.x);
 			speed.y = passive_speed.y;
+			//受け身時間を入力
+			passive_timer = passive_max_time;
 			act_state = ActState::PASSIVE;
 			GetSound().SESinglePlay(SEKind::PASSIVE);
 			//描画をセット
@@ -3264,19 +3267,27 @@ void Knight::KnockUpdate(float elapsed_time)
 				{
 					speed.x = passive_speed.x;
 					speed.y = passive_speed.y;
+					//受け身時間を入力
+					passive_timer = passive_max_time;
 				}
 				if (pad->x_input[scastI(PAD::STICK_L)] > 0)
 				{
 					speed.x = -passive_speed.x;
 					speed.y = passive_speed.y;
+					//受け身時間を入力
+					passive_timer = passive_max_time;
 				}
 				if (pad->x_input[scastI(PAD::STICK_U)] > 0)
 				{
 					speed.y = passive_speed.y;
+					//受け身時間を入力
+					passive_timer = passive_max_time;
 				}
 				if (pad->x_input[scastI(PAD::STICK_D)] > 0)
 				{
 					speed.y = -passive_speed.y;
+					//受け身時間を入力
+					passive_timer = passive_max_time;
 				}
 
 				if (pad->x_input[scastI(PAD::STICK_R)] == 0 && pad->x_input[scastI(PAD::STICK_L)] == 0 &&
@@ -3284,6 +3295,8 @@ void Knight::KnockUpdate(float elapsed_time)
 				{
 					speed.x = Getapply(-passive_speed.x);
 					speed.y = passive_speed.y;
+					//受け身時間を入力
+					passive_timer = passive_max_time;
 				}
 			}
 
@@ -3466,6 +3479,8 @@ void Knight::SlamUpdate(float elapsed_time)
 				//何も入力していない場合は自動的に受け身を取る
 				speed.x = Getapply(-passive_speed.x);
 				speed.y = passive_speed.y;
+				//受け身時間を入力
+				passive_timer = passive_max_time;
 				act_state = ActState::PASSIVE;
 				GetSound().SESinglePlay(SEKind::PASSIVE);
 				//描画をセット
@@ -3985,6 +4000,8 @@ void Knight::DownUpdate()
 		{
 			speed.x = passive_speed.x;
 			speed.y = passive_speed.y;
+			//受け身時間を入力
+			passive_timer = passive_max_time;
 			act_state = ActState::PASSIVE;
 			GetSound().SESinglePlay(SEKind::PASSIVE);
 			//描画をセット
@@ -4002,6 +4019,8 @@ void Knight::DownUpdate()
 		{
 			speed.x = -passive_speed.x;
 			speed.y = passive_speed.y;
+			//受け身時間を入力
+			passive_timer = passive_max_time;
 			act_state = ActState::PASSIVE;
 			GetSound().SESinglePlay(SEKind::PASSIVE);
 			//描画をセット
@@ -4036,16 +4055,22 @@ void Knight::DownUpdate()
 			{
 				speed.x = passive_speed.x;
 				speed.y = passive_speed.y;
+				//受け身時間を入力
+				passive_timer = passive_max_time;
 			}
 			if (pad->x_input[scastI(PAD::STICK_L)] > 0)
 			{
 				speed.x = -passive_speed.x;
 				speed.y = passive_speed.y;
+				//受け身時間を入力
+				passive_timer = passive_max_time;
 			}
 			if (pad->x_input[scastI(PAD::STICK_R)] == 0 && pad->x_input[scastI(PAD::STICK_L)] == 0)
 			{
 				speed.x = Getapply(-passive_speed.x);
 				speed.y = passive_speed.y;
+				//受け身時間を入力
+				passive_timer = passive_max_time;
 			}
 		}
 		if (pad->x_input[scastI(PAD::STICK_U)] > 0)
@@ -4086,18 +4111,20 @@ void Knight::PassiveUpdate(float elapsed_time)
 	if (rightOrleft > 0)
 	{
 		//右向き
-		angle.z += 20.0f * elapsed_time;
+		angle.z += 30.0f * elapsed_time;
 	}
 	if (rightOrleft < 0)
 	{
 		//左向き
-		angle.z -= 20.0f * elapsed_time;
+		angle.z -= 30.0f * elapsed_time;
 	}
 
 	if (pos.y < POS_Y)
 	{
 		pos.y = POS_Y;
 	}
+
+	passive_timer -= elapsed_time;
 
 	if (speed.x > 0)
 	{
@@ -4131,11 +4158,12 @@ void Knight::PassiveUpdate(float elapsed_time)
 			speed.y = 0.0f;
 		}
 	}
-	if (speed.x == 0.0f && speed.y == 0)
+	if (passive_timer < 0.0f)
 	{
 		HitBoxTransition(HitBoxState::NOGUARD);
 		ChangeFace(FaceAnim::NORMAL);
 		angle.z = 0.0f;
+		passive_timer = 0.0f;
 		if (ground)
 		{
 			ChangeFace(FaceAnim::NORMAL);
@@ -4196,6 +4224,8 @@ void Knight::StateNone(float elapsed_time)
 
 			speed.x = Getapply(-passive_speed.x);
 			speed.y = passive_speed.y;
+			//受け身時間を入力
+			passive_timer = passive_max_time;
 			return;
 		}
 		steal_escape -= elapsed_time;

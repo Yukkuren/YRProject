@@ -2180,6 +2180,46 @@ void SceneGame::ComboImageSet()
 //-------------------------------------
 
 
+
+void SceneGame::PlayerMoveReq(int req_player_num, YR_Vector3 pos)
+{
+	//プレイヤークラスから呼び出す関数
+	//リクエストしたプレイヤー以外のプレイヤーの位置を動かす
+	switch (req_player_num)
+	{
+	case 1:
+		player2p->pos = pos;
+		break;
+	case 2:
+		player1p->pos = pos;
+		break;
+	default:
+		break;
+	}
+}
+
+
+void SceneGame::PlayerMoveReq(int req_player_num, YR_Vector3 vec, float speed)
+{
+	//プレイヤークラスから呼び出す関数
+	//リクエストしたプレイヤー以外のプレイヤーに速度を送る
+	YR_Vector3 plus_speed = vec * speed;
+	switch (req_player_num)
+	{
+	case 1:
+		player2p->speed = plus_speed;
+		break;
+	case 2:
+		player1p->speed = plus_speed;
+		break;
+	default:
+		break;
+	}
+}
+
+
+
+
 void SceneGame::SetRenderTexture()
 {
 	FRAMEWORK.framebuffer.SetRenderTexture(color_texture->GetRenderTargetView());

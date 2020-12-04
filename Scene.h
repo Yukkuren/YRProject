@@ -382,6 +382,9 @@ public:
 	void				UI_Draw();
 	void				SetUITexture();
 
+	void				PlayerMoveReq(int req_player_num, YR_Vector3 pos);
+	void				PlayerMoveReq(int req_player_num, YR_Vector3 vec, float speed);
+
 public:
 	//ゲーム処理関数
 	void	SetPlayerCharacter(std::unique_ptr<Player>* player, int select);	//selectによってプレイヤーを生成する

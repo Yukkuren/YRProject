@@ -27,6 +27,7 @@ constexpr float draw_guarf_effect_add_pos_x = 3.0f;		//ƒK[ƒhƒGƒtƒFƒNƒg•`‰æ‚Ìˆ
 constexpr float Reflection_range_min = 100.0f;			//‚±‚Ì”’lˆÈã‚Ì‚Á”ò‚Ñ‚È‚ç•Ç‚Å’µ‚Ë•Ô‚é
 constexpr float Reflection_attenuation_factor = 0.8f;	//•Ç”½Ë‚ÌŒ¸Š—¦
 constexpr float cut_in_max_time = 0.5f;					//ƒJƒbƒgƒCƒ“•\¦ŠÔ
+constexpr float passive_max_time = 0.2f;				//ó‚¯g’†–³“GŠÔ
 
 //--------------------------------------
 //	**ƒLƒƒƒ‰–¼İ’è
@@ -199,8 +200,8 @@ struct AttackSingle
 {
 public:
 	std::vector<AttackParameter>	parameter;		//“à•”ƒpƒ‰ƒ[ƒ^[
-	int								quantity;		//ˆê“x‚ÌUŒ‚‚Å¶¬‚·‚é“–‚½‚è”»’è‚Ì”—Ê
-	float							fream;			//”­¶ƒtƒŒ[ƒ€
+	int								quantity = 1;	//ˆê“x‚ÌUŒ‚‚Å¶¬‚·‚é“–‚½‚è”»’è‚Ì”—Ê
+	float							fream = 0.0f;	//”­¶ƒtƒŒ[ƒ€
 };
 
 
@@ -300,9 +301,9 @@ public:
 struct Animation_Coordinate
 {
 public:
-	float							fream;			//”­¶
-	float							timer;			//‘±
-	float							later;			//ŒãŒ„
+	float							fream = 1.0f;			//”­¶
+	float							timer = 1.0f;			//‘±
+	float							later = 1.0f;			//ŒãŒ„
 };
 
 
@@ -313,8 +314,8 @@ public:
 struct ComboList
 {
 public:
-	std::vector<AttackState>		combolist;	//ƒRƒ“ƒ{ƒŠƒXƒg
-	int								now_pos;	//Œ»İ‚ÌƒRƒ“ƒ{‚ÌˆÊ’u
+	std::vector<AttackState>		combolist;		//ƒRƒ“ƒ{ƒŠƒXƒg
+	int								now_pos = 0;	//Œ»İ‚ÌƒRƒ“ƒ{‚ÌˆÊ’u
 };
 
 
@@ -325,48 +326,48 @@ protected:
 public:
 	//ƒQ[ƒ€“àˆ——p•Ï”
 	float				hp = 0;
-	int					jumpcount;		//ƒWƒƒƒ“ƒv‚Ì‰ñ”•Û
-	int					air_dash_count;	//‹ó’†ƒ_ƒbƒVƒ…‚Ì‰ñ”•Û
-	bool				jumpflag;		//ƒWƒƒƒ“ƒv‚µ‚Ä‚¢‚é
-	bool				max_jump_flag;	//ƒWƒƒƒ“ƒv‚ÌÅ‘å’l‚ğ’´‚¦‚½
-	float				jump_can_timer;	//ƒWƒƒƒ“ƒv‰Â”\‚É‚È‚é‚Ü‚Å‚ÌŠÔ‚ğ‘ª’è‚·‚é(0.0ˆÈ‰º‚É‚È‚ê‚ÎƒWƒƒƒ“ƒv‰Â”\)
-	bool				ground;			//TRUE‚È‚ç’n–Ê‚É‚Â‚¢‚Ä‚¢‚é
-	bool				drawset;		//“Á’è‚Ì‰æ‘œ‚ğ•`‰æ‚µ‚½‚Æ‚«‚Étrue‚É‚µ‚Ä’Êí‚Ì‰æ‘œ‚ğ•`‰æ‚µ‚È‚¢
-	bool				attack;			//TRUE‚È‚çUŒ‚’†
-	ActState			act_state;		//¡‚Ìs“®B‚Ü‚½s“®•s‰Â‚È‚ç‚Ç‚¤‚¢‚¤ó‘Ô‚©
-	ActState			rival_state;	//‘Šè‚Ì¡‚Ìs“®BSceneGame‚Å‘ã“ü‚·‚é
-	AttackState			attack_state;	//¡‰½‚ÌUŒ‚‚ğ‚µ‚Ä‚¢‚é‚©
-	AttackState			last_attack;	//ÅŒã‚É‚È‚ñ‚ÌUŒ‚‚ğ‚µ‚½‚©
-	AirDashState		air_dash_state;	//‹ó’†ƒ_ƒbƒVƒ…ƒXƒe[ƒg
-	float				rightOrleft;	//‰EŒü‚«‚È‚ç*1¶Œü‚«‚È‚ç*-1
-	bool				moveflag;		//TRUE‚È‚ç“®‚¢‚Ä‚¢‚é
-	float				fream;			//”­¶ƒtƒŒ[ƒ€
-	float				later;			//ŒãŒ„ƒtƒŒ[ƒ€(‰Šú’l‚Énon_target‚ğ“ü‚ê‚Ä‚¨‚­)
-	float				timer;			//‘±ƒtƒŒ[ƒ€(‰Šú’l‚Énon_target‚ğ“ü‚ê‚Ä‚¨‚­)
-	float				knocktimer;		//‹ò‚ç‚¢ŠÔ
-	float				gravity;		//d—Í’l
-	float				down_force;		//ƒWƒƒƒ“ƒv‚Éd—Í‚Æ‚Í•Ê‚É“­‚­‰º•ûŒü‚Ì—Í
-	float				fall_force;		//‹ó’†ƒ_ƒEƒ“’†‚Éd—Í‚Æ‚Í•Ê‚É“­‚­‰º•ûŒü‚Ì—Í
-	float				specialfream;	//ãƒRƒ“ƒ{“™‚ÅƒtƒŒ[ƒ€‚ğŒ¸‚ç‚·Û‚Ì”’l
-	bool				finish;			//s“®‚ªI—¹‚µ‚½‚Æ‚«‚Ì‚İtrue
-	bool				step;			//ƒXƒeƒbƒv’†‚Ítrue(‘¼‚Ìˆ—‚ğs‚í‚È‚¢)
-	bool				hightrigger;	//ƒnƒCƒWƒƒƒ“ƒvtrueA’Êífalse
-	int					trackgauge;		//’Ç”öƒ_ƒbƒVƒ…‚Ìc‚è‰ñ”
-	float				gauge;			//ƒQ[ƒW
-	int					power;			//ƒQ[ƒW‚ªÅ‘å‚É‚È‚é‚Æ1‘‚¦‚éB“Áê‹Z‚Í‚±‚Á‚¿‚ğÁ”ï‚·‚é
-	float				steal_escape;	//“Š‚°”²‚¯‰Â”\ŠÔ
-	int					combo_count;	//ƒRƒ“ƒ{ƒJƒEƒ“ƒg
-	int					now_player;		//‚Ç‚ÌƒvƒŒƒCƒ„[‚ª‚±‚ÌƒLƒƒƒ‰‚ğ‘€ì‚µ‚Ä‚¢‚é‚©(1:1PA2:2P)
-	float				anim_ccodinate;	//ƒAƒjƒ[ƒVƒ‡ƒ“‘¬“x‚ğ’²®‚·‚é•Ï”
-	int					stop_state;		//ƒqƒbƒgƒXƒgƒbƒv’†‚Ìˆ—‚Åg—p
-	//bool				hit_state_n_set;//“–‚½‚è”»’è‚Ìƒpƒ‰ƒ[ƒ^‚ğƒZƒbƒg‚µ‚½‚­‚È‚¢‚Æ‚«‚Ítrue
-	float				cut_in_timer;	//ƒJƒbƒgƒCƒ“‚Ì•\¦ŠÔ
-	DirectX::XMFLOAT4	light_direction;//ƒ‰ƒCƒg‚Ìi‚Ş•ûŒü
-	HitResult			hit_result;		//UŒ‚‚ª“–‚½‚Á‚½ê‡‚ÌŒ‹‰Ê‚ğ•Û‘¶‚·‚é
-	HitResult			atk_result;		//UŒ‚Œˆ’è‚ÉƒLƒƒƒ“ƒZƒ‹—p‚ÌğŒ‚ğ•Û‘¶‚·‚é‚½‚ß‚Ì•Ï”
-	std::vector<AttackBox> atk;			//UŒ‚“–‚½‚è”»’è
-	std::vector<AttackBox> projectile_atk;//”ò‚Ñ“¹‹ï“–‚½‚è”»’è
-	std::vector<HitBox>	hit;			//“–‚½‚è”»’è
+	int					jumpcount = 2;							//ƒWƒƒƒ“ƒv‚Ì‰ñ”•Û
+	int					air_dash_count = 1;						//‹ó’†ƒ_ƒbƒVƒ…‚Ì‰ñ”•Û
+	bool				jumpflag = false;						//ƒWƒƒƒ“ƒv‚µ‚Ä‚¢‚é
+	bool				max_jump_flag = false;					//ƒWƒƒƒ“ƒv‚ÌÅ‘å’l‚ğ’´‚¦‚½
+	float				jump_can_timer = 0.0f;					//ƒWƒƒƒ“ƒv‰Â”\‚É‚È‚é‚Ü‚Å‚ÌŠÔ‚ğ‘ª’è‚·‚é(0.0ˆÈ‰º‚É‚È‚ê‚ÎƒWƒƒƒ“ƒv‰Â”\)
+	bool				ground = true;							//TRUE‚È‚ç’n–Ê‚É‚Â‚¢‚Ä‚¢‚é
+	bool				drawset = false;						//“Á’è‚Ì‰æ‘œ‚ğ•`‰æ‚µ‚½‚Æ‚«‚Étrue‚É‚µ‚Ä’Êí‚Ì‰æ‘œ‚ğ•`‰æ‚µ‚È‚¢
+	bool				attack = false;							//TRUE‚È‚çUŒ‚’†
+	ActState			act_state = ActState::NONE;				//¡‚Ìs“®B‚Ü‚½s“®•s‰Â‚È‚ç‚Ç‚¤‚¢‚¤ó‘Ô‚©
+	ActState			rival_state = ActState::NONE;			//‘Šè‚Ì¡‚Ìs“®BSceneGame‚Å‘ã“ü‚·‚é
+	AttackState			attack_state = AttackState::NONE;		//¡‰½‚ÌUŒ‚‚ğ‚µ‚Ä‚¢‚é‚©
+	AttackState			last_attack = AttackState::NONE;		//ÅŒã‚É‚È‚ñ‚ÌUŒ‚‚ğ‚µ‚½‚©
+	AirDashState		air_dash_state = AirDashState::NONE;	//‹ó’†ƒ_ƒbƒVƒ…ƒXƒe[ƒg
+	float				rightOrleft = 1.0f;						//‰EŒü‚«‚È‚ç*1¶Œü‚«‚È‚ç*-1
+	bool				moveflag = false;						//TRUE‚È‚ç“®‚¢‚Ä‚¢‚é
+	float				fream = non_target;						//”­¶ƒtƒŒ[ƒ€
+	float				later = non_target;						//ŒãŒ„ƒtƒŒ[ƒ€(‰Šú’l‚Énon_target‚ğ“ü‚ê‚Ä‚¨‚­)
+	float				timer = non_target;						//‘±ƒtƒŒ[ƒ€(‰Šú’l‚Énon_target‚ğ“ü‚ê‚Ä‚¨‚­)
+	float				knocktimer = 0.0f;						//‹ò‚ç‚¢ŠÔ
+	float				gravity = 0.0f;							//d—Í’l
+	float				down_force = 0.0f;						//ƒWƒƒƒ“ƒv‚Éd—Í‚Æ‚Í•Ê‚É“­‚­‰º•ûŒü‚Ì—Í
+	float				fall_force = 0.0f;						//‹ó’†ƒ_ƒEƒ“’†‚Éd—Í‚Æ‚Í•Ê‚É“­‚­‰º•ûŒü‚Ì—Í
+	bool				finish = false;							//s“®‚ªI—¹‚µ‚½‚Æ‚«‚Ì‚İtrue
+	bool				step = false;							//ƒXƒeƒbƒv’†‚Ítrue(‘¼‚Ìˆ—‚ğs‚í‚È‚¢)
+	bool				hightrigger = false;					//ƒnƒCƒWƒƒƒ“ƒvtrueA’Êífalse
+	int					trackgauge = 2;							//’Ç”öƒ_ƒbƒVƒ…‚Ìc‚è‰ñ”
+	float				gauge = 0.0f;							//ƒQ[ƒW
+	int					power = 1;								//ƒQ[ƒW‚ªÅ‘å‚É‚È‚é‚Æ1‘‚¦‚éB“Áê‹Z‚Í‚±‚Á‚¿‚ğÁ”ï‚·‚é
+	float				steal_escape = 0.0f;					//“Š‚°”²‚¯‰Â”\ŠÔ
+	int					combo_count = 0;						//ƒRƒ“ƒ{ƒJƒEƒ“ƒg
+	int					now_player = 0;							//‚Ç‚ÌƒvƒŒƒCƒ„[‚ª‚±‚ÌƒLƒƒƒ‰‚ğ‘€ì‚µ‚Ä‚¢‚é‚©(1:1PA2:2P)
+	float				anim_ccodinate = 1.0f;					//ƒAƒjƒ[ƒVƒ‡ƒ“‘¬“x‚ğ’²®‚·‚é•Ï”
+	int					stop_state = 0;							//ƒqƒbƒgƒXƒgƒbƒv’†‚Ìˆ—‚Åg—p
+	float				cut_in_timer = 0.0f;					//ƒJƒbƒgƒCƒ“‚Ì•\¦ŠÔ
+	float				passive_timer = 0.0f;					//ó‚¯g’†‚Ì–³“GŠÔ‘ª’è•Ï”
+	DirectX::XMFLOAT4	light_direction =
+		DirectX::XMFLOAT4(-1.0f, -0.1, 1.0f, 0.0f);				//ƒ‰ƒCƒg‚Ìi‚Ş•ûŒü
+	HitResult			hit_result = HitResult::NOT_OCCURRENCE;	//UŒ‚‚ª“–‚½‚Á‚½ê‡‚ÌŒ‹‰Ê‚ğ•Û‘¶‚·‚é
+	HitResult			atk_result = HitResult::HIT;			//UŒ‚Œˆ’è‚ÉƒLƒƒƒ“ƒZƒ‹—p‚ÌğŒ‚ğ•Û‘¶‚·‚é‚½‚ß‚Ì•Ï”
+	std::vector<AttackBox> atk;									//UŒ‚“–‚½‚è”»’è
+	std::vector<AttackBox> projectile_atk;						//”ò‚Ñ“¹‹ï“–‚½‚è”»’è
+	std::vector<HitBox>	hit;									//“–‚½‚è”»’è
 
 	std::array<Animation_Coordinate, scastI(AttackState::ATTACK_END)>	ac_attack;	//UŒ‚‚²‚Æ‚ÌƒAƒjƒ[ƒVƒ‡ƒ“’²®’l
 	std::array<Animation_Coordinate, scastI(ActState::ACT_END)>			ac_act;		//s“®‚²‚Æ‚ÌƒAƒjƒ[ƒVƒ‡ƒ“’²®’l
@@ -386,17 +387,17 @@ public:
 	//std::unique_ptr<Skinned_mesh>	base = nullptr;
 public:
 	//À•WAƒ‚ƒfƒ‹•`‰æ—p•Ï”
-	YR_Vector3		pos;
-	YR_Vector3		scale;
-	YR_Vector3		angle;
-	YR_Vector3		speed;
-	YR_Vector3		stop_pos;
+	YR_Vector3		pos = { 0.0f,0.0f,0.0f };
+	YR_Vector3		scale = { 1.0f,1.0f,1.0f };
+	YR_Vector3		angle = { 0.0f,0.0f,0.0f };
+	YR_Vector3		speed = { 0.0f,0.0f,0.0f };
+	YR_Vector3		stop_pos = { 0.0f,0.0f,0.0f };
 	Tracking		tracking;
 	Speed			speed_X;
 	Speed			speed_Y;
 	std::unique_ptr<GamepadBase> pad;
 
-	int				chara_color;		//ƒLƒƒƒ‰‚ÌƒJƒ‰[”Ô†
+	int				chara_color = 0;		//ƒLƒƒƒ‰‚ÌƒJƒ‰[”Ô†
 
 
 public:
