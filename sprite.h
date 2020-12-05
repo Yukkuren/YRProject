@@ -495,6 +495,31 @@ public:
 		render(shader, x, y, width, height, sx, sy, sw, sh, 0.0f, color.x, color.y, color.z, color.w,mask);
 	}
 
+	void DrawExtendSetGraph(YRShader* shader, float x, float y, float x2, float y2, float sx, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,1.0f })
+	{
+		float width = x2 - x;
+		float height = y2 - y;
+		render(shader, x, y, width, height, sx, sy, sw, sh, 0.0f, color.x, color.y, color.z, color.w, mask);
+	}
+
+
+	void DrawExtendAnimGraph(YRShader* shader, float x, float y, float x2, float y2, float speed, float elapsed_time, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,1.0f })
+	{
+		sx += (speed * elapsed_time);
+		float width = x2 - x;
+		float height = y2 - y;
+		if (sx < -sw)
+		{
+			sx = 0.0f;
+			render(shader, x - (sw / 2.0f), 100.0f - (sh / 2.0f), sw, sh, sx, sy, sw, sh, 0.0f, 1, 1, 1, 1, mask);
+		}
+		if (sx > sw)
+		{
+			sx = 0.0f;
+		}
+		render(shader, x, y, width, height, sx, sy, sw + speed, sh, 0.0f, color.x, color.y, color.z, color.w, mask);
+	}
+
 	Sprite();
 	Sprite(const wchar_t* wchar/*Texture file name*/);
 	Sprite(const wchar_t* wchar, float sw, float sh);
@@ -510,8 +535,6 @@ public:
 		int max_num = 0);
 	void Init(const wchar_t* whar);
 	~Sprite();
-	
-	
 };
 
 namespace TextureALL

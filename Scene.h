@@ -306,7 +306,8 @@ public:
 	std::unique_ptr<Sprite> HPbar_img = nullptr;
 	std::unique_ptr<Sprite> HPDamagebar_img = nullptr;
 	std::unique_ptr<Sprite> KO_img = nullptr;
-	std::unique_ptr<Sprite> gauge_img = nullptr;
+	std::unique_ptr<Sprite> gauge_img_1p = nullptr;
+	std::unique_ptr<Sprite> gauge_img_2p = nullptr;
 	std::unique_ptr<Sprite> gaugecase_img = nullptr;
 	std::unique_ptr<Sprite> font_img = nullptr;
 	std::unique_ptr<Sprite> call_img = nullptr;
@@ -320,6 +321,12 @@ public:
 	std::unique_ptr<AnimBoard>	p1_icon_board = nullptr;
 	std::unique_ptr<AnimBoard>	p2_icon_board = nullptr;
 	std::unique_ptr<AnimBoard>	arrow_icon_board = nullptr;
+
+	std::unique_ptr<Sprite> gauge_img = nullptr;
+	std::unique_ptr<Sprite> gauge_case_img = nullptr;
+	std::unique_ptr<Sprite> gauge_mask = nullptr;
+	std::unique_ptr<Sprite> gauge_case_mask = nullptr;
+	std::unique_ptr<Sprite> gauge_anim = nullptr;
 
 
 	//画面描画用テクスチャ
@@ -336,6 +343,7 @@ public:
 
 	//サンプラー
 	std::shared_ptr<Sampler> sampler_clamp = nullptr;
+	std::shared_ptr<Sampler> sampler_wrap = nullptr;
 
 	//シェーダー
 	std::unique_ptr<YRShader> skinShader = nullptr;
@@ -392,7 +400,7 @@ public:
 	void				ScoreImageSet();
 
 	void				Control2PState(float elapsed_time);
-	void				UI_Draw();
+	void				UI_Draw(float elapsed_time);
 	void				SetUITexture();
 
 	void				PlayerMoveReq(int req_player_num, YR_Vector3 pos);

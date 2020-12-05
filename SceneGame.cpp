@@ -267,6 +267,10 @@ void SceneGame::LoadData()
 	{
 		sampler_clamp = std::make_shared<Sampler>(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_CLAMP);
 	}
+	if (sampler_wrap == nullptr)
+	{
+		sampler_wrap = std::make_shared<Sampler>(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP);
+	}
 
 
 	//画像のロード
@@ -302,9 +306,13 @@ void SceneGame::LoadData()
 	{
 		KO_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/KO.png", 640.0f, 384.0f);
 	}
-	if (gauge_img == nullptr)
+	if (gauge_img_1p == nullptr)
 	{
-		gauge_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gauge.png", 640.0f, 64.0f);
+		gauge_img_1p = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gauge.png", 640.0f, 64.0f);
+	}
+	if (gauge_img_2p == nullptr)
+	{
+		gauge_img_2p = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gauge.png", 640.0f, 64.0f);
 	}
 	if (gaugecase_img == nullptr)
 	{
@@ -351,6 +359,26 @@ void SceneGame::LoadData()
 		arrow_icon_board = std::make_unique<AnimBoard>(arrow_icon_img, 1, DirectX::XMFLOAT2(640.0f, 640.0f), DirectX::XMINT2(1, 1), DirectX::XMFLOAT2(640.0f, 640.0f));
 	}
 
+	if (gauge_img == nullptr)
+	{
+		gauge_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gauge_img.png", 640.0f, 64.0f);
+	}
+	if (gauge_mask == nullptr)
+	{
+		gauge_mask = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gauge_mask.png", 640.0f, 64.0f);
+	}
+	if (gauge_anim == nullptr)
+	{
+		gauge_anim = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gauge_anim.png", 640.0f, 64.0f);
+	}
+	if (gauge_case_img == nullptr)
+	{
+		gauge_case_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gauge_case_img.png", 704.0f, 128.0f);
+	}
+	if (gauge_case_mask == nullptr)
+	{
+		gauge_case_mask = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gauge_case_mask.png", 704.0f, 128.0f);
+	}
 
 
 	if (gaussShader == nullptr)
@@ -432,13 +460,19 @@ void SceneGame::UnInit()
 	draw_img.reset();
 	HPbar_img.reset();
 	KO_img.reset();
-	gauge_img.reset();
+	gauge_img_1p.reset();
+	gauge_img_2p.reset();
 	gaugecase_img.reset();
 	font_img.reset();
 	call_img.reset();
 	effect_img.reset();
 	pause_img.reset();
 	HPDamagebar_img.reset();
+	gauge_img.reset();
+	gauge_case_img.reset();
+	gauge_mask.reset();
+	gauge_case_mask.reset();
+	gauge_anim.reset();
 	test = nullptr;
 	geo = nullptr;
 	HP_img = nullptr;
@@ -447,13 +481,19 @@ void SceneGame::UnInit()
 	draw_img = nullptr;
 	HPbar_img = nullptr;
 	KO_img = nullptr;
-	gauge_img = nullptr;
+	gauge_img_1p = nullptr;
+	gauge_img_2p = nullptr;
 	gaugecase_img = nullptr;
 	font_img = nullptr;
 	call_img = nullptr;
 	effect_img = nullptr;
 	pause_img = nullptr;
 	HPDamagebar_img = nullptr;
+	gauge_img = nullptr;
+	gauge_case_img = nullptr;
+	gauge_mask = nullptr;
+	gauge_case_mask = nullptr;
+	gauge_anim = nullptr;
 
 	//シェーダー解放
 	spriteShader.reset();
@@ -466,6 +506,11 @@ void SceneGame::UnInit()
 	ParallelToonShader = nullptr;
 	ToonShader.reset();
 	ToonShader = nullptr;
+
+	sampler_wrap.reset();
+	sampler_wrap = nullptr;
+	sampler_clamp.reset();
+	sampler_clamp = nullptr;
 
 	input_pad.UnInit();
 
@@ -1329,7 +1374,7 @@ void SceneGame::Draw(float elapsed_time)
 			}
 		}
 
-
+		sampler_wrap->Set(0);
 		//1PのHP
 		HPDamagebar_img->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.Damage_ratio1P, 100.0f);
 		HP_img->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f);
@@ -1337,6 +1382,7 @@ void SceneGame::Draw(float elapsed_time)
 		//2PのHP
 		HPDamagebar_img->DrawRectGraph(spriteShader.get(), 1000.0f, 100.0f, 0.0f, 0.0f, PL.Damage_ratio2P, 100.0f);
 		HP_img->DrawRectGraph(spriteShader.get(), 1000.0f, 100.0f, 0.0f, 0.0f, PL.ratio2P, 100.0f);
+		sampler_clamp->Set(0);
 
 		//このフレームでのHPを保存する
 		pl1_before_hp = player1p->hp;
@@ -1619,7 +1665,7 @@ void SceneGame::Draw(float elapsed_time)
 
 	//フェード用画像描画
 	//FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
-	UI_Draw();
+	UI_Draw(elapsed_time);
 
 	NullSetRenderTexture();
 	RenderTexture();
@@ -1710,11 +1756,24 @@ void SceneGame::IconDraw(
 
 
 
-void SceneGame::UI_Draw()
+void SceneGame::UI_Draw(float elapsed_time)
 {
 	NullSetRenderTexture();
 
 	SetUITexture();
+
+#ifdef EXIST_IMGUI
+	static float xx = 425.0f;
+	static float yy = 1030.0f;
+	if (Get_Use_ImGui())
+	{
+		ImGui::Begin("Gauge_UI");
+		ImGui::SliderFloat("x", &xx, 0.0f, 1920.0f);
+		ImGui::SliderFloat("y", &yy, 0.0f, 1080.0f);
+		ImGui::End();
+	}
+#endif // EXIST_IMGUI
+
 	//UIの描画
 	switch (main_loop)
 	{
@@ -1730,17 +1789,42 @@ void SceneGame::UI_Draw()
 
 		//UI描画
 
+
+		switch (YRCamera.camera_state)
+		{
+		case Camera::CAMERA_STATE::PLAYER1P:
+			player1p->DrawCutIn(spriteShader.get(), game_speed);
+			break;
+		case Camera::CAMERA_STATE::PLAYER2P:
+			player2p->DrawCutIn(spriteShader.get(), game_speed);
+			break;
+		default:
+			break;
+		}
+
 		//ゲージ描画
 		PL.gauge1P = (player1p->gauge / GAUGE_MAX) * 640.0f;
 		PL.gauge2P = (player2p->gauge / GAUGE_MAX) * 640.0f;
 
+		sampler_wrap->Set(0);
+
 		PL.power1P = ColorSet(player1p->power);
-		gauge_img->DrawExtendGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + PL.gauge1P, 1064.0f, SpriteMask::NONE, PL.power1P);
+		//gauge_img_1p->DrawExtendAnimGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + PL.gauge1P, 1064.0f, -100.0f, elapsed_time, SpriteMask::NONE, PL.power1P);
 		PL.power2P = ColorSet(player2p->power);
-		gauge_img->DrawExtendGraph(spriteShader.get(), 1800.0f - PL.gauge2P, 1000.0f, 1800.0f, 1064.0f, SpriteMask::NONE, PL.power2P);
+		gauge_img_2p->DrawExtendAnimGraph(spriteShader.get(), 1800.0f - PL.gauge2P, 1000.0f, 1800.0f, 1064.0f, 100.0f, elapsed_time, SpriteMask::NONE, PL.power2P);
+
+		sampler_clamp->Set(0);
+
+		gauge_case_img->DrawRotaGraph(spriteShader.get(), 425.0f, 1031.0f, 0.0f, 1.0f);
+		gauge_case_mask->DrawRotaGraph(spriteShader.get(), xx, yy, 0.0f, 1.0f,SpriteMask::WRITE);
+
+		gauge_img->DrawExtendGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + PL.gauge1P, 1064.0f, SpriteMask::INDRAW, PL.power1P);
+		//gauge_mask->DrawExtendGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + PL.gauge1P, 1064.0f, SpriteMask::WRITE, PL.power1P);
+
+		gauge_anim->DrawExtendAnimGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + PL.gauge1P, 1064.0f, -300.0f, elapsed_time, SpriteMask::INDRAW);
 
 		//ゲージケース
-		gaugecase_img->DrawExtendGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + 640.0f, 1064.0f);
+		//gaugecase_img->DrawExtendGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + 640.0f, 1064.0f);
 		gaugecase_img->DrawExtendGraph(spriteShader.get(), 1800.0f - 640.0f, 1000.0f, 1800.0f, 1064.0f);
 
 		//ゲージの数字描画
@@ -1767,18 +1851,6 @@ void SceneGame::UI_Draw()
 			PL.power2P
 		);
 
-
-		switch (YRCamera.camera_state)
-		{
-		case Camera::CAMERA_STATE::PLAYER1P:
-			player1p->DrawCutIn(spriteShader.get(), game_speed);
-			break;
-		case Camera::CAMERA_STATE::PLAYER2P:
-			player2p->DrawCutIn(spriteShader.get(), game_speed);
-			break;
-		default:
-			break;
-		}
 
 #ifdef EXIST_IMGUI
 		if (Get_Use_ImGui())

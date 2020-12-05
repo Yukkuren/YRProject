@@ -225,7 +225,7 @@ void SceneTest::Init()
 			blur_texture[i] = std::make_unique<Texture>();
 			blur_texture[i]->Create(960.0f / riv, 540.0f / riv, DXGI_FORMAT_R16G16B16A16_FLOAT);
 			blur_texture[i]->CreateDepth(960.0f / riv, 540.0f / riv, DXGI_FORMAT_R24G8_TYPELESS);
-		}		
+		}
 	}
 
 	if (multi_blur_texture == nullptr)

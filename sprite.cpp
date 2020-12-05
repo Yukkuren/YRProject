@@ -700,17 +700,17 @@ void Sprite::render(YRShader* shader, float dx,float dy,float dw,float dh,float 
 	sx3 = 2.0f*sx3 / screen_width - 1.0f;
 	sy3 = 1.0f - 2.0f*sy3 / screen_height;*/
 
-	
+
 
 	HRESULT hr = S_OK;
 	D3D11_MAP maptype = D3D11_MAP_WRITE_DISCARD;
 	//ID3D11Resource *resouse;
 	/*UINT mapflug;*/
 	D3D11_MAPPED_SUBRESOURCE mapsub;
-	
+
 	hr= FRAMEWORK.context->Map(buffer.Get(), 0,  maptype,0, &mapsub);
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-	
+
 	vertex *vertics = static_cast<vertex *>(mapsub.pData);
 	vertics[0].position.x = x0;
 	vertics[0].position.y = y0;
@@ -721,7 +721,7 @@ void Sprite::render(YRShader* shader, float dx,float dy,float dw,float dh,float 
 	vertics[3].position.x = x3;
 	vertics[3].position.y = y3;
 	vertics[0].position.z = vertics[1].position.z = vertics[2].position.z = vertics[3].position.z = 0.0f;
-	
+
 	DirectX::XMFLOAT4 color(r, g, b,a);
 	vertics[0].color = vertics[1].color = vertics[2].color=vertics[3].color=color;
 
@@ -734,7 +734,7 @@ void Sprite::render(YRShader* shader, float dx,float dy,float dw,float dh,float 
 	vertics[3].texcord.x = static_cast<FLOAT>(sx+sw) / texture2d_desc.Width;
 	vertics[3].texcord.y = static_cast<FLOAT>(sy + sh) / texture2d_desc.Height;
 	FRAMEWORK.context->Unmap(buffer.Get(), 0);
-	
+
 	UINT stencil=1;
 
 	ID3D11DepthStencilState* currentDepthStencilState = nullptr;
