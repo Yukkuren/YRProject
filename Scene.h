@@ -306,9 +306,6 @@ public:
 	std::unique_ptr<Sprite> HPbar_img = nullptr;
 	std::unique_ptr<Sprite> HPDamagebar_img = nullptr;
 	std::unique_ptr<Sprite> KO_img = nullptr;
-	std::unique_ptr<Sprite> gauge_img_1p = nullptr;
-	std::unique_ptr<Sprite> gauge_img_2p = nullptr;
-	std::unique_ptr<Sprite> gaugecase_img = nullptr;
 	std::unique_ptr<Sprite> font_img = nullptr;
 	std::unique_ptr<Sprite> call_img = nullptr;
 	std::unique_ptr<Sprite> effect_img = nullptr;
@@ -324,14 +321,21 @@ public:
 
 	std::unique_ptr<Sprite> gauge_img = nullptr;
 	std::unique_ptr<Sprite> gauge_case_img = nullptr;
-	std::unique_ptr<Sprite> gauge_mask = nullptr;
 	std::unique_ptr<Sprite> gauge_case_mask = nullptr;
-	std::unique_ptr<Sprite> gauge_anim = nullptr;
+	std::unique_ptr<Sprite> gauge_anim1p = nullptr;
+	std::unique_ptr<Sprite> gauge_anim2p = nullptr;
+
+	std::unique_ptr<Sprite> HPbar_base = nullptr;
+	std::unique_ptr<Sprite> HPbar_case = nullptr;
+	std::unique_ptr<Sprite> HPbar_mask = nullptr;
+	std::unique_ptr<Sprite> HPbar_fedo = nullptr;
+	std::unique_ptr<Sprite> HPbar_design = nullptr;
 
 
 	//画面描画用テクスチャ
 	std::unique_ptr<Texture> color_texture = nullptr;
 	std::unique_ptr<Texture> UI_texture = nullptr;
+	std::unique_ptr<Texture> HP_texture = nullptr;
 	//std::unique_ptr<Texture> normal_texture = nullptr;
 	//std::unique_ptr<Texture> position_texture = nullptr;
 	std::unique_ptr<Texture> luminance_texture = nullptr;
@@ -394,14 +398,22 @@ public:
 	void				PadSet(int select1, int select2);
 	void				Winjudge();
 	DirectX::XMFLOAT4	ColorSet(int power);
+	DirectX::XMFLOAT4	HPColorSet(float hp, float max_hp);
 	void				ComboImageSet();
 
 	DirectX::XMFLOAT2	Distance(DirectX::XMFLOAT2& s_pos, DirectX::XMFLOAT2& e_pos);
 	void				ScoreImageSet();
 
 	void				Control2PState(float elapsed_time);
+	void				HPBar_Draw(	const DirectX::XMMATRIX& view,
+									const DirectX::XMMATRIX& projection,
+									const DirectX::XMFLOAT4& light_direction,
+									const DirectX::XMFLOAT4& light_color,
+									const DirectX::XMFLOAT4& ambient_color,
+									float elapsed_time);
 	void				UI_Draw(float elapsed_time);
 	void				SetUITexture();
+	void				SetHPTexture();
 
 	void				PlayerMoveReq(int req_player_num, YR_Vector3 pos);
 	void				PlayerMoveReq(int req_player_num, YR_Vector3 vec, float speed);
@@ -432,6 +444,8 @@ public:
 	void RenderBlur();
 
 	void RenderUI();
+
+	void RenderHP();
 
 	void AIControll(float elapsed_time);
 

@@ -212,6 +212,12 @@ void SceneGame::LoadData()
 		UI_texture->Create(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM);
 		UI_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
 	}
+	if (HP_texture == nullptr)
+	{
+		HP_texture = std::make_unique<Texture>();
+		HP_texture->Create(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM);
+		HP_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
+	}
 	/*if (normal_texture == nullptr)
 	{
 		normal_texture = std::make_unique<Texture>();
@@ -306,18 +312,6 @@ void SceneGame::LoadData()
 	{
 		KO_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/KO.png", 640.0f, 384.0f);
 	}
-	if (gauge_img_1p == nullptr)
-	{
-		gauge_img_1p = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gauge.png", 640.0f, 64.0f);
-	}
-	if (gauge_img_2p == nullptr)
-	{
-		gauge_img_2p = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gauge.png", 640.0f, 64.0f);
-	}
-	if (gaugecase_img == nullptr)
-	{
-		gaugecase_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gaugecase.png", 640.0f, 64.0f);
-	}
 	if (font_img == nullptr)
 	{
 		font_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/font.png", 640.0f, 64.0f, 10, 1, 64.0f, 64.0f);
@@ -363,13 +357,14 @@ void SceneGame::LoadData()
 	{
 		gauge_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gauge_img.png", 640.0f, 64.0f);
 	}
-	if (gauge_mask == nullptr)
+	if (gauge_anim1p == nullptr)
 	{
-		gauge_mask = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gauge_mask.png", 640.0f, 64.0f);
+		gauge_anim1p = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gauge_anim.png", 640.0f, 64.0f);
 	}
-	if (gauge_anim == nullptr)
+	if (gauge_anim2p == nullptr)
 	{
-		gauge_anim = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gauge_anim.png", 640.0f, 64.0f);
+		gauge_anim2p = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gauge_anim.png", 640.0f, 64.0f);
+		gauge_anim2p->sx = gauge_anim2p->sw;
 	}
 	if (gauge_case_img == nullptr)
 	{
@@ -378,6 +373,28 @@ void SceneGame::LoadData()
 	if (gauge_case_mask == nullptr)
 	{
 		gauge_case_mask = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gauge_case_mask.png", 704.0f, 128.0f);
+	}
+
+
+	if (HPbar_base == nullptr)
+	{
+		HPbar_base = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/HPBar_base.png", 800.0f, 100.0f);
+	}
+	if (HPbar_fedo == nullptr)
+	{
+		HPbar_fedo = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/HPBar_fedo.png", 800.0f, 100.0f);
+	}
+	if (HPbar_design == nullptr)
+	{
+		HPbar_design = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/HPBar_design.png", 800.0f, 100.0f);
+	}
+	if (HPbar_case == nullptr)
+	{
+		HPbar_case = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/HPcase.png", 896.0f, 192.0f);
+	}
+	if (HPbar_mask == nullptr)
+	{
+		HPbar_mask = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/HPcase_mask.png", 896.0f, 192.0f);
 	}
 
 
@@ -460,9 +477,6 @@ void SceneGame::UnInit()
 	draw_img.reset();
 	HPbar_img.reset();
 	KO_img.reset();
-	gauge_img_1p.reset();
-	gauge_img_2p.reset();
-	gaugecase_img.reset();
 	font_img.reset();
 	call_img.reset();
 	effect_img.reset();
@@ -470,9 +484,15 @@ void SceneGame::UnInit()
 	HPDamagebar_img.reset();
 	gauge_img.reset();
 	gauge_case_img.reset();
-	gauge_mask.reset();
 	gauge_case_mask.reset();
-	gauge_anim.reset();
+	gauge_anim1p.reset();
+	gauge_anim2p.reset();
+	HPbar_base.reset();
+	HPbar_case.reset();
+	HPbar_mask.reset();
+	HPbar_fedo.reset();
+	HPbar_design.reset();
+
 	test = nullptr;
 	geo = nullptr;
 	HP_img = nullptr;
@@ -481,9 +501,6 @@ void SceneGame::UnInit()
 	draw_img = nullptr;
 	HPbar_img = nullptr;
 	KO_img = nullptr;
-	gauge_img_1p = nullptr;
-	gauge_img_2p = nullptr;
-	gaugecase_img = nullptr;
 	font_img = nullptr;
 	call_img = nullptr;
 	effect_img = nullptr;
@@ -491,9 +508,14 @@ void SceneGame::UnInit()
 	HPDamagebar_img = nullptr;
 	gauge_img = nullptr;
 	gauge_case_img = nullptr;
-	gauge_mask = nullptr;
 	gauge_case_mask = nullptr;
-	gauge_anim = nullptr;
+	gauge_anim1p = nullptr;
+	gauge_anim2p = nullptr;
+	HPbar_base = nullptr;
+	HPbar_case = nullptr;
+	HPbar_mask = nullptr;
+	HPbar_fedo = nullptr;
+	HPbar_design = nullptr;
 
 	//シェーダー解放
 	spriteShader.reset();
@@ -1182,14 +1204,18 @@ void SceneGame::Update(float elapsed_time)
 
 void SceneGame::Draw(float elapsed_time)
 {
+	SetHPTexture();
+
 	static float light_color[4] = { 1,1,1,1 };
 	//ライト方向
 	static DirectX::XMFLOAT4 light_direction = DirectX::XMFLOAT4(-1, 0, 1, 0);
 	static DirectX::XMFLOAT4 ambient_color(0.3f, 0.3f, 0.3f, 0.5f);
 	//FRAMEWORK.context.Get()->OMSetRenderTargets(1, FRAMEWORK.view.GetAddressOf(), FRAMEWORK.depth.Get());
-	SetRenderTexture();
+
 #ifdef EXIST_IMGUI
 	//ImGui
+	static float xxx = 0.0f;
+	static float yyy = 0.0f;
 	if(Get_Use_ImGui())
 	{
 		DirectX::XMFLOAT3	eye = YRCamera.GetEye();
@@ -1225,6 +1251,9 @@ void SceneGame::Draw(float elapsed_time)
 		ImGui::Text("%f", AI2P.timer);
 		float dis = player1p->pos.Distance(player2p->pos);
 		ImGui::Text("%f", dis);
+
+		ImGui::SliderFloat("x", &xxx, 0.0f, 1920.0f);
+		ImGui::SliderFloat("y", &yyy, 0.0f, 1080.0f);
 		//ImGui::InputFloat("scroll", &scall, 0.01f, 100.0f);
 		//ImGui::SliderFloat("rollX", &roll.x, 0.0f, 30.00f);
 		//ImGui::SliderFloat("rollY", &roll.y, 0.0f, 30.00f);
@@ -1282,6 +1311,7 @@ void SceneGame::Draw(float elapsed_time)
 		ImGui::End();
 	}
 #endif
+
 	DirectX::XMFLOAT4 lightColor(light_color[0], light_color[1], light_color[2], light_color[3]);
 
 	//ビュー行列
@@ -1293,6 +1323,10 @@ void SceneGame::Draw(float elapsed_time)
 
 	//材質カラー
 	DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(1, 1, 1, 1);
+
+	HPBar_Draw(V, P, light_direction, lightColor, ambient_color, elapsed_time);
+
+	SetRenderTexture();
 
 	//仮背景
 	//test->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 0.5f);
@@ -1307,7 +1341,8 @@ void SceneGame::Draw(float elapsed_time)
 	//	P,
 	//	DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.5f)
 	//);
-	stage.Draw(V, P, light_direction, lightColor, ambient_color, elapsed_time);
+	//stage.Draw(V, P, light_direction, lightColor, ambient_color, elapsed_time);
+	RenderHP();
 
 	switch (main_loop)
 	{
@@ -1329,64 +1364,6 @@ void SceneGame::Draw(float elapsed_time)
 		//内部処理ではフェードをしているだけで画面に変化はない為一括
 
 
-		//必殺技などの時は周りを暗くする
-		switch (YRCamera.GetRequest())
-		{
-		case Camera::Request::HOLD:
-			FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.8f));
-			break;
-		default:
-			break;
-		}
-
-		//UI描画
-		//体力バー表示
-		PL.ratio1P = player1p->hp / PL.HP_MAX1P * 800.0f;
-		PL.ratio2P = player2p->hp / PL.HP_MAX2P * 800.0f;
-		PL.correction_value = 800.0f - PL.ratio1P;
-
-		HPbar_img->DrawExtendGraph(spriteShader.get(), 75.0f, 75.0f, 925.0f, 225.0f);
-		HPbar_img->DrawExtendGraph(spriteShader.get(), 975.0f, 75.0f, 1825.0f, 225.0f);
-
-		if (player1p->combo_count == 1 && pl1_before_hp != player1p->hp)
-		{
-			PL.Damage_ratio1P = pl1_before_hp / PL.HP_MAX1P * 800.0f;
-		}
-
-		if (player2p->combo_count == 1 && pl2_before_hp != player2p->hp)
-		{
-			PL.Damage_ratio2P = pl2_before_hp / PL.HP_MAX2P * 800.0f;
-		}
-
-		if (player1p->combo_count == 0)
-		{
-			if (PL.Damage_ratio1P >= PL.ratio1P)
-			{
-				PL.Damage_ratio1P -= elapsed_time * 10.0f;
-			}
-		}
-
-		if (player2p->combo_count == 0)
-		{
-			if (PL.Damage_ratio2P >= PL.ratio2P)
-			{
-				PL.Damage_ratio2P -= elapsed_time * 10.0f;
-			}
-		}
-
-		sampler_wrap->Set(0);
-		//1PのHP
-		HPDamagebar_img->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.Damage_ratio1P, 100.0f);
-		HP_img->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f);
-
-		//2PのHP
-		HPDamagebar_img->DrawRectGraph(spriteShader.get(), 1000.0f, 100.0f, 0.0f, 0.0f, PL.Damage_ratio2P, 100.0f);
-		HP_img->DrawRectGraph(spriteShader.get(), 1000.0f, 100.0f, 0.0f, 0.0f, PL.ratio2P, 100.0f);
-		sampler_clamp->Set(0);
-
-		//このフレームでのHPを保存する
-		pl1_before_hp = player1p->hp;
-		pl2_before_hp = player2p->hp;
 
 		//コンボ表示
 
@@ -1475,10 +1452,12 @@ void SceneGame::Draw(float elapsed_time)
 				);
 			}
 		}
-
+		//FRAMEWORK.context->OMSetDepthStencilState(m_depth_stencil_state2.Get(), 1);
 		//プレイヤー描画
 		player1p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, lightColor, ambient_color, game_speed*p1_elapsed_time);
 		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, lightColor, ambient_color, game_speed*p2_elapsed_time);
+
+		//FRAMEWORK.context->OMSetDepthStencilState(m_depth_stencil_state.Get(), 1);
 
 		//エフェクト
 		YRGetEffect().CameraSet();
@@ -1494,7 +1473,6 @@ void SceneGame::Draw(float elapsed_time)
 			DirectX::XMFLOAT3(DirectX::XMConvertToRadians(90.0f), 0.0f, 0.0f),
 			V, P, light_direction, lightColor, ambient_color, elapsed_time, 0.0f
 		);*/
-
 
 #ifdef EXIST_IMGUI
 		if (Get_Use_ImGui())
@@ -1668,6 +1646,7 @@ void SceneGame::Draw(float elapsed_time)
 	UI_Draw(elapsed_time);
 
 	NullSetRenderTexture();
+	//RenderHP();
 	RenderTexture();
 	RenderBlur();
 	RenderUI();
@@ -1756,6 +1735,119 @@ void SceneGame::IconDraw(
 
 
 
+void SceneGame::HPBar_Draw(
+	const DirectX::XMMATRIX& view,
+	const DirectX::XMMATRIX& projection,
+	const DirectX::XMFLOAT4& light_direction,
+	const DirectX::XMFLOAT4& light_color,
+	const DirectX::XMFLOAT4& ambient_color,
+	float elapsed_time)
+{
+	stage.Draw(view, projection, light_direction, light_color, ambient_color, elapsed_time);
+
+	switch (main_loop)
+	{
+	case SceneGame::MAIN_LOOP::INTRO1P:
+	case SceneGame::MAIN_LOOP::INTRO2P:
+		break;
+	case SceneGame::MAIN_LOOP::READY:
+	case SceneGame::MAIN_LOOP::MAIN:
+	case SceneGame::MAIN_LOOP::FINISH:
+	case SceneGame::MAIN_LOOP::DRAW:
+		//必殺技などの時は周りを暗くする
+		switch (YRCamera.GetRequest())
+		{
+		case Camera::Request::HOLD:
+			FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, false, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.8f));
+			break;
+		default:
+			break;
+		}
+
+		//UI描画
+		//体力バー表示
+		PL.ratio1P = player1p->hp / PL.HP_MAX1P * 800.0f;
+		PL.ratio2P = player2p->hp / PL.HP_MAX2P * 800.0f;
+		PL.correction_value = 800.0f - PL.ratio1P;
+
+		DirectX::XMFLOAT4 hp1p_color = HPColorSet(player1p->hp, PL.HP_MAX1P);
+		DirectX::XMFLOAT4 hp2p_color = HPColorSet(player2p->hp, PL.HP_MAX2P);
+
+		if (player1p->combo_count == 1 && pl1_before_hp != player1p->hp)
+		{
+			PL.Damage_ratio1P = 800.0f - pl1_before_hp / PL.HP_MAX1P * 800.0f;
+		}
+
+		if (player2p->combo_count == 1 && pl2_before_hp != player2p->hp)
+		{
+			PL.Damage_ratio2P = pl2_before_hp / PL.HP_MAX2P * 800.0f;
+		}
+
+		if (player1p->combo_count == 0)
+		{
+			if (PL.Damage_ratio1P <= PL.correction_value)
+			{
+				PL.Damage_ratio1P += elapsed_time * 10.0f;
+			}
+		}
+
+		if (player2p->combo_count == 0)
+		{
+			if (PL.Damage_ratio2P >= PL.ratio2P)
+			{
+				PL.Damage_ratio2P -= elapsed_time * 10.0f;
+			}
+		}
+
+		sampler_wrap->Set(0);
+
+		//HPbar_img->DrawExtendGraph(spriteShader.get(), 75.0f, 75.0f, 925.0f, 225.0f);
+		//HPbar_img->DrawExtendGraph(spriteShader.get(), 975.0f, 75.0f, 1825.0f, 225.0f);
+
+		HPbar_case->DrawRotaGraph(spriteShader.get(), 500.0f, 150.0f, 0.0f, 1.0f);
+		HPbar_mask->DrawRotaGraph(spriteShader.get(), 500.0f, 150.0f, 0.0f, 1.0f, false, SpriteMask::WRITE);
+
+		HPbar_case->DrawRotaGraph(spriteShader.get(), 1400.0f, 150.0f, 0.0f, 1.0f, true);
+		HPbar_mask->DrawRotaGraph(spriteShader.get(), 1400.0f, 150.0f, 0.0f, 1.0f, true, SpriteMask::WRITE);
+
+		//1PのHP
+		HPDamagebar_img->DrawRectGraph(spriteShader.get(), 100.0f + PL.Damage_ratio1P, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f, false, SpriteMask::INDRAW);
+		//HP_img->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f,SpriteMask::INDRAW);
+		HPbar_base->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f, false, SpriteMask::INDRAW, hp1p_color);
+		HPbar_fedo->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f, false, SpriteMask::INDRAW, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
+		HPbar_design->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f, false, SpriteMask::INDRAW);
+
+
+		//2PのHP
+		HPDamagebar_img->DrawRectGraph(spriteShader.get(), 1000.0f, 100.0f, 0.0f, 0.0f, PL.Damage_ratio2P, 100.0f, false, SpriteMask::INDRAW);
+		//HP_img->DrawRectGraph(spriteShader.get(), 1000.0f, 100.0f, 0.0f, 0.0f, PL.ratio2P, 100.0f);
+		HPbar_base->DrawRectGraph(spriteShader.get(), 1000.0f, 100.0f, 0.0f, 0.0f, PL.ratio2P, 100.0f, true, SpriteMask::INDRAW, hp2p_color);
+		HPbar_fedo->DrawRectGraph(spriteShader.get(), 1000.0f, 100.0f, 0.0f, 0.0f, PL.ratio2P, 100.0f, true, SpriteMask::INDRAW, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
+		HPbar_design->DrawRectGraph(spriteShader.get(), 1000.0f, 100.0f, 0.0f, 0.0f, PL.ratio2P, 100.0f, true, SpriteMask::INDRAW);
+
+		sampler_clamp->Set(0);
+
+		//このフレームでのHPを保存する
+		pl1_before_hp = player1p->hp;
+		pl2_before_hp = player2p->hp;
+
+		////エフェクト
+		//YRGetEffect().CameraSet();
+
+		////エフェクト描画
+		//YRGetEffect().Draw();
+		break;
+	case SceneGame::MAIN_LOOP::GAME_FIN:
+		break;
+	default:
+		break;
+	}
+
+	NullSetRenderTexture();
+}
+
+
+
 void SceneGame::UI_Draw(float elapsed_time)
 {
 	NullSetRenderTexture();
@@ -1811,21 +1903,22 @@ void SceneGame::UI_Draw(float elapsed_time)
 		PL.power1P = ColorSet(player1p->power);
 		//gauge_img_1p->DrawExtendAnimGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + PL.gauge1P, 1064.0f, -100.0f, elapsed_time, SpriteMask::NONE, PL.power1P);
 		PL.power2P = ColorSet(player2p->power);
-		gauge_img_2p->DrawExtendAnimGraph(spriteShader.get(), 1800.0f - PL.gauge2P, 1000.0f, 1800.0f, 1064.0f, 100.0f, elapsed_time, SpriteMask::NONE, PL.power2P);
+		//gauge_img_2p->DrawExtendAnimGraph(spriteShader.get(), 1800.0f - PL.gauge2P, 1000.0f, 1800.0f, 1064.0f, 100.0f, elapsed_time, SpriteMask::NONE, PL.power2P);
 
 		sampler_clamp->Set(0);
 
+		//ゲージ
 		gauge_case_img->DrawRotaGraph(spriteShader.get(), 425.0f, 1031.0f, 0.0f, 1.0f);
-		gauge_case_mask->DrawRotaGraph(spriteShader.get(), xx, yy, 0.0f, 1.0f,SpriteMask::WRITE);
+		gauge_case_mask->DrawRotaGraph(spriteShader.get(), 425.0f, 1030.0f, 0.0f, 1.0f,false,SpriteMask::WRITE);
+
+		gauge_case_img->DrawRotaGraph(spriteShader.get(), 1475.0f, 1031.0f, 0.0f, 1.0f,true);
+		gauge_case_mask->DrawRotaGraph(spriteShader.get(), 1475.0f, 1030.0f, 0.0f, 1.0f, true, SpriteMask::WRITE);
 
 		gauge_img->DrawExtendGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + PL.gauge1P, 1064.0f, SpriteMask::INDRAW, PL.power1P);
-		//gauge_mask->DrawExtendGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + PL.gauge1P, 1064.0f, SpriteMask::WRITE, PL.power1P);
+		gauge_img->DrawExtendGraph(spriteShader.get(), 1800.0f - PL.gauge2P, 1000.0f, 1800.0f, 1064.0f, SpriteMask::INDRAW, PL.power2P);
 
-		gauge_anim->DrawExtendAnimGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + PL.gauge1P, 1064.0f, -300.0f, elapsed_time, SpriteMask::INDRAW);
-
-		//ゲージケース
-		//gaugecase_img->DrawExtendGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + 640.0f, 1064.0f);
-		gaugecase_img->DrawExtendGraph(spriteShader.get(), 1800.0f - 640.0f, 1000.0f, 1800.0f, 1064.0f);
+		gauge_anim1p->DrawExtendAnimGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + PL.gauge1P, 1064.0f, -300.0f, elapsed_time, SpriteMask::INDRAW, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
+		gauge_anim2p->DrawExtendAnimGraph(spriteShader.get(), 1800.0f - PL.gauge2P, 1000.0f, 1800.0f, 1064.0f, 300.0f, elapsed_time, SpriteMask::INDRAW, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
 
 		//ゲージの数字描画
 		font_img->DrawRotaDivGraph
@@ -1949,7 +2042,7 @@ void SceneGame::UI_Draw(float elapsed_time)
 	}
 
 	//フェード用画像描画
-	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
+	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f,false, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
 }
 
 
@@ -2029,25 +2122,41 @@ DirectX::XMFLOAT4 SceneGame::ColorSet(int power)
 		return DirectX::XMFLOAT4(1.0f,0.4f,0.0f,1.0f);
 		break;
 	case 1:
-		return DirectX::XMFLOAT4(0.4f,1.0f,0.4f,1.0f);
+		return DirectX::XMFLOAT4(0.4f,1.0f,0.0f,1.0f);
 		break;
 	case 2:
 		return DirectX::XMFLOAT4(0.0f,0.0f,1.0f,1.0f);
 		break;
 	case 3:
-		return DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+		return DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f);
 		break;
 	case 4:
 		return DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 		break;
 	case 5:
-		return DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+		return DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
 		break;
 
 	}
 	return DirectX::XMFLOAT4(1.0f, 0.4f, 0.0f, 1.0f);
 }
 
+
+DirectX::XMFLOAT4 SceneGame::HPColorSet(float hp, float max_hp)
+{
+	//ゲージの量からフォントの色を決定する
+	if (hp >= max_hp)
+	{
+		return DirectX::XMFLOAT4(0.0f, 0.5f, 1.0f, 1.0f);
+	}
+
+	if (hp <= (max_hp * 0.3f))
+	{
+		return DirectX::XMFLOAT4(1.0f, 0.2f, 0.0f, 1.0f);
+	}
+
+	return DirectX::XMFLOAT4(0.4f, 1.0f, 0.0f, 1.0f);
+}
 
 void SceneGame::ScoreImageSet()
 {
@@ -2469,7 +2578,7 @@ void SceneGame::SetRenderTexture()
 	ID3D11DepthStencilView* dsv = color_texture->GetDepthStencilView();
 
 	//画面クリア
-	FRAMEWORK.framebuffer.Clear();
+	FRAMEWORK.framebuffer.Clear(0.0f, 0.0f, 0.0f, 0.0f);
 	FRAMEWORK.context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	//ビュー更新
@@ -2490,6 +2599,40 @@ void SceneGame::SetRenderTexture()
 	//サンプラー設定
 	sampler_clamp->Set(0);
 }
+
+
+
+
+void SceneGame::SetHPTexture()
+{
+	FRAMEWORK.framebuffer.SetRenderTexture(HP_texture->GetRenderTargetView());
+
+	ID3D11DepthStencilView* dsv = HP_texture->GetDepthStencilView();
+
+	//画面クリア
+	FRAMEWORK.framebuffer.Clear(0.0f, 0.0f, 0.0f, 0.0f);
+	FRAMEWORK.context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	//ビュー更新
+	YRCamera.Active();
+
+	//ビューポート設定
+	//レンダーターゲットビューの設定
+	//FRAMEWORK.framebuffer.GetDefaultRTV();
+	FRAMEWORK.framebuffer.Activate(1920.0f, 1080.0f, dsv);
+
+	//ブレンドステート設定
+	FRAMEWORK.BlendSet(Blend::ALPHA);
+	//ラスタライザー設定
+	FRAMEWORK.context->RSSetState(FRAMEWORK.rasterizer_state[framework::RS_CULL_BACK].Get());
+	//デプスステンシルステート設定
+	FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[framework::DS_TRUE].Get(), 1);
+
+	//サンプラー設定
+	sampler_clamp->Set(0);
+}
+
+
 
 
 void SceneGame::SetUITexture()
@@ -2553,6 +2696,36 @@ void SceneGame::RenderTexture()
 #endif // USE_IMGUI
 
 }
+
+
+
+void SceneGame::RenderHP()
+{
+
+	//ブレンドステート設定
+	FRAMEWORK.BlendSet(Blend::ALPHA);
+
+	//Gbuffer描画
+	sprite->render(
+		spriteEx.get(),
+		HP_texture.get(),
+		0.0f, 0.0f, 1920.0f, 1080.0f,
+		0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
+
+#ifdef EXIST_IMGUI
+	if (Get_Use_ImGui())
+	{
+		if (ImGui::TreeNode(u8"HPテクスチャ"))
+		{
+			ImGui::Image((void*)(HP_texture->GetShaderResource()), ImVec2(360, 360));
+			ImGui::TreePop();
+		}
+	}
+#endif // USE_IMGUI
+
+}
+
+
 
 void SceneGame::RenderUI()
 {

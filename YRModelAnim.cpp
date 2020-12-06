@@ -177,7 +177,7 @@ void ModelAnim::UpdateAnimation(float elapsed_time)
 					Node& node = m_nodes[node_index];
 
 					XMFLOAT3 scale = key0.scale.GetDXFLOAT3();
-					
+
 
 					DirectX::XMVECTOR s0 = DirectX::XMLoadFloat3(&key0.scale.GetDXFLOAT3());
 					DirectX::XMVECTOR s1 = DirectX::XMLoadFloat3(&key1.scale.GetDXFLOAT3());
@@ -416,13 +416,13 @@ void ModelAnim::Draw(
 		FRAMEWORK.context.Get()->IASetVertexBuffers(0, 1, mesh.vertex_buffer.GetAddressOf(), &stride, &offset);
 		FRAMEWORK.context.Get()->IASetIndexBuffer(mesh.index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 		FRAMEWORK.context.Get()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		
-		DirectX::XMFLOAT4X4 global_transform = 
+
+		DirectX::XMFLOAT4X4 global_transform =
 		{
 			1, 0, 0, 0,
 			0, 1, 0, 0,
 			0, 0, 1, 0,
-			0, 0, 0, 1 
+			0, 0, 0, 1
 		};
 
 		for (const Model::Subset& subset : mesh.subsets)
@@ -514,7 +514,7 @@ void ModelAnim::Draw(
 			FRAMEWORK.context->VSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
 			FRAMEWORK.context->PSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
 			FRAMEWORK.context->GSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
-			
+
 			if (m_model_resource->color_texture_main == nullptr)
 			{
 				FRAMEWORK.context->PSSetShaderResources(0, 1, subset.material->shader_resource_view.Get() ? subset.material->shader_resource_view.GetAddressOf() : m_dummy_srv.GetAddressOf());
@@ -538,12 +538,12 @@ void ModelAnim::NodeChange(const std::shared_ptr<Model>& resource)
 	int res = 0;
 	model_resource_anim = resource;
 
-	
-	ModelData::NodeKeyData dummy = 
+
+	ModelData::NodeKeyData dummy =
 	{
 		DirectX::XMFLOAT3(0.0f,0.0f,0.0f),
 		YR_Vector4(0.0f,0.0f,0.0f,0.0f),
-		DirectX::XMFLOAT3(0.0f,0.0f,0.0f) 
+		DirectX::XMFLOAT3(0.0f,0.0f,0.0f)
 	};
 
 	for (int i = 0; i < model_resource_anim->m_data->animations[0].keyframes.size(); i++)

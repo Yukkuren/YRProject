@@ -194,16 +194,24 @@ public:
 		render( shader,x - (sw / 2.0f), y - (sh / 2.0f), sw, sh, sx, sy, sw, sh, 0.0f, 1, 1, 1, 1,mask);
 	}
 	//画像回転描画(コンテキスト、描画位置x,y、回転角度、画像拡大率)
-	void DrawRotaGraph(YRShader* shader, float x, float y, float angle, float size, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1,1,1,1 })
+	void DrawRotaGraph(YRShader* shader, float x, float y, float angle, float size, bool reverse=false, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1,1,1,1 })
 	{
+		float ssx = 0.0f;
+		float ssw = sw;
+		if (reverse)
+		{
+			ssx = sw;
+			ssw = -sw;
+		}
+
 		render(
 			shader,
 			x - (sw / 2 * size),
 			y - (sh / 2 * size),
 			sw * size, sh * size,
-			0,
-			0,
-			sw,
+			ssx,
+			0.0f,
+			ssw,
 			sh,
 			angle,
 			color.x,
@@ -235,6 +243,42 @@ public:
 			color.w,
 			mask);
 	}
+
+
+	void DrawRotaGraph(
+		YRShader* shader,
+		float x, float y, float angle,
+		DirectX::XMFLOAT2 size,bool reverse, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1,1,1,1 })
+	{
+		float ssx = 0.0f;
+		float ssy = 0.0f;
+		float ssw = sw;
+		float ssh = sh;
+		if (reverse)
+		{
+			ssx = sw;
+			ssy = sh;
+			ssw = -sw;
+			ssh = -sh;
+		}
+
+		render(
+			shader,
+			x - (size.x / 2.0f),
+			y - (size.y / 2.0f),
+			size.x, size.y,
+			ssx,
+			ssy,
+			ssw,
+			ssh,
+			angle,
+			color.x,
+			color.y,
+			color.z,
+			color.w,
+			mask);
+	}
+
 	//円形画像描画(画像描画サイズ決定型)(コンテキスト、描画位置x,y、回転角度、円の半径)
 	void DrawCircleGraph(
 		YRShader* shader,
@@ -483,9 +527,16 @@ public:
 
 	//描画範囲指定描画(シェーダー、描画位置(x,y)、描画したい矩形の左上座標(x,y)、サイズ(指定した左上からどこまで))
 	//中心が左端なので注意
-	void DrawRectGraph(YRShader* shader, float x, float y, float srcX, float srcY, float width, float height, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1,1,1,1 })
+	void DrawRectGraph(YRShader* shader, float x, float y, float srcX, float srcY, float width, float height, bool reverse = false, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1,1,1,1 })
 	{
-		render(shader, x, y, width, height, srcX, srcY, width, height, 0.0f, color.x, color.y, color.z, color.w,mask);
+		float ssx = srcX;
+		float ssw = width;
+		if (reverse)
+		{
+			ssx = srcX;
+			ssw = -width;
+		}
+		render(shader, x, y, width, height, ssx, srcY, ssw, height, 0.0f, color.x, color.y, color.z, color.w,mask);
 	}
 
 	void DrawExtendGraph(YRShader* shader, float x, float y, float x2, float y2, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,1.0f })
@@ -511,13 +562,12 @@ public:
 		if (sx < -sw)
 		{
 			sx = 0.0f;
-			render(shader, x - (sw / 2.0f), 100.0f - (sh / 2.0f), sw, sh, sx, sy, sw, sh, 0.0f, 1, 1, 1, 1, mask);
 		}
 		if (sx > sw)
 		{
 			sx = 0.0f;
 		}
-		render(shader, x, y, width, height, sx, sy, sw + speed, sh, 0.0f, color.x, color.y, color.z, color.w, mask);
+		render(shader, x, y, width, height, sx, sy, sw, sh, 0.0f, color.x, color.y, color.z, color.w, mask);
 	}
 
 	Sprite();

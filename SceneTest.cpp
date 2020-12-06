@@ -801,6 +801,7 @@ void SceneTest::RenderTexture(
 			center_y,
 			0.0f,
 			3.0f,
+			false,
 			SpriteMask::INDRAW
 		);
 	}

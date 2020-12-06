@@ -931,7 +931,7 @@ void Sprite::render(
 	data[1].Normal = XMFLOAT3(0, 0, 1);
 	data[2].Normal = XMFLOAT3(0, 0, 1);
 	data[3].Normal = XMFLOAT3(0, 0, 1);
-	
+
 	shader->Acivate();
 	//頂点データ更新
 	//FRAMEWORK.context->UpdateSubresource(buffer.Get(), 0, NULL, data, 0, 0);

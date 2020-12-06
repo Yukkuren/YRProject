@@ -64,7 +64,7 @@ PSOutput main(PSInput input) : SV_TARGET
 	Out.Color = color * input.Color * float4(A + D + S, 1.0f);
 	float lu = Out.Color.a + Out.Color.g + Out.Color.b;
 
-	Out.Luminance = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	//Out.Luminance = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	return Out;
 }

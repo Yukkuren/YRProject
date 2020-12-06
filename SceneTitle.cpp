@@ -290,7 +290,7 @@ void SceneTitle::Update(float elapsed_time)
 			//}
 		}
 #ifdef EXIST_IMGUI
-		
+
 
 		if (pKeyState.tflg == 1)
 		{
@@ -822,7 +822,7 @@ void SceneTitle::Draw(float elapsed_time)
 
 		//SceneRender(elapsed_time);
 	}
-	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
+	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, false, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
 }
 
 

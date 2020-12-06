@@ -304,6 +304,7 @@ void SceneSelect::Draw(float elapsedTime)
 				p1.y,
 				0.0f,
 				Rato,
+				false,
 				SpriteMask::NONE,
 				DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
 			);
@@ -319,6 +320,7 @@ void SceneSelect::Draw(float elapsedTime)
 					p1.y,
 					0.0f,
 					Rato,
+					false,
 					SpriteMask::NONE,
 					DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
 				);
@@ -335,6 +337,7 @@ void SceneSelect::Draw(float elapsedTime)
 				p2.y,
 				0.0f,
 				Rato,
+				false,
 				SpriteMask::NONE,
 				DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)
 			);
@@ -350,6 +353,7 @@ void SceneSelect::Draw(float elapsedTime)
 					p2.y,
 					0.0f,
 					Rato,
+					false,
 					SpriteMask::NONE,
 					DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)
 				);
@@ -357,7 +361,7 @@ void SceneSelect::Draw(float elapsedTime)
 		}
 	}
 	//フェード用画像
-	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
+	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, false, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
 }
 
 YR_Vector3 SceneSelect::PosSet(int select)

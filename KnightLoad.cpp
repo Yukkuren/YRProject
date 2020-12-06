@@ -43,7 +43,7 @@ void Knight::LoadData(int color_number)
 		//カットイン画像読み込み
 		if (cutIn == nullptr)
 		{
-			cutIn = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut1.png", 1280.0f, 720.0f);
+			cutIn = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut1.png", 640.0f, 192.0f);
 		}
 
 		break;
@@ -54,7 +54,7 @@ void Knight::LoadData(int color_number)
 		//カットイン画像読み込み
 		if (cutIn == nullptr)
 		{
-			cutIn = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut2.png", 1280.0f, 720.0f);
+			cutIn = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut2.png", 640.0f, 192.0f);
 		}
 		break;
 	default:
