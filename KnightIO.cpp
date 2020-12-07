@@ -771,41 +771,45 @@ void Knight::DrawDEBUG(
 	const DirectX::XMFLOAT4& ambient_color,
 	float						elapsed_time)
 {
-	for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
+#ifdef EXIST_IMGUI
+	if (Get_Debug_Draw())
 	{
-		hit[i].Draw(geoshader, view, projection, light_direction, light_color, ambient_color);
-	}
 
-	if (!atk.empty())
-	{
-		for (auto& a : atk)
+		for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
 		{
-			if (a.attack)
+			hit[i].Draw(geoshader, view, projection, light_direction, light_color, ambient_color);
+		}
+
+		if (!atk.empty())
+		{
+			for (auto& a : atk)
 			{
-				if (a.hit_ok)
+				if (a.attack)
 				{
-					a.Draw(geoshader, view, projection, light_direction, light_color, ambient_color);
+					if (a.hit_ok)
+					{
+						a.Draw(geoshader, view, projection, light_direction, light_color, ambient_color);
+					}
 				}
 			}
 		}
-	}
 
-	if (!projectile_atk.empty())
-	{
-		for (int i = 0; i < projectile_atk.size(); i++)
+		if (!projectile_atk.empty())
 		{
-			if (projectile_atk[i].attack)
+			for (int i = 0; i < projectile_atk.size(); i++)
 			{
-				if (projectile_atk[i].hit_ok)
+				if (projectile_atk[i].attack)
 				{
-					projectile_atk[i].Draw(geoshader, view, projection, light_direction, light_color, ambient_color);
+					if (projectile_atk[i].hit_ok)
+					{
+						projectile_atk[i].Draw(geoshader, view, projection, light_direction, light_color, ambient_color);
+					}
 				}
 			}
 		}
 	}
 
 	//UŒ‚ƒŠƒXƒgì¬—pˆ—
-#ifdef EXIST_IMGUI
 	if (Get_Use_ImGui())
 	{
 

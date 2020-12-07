@@ -10,11 +10,20 @@
 
 //‚±‚Ì•Ï”‚Å•\Ž¦A”ñ•\Ž¦‚ðØ‚è‘Ö‚¦‚é
 static bool use_ImGui = false;
+static bool use_debug = false;
 
 bool Get_Use_ImGui()
 {
 #ifdef EXIST_IMGUI
 	return use_ImGui;
+#endif // !EXIST_IMGUI
+	return false;
+}
+
+bool Get_Debug_Draw()
+{
+#ifdef EXIST_IMGUI
+	return use_debug;
 #endif // !EXIST_IMGUI
 	return false;
 }
@@ -556,6 +565,11 @@ void framework::update(float elapsed_time/*Elapsed seconds from last frame*/)
 	if (pKeyState.spaceflg == 1 && pKeyState.lshiftflg > 0)
 	{
 		use_ImGui = !use_ImGui;
+	}
+
+	if (pKeyState.bflg == 1 && pKeyState.lshiftflg > 0)
+	{
+		use_debug = !use_debug;
 	}
 
 #endif // EXIST_IMGUI

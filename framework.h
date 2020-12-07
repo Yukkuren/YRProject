@@ -37,6 +37,7 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wparam
 
 //‚±‚ÌŠÖ”‚ÅImGui‚ğ•`‰æ‚·‚é‚©‚Ç‚¤‚©‚ğŒˆ’è‚·‚é
 bool Get_Use_ImGui();
+bool Get_Debug_Draw();
 
 #define		FADE_MIX( x )		( x * 3.0f)
 //#define		ToRadian( x )		( x * ( PI / 180.0f ) )

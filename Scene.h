@@ -307,6 +307,8 @@ public:
 	std::unique_ptr<Sprite> HPDamagebar_img = nullptr;
 	std::unique_ptr<Sprite> KO_img = nullptr;
 	std::unique_ptr<Sprite> font_img = nullptr;
+	std::unique_ptr<Sprite> desastal_case = nullptr;
+	std::unique_ptr<Sprite> desastal_img = nullptr;
 	std::unique_ptr<Sprite> call_img = nullptr;
 	std::unique_ptr<Sprite> effect_img = nullptr;
 	std::unique_ptr<Sprite> pause_img = nullptr;
@@ -497,6 +499,9 @@ public:
 	std::unique_ptr<Sprite>	select_img = nullptr;
 	std::unique_ptr<Sprite>	title_img = nullptr;
 	std::unique_ptr<Sprite> choice_img = nullptr;
+	std::unique_ptr<Sprite>	choice_mask = nullptr;
+	std::unique_ptr<Sprite>	choice_anim = nullptr;
+
 
 	//画面描画用テクスチャ
 	std::unique_ptr<Texture> color_texture = nullptr;

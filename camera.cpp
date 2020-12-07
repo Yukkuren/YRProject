@@ -174,33 +174,39 @@ const int& Camera::GetRequestPlayer()const
 
 void Camera::CameraMove(YRShader *shader)
 {
-	//マウスが右クリックされたら座標を保存する
-	if (pMouse.right_state == 1)
-	{
-		start_Pos = pMouse.pos;
-	}
+#ifdef EXIST_IMGUI
 
-	if (pMouse.right_state > 1)
+	if (Get_Use_ImGui())
 	{
-		pColSprite.circle->DrawCircleGraph(shader, start_Pos.x, start_Pos.y, 0.0f, 5.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f));
-		if (start_Pos.x > pMouse.pos.x)
+		//マウスが右クリックされたら座標を保存する
+		if (pMouse.right_state == 1)
 		{
-			eye.x += 0.1f;
-		}
-		if (pMouse.pos.x > start_Pos.x)
-		{
-			eye.x -= 0.1f;
+			start_Pos = pMouse.pos;
 		}
 
-		if (start_Pos.y > pMouse.pos.y)
+		if (pMouse.right_state > 1)
 		{
-			eye.y += 0.1f;
-		}
-		if (pMouse.pos.y > start_Pos.y)
-		{
-			eye.y -= 0.1f;
+			pColSprite.circle->DrawCircleGraph(shader, start_Pos.x, start_Pos.y, 0.0f, 5.0f, DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f));
+			if (start_Pos.x > pMouse.pos.x)
+			{
+				eye.x += 0.1f;
+			}
+			if (pMouse.pos.x > start_Pos.x)
+			{
+				eye.x -= 0.1f;
+			}
+
+			if (start_Pos.y > pMouse.pos.y)
+			{
+				eye.y += 0.1f;
+			}
+			if (pMouse.pos.y > start_Pos.y)
+			{
+				eye.y -= 0.1f;
+			}
 		}
 	}
+#endif // EXIST_IMGUI
 }
 
 void Camera::SpecifiedLerp(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& focus,float factor)

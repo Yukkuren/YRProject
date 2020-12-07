@@ -102,6 +102,18 @@ void SceneTitle::LoadData()
 	{
 		choice_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameTitle/Select.png", 1920.0f, 1920.0f,1,3,1920.0f,640.0f);
 	}
+	if (choice_mask == nullptr)
+	{
+		choice_mask = std::make_unique<Sprite>(L"./Data/Image/UI/GameTitle/Select_mask.png", 1920.0f, 1920.0f,1,3,1920.0f,640.0f);
+	}
+	if (choice_anim == nullptr)
+	{
+		choice_anim = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gauge_anim.png", 640.0f, 64.0f);
+	}
+	/*if (choice_anim == nullptr)
+	{
+		choice_anim = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gauge_img.png", 640.0f, 64.0f);
+	}*/
 
 	//コンスタントバッファ作成
 	FRAMEWORK.CreateConstantBuffer(constantBuffer.GetAddressOf(), sizeof(Title_CBuffer));
@@ -292,7 +304,7 @@ void SceneTitle::Update(float elapsed_time)
 #ifdef EXIST_IMGUI
 
 
-		if (pKeyState.tflg == 1)
+		/*if (pKeyState.tflg == 1)
 		{
 			GetSound().BGMStop(BGMKind::TITLE);
 			select_p1 = scastI(INPUT_PLAYER::P1);
@@ -301,7 +313,7 @@ void SceneTitle::Update(float elapsed_time)
 			UnInit();
 			FRAMEWORK.SetScene(SCENE_TEST);
 			return;
-		}
+		}*/
 
 #endif // USE_IMGUI
 
@@ -550,6 +562,11 @@ void SceneTitle::Update(float elapsed_time)
 void SceneTitle::Draw(float elapsed_time)
 {
 #ifdef EXIST_IMGUI
+
+	static float xx = 0.0f;
+	static float yy = 0.0f;
+	static float xxx = 0.0f;
+	static float yyy = 0.0f;
 	if (Get_Use_ImGui())
 	{
 
@@ -570,6 +587,12 @@ void SceneTitle::Draw(float elapsed_time)
 		ImGui::SliderFloat("material_color_y", &cbuffer_param.material_color.y, 0.0f, 1.0f);
 		ImGui::SliderFloat("material_color_z", &cbuffer_param.material_color.z, 0.0f, 1.0f);
 		ImGui::SliderFloat("material_color_w", &cbuffer_param.material_color.w, 0.0f, 1.0f);
+
+
+		ImGui::SliderFloat("xx", &xx, 0.0f, 1920.0f);
+		ImGui::SliderFloat("yy", &yy, 0.0f, 1080.0f);
+		ImGui::SliderFloat("xxx", &xxx, 0.0f, 1920.0f);
+		ImGui::SliderFloat("yyx", &yyy, 0.0f, 1080.0f);
 
 		if (ImGui::TreeNode(u8"カラーテクスチャ"))
 		{
@@ -614,22 +637,36 @@ void SceneTitle::Draw(float elapsed_time)
 		switch (state)
 		{
 		case SceneTitle::STATE::HOME:
-			/*choice_img->DrawRotaDivGraph(
+			FRAMEWORK.fade_img->DrawExtendGraph(spriteShader.get(), 0.0f, 687.0f, 1920.0f, 845.0f, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
+
+			choice_img->DrawRotaDivGraph(
 				spriteShader.get(),
 				static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
-				static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f + (sinf(timer) * 100.0f),
+				static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f,
 				0.0f,
 				0.5f,
 				0
-			);*/
+			);
+			choice_mask->DrawRotaDivGraph(
+				spriteShader.get(),
+				static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
+				static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f,
+				0.0f,
+				0.5f,
+				0,
+				SpriteMask::WRITE
+			);
+
+			choice_anim->DrawExtendAnimGraph(spriteShader.get(), 485.0f, 691.0f, 1434.0f, 837.0f, -300.0f, elapsed_time, SpriteMask::INDRAW);
 			break;
 		case SceneTitle::STATE::SELECT:
+			FRAMEWORK.fade_img->DrawExtendGraph(spriteShader.get(), 0.0f, 687.0f, 1920.0f, 845.0f, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
 			if (vs_mode == VS_MODE::CPU)
 			{
 				choice_img->DrawRotaDivGraph(
 					spriteShader.get(),
 					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.3f,
-					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f + (sinf(timer) * 50.0f),
+					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f,
 					0.0f,
 					0.3f,
 					1
@@ -644,6 +681,26 @@ void SceneTitle::Draw(float elapsed_time)
 					SpriteMask::NONE,
 					DirectX::XMFLOAT4(0.2f, 0.2f, 0.2f, 0.3f)
 				);
+
+				choice_mask->DrawRotaDivGraph(
+					spriteShader.get(),
+					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.3f,
+					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f,
+					0.0f,
+					0.3f,
+					1,
+					SpriteMask::WRITE
+				);
+				choice_mask->DrawRotaDivGraph(
+					spriteShader.get(),
+					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.7f,
+					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f,
+					0.0f,
+					0.3f,
+					2,
+					SpriteMask::WRITE
+				);
+				choice_anim->DrawExtendAnimGraph(spriteShader.get(), 314.0f, 691.0f, 833.0f, 826.0f, -300.0f, elapsed_time, SpriteMask::INDRAW);
 			}
 			else
 			{
@@ -660,11 +717,31 @@ void SceneTitle::Draw(float elapsed_time)
 				choice_img->DrawRotaDivGraph(
 					spriteShader.get(),
 					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.7f,
-					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f + (sinf(timer) * 50.0f),
+					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f,
 					0.0f,
 					0.3f,
 					2
 				);
+
+				choice_mask->DrawRotaDivGraph(
+					spriteShader.get(),
+					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.3f,
+					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f,
+					0.0f,
+					0.3f,
+					1,
+					SpriteMask::WRITE
+				);
+				choice_mask->DrawRotaDivGraph(
+					spriteShader.get(),
+					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.7f,
+					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f,
+					0.0f,
+					0.3f,
+					2,
+					SpriteMask::WRITE
+				);
+				choice_anim->DrawExtendAnimGraph(spriteShader.get(), 1011.0f, 691.0f, 1620.0f, 826.0f, -300.0f, elapsed_time, SpriteMask::INDRAW);
 			}
 			break;
 		case SceneTitle::STATE::END:
@@ -673,7 +750,7 @@ void SceneTitle::Draw(float elapsed_time)
 				choice_img->DrawRotaDivGraph(
 					spriteShader.get(),
 					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.3f,
-					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f + (sinf(timer) * 50.0f),
+					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f,
 					0.0f,
 					0.3f,
 					1
@@ -688,6 +765,25 @@ void SceneTitle::Draw(float elapsed_time)
 					SpriteMask::NONE,
 					DirectX::XMFLOAT4(0.2f, 0.2f, 0.2f, 0.3f)
 				);
+				choice_mask->DrawRotaDivGraph(
+					spriteShader.get(),
+					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.3f,
+					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f,
+					0.0f,
+					0.3f,
+					1,
+					SpriteMask::WRITE
+				);
+				choice_mask->DrawRotaDivGraph(
+					spriteShader.get(),
+					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.7f,
+					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f,
+					0.0f,
+					0.3f,
+					2,
+					SpriteMask::WRITE
+				);
+				choice_anim->DrawExtendAnimGraph(spriteShader.get(), 314.0f, 691.0f, 833.0f, 826.0f, -300.0f, elapsed_time, SpriteMask::INDRAW);
 			}
 			else
 			{
@@ -704,16 +800,36 @@ void SceneTitle::Draw(float elapsed_time)
 				choice_img->DrawRotaDivGraph(
 					spriteShader.get(),
 					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.7f,
-					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f + (sinf(timer) * 50.0f),
+					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f,
 					0.0f,
 					0.3f,
 					2
 				);
+				choice_mask->DrawRotaDivGraph(
+					spriteShader.get(),
+					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.3f,
+					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f,
+					0.0f,
+					0.3f,
+					1,
+					SpriteMask::WRITE
+				);
+				choice_mask->DrawRotaDivGraph(
+					spriteShader.get(),
+					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.7f,
+					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.7f,
+					0.0f,
+					0.3f,
+					2,
+					SpriteMask::WRITE
+				);
+				choice_anim->DrawExtendAnimGraph(spriteShader.get(), 1011.0f, 691.0f, 1620.0f, 826.0f, -300.0f, elapsed_time, SpriteMask::INDRAW);
 			}
 			break;
 		default:
 			break;
 		}
+
 
 		//アイコン描画
 		/*knight_icon->DrawRotaGraph(

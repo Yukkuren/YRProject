@@ -316,6 +316,14 @@ void SceneGame::LoadData()
 	{
 		font_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/font.png", 640.0f, 64.0f, 10, 1, 64.0f, 64.0f);
 	}
+	if (desastal_case == nullptr)
+	{
+		desastal_case = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/desastal_case.png", 640.0f, 640.0f);
+	}
+	if (desastal_img == nullptr)
+	{
+		desastal_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/desastal.png", 1920.0f, 1280.0f, 3, 2, 640.0f, 640.0f);
+	}
 	if (call_img == nullptr)
 	{
 		call_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/call.png", 1024.0f, 512.0f, 1, 2, 1024.0f, 256.0f);
@@ -492,6 +500,8 @@ void SceneGame::UnInit()
 	HPbar_mask.reset();
 	HPbar_fedo.reset();
 	HPbar_design.reset();
+	desastal_case.reset();
+	desastal_img.reset();
 
 	test = nullptr;
 	geo = nullptr;
@@ -516,6 +526,8 @@ void SceneGame::UnInit()
 	HPbar_mask = nullptr;
 	HPbar_fedo = nullptr;
 	HPbar_design = nullptr;
+	desastal_case = nullptr;
+	desastal_img = nullptr;
 
 	//シェーダー解放
 	spriteShader.reset();
@@ -1027,7 +1039,7 @@ void SceneGame::Update(float elapsed_time)
 							player2p->pad->Init();
 						}
 						#ifdef EXIST_IMGUI
-						if (Get_Use_ImGui())
+						if (Get_Debug_Draw())
 						{
 							input_pad.Update(player1p.get(), player2p.get());
 						}
@@ -1475,8 +1487,6 @@ void SceneGame::Draw(float elapsed_time)
 		);*/
 
 #ifdef EXIST_IMGUI
-		if (Get_Use_ImGui())
-		{
 			FRAMEWORK.context->OMSetDepthStencilState(m_depth_stencil_state2.Get(), 1);
 			player1p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed * p1_elapsed_time);
 			player2p->DrawDEBUG(geoShader.get(), V, P, light_direction, lightColor, ambient_color, game_speed * p2_elapsed_time);
@@ -1491,7 +1501,6 @@ void SceneGame::Draw(float elapsed_time)
 
 			YRCamera.CameraMove(spriteShader.get());
 			FRAMEWORK.context->OMSetDepthStencilState(m_depth_stencil_state.Get(), 1);
-		}
 #endif // USE_IMGUI
 
 //		//UI描画
@@ -1921,24 +1930,42 @@ void SceneGame::UI_Draw(float elapsed_time)
 		gauge_anim2p->DrawExtendAnimGraph(spriteShader.get(), 1800.0f - PL.gauge2P, 1000.0f, 1800.0f, 1064.0f, 300.0f, elapsed_time, SpriteMask::INDRAW, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
 
 		//ゲージの数字描画
-		font_img->DrawRotaDivGraph
+		desastal_case->DrawRotaGraph
 		(
 			spriteShader.get(),
-			70.0f,
-			950.0f,
+			86.0f,
+			965.0f,
 			0.0f,
-			2.0f,
+			0.25f
+		);
+		desastal_img->DrawRotaDivGraph
+		(
+			spriteShader.get(),
+			86.0f,
+			965.0f,
+			0.0f,
+			0.25f,
 			player1p->power,
 			SpriteMask::NONE,
 			PL.power1P
 		);
-		font_img->DrawRotaDivGraph
+
+		desastal_case->DrawRotaGraph
 		(
 			spriteShader.get(),
-			1800.0f,
-			950.0f,
+			1838.0f,
+			965.0f,
 			0.0f,
-			2.0f,
+			0.25f,
+			true
+		);
+		desastal_img->DrawRotaDivGraphReverse
+		(
+			spriteShader.get(),
+			1838.0f,
+			965.0f,
+			0.0f,
+			0.25f,
 			player2p->power,
 			SpriteMask::NONE,
 			PL.power2P
@@ -1946,7 +1973,7 @@ void SceneGame::UI_Draw(float elapsed_time)
 
 
 #ifdef EXIST_IMGUI
-		if (Get_Use_ImGui())
+		if (Get_Debug_Draw())
 		{
 			input_pad.Draw(spriteShader.get());
 		}

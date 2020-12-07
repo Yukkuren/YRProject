@@ -525,6 +525,41 @@ public:
 
 	}
 
+	void DrawRotaDivGraphReverse(
+		YRShader* shader,
+		float x, float y, float angle, float size, int num, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1,1,1,1 })
+	{
+		//x,y:描画位置
+		//nx,ny:描画する画像の縦、横の分割数
+		//size:描画時の拡大率(通常サイズ1.0f)
+
+		//float sxx = div[num].nx;
+		//float sww = nsx;
+
+		float sxx = div[num].nx + nsx;
+		float sww = -nsx;
+
+		//numに合わせて描画位置を決定する
+		render(
+			shader,
+			x - (nsx / 2 * size),
+			y - (nsy / 2 * size),
+			nsx * size,
+			nsy * size,
+			sxx,
+			div[num].ny,
+			sww,
+			nsy,
+			angle,
+			color.x,
+			color.y,
+			color.z,
+			color.w,
+			mask
+		);
+
+	}
+
 	//描画範囲指定描画(シェーダー、描画位置(x,y)、描画したい矩形の左上座標(x,y)、サイズ(指定した左上からどこまで))
 	//中心が左端なので注意
 	void DrawRectGraph(YRShader* shader, float x, float y, float srcX, float srcY, float width, float height, bool reverse = false, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1,1,1,1 })

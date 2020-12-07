@@ -426,7 +426,10 @@ void Knight::Update(float decision, float elapsed_time)
 						}
 					}
 				}
-				rightOrleft = decision;
+				if (!moveflag)
+				{
+					rightOrleft = decision;
+				}
 				if (speed.x > 0.0f)
 				{
 					speed.x -= brake_speed*elapsed_time;
@@ -461,14 +464,8 @@ void Knight::Update(float decision, float elapsed_time)
 					//地面についている場合のみ
 					if (ground)
 					{
-						if (!moveflag)
-						{
-							MoveAnimSet();
-						}
-						if (moveflag)
-						{
-							Move(rightOrleft);
-						}
+						MoveAnimSet();
+						Move(rightOrleft);
 					}
 
 					AttackInput();
@@ -2315,7 +2312,10 @@ void Knight::MoveStop()
 		if (pad->x_input[static_cast<int>(PAD::L_DASH)] == 0 && pad->x_input[static_cast<int>(PAD::R_DASH)] == 0)
 		{
 			speed.x = 0.0f;
-			act_state = ActState::NONE;
+			if (act_state != ActState::WAIT)
+			{
+				act_state = ActState::NONE;
+			}
 			moveflag = false;
 		}
 	}
@@ -2324,25 +2324,37 @@ void Knight::MoveStop()
 	if (pad->x_input[static_cast<int>(PAD::STICK_L)] > 0 && pad->x_input[static_cast<int>(PAD::STICK_R)] > 0)
 	{
 		speed.x = 0.0f;
-		act_state = ActState::NONE;
+		if (act_state != ActState::WAIT)
+		{
+			act_state = ActState::NONE;
+		}
 		moveflag = false;
 	}
 	if (pad->x_input[static_cast<int>(PAD::L_DASH)] > 0 && pad->x_input[static_cast<int>(PAD::R_DASH)] > 0)
 	{
 		speed.x = 0.0f;
-		act_state = ActState::NONE;
+		if (act_state != ActState::WAIT)
+		{
+			act_state = ActState::NONE;
+		}
 		moveflag = false;
 	}
 	if (pad->x_input[static_cast<int>(PAD::L_DASH)] > 0 && pad->x_input[static_cast<int>(PAD::STICK_R)] > 0)
 	{
 		speed.x = 0.0f;
-		act_state = ActState::NONE;
+		if (act_state != ActState::WAIT)
+		{
+			act_state = ActState::NONE;
+		}
 		moveflag = false;
 	}
 	if (pad->x_input[static_cast<int>(PAD::R_DASH)] > 0 && pad->x_input[static_cast<int>(PAD::STICK_L)] > 0)
 	{
 		speed.x = 0.0f;
-		act_state = ActState::NONE;
+		if (act_state != ActState::WAIT)
+		{
+			act_state = ActState::NONE;
+		}
 		moveflag = false;
 	}
 
@@ -2457,7 +2469,7 @@ void Knight::MoveAnimSet()
 		return;
 	}
 
-	if (pad->x_input[static_cast<int>(PAD::STICK_L)] > 0)
+	if (pad->x_input[static_cast<int>(PAD::STICK_L)] == 1)
 	{
 		moveflag = true;
 
@@ -2483,7 +2495,7 @@ void Knight::MoveAnimSet()
 			anim_ccodinate = ac_act[scastI(act_state)].fream;
 		}
 	}
-	if (pad->x_input[static_cast<int>(PAD::STICK_R)] > 0)
+	if (pad->x_input[static_cast<int>(PAD::STICK_R)] == 1)
 	{
 		moveflag = true;
 
@@ -2509,6 +2521,63 @@ void Knight::MoveAnimSet()
 			anim_ccodinate = ac_act[scastI(act_state)].fream;
 		}
 	}
+
+	if (!moveflag)
+	{
+		if (pad->x_input[static_cast<int>(PAD::STICK_L)] > 0 )
+		{
+			moveflag = true;
+
+			if (rightOrleft > 0)
+			{
+				//描画をセット
+				//右向き
+				//後退
+				anim->NodeChange(model_motion.back_R);
+				anim_ccodinate = ac_act[scastI(ActState::RETREAT)].fream;
+			}
+			//歩きは削除(ダッシュのみ)
+			else
+			{
+				//描画をセット
+				//左向き
+				/*anim->NodeChange(model_motion.walk_L);
+				anim_ccodinate = ac_act[scastI(ActState::MOVEL)].fream;*/
+				//ダッシュ左向き
+				act_state = ActState::DASH;
+				anim->NodeChange(model_motion.dash_L, scastI(AnimAtk::FREAM));
+				anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
+				anim_ccodinate = ac_act[scastI(act_state)].fream;
+			}
+		}
+		if (pad->x_input[static_cast<int>(PAD::STICK_R)] > 0)
+		{
+			moveflag = true;
+
+			if (rightOrleft < 0)
+			{
+				//描画をセット
+				//左向き
+				//後退
+				anim->NodeChange(model_motion.back_L);
+				anim_ccodinate = ac_act[scastI(ActState::RETREAT)].fream;
+			}
+			//歩きは削除(ダッシュのみ)
+			else
+			{
+				//描画をセット
+				//右向き
+				/*anim->NodeChange(model_motion.walk_R);
+				anim_ccodinate = ac_act[scastI(ActState::MOVER)].fream;*/
+				//ダッシュ右向き
+				act_state = ActState::DASH;
+				anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::FREAM));
+				anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
+				anim_ccodinate = ac_act[scastI(act_state)].fream;
+			}
+		}
+	}
+
 }
 
 void Knight::GuardAnimSet()
@@ -4596,6 +4665,7 @@ void Knight::ReadySet()
 	{
 		anim->NodeChange(model_motion.wait_L);
 	}
+	anim_ccodinate = ac_act[scastI(ActState::WAIT)].fream;
 	ChangeFace(FaceAnim::NORMAL);
 	FaceAnimation(0.0f);
 	//GetSound().SEPlay(SEKind::INTRO_WIND);
