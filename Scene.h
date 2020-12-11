@@ -27,6 +27,20 @@ constexpr float end_slow_time = 3.0f;		//試合終了後スローにする時間
 constexpr float slow_adjust = 0.2f;			//スロー補正値
 constexpr float game_end_time = 5.0f;		//ゲームが終了して勝利画面に移行する時間
 
+constexpr std::array<PAD, 10> any_button =
+{
+	PAD::A,
+	PAD::B,
+	PAD::X,
+	PAD::Y,
+	PAD::RB,
+	PAD::LB,
+	PAD::R_TRIGGER,
+	PAD::L_TRIGGER,
+	PAD::START,
+	PAD::SELECT,
+};
+
 enum class INPUT_PLAYER : int
 {
 	P1 = 0,
@@ -685,7 +699,6 @@ public:
 	std::shared_ptr<Model> knight = nullptr;
 	std::shared_ptr<Model> wait_R = nullptr;
 	std::shared_ptr<Model> special_R = nullptr;
-	std::shared_ptr<Texture> box_texture = nullptr;
 	std::shared_ptr<Texture> board_texture = nullptr;
 	std::unique_ptr<ModelAnim> motion = nullptr;
 	std::unique_ptr<Skinned_mesh> sky = nullptr;
@@ -705,6 +718,8 @@ public:
 	std::shared_ptr<Texture> test_normal_texture = nullptr;
 	std::shared_ptr<Texture> scorpion_specular_texture = nullptr;
 	std::shared_ptr<Texture> specular_texture = nullptr;
+	std::shared_ptr<Texture> knight_normal_map = nullptr;
+	std::shared_ptr<Texture> knight_height_map = nullptr;
 
 
 	//Gbuffer用スプライト
@@ -730,6 +745,7 @@ public:
 	std::unique_ptr<YRShader> multi_gaussShader = nullptr;
 	std::unique_ptr<YRShader> furShader = nullptr;
 	std::unique_ptr<YRShader> skyShader = nullptr;
+	std::unique_ptr<YRShader> earthShader = nullptr;
 
 	//テクスチャ
 	std::unique_ptr<Texture> color_texture = nullptr;
@@ -781,6 +797,18 @@ public:
 		DirectX::XMFLOAT4	eye_pos = { 0.0f,0.0f,0.0f,0.0f };
 		float Density = 0.0f;		//毛の密度
 		float Distance = 0.0f;		//毛の長さ
+		float dummy1 = 0.0f;
+		float dummy2 = 0.0f;
+	};
+
+	struct ConstantBufferForPerFrame
+	{
+		DirectX::XMFLOAT4	light_direction = { 0.0f,0.0f,0.0f,0.0f };
+		DirectX::XMFLOAT4	light_color = { 0.0f,0.0f,0.0f,0.0f };
+		DirectX::XMFLOAT4	ambient_color = { 0.0f,0.0f,0.0f,0.0f };
+		DirectX::XMFLOAT4	eye_pos = { 0.0f,0.0f,0.0f,0.0f };
+		float wave_time = 0.0f; //波の UV スクロール用時間
+		float divide = 0.0f; //分割数（外と内）
 		float dummy1 = 0.0f;
 		float dummy2 = 0.0f;
 	};

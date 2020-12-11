@@ -54,6 +54,20 @@ public:
 		const DirectX::XMFLOAT4		material_color = { 1.0f,1.0f,1.0f,1.0f }
 		);
 
+	void Draw(
+		YRShader* shader,
+		const DirectX::XMMATRIX& view,
+		const DirectX::XMMATRIX& projection,
+		const DirectX::XMFLOAT4& light_direction,
+		const DirectX::XMFLOAT4& light_color,
+		const D3D_PRIMITIVE_TOPOLOGY& topology,
+		const DirectX::XMFLOAT4& ambient_color,
+		const DirectX::XMFLOAT2& off_set_eye = { 0.0f,0.0f },
+		const DirectX::XMFLOAT2& off_set_mouse = { 0.0f,0.0f },
+		const Model::Material_Attribute& blur_material = Model::Material_Attribute::SWORD,
+		const DirectX::XMFLOAT4		material_color = { 1.0f,1.0f,1.0f,1.0f }
+	);
+
 	void NodeChange(const std::shared_ptr<Model>& resource);
 	void NodeChange(const std::shared_ptr<Model>& resource,int anim_num);
 

@@ -55,7 +55,7 @@ geometric_primitive::geometric_primitive()
 	depth_desc.FrontFace.StencilPassOp = depth_desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 	depth_desc.FrontFace.StencilFailOp = depth_desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
 
-	
+
 	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, depth_state.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
@@ -125,7 +125,7 @@ geometric_primitive::geometric_primitive()
 	buffer_desc.CPUAccessFlags = 0;// D3D11_CPU_ACCESS_WRITE;
 	buffer_desc.MiscFlags = 0;
 	buffer_desc.StructureByteStride = 0;
-	
+
 	D3D11_SUBRESOURCE_DATA subresource = {};
 	subresource.pSysMem = vertics;
 	subresource.SysMemPitch = 0;
@@ -146,7 +146,7 @@ geometric_primitive::geometric_primitive()
 	subresource.pSysMem = indices;
 	subresource.SysMemPitch = 0;
 	subresource.SysMemSlicePitch = 0;
-	
+
 	hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, &subresource, index_buffer.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
@@ -204,7 +204,7 @@ void  geometric_primitive::render(
 	//頂点バッファのバインド
 	FRAMEWORK.context->IASetVertexBuffers(0, 1, vertex_buffer.GetAddressOf(), &stride, &offset);
 
-	
+
 	//インデックスバッファのバインド
 	FRAMEWORK.context->IASetIndexBuffer(index_buffer.Get(), DXGI_FORMAT_R32_UINT, offset);
 

@@ -88,10 +88,6 @@ void SceneTest::Init()
 	YRCamera.SetUp(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));				//上方向
 	YRCamera.SetPerspective(30 * 0.01745f, 1920.0f / 1080.0f, 1.4f, 1000.0f);
 
-	if (box_texture == nullptr)
-	{
-		box_texture = std::make_shared<Texture>(L"./Data/FBX/danbo_fbx/texture/danbo_face_c2.png");
-	}
 	if (board_texture == nullptr)
 	{
 		board_texture = std::make_shared<Texture>(L"./Data/Image/UI/GameScene/effect.png");
@@ -101,8 +97,8 @@ void SceneTest::Init()
 	color_texture_main = nullptr;
 	color_texture_face = nullptr;
 
-	color_texture_main = std::make_shared<Texture>(L"./Data/FBX/Knight/knight_tex_nofaces2.png");
-	color_texture_face = std::make_shared<Texture>(L"./Data/FBX/Knight/knight_tex_face2.png");
+	//color_texture_main = std::make_shared<Texture>(L"./Data/FBX/Knight/knight_tex_nofaces2.png");
+	//color_texture_face = std::make_shared<Texture>(L"./Data/FBX/Knight/knight_tex_face2.png");
 
 	if (knight == nullptr)
 	{
@@ -259,6 +255,15 @@ void SceneTest::Init()
 	{
 		specular_texture = std::make_shared<Texture>();
 		specular_texture->Create(1280, 720, DXGI_FORMAT_R8G8B8A8_UNORM);
+	}
+
+	if (knight_normal_map == nullptr)
+	{
+		knight_normal_map = std::make_shared<Texture>(L"Data/FBX/Knight/knight_tex_nofaces_normal.png");
+	}
+	if (knight_height_map == nullptr)
+	{
+		knight_height_map = std::make_shared<Texture>(L"Data/FBX/Knight/knight_tex_bump.png");
 	}
 
 
@@ -431,7 +436,7 @@ static bool blur = true;
 	//ImGui
 	if(Get_Use_ImGui())
 	{
-		
+
 		//ImGui::Checkbox(u8"ブルーム", &blur);
 		if (ImGui::TreeNode("texture"))
 		{
@@ -586,7 +591,7 @@ void SceneTest::RenderTexture(
 		FRAMEWORK.context->ClearRenderTargetView(testrtv[i], clearColor);
 	}*/
 	FRAMEWORK.context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	
+
 	//ビュー更新
 	YRCamera.Active();
 
@@ -599,7 +604,7 @@ void SceneTest::RenderTexture(
 	FRAMEWORK.framebuffer.Activate(1920.0f, 1080.0f, dsv);
 
 	//定数バッファの設定
-	CB_Multi_Render_Target cb;
+	/*CB_Multi_Render_Target cb;
 	cb.light_direction = light_direction;
 	cb.light_color = light_color;
 	cb.ambient_color = ambient_color;
@@ -608,7 +613,15 @@ void SceneTest::RenderTexture(
 	cb.eye_pos.z = YRCamera.GetEye().z;
 	cb.eye_pos.w = 1.0f;
 	cb.Density = Density;
-	cb.Distance = Distance;
+	cb.Distance = Distance;*/
+
+	ConstantBufferForPerFrame cb;
+	cb.light_direction = light_direction;
+	cb.light_color = light_color;
+	cb.ambient_color = ambient_color;
+	cb.eye_pos.x = YRCamera.GetEye().x;
+	cb.eye_pos.y = YRCamera.GetEye().y;
+	cb.eye_pos.z = YRCamera.GetEye().z;
 
 	//定数バッファ更新
 	FRAMEWORK.context->UpdateSubresource(constantBuffer.Get(), 0, NULL, &cb, 0, 0);
@@ -622,7 +635,7 @@ void SceneTest::RenderTexture(
 	FRAMEWORK.context->RSSetState(FRAMEWORK.rasterizer_state[framework::RS_CULL_BACK].Get());
 	//デプスステンシルステート設定
 	FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[framework::DS_TRUE].Get(), 1);
-	
+
 	//サンプラー設定
 	sampler_clamp->Set(0);
 
@@ -651,7 +664,7 @@ void SceneTest::RenderTexture(
 	);*/
 
 	//test->DrawExtendGraph(spriteShader.get(), 0.0f, 0.0f, FRAMEWORK.SCREEN_WIDTH, FRAMEWORK.SCREEN_HEIGHT, DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f));
-	
+
 	FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[framework::DS_WRITE_FALSE].Get(), 1);
 
 	if (pause)
@@ -694,7 +707,10 @@ void SceneTest::RenderTexture(
 			knight_angle);
 		motion->Draw(
 			toonShader.get(),
-			view, projection, light_direction, light_color, ambient_color
+			view, projection,
+			light_direction, light_color,
+			D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST,
+			ambient_color
 		);
 		/*motion->Draw(
 			skinShader.get(),
@@ -823,7 +839,7 @@ void SceneTest::RenderTexture(
 	testrtv[0] = FRAMEWORK.view.Get();*/
 	//レンダーターゲットの回復
 	//FRAMEWORK.context.Get()->OMSetRenderTargets(testrtv.size(), testrtv.data(), FRAMEWORK.depth.Get());
-	
+
 	FRAMEWORK.framebuffer.Deactivate();
 	FRAMEWORK.framebuffer.SetDefaultRTV();
 	FRAMEWORK.framebuffer.ResetRenderTexture();
@@ -959,7 +975,7 @@ void SceneTest::RenderBlur(
 		/*FRAMEWORK.framebuffer.Deactivate();
 		FRAMEWORK.framebuffer.ResetRenderTexture();
 		FRAMEWORK.framebuffer.SetDefaultRTV();*/
-		
+
 		//テクスチャをセット
 		FRAMEWORK.framebuffer.SetRenderTexture(multi_blur_texture->GetRenderTargetView(), true);
 		//ID3D11DepthStencilView* dsv = color_texture->GetDepthStencilView();
@@ -1002,7 +1018,7 @@ void SceneTest::RenderBlur(
 			6,
 			0.0f, 0.0f, 1920.0f, 1080.0f,
 			0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
-		
+
 		FRAMEWORK.framebuffer.Deactivate();
 		FRAMEWORK.framebuffer.ResetRenderTexture();
 

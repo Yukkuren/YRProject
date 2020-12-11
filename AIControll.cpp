@@ -20,11 +20,11 @@ void SceneGame::AIControll(float elapsed_time)
 		player2p->pad->Init();
 	}
 
-	if (player1p->act_state == ActState::SLAM)
+	/*if (player1p->act_state == ActState::SLAM)
 	{
 		player2p->pad->Init();
 		AI2P.state = AI_Controller::AI_State::SPECIAL;
-	}
+	}*/
 
 	if (player2p->steal_escape > 0.0f)
 	{
@@ -165,7 +165,16 @@ void SceneGame::AIControll(float elapsed_time)
 			player2p->pad->x_input[scastI(PAD::R_DASH)] = 0;
 			player2p->pad->x_input[scastI(PAD::L_DASH)] = 0;
 			AI2P.timer = 0.0f;
-			AI2P.state = AI_Controller::AI_State::SPECIAL;
+			if (player2p->power > 0)
+			{
+				//クリスタルがあれば超必
+				AI2P.state = AI_Controller::AI_State::SPECIAL;
+			}
+			else
+			{
+				//なければ通常のステートに
+				AI2P.state = AI_Controller::AI_State::INIT;
+			}
 		}
 		break;
 	case AI_Controller::AI_State::COMBO:

@@ -6,7 +6,7 @@
 #include<array>
 #include<memory>
 #include "Texture.h"
-#include <fbxsdk.h> 
+#include <fbxsdk.h>
 #include "YR_VectorMaster.h"
 
 

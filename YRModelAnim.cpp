@@ -528,6 +528,193 @@ void ModelAnim::Draw(
 }
 
 
+
+
+void ModelAnim::Draw(
+	YRShader* shader,
+	const DirectX::XMMATRIX& view,
+	const DirectX::XMMATRIX& projection,
+	const DirectX::XMFLOAT4& light_direction,
+	const DirectX::XMFLOAT4& light_color,
+	const D3D_PRIMITIVE_TOPOLOGY& topology,
+	const DirectX::XMFLOAT4& ambient_color,
+	const DirectX::XMFLOAT2& off_set_eye,
+	const DirectX::XMFLOAT2& off_set_mouse,
+	const Model::Material_Attribute& blur_material,
+	const DirectX::XMFLOAT4		material_color
+)
+{
+	DirectX::XMFLOAT4X4 world;
+	DirectX::XMStoreFloat4x4(&world, world_matrix);
+
+	DirectX::XMFLOAT4X4 world_view_projection;
+	DirectX::XMStoreFloat4x4(&world_view_projection, world_matrix * view * projection);
+
+	const std::vector<Node>& nodes = GetNodes();
+	//std::vector<Model::Mesh> test = m_model_resource->GetMeshes();
+
+	const Model* model_res = m_model_resource.get();
+
+	/*for (auto& material : model_res->m_data->materials)
+	{
+		std::string file = material.texture_filename;
+		const char* name = file.c_str();
+		int hoge = 0;
+	}
+
+	for (auto& data : model_res->m_data->meshes)
+	{
+		for (auto& v : data.subsets)
+		{
+			int i = v.material_index;
+			int hoge = 0;
+		}
+	}*/
+
+	for (const Model::Mesh& mesh : model_res->GetMeshes())
+	{
+		// メッシュ用定数バッファ更新
+		cbuffer cb;
+		::memset(&cb, 0, sizeof(cb));
+		if (mesh.node_indices.size() > 0)
+		{
+			size_t max = mesh.node_indices.size();
+			for (size_t i = 0; i < max; i++)
+			{
+				DirectX::XMMATRIX inverse_transform = DirectX::XMLoadFloat4x4(mesh.inverse_transforms.at(i));
+				DirectX::XMMATRIX world_transform = DirectX::XMLoadFloat4x4(&nodes.at(mesh.node_indices.at(i)).world_transform);
+				DirectX::XMMATRIX bone_transform = inverse_transform * world_transform;
+				DirectX::XMStoreFloat4x4(&cb.bone_transforms[i], bone_transform);
+
+			}
+		}
+		else
+		{
+			cb.bone_transforms[0] = nodes.at(mesh.node_index).world_transform;
+		}
+
+		UINT stride = sizeof(ModelData::Vertex);
+		UINT offset = 0;
+		FRAMEWORK.context->RSSetState(m_rasterizer_state.Get());
+		FRAMEWORK.context->OMSetDepthStencilState(m_depth_stencil_state.Get(), 1);
+		shader->Acivate();
+		FRAMEWORK.context.Get()->IASetVertexBuffers(0, 1, mesh.vertex_buffer.GetAddressOf(), &stride, &offset);
+		FRAMEWORK.context.Get()->IASetIndexBuffer(mesh.index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		FRAMEWORK.context.Get()->IASetPrimitiveTopology(topology);
+
+		DirectX::XMFLOAT4X4 global_transform =
+		{
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1
+		};
+
+		for (const Model::Subset& subset : mesh.subsets)
+		{
+			DirectX::XMStoreFloat4x4(&cb.world_view_projection,
+				/*DirectX::XMLoadFloat4x4(&global_transform) **/
+				DirectX::XMLoadFloat4x4(&coodinate_conversion) *
+				DirectX::XMLoadFloat4x4(&world_view_projection));
+			DirectX::XMStoreFloat4x4(&cb.world,
+				/*DirectX::XMLoadFloat4x4(&global_transform) **/
+				DirectX::XMLoadFloat4x4(&coodinate_conversion) *
+				DirectX::XMLoadFloat4x4(&world));
+			//cb.material_color = subset.material->color;
+			cb.light_direction = light_direction;
+			cb.light_color = light_color;
+			cb.ambient_color = ambient_color;
+			cb.material_color.x = material_color.x * subset.material->color.x;
+			cb.material_color.y = material_color.y * subset.material->color.y;
+			cb.material_color.z = material_color.z * subset.material->color.z;
+			cb.material_color.w = material_color.w * subset.material->color.w;
+			cb.eyePos.x = YRCamera.GetEye().x;
+			cb.eyePos.y = YRCamera.GetEye().y;
+			cb.eyePos.z = YRCamera.GetEye().z;
+			cb.eyePos.w = 1.0f;
+			DirectX::XMFLOAT4X4 v;
+			DirectX::XMStoreFloat4x4(&v, view);
+			cb.view = v;
+			DirectX::XMFLOAT4X4 p;
+			DirectX::XMStoreFloat4x4(&p, projection);
+			cb.projection = p;
+			cb.at = YRCamera.GetAt();
+			cb.dummy00 = 0.0f;
+			cb.dummy01 = 0.0f;
+
+			//ブルームで光らせる場所を指定する
+			switch (blur_material)
+			{
+			case Model::Material_Attribute::NONE:
+				cb.lumi_factor = 0.0f;
+				break;
+			case Model::Material_Attribute::ALL:
+				cb.lumi_factor = 1.0f;
+				break;
+			default:
+				if (subset.material_index == blur_material)
+				{
+					cb.lumi_factor = 1.0f;
+				}
+				break;
+			}
+
+			switch (subset.material_index)
+			{
+			case Model::Material_Attribute::EYE:
+				cb.Offset_X = off_set_eye.x;
+				cb.Offset_Y = off_set_eye.y;
+				if (m_model_resource->color_texture_face)
+				{
+					m_model_resource->color_texture_face->Set(0);
+				}
+				break;
+			case Model::Material_Attribute::MOUSE:
+				cb.Offset_X = off_set_mouse.x;
+				cb.Offset_Y = off_set_mouse.y;
+				if (m_model_resource->color_texture_face)
+				{
+					m_model_resource->color_texture_face->Set(0);
+				}
+				break;
+			case Model::Material_Attribute::SWORD:
+				cb.Offset_X = 0.0f;
+				cb.Offset_Y = 0.0f;
+				if (m_model_resource->color_texture_main)
+				{
+					m_model_resource->color_texture_main->Set(0);
+				}
+				break;
+			default:
+				cb.Offset_X = 0.0f;
+				cb.Offset_Y = 0.0f;
+				if (m_model_resource->color_texture_main)
+				{
+					m_model_resource->color_texture_main->Set(0);
+				}
+				break;
+			}
+
+			FRAMEWORK.context->UpdateSubresource(constant_buffer.Get(), 0, 0, &cb, 0, 0);
+			FRAMEWORK.context->VSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
+			FRAMEWORK.context->PSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
+			FRAMEWORK.context->GSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
+
+			if (m_model_resource->color_texture_main == nullptr)
+			{
+				FRAMEWORK.context->PSSetShaderResources(0, 1, subset.material->shader_resource_view.Get() ? subset.material->shader_resource_view.GetAddressOf() : m_dummy_srv.GetAddressOf());
+			}
+			FRAMEWORK.context->PSSetSamplers(0, 1, m_sampler_state.GetAddressOf());
+			FRAMEWORK.context->DrawIndexed(subset.index_count, subset.start_index, 0);
+		}
+
+		shader->Inactivate();
+	}
+}
+
+
+
+
 void ModelAnim::NodeChange(const std::shared_ptr<Model>& resource)
 {
 	PlayAnimation(0, true);

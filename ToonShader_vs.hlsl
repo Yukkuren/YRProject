@@ -1,6 +1,6 @@
 #include "ToonShader.hlsli"
 
-GSInput main(VSInput input) 
+GSInput main(VSInput input)
 {
 	GSInput output = (GSInput)0;
 

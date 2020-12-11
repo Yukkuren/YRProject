@@ -31,7 +31,7 @@
 // SV_TARGET                2   xyzw        2   TARGET   float   xyzw
 //
 ps_5_0
-dcl_globalFlags refactoringAllowed
+dcl_globalFlags refactoringAllowed | skipOptimization
 dcl_sampler s0, mode_default
 dcl_resource_texture2d (float,float,float,float) t0
 dcl_input_ps linear v1.xyzw
@@ -41,14 +41,44 @@ dcl_input_ps linear v4.xy
 dcl_output o0.xyzw
 dcl_output o1.xyzw
 dcl_output o2.xyzw
-dcl_temps 1
+dcl_temps 3
+//
+// Initial variable locations:
+//   v0.x <- input.Position.x; v0.y <- input.Position.y; v0.z <- input.Position.z; v0.w <- input.Position.w; 
+//   v1.x <- input.color.x; v1.y <- input.color.y; v1.z <- input.color.z; v1.w <- input.color.w; 
+//   v2.x <- input.wNormal.x; v2.y <- input.wNormal.y; v2.z <- input.wNormal.z; 
+//   v3.x <- input.wPos.x; v3.y <- input.wPos.y; v3.z <- input.wPos.z; 
+//   v4.x <- input.Tex.x; v4.y <- input.Tex.y; 
+//   o2.x <- <main return value>.wPosition.x; o2.y <- <main return value>.wPosition.y; o2.z <- <main return value>.wPosition.z; o2.w <- <main return value>.wPosition.w; 
+//   o1.x <- <main return value>.wNormal.x; o1.y <- <main return value>.wNormal.y; o1.z <- <main return value>.wNormal.z; o1.w <- <main return value>.wNormal.w; 
+//   o0.x <- <main return value>.Color.x; o0.y <- <main return value>.Color.y; o0.z <- <main return value>.Color.z; o0.w <- <main return value>.Color.w
+//
+#line 7 "D:\ゲーム制作\YRProject\toGbuffer_ps.hlsl"
 sample_indexable(texture2d)(float,float,float,float) r0.xyzw, v4.xyxx, t0.xyzw, s0
-mul o0.xyzw, r0.xyzw, v1.xyzw
-dp3 r0.x, v2.xyzx, v2.xyzx
-rsq r0.x, r0.x
-mul o1.xyz, r0.xxxx, v2.xyzx
-mov o1.w, l(1.000000)
-mov o2.xyz, v3.xyzx
-mov o2.w, l(1.000000)
+mul r0.xyzw, r0.xyzw, v1.xyzw  // r0.x <- color.x; r0.y <- color.y; r0.z <- color.z; r0.w <- color.w
+
+#line 8
+dp3 r1.x, v2.xyzx, v2.xyzx
+rsq r1.x, r1.x
+mul r1.xyz, r1.xxxx, v2.xyzx  // r1.x <- N.x; r1.y <- N.y; r1.z <- N.z
+
+#line 9
+mov r2.xyz, v3.xyzx  // r2.x <- P.x; r2.y <- P.y; r2.z <- P.z
+
+#line 10
+mov r0.xyzw, r0.xyzw  // r0.x <- Out.Color.x; r0.y <- Out.Color.y; r0.z <- Out.Color.z; r0.w <- Out.Color.w
+
+#line 12
+mov r1.xyz, r1.xyzx  // r1.x <- Out.wNormal.x; r1.y <- Out.wNormal.y; r1.z <- Out.wNormal.z
+mov r1.w, l(1.000000)  // r1.w <- Out.wNormal.w
+
+#line 13
+mov r2.xyz, r2.xyzx  // r2.x <- Out.wPosition.x; r2.y <- Out.wPosition.y; r2.z <- Out.wPosition.z
+mov r2.w, l(1.000000)  // r2.w <- Out.wPosition.w
+
+#line 16
+mov o0.xyzw, r0.xyzw
+mov o1.xyzw, r1.xyzw
+mov o2.xyzw, r2.xyzw
 ret 
-// Approximately 9 instruction slots used
+// Approximately 15 instruction slots used

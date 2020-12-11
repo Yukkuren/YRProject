@@ -103,6 +103,12 @@
       <AdditionalDependencies>d3d11.lib;dxgi.lib;DirectXTK.lib;libfbxsdk-md.lib;EffekseerRendererDX11.lib;Effekseer.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.\DirectXTK-master\Bin\Desktop_2015\Win32\Debug;.\FBX SDK\2016.1.2\lib\vs2015\x86\debug;.\EXlib\Effekseer\Debug;.\EXlib\DX11\Debug</AdditionalLibraryDirectories>
     </Link>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+      <AssemblerOutput>AssemblyCode</AssemblerOutput>
+      <ObjectFileOutput>$(ProjectDir)Data\Shader\%(Filename).cso</ObjectFileOutput>
+      <AssemblerOutputFile>%(Filename).cod</AssemblerOutputFile>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -141,6 +147,12 @@
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;d3d11.lib;dxgi.lib;DirectXTK.lib;libfbxsdk-md.lib;EffekseerRendererDX11.lib;Effekseer.lib;xaudio2.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.\FBX SDK\2016.1.2\lib\vs2015\x86\release;.\DirectXTK-master\Bin\Desktop_2015\Win32\Release;.\cereal-master\include;.\EXlib\Effekseer\Release;.\EXlib\DX11\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+      <AssemblerOutput>AssemblyCode</AssemblerOutput>
+      <ObjectFileOutput>$(ProjectDir)Data\Shader\%(Filename).cso</ObjectFileOutput>
+      <AssemblerOutputFile>%(Filename).cod</AssemblerOutputFile>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -191,6 +203,7 @@
     <ClCompile Include="framework.cpp" />
     <ClCompile Include="MainCamera.cpp" />
     <ClCompile Include="Stage.cpp" />
+    <ClCompile Include="Trajectory.cpp" />
     <ClCompile Include="YRModel.cpp" />
     <ClCompile Include="Sampler.cpp" />
     <ClCompile Include="SceneClear.cpp" />
@@ -230,6 +243,7 @@
     <ClInclude Include="HitCheak.h" />
     <ClInclude Include="Knight.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="Trajectory.h" />
     <ClInclude Include="YRModel.h" />
     <ClInclude Include="Sampler.h" />
     <ClInclude Include="World.h" />
@@ -278,6 +292,7 @@
     <None Include="Skinned_mesh.hlsli" />
     <None Include="SkyMapShader.hlsli" />
     <None Include="sprite.hlsli" />
+    <None Include="Tessellation.hlsli" />
     <None Include="TitleShader.hlsli" />
     <None Include="ToonShader.hlsli" />
     <None Include="SpriteEx.hlsli" />
@@ -831,6 +846,32 @@
       <AssemblerOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).cod</AssemblerOutputFile>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Tessellation_ds.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Domain</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Domain</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Domain</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Domain</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Tessellation_hs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Tessellation_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="TitleShader_ps.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>

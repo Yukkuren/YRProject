@@ -142,6 +142,15 @@
     <FxCompile Include="ConcentrationShader_ps.hlsl">
       <Filter>Shader\ConcentrationShader</Filter>
     </FxCompile>
+    <FxCompile Include="Tessellation_vs.hlsl">
+      <Filter>Shader\Tessellation</Filter>
+    </FxCompile>
+    <FxCompile Include="Tessellation_hs.hlsl">
+      <Filter>Shader\Tessellation</Filter>
+    </FxCompile>
+    <FxCompile Include="Tessellation_ds.hlsl">
+      <Filter>Shader\Tessellation</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="1PGamePad.cpp">
@@ -291,6 +300,9 @@
     <ClCompile Include="InputListProcess.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Trajectory.cpp">
+      <Filter>Souce</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimBoard.h">
@@ -431,6 +443,9 @@
     <ClInclude Include="Resource.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Trajectory.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="AnimShader.hlsli">
@@ -498,6 +513,9 @@
     </None>
     <None Include="ConcentrationShader.hlsli">
       <Filter>Shader\ConcentrationShader</Filter>
+    </None>
+    <None Include="Tessellation.hlsli">
+      <Filter>Shader\Tessellation</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -596,6 +614,9 @@
     </Filter>
     <Filter Include="Shader\ConcentrationShader">
       <UniqueIdentifier>{0206af5d-a27d-451c-a66d-e4200a80e5fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Tessellation">
+      <UniqueIdentifier>{513fe500-ed02-474c-b79d-b797cb8f06fe}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

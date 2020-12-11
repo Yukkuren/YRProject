@@ -744,11 +744,13 @@ void SceneGame::Update(float elapsed_time)
 			}
 
 			//途中ボタンが押されたときはスキップ
-			if (player1p->pad->x_input[scastI(PAD::X)] == 1 ||
-				player2p->pad->x_input[scastI(PAD::X)] == 1)
+			for (int i = 0; i < any_button.size(); i++)
 			{
-				fado_start = true;
-				GetSound().SEStop(SEKind::INTRO_WIND);
+				if (player1p->pad->x_input[scastI(any_button[i])] == 1 || player2p->pad->x_input[scastI(any_button[i])] == 1)
+				{
+					fado_start = true;
+					GetSound().SEStop(SEKind::INTRO_WIND);
+				}
 			}
 			break;
 		case MAIN_LOOP::INTRO2P:
@@ -770,14 +772,16 @@ void SceneGame::Update(float elapsed_time)
 				main_loop = MAIN_LOOP::INTRO2P;
 			}
 						//途中ボタンが押されたらスキップ
-			if (player1p->pad->x_input[scastI(PAD::X)] == 1 ||
-				player2p->pad->x_input[scastI(PAD::X)] == 1)
+			for (int i = 0; i < any_button.size(); i++)
 			{
-				fado_start = true;
-				main_loop = MAIN_LOOP::INTRO2P;
-				GetSound().SEStop(SEKind::INTRO_WIND);
-				player1p->pad->Init();
-				player2p->pad->Init();
+				if (player1p->pad->x_input[scastI(any_button[i])] == 1 || player2p->pad->x_input[scastI(any_button[i])] == 1)
+				{
+					fado_start = true;
+					main_loop = MAIN_LOOP::INTRO2P;
+					GetSound().SEStop(SEKind::INTRO_WIND);
+					player1p->pad->Init();
+					player2p->pad->Init();
+				}
 			}
 			break;
 		case MAIN_LOOP::READY:
@@ -874,6 +878,11 @@ void SceneGame::Update(float elapsed_time)
 						game_speed = 0.0f;
 						Hitcheak::timer -= elapsed_time;
 						hit_stop_elapsed += elapsed_time;
+						if (player1p->pad->x_input[scastI(PAD::START)] == 1 || player2p->pad->x_input[scastI(PAD::START)] == 1)
+						{
+							//ポーズボタンが押された
+							pause = true;
+						}
 						if (Hitcheak::timer < 0.0f)
 						{
 							//ヒットストップ終了
@@ -887,6 +896,8 @@ void SceneGame::Update(float elapsed_time)
 							player1p->stop_state = 0;
 							player2p->stop_state = 0;
 							YRCamera.RequestCamera(Camera::Request::RELEASE, 0);
+							//カメラリクエスト更新
+							CameraRequest(game_speed);
 						}
 						if (Hitcheak::timer != 0.0f)
 						{
@@ -906,6 +917,11 @@ void SceneGame::Update(float elapsed_time)
 								player1p->StopHitParamUpdate();
 								player2p->StopHitParamUpdate();
 								hit_stop_elapsed = 0.0f;
+							}
+							if (player1p->pad->x_input[scastI(PAD::START)] == 1 || player2p->pad->x_input[scastI(PAD::START)] == 1)
+							{
+								//ポーズボタンが押された
+								pause = true;
 							}
 							return;
 						}
@@ -1147,10 +1163,12 @@ void SceneGame::Update(float elapsed_time)
 			}
 
 			//途中ボタンが押されたらスキップ
-			if (player1p->pad->x_input[scastI(PAD::X)] == 1 ||
-				player2p->pad->x_input[scastI(PAD::X)] == 1)
+			for (int i = 0; i < any_button.size(); i++)
 			{
-				fado_start = true;
+				if (player1p->pad->x_input[scastI(any_button[i])] == 1 || player2p->pad->x_input[scastI(any_button[i])] == 1)
+				{
+					fado_start = true;
+				}
 			}
 			break;
 		case MAIN_LOOP::WIN2P:
@@ -1166,10 +1184,12 @@ void SceneGame::Update(float elapsed_time)
 			}
 
 			//途中ボタンが押されたらスキップ
-			if (player1p->pad->x_input[scastI(PAD::X)] == 1 ||
-				player2p->pad->x_input[scastI(PAD::X)] == 1)
+			for (int i = 0; i < any_button.size(); i++)
 			{
-				fado_start = true;
+				if (player1p->pad->x_input[scastI(any_button[i])] == 1 || player2p->pad->x_input[scastI(any_button[i])] == 1)
+				{
+					fado_start = true;
+				}
 			}
 			break;
 		case MAIN_LOOP::DRAW:
@@ -1188,10 +1208,12 @@ void SceneGame::Update(float elapsed_time)
 			}
 
 			//途中ボタンが押されたらスキップ
-			if (player1p->pad->x_input[scastI(PAD::X)] == 1 ||
-				player2p->pad->x_input[scastI(PAD::X)] == 1)
+			for (int i = 0; i < any_button.size(); i++)
 			{
-				fado_start = true;
+				if (player1p->pad->x_input[scastI(any_button[i])] == 1 || player2p->pad->x_input[scastI(any_button[i])] == 1)
+				{
+					fado_start = true;
+				}
 			}
 			break;
 		case MAIN_LOOP::GAME_FIN:
@@ -1228,6 +1250,8 @@ void SceneGame::Draw(float elapsed_time)
 	//ImGui
 	static float xxx = 0.0f;
 	static float yyy = 0.0f;
+	static DirectX::XMFLOAT3 eye_hit = { 0.0f,0.0f,0.0f };
+	static DirectX::XMFLOAT3 focus_hit = { 0.0f,0.0f,0.0f };
 	if(Get_Use_ImGui())
 	{
 		DirectX::XMFLOAT3	eye = YRCamera.GetEye();
@@ -1273,6 +1297,22 @@ void SceneGame::Draw(float elapsed_time)
 		//ImGui::InputFloat("transX", &trans.x, 1.0f, 30.00f);
 		//ImGui::InputFloat("transY", &trans.y, 1.0f, 30.00f);
 		//ImGui::InputFloat("transZ", &trans.z, 1.0f, 30.00f);
+		eye.x -= eye_hit.x;
+		eye.y -= eye_hit.y;
+		eye.z -= eye_hit.z;
+		focus.x -= focus_hit.x;
+		focus.y -= focus_hit.y;
+		focus.z -= focus_hit.z;
+		if (ImGui::TreeNode("HitStopCamera"))
+		{
+			ImGui::SliderFloat("eye_X", &eye_hit.x, -360.0f, 360.0f);
+			ImGui::SliderFloat("eye_Y", &eye_hit.y, -360.0f, 360.0f);
+			ImGui::SliderFloat("eye_Z", &eye_hit.z, -360.0f, 360.0f);
+			ImGui::SliderFloat("focus_X", &focus_hit.x, -360.0f, 360.0f);
+			ImGui::SliderFloat("focus_Y", &focus_hit.y, -360.0f, 360.0f);
+			ImGui::SliderFloat("focus_Z", &focus_hit.z, -360.0f, 360.0f);
+			ImGui::TreePop();
+		}
 		if(ImGui::TreeNode("light"))
 		{
 			ImGui::ColorEdit4("light_color", light_color);
@@ -1315,6 +1355,12 @@ void SceneGame::Draw(float elapsed_time)
 			ImGui::SliderFloat("far", &farZ, 0.1f, 1000000.0f);
 			ImGui::TreePop();
 		}
+		eye.x += eye_hit.x;
+		eye.y += eye_hit.y;
+		eye.z += eye_hit.z;
+		focus.x += focus_hit.x;
+		focus.y += focus_hit.y;
+		focus.z += focus_hit.z;
 
 		YRCamera.SetEye(eye);
 		YRCamera.SetFocus(focus);
@@ -2274,7 +2320,7 @@ void SceneGame::PauseUpdate()
 	//ポーズ中行う処理
 	if (player1p->pad->x_input[scastI(PAD::START)] == 1 || player2p->pad->x_input[scastI(PAD::START)] == 1)
 	{
-		pause = false;
+		//pause = false;
 		//pauseTimer = 20;
 	}
 	if (player1p->pad->x_input[scastI(PAD::LB)] == 1 ||player2p->pad->x_input[scastI(PAD::LB)] == 1)
@@ -2478,6 +2524,9 @@ void SceneGame::CameraRequest(float elapsed_time)
 		DirectX::XMFLOAT3 focus = camerapos.GetDXFLOAT3();
 		DirectX::XMFLOAT3 eye = camerapos.GetDXFLOAT3();
 
+		float x_adjust = 70.0f;
+		float y_adjust = 5.0f;
+
 		if (YRCamera.damage_pl_num > 1)
 		{
 			//ダメージを受けたのは2P
@@ -2485,12 +2534,12 @@ void SceneGame::CameraRequest(float elapsed_time)
 			if (player1p->pos.x < player2p->pos.x)
 			{
 				//1Pが左の場合
-				eye.x -= 50.0f;
+				eye.x -= x_adjust;
 			}
 			else
 			{
 				//1Pが右の場合
-				eye.x += 50.0f;
+				eye.x += x_adjust;
 			}
 		}
 		else
@@ -2500,18 +2549,20 @@ void SceneGame::CameraRequest(float elapsed_time)
 			if (player1p->pos.x < player2p->pos.x)
 			{
 				//2Pが右の場合
-				eye.x += 50.0f;
+				eye.x += x_adjust;
 			}
 			else
 			{
 				//2Pが左の場合
-				eye.x -= 50.0f;
+				eye.x -= x_adjust;
 			}
 		}
+		eye.y -= y_adjust;
 
 		eye.z = focus.z - 100.0f;
 
 		YRCamera.viblate_timer = 0.5f;
+		YRCamera.viblate_timer = 0.0f;
 		YRCamera.targetPos = focus;
 
 		YRCamera.SetEye(eye);

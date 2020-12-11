@@ -10,7 +10,6 @@ float4 MatPos(float4 POS)
 	float len = length(P - E);
 	float h = length(wPOS - P) / len;
 	h = max(0.05, h);
-	
 	//float h = (abs(len) < 0.001) ? 1.0 : length(wPOS - P) / len;
 	//h *= dot(wPOS - P, at) > 0 ? -1 : 1;
 	row_major float4x4 Mat = {

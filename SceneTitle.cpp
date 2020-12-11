@@ -303,8 +303,7 @@ void SceneTitle::Update(float elapsed_time)
 		}
 #ifdef EXIST_IMGUI
 
-
-		/*if (pKeyState.tflg == 1)
+		if (pKeyState.tflg == 1)
 		{
 			GetSound().BGMStop(BGMKind::TITLE);
 			select_p1 = scastI(INPUT_PLAYER::P1);
@@ -313,7 +312,7 @@ void SceneTitle::Update(float elapsed_time)
 			UnInit();
 			FRAMEWORK.SetScene(SCENE_TEST);
 			return;
-		}*/
+		}
 
 #endif // USE_IMGUI
 
@@ -423,10 +422,13 @@ void SceneTitle::Update(float elapsed_time)
 		switch (state)
 		{
 		case SceneTitle::STATE::HOME:
-			if (g1.x_input[scastI(PAD::X)] == 1|| g2.x_input[scastI(PAD::X)] == 1)
+			for (int i = 0; i < any_button.size(); i++)
 			{
-				state = STATE::SELECT;
-				GetSound().SESinglePlay(SEKind::SELECT_ENTER);
+				if (g1.x_input[scastI(any_button[i])] == 1 || g2.x_input[scastI(any_button[i])] == 1)
+				{
+					state = STATE::SELECT;
+					GetSound().SESinglePlay(SEKind::SELECT_ENTER);
+				}
 			}
 			break;
 		case SceneTitle::STATE::SELECT:
@@ -449,15 +451,21 @@ void SceneTitle::Update(float elapsed_time)
 					GetSound().SESinglePlay(SEKind::SELECT);
 				}
 			}
-			if (g1.x_input[scastI(PAD::X)] == 1)
+			for (int i = 0; i < any_button.size(); i++)
 			{
-				state = STATE::END;
-				GetSound().SESinglePlay(SEKind::SELECT_ENTER);
-			}
-			if (g1.x_input[scastI(PAD::B)] == 1)
-			{
-				state = STATE::HOME;
-				GetSound().SESinglePlay(SEKind::SELECT_CANCEL);
+				if (g1.x_input[scastI(any_button[i])] == 1)
+				{
+					if (any_button[i] == PAD::B)
+					{
+						state = STATE::HOME;
+						GetSound().SESinglePlay(SEKind::SELECT_CANCEL);
+					}
+					else
+					{
+						state = STATE::END;
+						GetSound().SESinglePlay(SEKind::SELECT_ENTER);
+					}
+				}
 			}
 
 			break;
