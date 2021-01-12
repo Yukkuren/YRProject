@@ -28,7 +28,7 @@ VS_OUT main(float3 position : POSITION)
 	Posi = mul(Posi, view);
 	Posi = mul(Posi, projection);
 	Posi /= Posi.w;
-	
+
 	vout.position = Posi;
 
 

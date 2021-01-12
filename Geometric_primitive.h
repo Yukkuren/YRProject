@@ -47,6 +47,20 @@ public:
 		const bool						viewflag = true
 	);
 
+	void render(
+		YRShader* shader,
+		Texture* texture,
+		const DirectX::XMFLOAT3& model_pos,
+		const DirectX::XMFLOAT3& pos,
+		const DirectX::XMFLOAT3& scale,
+		const DirectX::XMFLOAT3& angle,
+		const DirectX::XMMATRIX& view,
+		const DirectX::XMMATRIX& projection,
+		//UNIT.23
+		const DirectX::XMFLOAT4			material_color = { 1.0f,1.0f,1.0f,1.0f },
+		const bool						viewflag = true
+	);
+
 	struct vertex
 	{
 		DirectX::XMFLOAT3		position;

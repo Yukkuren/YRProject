@@ -41,7 +41,7 @@ public:
 	const std::vector<Node>& GetNodes() const { return m_nodes; }
 	const Model* GetModelResource() const { return m_model_resource.get(); }
 
-	void Draw(
+	DirectX::XMFLOAT4X4 Draw(
 		YRShader* shader,
 		const DirectX::XMMATRIX&	view,
 		const DirectX::XMMATRIX&	projection,
@@ -53,6 +53,8 @@ public:
 		const Model::Material_Attribute& blur_material= Model::Material_Attribute::SWORD,
 		const DirectX::XMFLOAT4		material_color = { 1.0f,1.0f,1.0f,1.0f }
 		);
+
+
 
 	void Draw(
 		YRShader* shader,

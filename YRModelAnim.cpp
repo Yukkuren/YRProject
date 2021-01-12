@@ -346,7 +346,7 @@ void ModelAnim::CalculateWorldTransform(
 }
 
 
-void ModelAnim::Draw(
+DirectX::XMFLOAT4X4 ModelAnim::Draw(
 	YRShader* shader,
 	const DirectX::XMMATRIX&	view,
 	const DirectX::XMMATRIX&	projection,
@@ -359,6 +359,15 @@ void ModelAnim::Draw(
 	const DirectX::XMFLOAT4		material_color
 )
 {
+
+	DirectX::XMFLOAT4X4 return_inverse =
+	{
+		1.0f,0.0f,0.0f,0.0f,
+		0.0f,1.0f,0.0f,0.0f,
+		0.0f,0.0f,1.0f,0.0f,
+		0.0f,0.0f,0.0f,1.0f
+	};
+
 	DirectX::XMFLOAT4X4 world;
 	DirectX::XMStoreFloat4x4(&world, world_matrix);
 
@@ -400,10 +409,10 @@ void ModelAnim::Draw(
 				DirectX::XMMATRIX world_transform = DirectX::XMLoadFloat4x4(&nodes.at(mesh.node_indices.at(i)).world_transform);
 				DirectX::XMMATRIX bone_transform = inverse_transform * world_transform;
 
-				/*if (nodes.at(mesh.node_indices.at(i)).name == std::string("Sword"))
+				if (nodes.at(mesh.node_indices.at(i)).name == std::string("Sword"))
 				{
-					int hoge=0;
-				}*/
+					DirectX::XMStoreFloat4x4(&return_inverse, inverse_transform);
+				}
 
 				DirectX::XMStoreFloat4x4(&cb.bone_transforms[i], bone_transform);
 			}
@@ -530,6 +539,7 @@ void ModelAnim::Draw(
 
 		shader->Inactivate();
 	}
+	return return_inverse;
 }
 
 

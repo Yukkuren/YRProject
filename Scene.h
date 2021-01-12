@@ -331,6 +331,8 @@ public:
 	std::shared_ptr<Texture> p1_icon_img = nullptr;
 	std::shared_ptr<Texture> p2_icon_img = nullptr;
 	std::shared_ptr<Texture> arrow_icon_img = nullptr;
+
+	//”Âƒ|ƒŠ
 	std::unique_ptr<AnimBoard>	p1_icon_board = nullptr;
 	std::unique_ptr<AnimBoard>	p2_icon_board = nullptr;
 	std::unique_ptr<AnimBoard>	arrow_icon_board = nullptr;

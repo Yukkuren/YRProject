@@ -1235,12 +1235,20 @@ void Knight::Draw(
 	const float shadow_y = -5.2f;
 	const float shadow_z = 3.0f;
 
+	DirectX::XMFLOAT4X4 return_inverse =
+	{
+		1.0f,0.0f,0.0f,0.0f,
+		0.0f,1.0f,0.0f,0.0f,
+		0.0f,0.0f,1.0f,0.0f,
+		0.0f,0.0f,0.0f,1.0f
+	};
+
 	if (scastI(YRCamera.camera_state) == now_player)
 	{
 		anim->UpdateAnimation(game_speed * anim_ccodinate);
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
-		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
+		return_inverse=anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
 		//‰e‚Ì•\Ž¦
 		anim->CalculateWorldTransform(DirectX::XMFLOAT3(pos.x, shadow_y,pos.z + shadow_z), DirectX::XMFLOAT3(scale.x, 0.001f, scale.z), DirectX::XMFLOAT3(0.0f,angle.y,0.0f));
 		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], Model::Material_Attribute::NONE, DirectX::XMFLOAT4( 0.0f,0.0f,0.0f,1.0f ));
@@ -1250,7 +1258,7 @@ void Knight::Draw(
 		anim->UpdateAnimation(game_speed * anim_ccodinate);
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
-		anim->Draw(parallel_shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
+		return_inverse=anim->Draw(parallel_shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
 		//‰e‚Ì•\Ž¦
 		anim->CalculateWorldTransform(DirectX::XMFLOAT3(pos.x, shadow_y, pos.z + shadow_z), DirectX::XMFLOAT3(scale.x, 0.001f, scale.z), DirectX::XMFLOAT3(0.0f, angle.y, 0.0f));
 		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], Model::Material_Attribute::NONE, DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -1260,7 +1268,7 @@ void Knight::Draw(
 		anim->UpdateAnimation(game_speed* anim_ccodinate);
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
-		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
+		return_inverse = anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
 		//‰e‚Ì•\Ž¦
 		anim->CalculateWorldTransform(DirectX::XMFLOAT3(pos.x, shadow_y, pos.z + shadow_z), DirectX::XMFLOAT3(scale.x, 0.001f, scale.z), DirectX::XMFLOAT3(0.0f, angle.y, 0.0f));
 		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], Model::Material_Attribute::NONE, DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -1270,7 +1278,7 @@ void Knight::Draw(
 		anim->UpdateAnimation(game_speed * anim_ccodinate);
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
-		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
+		return_inverse = anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
 		//‰e‚Ì•\Ž¦
 		anim->CalculateWorldTransform(DirectX::XMFLOAT3(pos.x, shadow_y, pos.z + shadow_z), DirectX::XMFLOAT3(scale.x, 0.001f, scale.z), DirectX::XMFLOAT3(0.0f, angle.y, 0.0f));
 		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], Model::Material_Attribute::NONE, DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -1288,8 +1296,9 @@ void Knight::Draw(
 
 	traject_timer += elapsed_time;
 
-	if (traject_timer > 0.5f)
-	{
+
+	/*if (traject_timer > 0.5f)
+	{*/
 		traject_timer = 0.0f;
 		DirectX::XMFLOAT3 head = { 0.0f,0.0f,0.0f };
 		DirectX::XMFLOAT3 tail = { 0.0f,0.0f,0.0f };
@@ -1299,7 +1308,14 @@ void Knight::Draw(
 		{
 			if (a.name == std::string("Sword"))
 			{
-				sword_world_transform = DirectX::XMLoadFloat4x4(&a.world_transform);
+				sword_world_transform = DirectX::XMLoadFloat4x4(&return_inverse) * DirectX::XMLoadFloat4x4(&a.world_transform);
+				/*tail = a.translate;
+				tail.x *= a.rotate.x;
+				tail.y *= a.rotate.y;
+				tail.z *= a.rotate.z;
+				tail.x *= 10.0f;
+				tail.y *= 10.0f;
+				tail.z *= 10.0f;*/
 				break;
 			}
 		}
@@ -1312,14 +1328,27 @@ void Knight::Draw(
 		DirectX::XMStoreFloat3(&head, head_vec);
 		DirectX::XMStoreFloat3(&tail, tail_vec);
 
-		traject.SetTrajectoryPos(head, tail);
+		test_pos = tail;
+		//traject.SetTrajectoryPos(head, tail);
 		//traject.SetTrajectoryPos(sword_head.GetDXFLOAT3(), sword_tail.GetDXFLOAT3());
 		//sword_head.x += 5.0f;
-	}
+	//}
 
 	//traject.Update(elapsed_time);
 
-	traject.render(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3(), view, projection, material_color);
+	//traject.render(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3(), view, projection, material_color);
+	if (now_player == 1)
+	{
+		test_geo->render(
+			traject.shader.get(),
+			test_tex.get(),
+			test_pos.GetDXFLOAT3(),
+			pos.GetDXFLOAT3(),
+			DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
+			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+			view, projection,
+			DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
+	}
 
 	TextDraw();
 

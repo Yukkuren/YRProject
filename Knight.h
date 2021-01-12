@@ -8,6 +8,7 @@
 #include <vector>
 #include "YRModelAnim.h"
 #include "Trajectory.h"
+#include "Geometric_primitive.h"
 
 
 enum class KNIGHTHIT :int
@@ -157,6 +158,9 @@ public:
 	float						traject_timer = 0.0f;
 	YR_Vector3					sword_head = { 0.0f,0.0f,0.0f };
 	YR_Vector3					sword_tail = { 0.0f,0.0f,0.0f };
+	std::unique_ptr<geometric_primitive> test_geo = nullptr;
+	std::unique_ptr<Texture>	test_tex = nullptr;
+	YR_Vector3					test_pos = { 0.0f,0.0f,0.0f };
 
 	~Knight();
 	void Init(YR_Vector3 InitPos);

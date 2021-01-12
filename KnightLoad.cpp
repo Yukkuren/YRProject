@@ -6,6 +6,7 @@
 #include "framework.h"
 #include <algorithm>
 #include "World.h"
+//#include <memory>
 
 
 void Knight::LoadData(int color_number)
@@ -22,6 +23,15 @@ void Knight::LoadData(int color_number)
 	DEBUGAttackLoad();
 	AttackClean();
 	AttackLoad();
+
+	if (test_geo == nullptr)
+	{
+		test_geo = std::make_unique<geometric_primitive>();
+	}
+	if (test_tex == nullptr)
+	{
+		test_tex = std::make_unique<Texture>(L"./Data/Image/BG/select.png");
+	}
 
 	//カットイン画像読み込み
 	if (cutFrame == nullptr)

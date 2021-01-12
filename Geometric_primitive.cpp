@@ -251,3 +251,95 @@ void  geometric_primitive::render(
 
 	shader->Inactivate();
 }
+
+
+
+void  geometric_primitive::render(
+	YRShader* shader,
+	Texture* texture,
+	const DirectX::XMFLOAT3& model_pos,
+	const DirectX::XMFLOAT3& pos,
+	const DirectX::XMFLOAT3& scale,
+	const DirectX::XMFLOAT3& angle,
+	const DirectX::XMMATRIX& view,
+	const DirectX::XMMATRIX& projection,
+	//UNIT.23
+	const DirectX::XMFLOAT4			material_color,
+	const bool						viewflag
+)
+{
+	DirectX::XMFLOAT3 pp = { 0.0f,0.0f,0.0f };
+	pp.x = pos.x + model_pos.x;
+	pp.y = pos.y + model_pos.y;
+	pp.z = pos.z + model_pos.z;
+
+	//ワールド変換行列の初期化
+	DirectX::XMMATRIX s, r, t;
+	//拡大行列作成
+	s = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);
+	//回転行列作成
+	r = DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z);
+	//移動行列作成
+	t = DirectX::XMMatrixTranslation(pp.x, pp.y, pp.z);
+	//行列合成と変換
+	DirectX::XMMATRIX world_matrix = s * r * t;
+	DirectX::XMFLOAT4X4 world;
+	DirectX::XMStoreFloat4x4(&world, world_matrix);
+	//ワールド・ビュー・プロジェクション行列作成
+	DirectX::XMFLOAT4X4 world_view_projection;
+	DirectX::XMStoreFloat4x4(&world_view_projection, world_matrix * view * projection);
+
+
+	UINT stride = sizeof(vertex);
+	UINT offset = 0;
+	//頂点バッファのバインド
+	FRAMEWORK.context->IASetVertexBuffers(0, 1, vertex_buffer.GetAddressOf(), &stride, &offset);
+
+
+	//インデックスバッファのバインド
+	FRAMEWORK.context->IASetIndexBuffer(index_buffer.Get(), DXGI_FORMAT_R32_UINT, offset);
+
+	FRAMEWORK.context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	//定数バッファのバインド
+	cbuffer cb = {};
+	cb.world = world;
+	cb.world_view_projection = world_view_projection;
+	cb.material_color = material_color;
+	cb.eyePos.x = YRCamera.GetEye().x;
+	cb.eyePos.y = YRCamera.GetEye().y;
+	cb.eyePos.z = YRCamera.GetEye().z;
+	cb.eyePos.w = 1.0f;
+	DirectX::XMFLOAT4X4 v;
+	DirectX::XMStoreFloat4x4(&v, view);
+	cb.view = v;
+	DirectX::XMFLOAT4X4 p;
+	DirectX::XMStoreFloat4x4(&p, projection);
+	cb.projection = p;
+	cb.at = YRCamera.GetAt();
+	cb.dummy = 0.0f;
+	FRAMEWORK.context->UpdateSubresource(constant_buffer.Get(), 0, 0, &cb, 0, 0);
+	FRAMEWORK.context->VSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
+	FRAMEWORK.context->PSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
+
+
+	//ステート・シェーダー設定
+	if (viewflag)
+	{
+		FRAMEWORK.context->RSSetState(filling_state.Get());
+	}
+	else
+	{
+		FRAMEWORK.context->RSSetState(line_state.Get());
+	}
+	/*FRAMEWORK.context->IASetInputLayout(input_layout);
+	FRAMEWORK.context->VSSetShader(vertex_shader, NULL, 0);
+	FRAMEWORK.context->PSSetShader(pixel_shader, NULL, 0);*/
+	shader->Acivate();
+
+	texture->Set(0);
+	//プリミティブの描画
+	FRAMEWORK.context->DrawIndexed(36, NULL, NULL);
+
+	shader->Inactivate();
+}
