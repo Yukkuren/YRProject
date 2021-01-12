@@ -105,20 +105,20 @@ dcl_temps 4
 //   v[2][2].x <- input[2].Tex.x; v[2][2].y <- input[2].Tex.y; 
 //   v[2][3].x <- input[2].Color.x; v[2][3].y <- input[2].Color.y; v[2][3].z <- input[2].Color.z; v[2][3].w <- input[2].Color.w
 //
-#line 81 "D:\ゲーム制作\YRProject\Tessellation_hs.hlsl"
+#line 82 "D:\ゲーム制作\YRProject\Tessellation_hs.hlsl"
 mov r0.x, vOutputControlPointID
 mov r0.yzw, v[r0.x + 0][0].xxyz  // r0.y <- output.Position.x; r0.z <- output.Position.y; r0.w <- output.Position.z
 
-#line 82
+#line 83
 mov r1.xyzw, v[r0.x + 0][3].xyzw  // r1.x <- output.Color.x; r1.y <- output.Color.y; r1.z <- output.Color.z; r1.w <- output.Color.w
 
-#line 83
+#line 84
 mov r2.xy, v[r0.x + 0][2].xyxx  // r2.x <- output.Tex.x; r2.y <- output.Tex.y
 
-#line 84
+#line 85
 mov r3.xyz, v[r0.x + 0][1].xyzx  // r3.x <- output.Normal.x; r3.y <- output.Normal.y; r3.z <- output.Normal.z
 
-#line 85
+#line 86
 mov o3.xyzw, r1.xyzw
 mov o0.xyz, r0.yzwy
 mov o1.xyz, r3.xyzx

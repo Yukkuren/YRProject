@@ -70,6 +70,14 @@ struct PSInput
     float3 vN : TEXCOORD4;
 };
 
+struct PSOutput
+{
+    float4 Color : SV_TARGET0;
+	//float4 wNormal : SV_TARGET1;
+	//float4 wPosition : SV_TARGET2;
+    float4 Luminance : SV_TARGET3;
+};
+
 cbuffer CONSTANT_BUFFER : register(b0)
 {
     row_major float4x4 world_view_projection;

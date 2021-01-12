@@ -534,7 +534,7 @@ void  board_primitive::render(
 	const bool						viewflag
 )
 {
-	
+
 	//ワールド変換行列の初期化
 	DirectX::XMMATRIX s, r, t;
 	//拡大行列作成

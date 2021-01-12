@@ -23,8 +23,6 @@ Texture::~Texture()
 
 bool Texture::Load(const wchar_t* filename)
 {
-	
-	
 	HRESULT hr = S_OK;
 
 	ID3D11Resource* pResouse;
@@ -52,7 +50,7 @@ bool Texture::Load(const wchar_t* filename)
 
 	texture2d->Release();
 	pResouse->Release();
-	
+
 	return true;
 }
 
@@ -71,6 +69,7 @@ void Texture::Set(UINT slot, BOOL flg)
 	if (ShaderResouceView)
 	{
 		FRAMEWORK.context->PSSetShaderResources(slot, 1, ShaderResouceView.GetAddressOf());
+		FRAMEWORK.context->DSSetShaderResources(slot, 1, ShaderResouceView.GetAddressOf());
 		//FRAMEWORK.context->VSSetShaderResources(slot, 1, ShaderResouceView.GetAddressOf());
 	}
 }
@@ -90,7 +89,7 @@ bool Texture::Create(u_int width, u_int height, DXGI_FORMAT format)
 	texture2d_desc.Usage = D3D11_USAGE_DEFAULT;
 	texture2d_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	texture2d_desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	
+
 	hr = FRAMEWORK.device->CreateTexture2D(&texture2d_desc, NULL, texture2d.GetAddressOf());
 	assert(SUCCEEDED(hr));
 

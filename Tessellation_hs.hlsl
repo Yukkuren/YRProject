@@ -68,6 +68,7 @@ uint pid : SV_PrimitiveID)
     output.inner_factor = divide;
     return output;
 }
+
 [domain("tri")]
 [partitioning("integer")]
 [outputtopology("triangle_cw")]

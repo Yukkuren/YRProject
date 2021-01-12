@@ -42,7 +42,6 @@ HRESULT YRShader::create_vertex(const char* cso_file, ID3D11VertexShader** vert,
 		cso_sz, input);
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
-	
 	//delete[]cso_data;
 
 
@@ -351,6 +350,28 @@ bool YRShader::Create_element(const char* VS_cso_file)
 			VS_cso_file,
 			VSShader.GetAddressOf(),
 			YRINPUT_ELEMENT_DESC.title_element_desc.data(),
+			numElements,
+			VertextLayout.GetAddressOf());
+	}
+	break;
+	case ShaderType::TRAJECTORY:
+	{
+		UINT numElements = YRINPUT_ELEMENT_DESC.trajectory_element_desc.size();
+		create_vertex(
+			VS_cso_file,
+			VSShader.GetAddressOf(),
+			YRINPUT_ELEMENT_DESC.trajectory_element_desc.data(),
+			numElements,
+			VertextLayout.GetAddressOf());
+	}
+	break;
+	case ShaderType::TESSELLATION:
+	{
+		UINT numElements = YRINPUT_ELEMENT_DESC.tessellation_element_desc.size();
+		create_vertex(
+			VS_cso_file,
+			VSShader.GetAddressOf(),
+			YRINPUT_ELEMENT_DESC.tessellation_element_desc.data(),
 			numElements,
 			VertextLayout.GetAddressOf());
 	}

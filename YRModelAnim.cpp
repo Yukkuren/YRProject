@@ -399,8 +399,13 @@ void ModelAnim::Draw(
 				DirectX::XMMATRIX inverse_transform = DirectX::XMLoadFloat4x4(mesh.inverse_transforms.at(i));
 				DirectX::XMMATRIX world_transform = DirectX::XMLoadFloat4x4(&nodes.at(mesh.node_indices.at(i)).world_transform);
 				DirectX::XMMATRIX bone_transform = inverse_transform * world_transform;
-				DirectX::XMStoreFloat4x4(&cb.bone_transforms[i], bone_transform);
 
+				/*if (nodes.at(mesh.node_indices.at(i)).name == std::string("Sword"))
+				{
+					int hoge=0;
+				}*/
+
+				DirectX::XMStoreFloat4x4(&cb.bone_transforms[i], bone_transform);
 			}
 		}
 		else
@@ -699,6 +704,8 @@ void ModelAnim::Draw(
 			FRAMEWORK.context->VSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
 			FRAMEWORK.context->PSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
 			FRAMEWORK.context->GSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
+			FRAMEWORK.context->DSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
+			FRAMEWORK.context->HSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
 
 			if (m_model_resource->color_texture_main == nullptr)
 			{

@@ -119,6 +119,21 @@ void Knight::Init(YR_Vector3 InitPos)
 	}
 
 	cut_in_timer = 0.0f;
+
+	traject.Init();
+	traject_timer = 0.0f;
+
+	//剣の原点座標を保存する
+	for (auto& m : main->GetNodes())
+	{
+		if (m.name == std::string("Sword"))
+		{
+			sword_tail = m.translate;
+		}
+	}
+
+	sword_head = sword_tail;
+	sword_head.y += 5.0f;
 }
 
 void Knight::Uninit()
@@ -1270,20 +1285,41 @@ void Knight::Draw(
 			inversion, material_color
 		);*/
 
-	//if (atk[scastI(KNIGHTATK::HADOU)].hit_ok)
-	//{
-	//	//波動拳の描画
-	//}
 
-	//if (atk[scastI(KNIGHTATK::THU_HADOU)].hit_ok)
-	//{
-	//	//中波動拳の描画。これまとめてもいいだろ
-	//}
+	traject_timer += elapsed_time;
 
-	//if (atk[scastI(KNIGHTATK::KYO_HADOU)].hit_ok)
-	//{
-	//	//でかい波動拳の描画。これは大きさ違うから仕方ない
-	//}
+	if (traject_timer > 0.5f)
+	{
+		traject_timer = 0.0f;
+		DirectX::XMFLOAT3 head = { 0.0f,0.0f,0.0f };
+		DirectX::XMFLOAT3 tail = { 0.0f,0.0f,0.0f };
+		//剣のワールド変換行列を取得する
+		DirectX::XMMATRIX sword_world_transform;
+		for (auto& a : anim->GetNodes())
+		{
+			if (a.name == std::string("Sword"))
+			{
+				sword_world_transform = DirectX::XMLoadFloat4x4(&a.world_transform);
+				break;
+			}
+		}
+
+		//取得した剣のワールド変換行列を使って剣の先端と根本の座標を割り出す
+		DirectX::XMVECTOR head_vec = DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&sword_head.GetDXFLOAT3()), sword_world_transform);
+		DirectX::XMVECTOR tail_vec = DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&sword_tail.GetDXFLOAT3()), sword_world_transform);
+
+
+		DirectX::XMStoreFloat3(&head, head_vec);
+		DirectX::XMStoreFloat3(&tail, tail_vec);
+
+		traject.SetTrajectoryPos(head, tail);
+		//traject.SetTrajectoryPos(sword_head.GetDXFLOAT3(), sword_tail.GetDXFLOAT3());
+		//sword_head.x += 5.0f;
+	}
+
+	//traject.Update(elapsed_time);
+
+	traject.render(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3(), view, projection, material_color);
 
 	TextDraw();
 

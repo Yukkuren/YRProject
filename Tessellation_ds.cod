@@ -31,8 +31,6 @@
 //
 // Name                                 Type  Format         Dim      HLSL Bind  Count
 // ------------------------------ ---------- ------- ----------- -------------- ------
-// WrapSampler                       sampler      NA          NA             s1      1 
-// HeightTexture                     texture  float4          2d             t2      1 
 // CONSTANT_BUFFER                   cbuffer      NA          NA            cb0      1 
 //
 //
@@ -78,8 +76,6 @@ dcl_input_control_point_count 3
 dcl_tessellator_domain domain_tri
 dcl_globalFlags refactoringAllowed | skipOptimization
 dcl_constantbuffer CB0[8], immediateIndexed
-dcl_sampler s1, mode_default
-dcl_resource_texture2d (float,float,float,float) t2
 dcl_input vDomain.xyz
 dcl_input vicp[3][0].xyz
 dcl_input vicp[3][1].xyz
@@ -125,123 +121,117 @@ mul r0.x, vDomain.x, vicp[0][3].x
 mul r0.y, vDomain.y, vicp[1][3].y
 add r0.x, r0.y, r0.x
 mul r0.y, vDomain.z, vicp[2][3].z
-add r0.xyzw, r0.yyyy, r0.xxxx  // r0.x <- C.x; r0.y <- C.y; r0.z <- C.z; r0.w <- C.w
+add r0.xyz, r0.yyyy, r0.xxxx  // r0.x <- C.x; r0.y <- C.y; r0.z <- C.z
 
-#line 48
+#line 49
 mul r1.xy, vDomain.xxxx, vicp[0][2].xyxx
 mul r1.zw, vDomain.yyyy, vicp[1][2].xxxy
 add r1.xy, r1.zwzz, r1.xyxx
 mul r1.zw, vDomain.zzzz, vicp[2][2].xxxy
 add r1.xy, r1.zwzz, r1.xyxx  // r1.x <- Tex.x; r1.y <- Tex.y
 
-#line 50
+#line 52
 mul r2.xyz, vDomain.xxxx, vicp[0][1].xyzx
 mul r3.xyz, vDomain.yyyy, vicp[1][1].xyzx
 add r2.xyz, r2.xyzx, r3.xyzx
 mul r3.xyz, vDomain.zzzz, vicp[2][1].xyzx
 add r2.xyz, r2.xyzx, r3.xyzx  // r2.x <- N.x; r2.y <- N.y; r2.z <- N.z
 
-#line 52
+#line 55
 mul r3.xyz, r2.xxxx, cb0[4].xyzx
-mul r4.xyz, r2.yyyy, cb0[5].xyzx
-add r3.xyz, r3.xyzx, r4.xyzx
-mul r4.xyz, r2.zzzz, cb0[6].xyzx
+mul r2.xyw, r2.yyyy, cb0[5].xyxz
+add r2.xyw, r2.xyxw, r3.xyxz
+mul r3.xyz, r2.zzzz, cb0[6].xyzx
+add r2.xyz, r2.xywx, r3.xyzx
+dp3 r1.z, r2.xyzx, r2.xyzx
+rsq r1.z, r1.z
+mul r2.xyz, r1.zzzz, r2.xyzx  // r2.x <- wN.x; r2.y <- wN.y; r2.z <- wN.z
+
+#line 58
+mov r2.xyz, r2.xyzx  // r2.x <- vN.x; r2.y <- vN.y; r2.z <- vN.z
+
+#line 59
+itof r3.yz, l(0, 0, 1, 0)  // r3.y <- vB.x; r3.z <- vB.y
+mov r3.x, l(0.001000)  // r3.x <- vB.z
+
+#line 61
+dp3 r1.z, r3.xyzx, r3.xyzx
+rsq r1.z, r1.z
+mul r3.xyz, r1.zzzz, r3.xyzx
+
+#line 62
+mul r4.xyz, r2.zxyz, r3.zxyz
+mul r3.xyz, r2.yzxy, r3.xyzx
+mov r3.xyz, -r3.xyzx
 add r3.xyz, r3.xyzx, r4.xyzx
 dp3 r1.z, r3.xyzx, r3.xyzx
 rsq r1.z, r1.z
-mul r3.xyz, r1.zzzz, r3.xyzx  // r3.x <- wN.x; r3.y <- wN.y; r3.z <- wN.z
+mul r3.xyz, r1.zzzz, r3.xyzx  // r3.x <- vT.x; r3.y <- vT.y; r3.z <- vT.z
 
-#line 54
-mov r3.xyz, r3.xyzx  // r3.x <- vN.x; r3.y <- vN.y; r3.z <- vN.z
-
-#line 55
-itof r4.yz, l(0, 0, 1, 0)  // r4.y <- vB.x; r4.z <- vB.y
-mov r4.x, l(0.001000)  // r4.x <- vB.z
-
-#line 57
-dp3 r1.z, r4.xyzx, r4.xyzx
-rsq r1.z, r1.z
-mul r4.xyz, r1.zzzz, r4.xyzx
-
-#line 58
-mul r5.xyz, r3.zxyz, r4.zxyz
-mul r4.xyz, r3.yzxy, r4.xyzx
-mov r4.xyz, -r4.xyzx
+#line 63
+mul r4.xyz, r2.yzxy, r3.zxyz
+mul r5.xyz, r2.zxyz, r3.yzxy
+mov r5.xyz, -r5.xyzx
 add r4.xyz, r4.xyzx, r5.xyzx
 dp3 r1.z, r4.xyzx, r4.xyzx
 rsq r1.z, r1.z
-mul r4.xyz, r1.zzzz, r4.xyzx  // r4.x <- vT.x; r4.y <- vT.y; r4.z <- vT.z
-
-#line 59
-mul r5.xyz, r3.yzxy, r4.zxyz
-mul r6.xyz, r3.zxyz, r4.yzxy
-mov r6.xyz, -r6.xyzx
-add r5.xyz, r5.xyzx, r6.xyzx
-dp3 r1.z, r5.xyzx, r5.xyzx
-rsq r1.z, r1.z
-mul r5.xyz, r1.zzzz, r5.xyzx  // r5.x <- vB.x; r5.y <- vB.y; r5.z <- vB.z
-
-#line 61
-itof r1.z, l(0)
-sample_l_indexable(texture2d)(float,float,float,float) r1.z, r1.xyxx, t2.yzxw, s1, r1.z
-mov r1.z, r1.z  // r1.z <- H
-
-#line 63
-mul r6.xyz, vDomain.xxxx, vicp[0][0].xyzx
-mul r7.xyz, vDomain.yyyy, vicp[1][0].xyzx
-add r6.xyz, r6.xyzx, r7.xyzx
-mul r7.xyz, vDomain.zzzz, vicp[2][0].xyzx
-add r6.xyz, r6.xyzx, r7.xyzx  // r6.x <- pos.x; r6.y <- pos.y; r6.z <- pos.z
-
-#line 64
-mul r2.xyz, r1.zzzz, r2.xyzx
-mul r2.xyz, r2.xyzx, l(0.100000, 0.100000, 0.100000, 0.000000)
-add r2.xyz, r2.xyzx, r6.xyzx  // r2.x <- pos.x; r2.y <- pos.y; r2.z <- pos.z
-
-#line 65
-mov r2.xyz, r2.xyzx  // r2.x <- P.x; r2.y <- P.y; r2.z <- P.z
-mov r1.z, l(1.000000)  // r1.z <- P.w
+mul r4.xyz, r1.zzzz, r4.xyzx  // r4.x <- vB.x; r4.y <- vB.y; r4.z <- vB.z
 
 #line 67
-mul r6.xyzw, r2.xxxx, cb0[0].xyzw
-mul r7.xyzw, r2.yyyy, cb0[1].xyzw
+mul r5.xyz, vDomain.xxxx, vicp[0][0].xyzx
+mul r6.xyz, vDomain.yyyy, vicp[1][0].xyzx
+add r5.xyz, r5.xyzx, r6.xyzx
+mul r6.xyz, vDomain.zzzz, vicp[2][0].xyzx
+add r5.xyz, r5.xyzx, r6.xyzx  // r5.x <- pos.x; r5.y <- pos.y; r5.z <- pos.z
+
+#line 69
+mov r5.xyz, r5.xyzx  // r5.x <- P.x; r5.y <- P.y; r5.z <- P.z
+mov r1.z, l(1.000000)  // r1.z <- P.w
+
+#line 70
+mov r0.w, l(1.000000)  // r0.w <- C.w
+
+#line 73
+mov r3.xyz, r3.xyzx  // r3.x <- output.vT.x; r3.y <- output.vT.y; r3.z <- output.vT.z
+
+#line 74
+mov r4.xyz, r4.xyzx  // r4.x <- output.vB.x; r4.y <- output.vB.y; r4.z <- output.vB.z
+
+#line 75
+mov r2.xyz, r2.xyzx  // r2.x <- output.vN.x; r2.y <- output.vN.y; r2.z <- output.vN.z
+
+#line 78
+mul r6.xyzw, r5.xxxx, cb0[0].xyzw
+mul r7.xyzw, r5.yyyy, cb0[1].xyzw
 add r6.xyzw, r6.xyzw, r7.xyzw
-mul r7.xyzw, r2.zzzz, cb0[2].xyzw
+mul r7.xyzw, r5.zzzz, cb0[2].xyzw
 add r6.xyzw, r6.xyzw, r7.xyzw
 mul r7.xyzw, r1.zzzz, cb0[3].xyzw
 add r6.xyzw, r6.xyzw, r7.xyzw  // r6.x <- output.Position.x; r6.y <- output.Position.y; r6.z <- output.Position.z; r6.w <- output.Position.w
 
-#line 68
-mul r7.xyz, r2.xxxx, cb0[4].xyzx
-mul r2.xyw, r2.yyyy, cb0[5].xyxz
-add r2.xyw, r2.xyxw, r7.xyxz
-mul r7.xyz, r2.zzzz, cb0[6].xyzx
-add r2.xyz, r2.xywx, r7.xyzx
+#line 79
+mul r7.xyz, r5.xxxx, cb0[4].xyzx
+mul r5.xyw, r5.yyyy, cb0[5].xyxz
+add r5.xyw, r5.xyxw, r7.xyxz
+mul r7.xyz, r5.zzzz, cb0[6].xyzx
+add r5.xyz, r5.xywx, r7.xyzx
 mul r7.xyz, r1.zzzz, cb0[7].xyzx
-add r2.xyz, r2.xyzx, r7.xyzx  // r2.x <- output.wPosition.x; r2.y <- output.wPosition.y; r2.z <- output.wPosition.z
+add r5.xyz, r5.xyzx, r7.xyzx  // r5.x <- output.wPosition.x; r5.y <- output.wPosition.y; r5.z <- output.wPosition.z
 
-#line 69
-mov r0.xyzw, r0.xyzw  // r0.x <- output.Color.x; r0.y <- output.Color.y; r0.z <- output.Color.z; r0.w <- output.Color.w
+#line 80
+mov r0.xyz, r0.xyzx  // r0.x <- output.Color.x; r0.y <- output.Color.y; r0.z <- output.Color.z
+mov r0.w, r0.w  // r0.w <- output.Color.w
 
-#line 70
+#line 81
 mov r1.xy, r1.xyxx  // r1.x <- output.Tex.x; r1.y <- output.Tex.y
 
-#line 72
-mov r4.xyz, r4.xyzx  // r4.x <- output.vT.x; r4.y <- output.vT.y; r4.z <- output.vT.z
-
-#line 73
-mov r5.xyz, r5.xyzx  // r5.x <- output.vB.x; r5.y <- output.vB.y; r5.z <- output.vB.z
-
-#line 74
-mov r3.xyz, r3.xyzx  // r3.x <- output.vN.x; r3.y <- output.vN.y; r3.z <- output.vN.z
-
-#line 75
+#line 83
 mov o0.xyzw, r6.xyzw
 mov o1.xyzw, r0.xyzw
-mov o2.xyz, r2.xyzx
-mov o4.xyz, r4.xyzx
-mov o5.xyz, r5.xyzx
-mov o6.xyz, r3.xyzx
+mov o2.xyz, r5.xyzx
+mov o4.xyz, r3.xyzx
+mov o5.xyz, r4.xyzx
+mov o6.xyz, r2.xyzx
 mov o3.xy, r1.xyxx
 ret 
-// Approximately 83 instruction slots used
+// Approximately 79 instruction slots used

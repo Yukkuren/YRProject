@@ -65,7 +65,7 @@ private:
 		toon_element_desc.push_back(tex);
 		toon_element_desc.push_back(wight);
 		toon_element_desc.push_back(bone);
-		
+
 		//toGbuf
 		toGbuf_element_desc.push_back(pos);
 		toGbuf_element_desc.push_back(normal);
@@ -114,6 +114,17 @@ private:
 		title_element_desc.push_back(normal);
 		title_element_desc.push_back(tex);
 		title_element_desc.push_back(color);
+
+		//trajectory
+		trajectory_element_desc.push_back(pos);
+		trajectory_element_desc.push_back(tex);
+
+		//tessellation
+		tessellation_element_desc.push_back(pos);
+		tessellation_element_desc.push_back(normal);
+		tessellation_element_desc.push_back(tex);
+		tessellation_element_desc.push_back(wight);
+		tessellation_element_desc.push_back(bone);
 	};
 public:
 
@@ -132,6 +143,8 @@ public:
 	std::vector<D3D11_INPUT_ELEMENT_DESC> fur_element_desc;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> sky_element_desc;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> title_element_desc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> trajectory_element_desc;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> tessellation_element_desc;
 
 	static INPUT_ELEMENT_DESC &getInstance()
 	{
@@ -159,6 +172,8 @@ enum class ShaderType :int
 	FUR,
 	SKY,
 	TITLE,
+	TRAJECTORY,
+	TESSELLATION,
 };
 
 
@@ -175,7 +190,7 @@ protected:
 	Microsoft::WRL::ComPtr<ID3D11DomainShader>		DSShader = nullptr;
 
 	Microsoft::WRL::ComPtr<ID3D11InputLayout>		VertextLayout = nullptr;
-	
+
 public:
 	//YRShader() {};
 	YRShader(ShaderType type) : type(type) {};
@@ -195,7 +210,7 @@ public:
 	bool Create(const char* VS_cso_file, const char* PS_cso_file, const char* GS_cso_file);
 	bool Create(const char* VS_cso_file, const char* PS_cso_file, const char* DS_cso_file, const char* HS_cso_file);
 	bool Create(const char* VS_cso_file, const char* PS_cso_file, const char* GS_cso_file, const char* DS_cso_file, const char* HS_cso_file);
-	
+
 	void Acivate();		//ìÆçÏ
 	void Inactivate();	//í‚é~
 };

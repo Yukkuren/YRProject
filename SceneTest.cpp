@@ -81,6 +81,11 @@ void SceneTest::Init()
 		skyShader = std::make_unique<YRShader>(ShaderType::SKY);
 		skyShader->Create("./Data/Shader/SkyMapShader_vs.cso", "./Data/Shader/SkyMapShader_ps.cso");
 	}
+	if (TessellationShader == nullptr)
+	{
+		TessellationShader = std::make_unique<YRShader>(ShaderType::TESSELLATION);
+		TessellationShader->Create("./Data/Shader/Tessellation_vs.cso", "./Data/Shader/Tessellation_ps.cso", "./Data/Shader/Tessellation_ds.cso", "./Data/Shader/Tessellation_hs.cso");
+	}
 
 	//カメラ初期設定
 	YRCamera.SetEye(DirectX::XMFLOAT3(0.0f, 5.0f, -25));			//視点
@@ -543,6 +548,7 @@ void SceneTest::RenderTexture(
 	static float Density = 1.0f;
 	//static DirectX::XMFLOAT3 sky_scale = { 10.0f,10.0f,10.0f };
 	static float sky_scale[3] = { 1.0f,1.0f,1.0f };
+	static float devide = 0.0f;
 
 #ifdef EXIST_IMGUI
 	if(Get_Use_ImGui())
@@ -558,6 +564,7 @@ void SceneTest::RenderTexture(
 		ImGui::InputFloat(u8"空.x", &sky_scale[0], 0.01f, 0.01f);
 		ImGui::InputFloat(u8"空.y", &sky_scale[1], 0.01f, 0.01f);
 		ImGui::InputFloat(u8"空.z", &sky_scale[2], 0.01f, 0.01f);
+		ImGui::SliderFloat("devide", &devide, 0.0f, 10.0f);
 	}
 #endif // USE_IMGUI
 
@@ -622,12 +629,17 @@ void SceneTest::RenderTexture(
 	cb.eye_pos.x = YRCamera.GetEye().x;
 	cb.eye_pos.y = YRCamera.GetEye().y;
 	cb.eye_pos.z = YRCamera.GetEye().z;
+	static float wave_time = 0;
+	wave_time += elapsed_time;
+	cb.wave_time = wave_time;
+	cb.divide = devide;
 
 	//定数バッファ更新
 	FRAMEWORK.context->UpdateSubresource(constantBuffer.Get(), 0, NULL, &cb, 0, 0);
 	FRAMEWORK.context->VSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
 	FRAMEWORK.context->PSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
-	FRAMEWORK.context->GSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
+	FRAMEWORK.context->HSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
+	FRAMEWORK.context->DSSetConstantBuffers(2, 1, constantBuffer.GetAddressOf());
 
 	//ブレンドステート設定
 	FRAMEWORK.BlendSet(Blend::ALPHA);
@@ -702,11 +714,18 @@ void SceneTest::RenderTexture(
 		//sampler_wrap->Set(0);
 		motion->UpdateAnimation(elapsed_time);
 		motion->CalculateLocalTransform();
+
+		knight_normal_map->Set(1);
+		knight_height_map->Set(2);
+
+		sampler_clamp->Set(0);
+		sampler_wrap->Set(1);
+
 		motion->CalculateWorldTransform(knight_pos,
 			DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
 			knight_angle);
 		motion->Draw(
-			toonShader.get(),
+			TessellationShader.get(),
 			view, projection,
 			light_direction, light_color,
 			D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST,

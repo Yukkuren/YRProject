@@ -5,33 +5,42 @@
 #include<wrl.h>
 #include <d3d11.h>
 #include "YRShader.h"
+#include "Texture.h"
+#include <memory>
 
 struct PosBuffer
 {
 	DirectX::XMFLOAT3	head = { 0.0f,0.0f,0.0f };
 	DirectX::XMFLOAT3	tail = { 0.0f,0.0f,0.0f };
-	bool				isUsed = true;
+	float				alpha = 1.0f;
 };
 
 struct PosData
 {
 	DirectX::XMFLOAT3	pos = { 0.0f,0.0f,0.0f };
-	DirectX::XMFLOAT3	normal = { 0.0f,0.0f,0.0f };
+	DirectX::XMFLOAT2	uv = { 0.0f,0.0f };
+	float				alpha = 1.0f;
 };
 
 class Trajectory
 {
 public:
 	void Init();
-	void Update();
+	void Update(float elapsed_time);
 	void SetTrajectoryPos(const DirectX::XMFLOAT3& headPos, const DirectX::XMFLOAT3& tailPos);
 
 	void render(
-		YRShader* shader,
+		const DirectX::XMFLOAT3& pos,
+		const DirectX::XMFLOAT3& scale,
+		const DirectX::XMFLOAT3& angle,
 		const DirectX::XMMATRIX& view,
-		const DirectX::XMMATRIX& projection
+		const DirectX::XMMATRIX& projection,
+		const DirectX::XMFLOAT4& material_color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+		const bool				viewflag = true
 	);
 
+	std::unique_ptr<Texture>	texture = nullptr;
+	std::unique_ptr<YRShader>	shader = nullptr;
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer>			vertex_buffer;		//頂点バッファ
@@ -40,6 +49,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState>	line_state;			//線描画
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState>	filling_state;		//塗りつぶし描画
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>	depth_state;
+
+	UINT	Index_size = 0;
 
 
 	std::vector<PosBuffer>		posArray;
@@ -52,6 +63,7 @@ private:
 		DirectX::XMFLOAT4		eyePos;
 		DirectX::XMFLOAT4X4		view;
 		DirectX::XMFLOAT4X4		projection;
+		DirectX::XMFLOAT4		material_color;
 		DirectX::XMFLOAT3		at;						//カメラ座標からfocusまでの単位ベクトル
 		float					dummy;
 	};

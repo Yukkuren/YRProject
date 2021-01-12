@@ -15,11 +15,13 @@ HSInput main(VSInput input)
     }
     input.Position = ps;
     input.Normal = n;
+    //input.Position = mul(float4(ps, 1.0), world_view_projection).xyz;
+    //input.Normal = normalize(mul(float4(n, 0.0), world)).xyz;
     output.Color = float4(1.0f, 1.0f, 1.0f, 1.0f);
     output.Tex = input.Tex;
 
-    output.Tex.x = input.Tex.x + Offset_X;
-    output.Tex.y = input.Tex.y + Offset_Y;
+    //output.Tex.x = input.Tex.x + Offset_X;
+    //output.Tex.y = input.Tex.y + Offset_Y;
 
     return output;
 }

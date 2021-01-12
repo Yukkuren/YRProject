@@ -151,6 +151,15 @@
     <FxCompile Include="Tessellation_ds.hlsl">
       <Filter>Shader\Tessellation</Filter>
     </FxCompile>
+    <FxCompile Include="Trajectory_vs.hlsl">
+      <Filter>Shader\Trajectory</Filter>
+    </FxCompile>
+    <FxCompile Include="Trajectory_ps.hlsl">
+      <Filter>Shader\Trajectory</Filter>
+    </FxCompile>
+    <FxCompile Include="Tessellation_ps.hlsl">
+      <Filter>Shader\Tessellation</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="1PGamePad.cpp">
@@ -517,6 +526,9 @@
     <None Include="Tessellation.hlsli">
       <Filter>Shader\Tessellation</Filter>
     </None>
+    <None Include="Trajectory.hlsli">
+      <Filter>Shader\Trajectory</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shader">
@@ -617,6 +629,9 @@
     </Filter>
     <Filter Include="Shader\Tessellation">
       <UniqueIdentifier>{513fe500-ed02-474c-b79d-b797cb8f06fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Trajectory">
+      <UniqueIdentifier>{79762939-0eb9-41c1-ad0c-04d3fb5b66b0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

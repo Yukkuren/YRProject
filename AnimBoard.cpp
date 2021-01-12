@@ -67,7 +67,11 @@ AnimBoard::AnimBoard(std::shared_ptr<Texture> texture,int split_size, XMFLOAT2 t
 		//テクスチャ空間の切り取る左上の座標
 		//テクスチャ空間の切り取る全体サイズ
 		//色
-		XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT2(1,1),XMFLOAT2(1,1),XMFLOAT2(1,1), XMFLOAT4(1,1,1,0), //左上
+		XMFLOAT3(0.0f, 0.0f, 0.0f),
+		XMFLOAT2(1,1),
+		XMFLOAT2(1,1),
+		XMFLOAT2(1,1),
+		XMFLOAT4(1,1,1,0), //左上
 	};
 
 	//	頂点バッファ作成

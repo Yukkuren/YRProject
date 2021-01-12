@@ -7,6 +7,7 @@
 #include "HitBox.h"
 #include <vector>
 #include "YRModelAnim.h"
+#include "Trajectory.h"
 
 
 enum class KNIGHTHIT :int
@@ -150,6 +151,12 @@ public:
 	//カラーチェンジ用テクスチャ
 	std::shared_ptr<Texture>	color_texture_main = nullptr;
 	std::shared_ptr<Texture>	color_texture_face = nullptr;
+
+	//剣の軌跡
+	Trajectory					traject;
+	float						traject_timer = 0.0f;
+	YR_Vector3					sword_head = { 0.0f,0.0f,0.0f };
+	YR_Vector3					sword_tail = { 0.0f,0.0f,0.0f };
 
 	~Knight();
 	void Init(YR_Vector3 InitPos);

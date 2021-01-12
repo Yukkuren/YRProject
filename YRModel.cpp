@@ -63,7 +63,6 @@ Model::Model(const char* filename)
 			::mbstowcs_s(&length, file.data(), 256, src.texture_filename.c_str(), _TRUNCATE);
 
 			std::array<char,256> char_file;
-			
 			for (int i = 0; i < file.size(); i++)
 			{
 				char_file[i] = file[i];

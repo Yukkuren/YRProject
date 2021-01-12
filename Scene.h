@@ -745,7 +745,7 @@ public:
 	std::unique_ptr<YRShader> multi_gaussShader = nullptr;
 	std::unique_ptr<YRShader> furShader = nullptr;
 	std::unique_ptr<YRShader> skyShader = nullptr;
-	std::unique_ptr<YRShader> earthShader = nullptr;
+	std::unique_ptr<YRShader> TessellationShader = nullptr;
 
 	//テクスチャ
 	std::unique_ptr<Texture> color_texture = nullptr;
@@ -803,8 +803,8 @@ public:
 
 	struct ConstantBufferForPerFrame
 	{
-		DirectX::XMFLOAT4	light_direction = { 0.0f,0.0f,0.0f,0.0f };
 		DirectX::XMFLOAT4	light_color = { 0.0f,0.0f,0.0f,0.0f };
+		DirectX::XMFLOAT4	light_direction = { 0.0f,0.0f,0.0f,0.0f };
 		DirectX::XMFLOAT4	ambient_color = { 0.0f,0.0f,0.0f,0.0f };
 		DirectX::XMFLOAT4	eye_pos = { 0.0f,0.0f,0.0f,0.0f };
 		float wave_time = 0.0f; //波の UV スクロール用時間
