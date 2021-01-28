@@ -470,6 +470,7 @@ DirectX::XMFLOAT4X4 ModelAnim::Draw(
 			cb.at = YRCamera.GetAt();
 			cb.dummy00 = 0.0f;
 			cb.dummy01 = 0.0f;
+			cb.dummy02 = { 0.0f,0.0f,0.0f,0.0f };
 
 			//ƒuƒ‹[ƒ€‚ÅŒõ‚ç‚¹‚éêŠ‚ğw’è‚·‚é
 			switch (blur_material)

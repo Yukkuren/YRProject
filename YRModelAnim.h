@@ -123,6 +123,7 @@ private:
 		float					Offset_Y;					//テクスチャの位置調整Y
 		float					dummy00;
 		float					dummy01;
+		DirectX::XMFLOAT4		dummy02;
 		/*int						inverse;
 		int		dummy1;
 		int		dummy2;

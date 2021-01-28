@@ -19,7 +19,16 @@ cbuffer CBPerMesh : register(b0)
 	float4 ambient_color;
 
 	row_major float4x4 bone_transforms[MAX_BONES];
-	//float4 EyePos;				//カメラ座標
+	float4 eyePos;				//カメラ座標
+    row_major float4x4 view;
+    row_major float4x4 projection;
+    float3 at;
+    float lumi_factor;
+    float Offset_X;
+    float Offset_Y;
+    float dummy00;
+    float dummy01;
+    float4 dummy02;
 };
 cbuffer CBPerFrame : register(b2)
 {

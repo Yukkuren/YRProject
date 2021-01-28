@@ -27,9 +27,12 @@ public:
 	void Activate(int width, int height, ID3D11DepthStencilView* pDepthStencilView);
 	void Activate(ID3D11DepthStencilView* pDepthStencilView);
 	void GetDefaultRTV();
+	void GetDefaultRTV(UINT num);
 	void SetViewPort(int width, int height);
 	void Deactivate();
 	void SetDefaultRTV();
+
+	static void ResetRenderTargetViews();
 
 
 private:

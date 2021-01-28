@@ -14,6 +14,16 @@
 //   float4 light_color;                // Offset:  160 Size:    16
 //   float4 ambient_color;              // Offset:  176 Size:    16 [unused]
 //   row_major float4x4 bone_transforms[128];// Offset:  192 Size:  8192 [unused]
+//   float4 eyePos;                     // Offset: 8384 Size:    16 [unused]
+//   row_major float4x4 view;           // Offset: 8400 Size:    64 [unused]
+//   row_major float4x4 projection;     // Offset: 8464 Size:    64 [unused]
+//   float3 at;                         // Offset: 8528 Size:    12 [unused]
+//   float lumi_factor;                 // Offset: 8540 Size:     4 [unused]
+//   float Offset_X;                    // Offset: 8544 Size:     4 [unused]
+//   float Offset_Y;                    // Offset: 8548 Size:     4 [unused]
+//   float dummy00;                     // Offset: 8552 Size:     4 [unused]
+//   float dummy01;                     // Offset: 8556 Size:     4 [unused]
+//   float4 dummy02;                    // Offset: 8560 Size:    16 [unused]
 //
 // }
 //

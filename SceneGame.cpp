@@ -1705,6 +1705,7 @@ void SceneGame::Draw(float elapsed_time)
 	RenderTexture();
 	RenderBlur();
 	RenderUI();
+
 	FRAMEWORK.framebuffer.Deactivate();
 	//FRAMEWORK.framebuffer.SetDefaultRTV();
 	//player1p->TextDraw();
@@ -2115,7 +2116,7 @@ void SceneGame::UI_Draw(float elapsed_time)
 	}
 
 	//フェード用画像描画
-	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f,false, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
+	//FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f,false, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
 }
 
 
@@ -2664,7 +2665,7 @@ void SceneGame::SetRenderTexture()
 
 	//ビューポート設定
 	//レンダーターゲットビューの設定
-	FRAMEWORK.framebuffer.GetDefaultRTV();
+	//FRAMEWORK.framebuffer.GetDefaultRTV();
 	FRAMEWORK.framebuffer.Activate(1920.0f, 1080.0f, dsv);
 
 	//ブレンドステート設定
@@ -2683,6 +2684,7 @@ void SceneGame::SetRenderTexture()
 
 void SceneGame::SetHPTexture()
 {
+	FRAMEWORK.framebuffer.GetDefaultRTV();
 	FRAMEWORK.framebuffer.SetRenderTexture(HP_texture->GetRenderTargetView());
 
 	ID3D11DepthStencilView* dsv = HP_texture->GetDepthStencilView();
@@ -2748,6 +2750,7 @@ void SceneGame::NullSetRenderTexture()
 	//レンダーターゲットの回復
 	//FRAMEWORK.context.Get()->OMSetRenderTargets(testrtv.size(), testrtv.data(), FRAMEWORK.depth.Get());
 	FRAMEWORK.framebuffer.ResetRenderTexture();
+	//framebuffer::ResetRenderTargetViews();
 	FRAMEWORK.framebuffer.SetDefaultRTV();
 }
 
@@ -2818,6 +2821,9 @@ void SceneGame::RenderUI()
 		0.0f, 0.0f, 1920.0f, 1080.0f,
 		0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
 
+	//フェード用画像描画
+	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, false, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
+
 #ifdef EXIST_IMGUI
 	if (Get_Use_ImGui())
 	{
@@ -2834,32 +2840,11 @@ void SceneGame::RenderUI()
 
 void SceneGame::RenderBlur()
 {
-	static float off_x = 1.0f;
-	static float off_y = 1.0f;
-	static float deviation = 0.5f;
-#ifdef EXIST_IMGUI
-	//ImGui
-	if(Get_Use_ImGui())
-	{
-		if (ImGui::TreeNode(u8"ブルーム"))
-		{
-			ImGui::Checkbox(u8"ブルーム", &blur_on);
-			ImGui::InputFloat("offset.x", &off_x, 0.01f, 0.01f);
-			ImGui::InputFloat("offset.y", &off_y, 0.01f, 0.01f);
-			ImGui::InputFloat("diviation.y", &deviation, 0.01f, 0.01f);
-			ImGui::TreePop();
-		}
-		if (ImGui::TreeNode(u8"ブルームテクスチャ"))
-		{
-			for (int i = 0; i < blur_texture.size(); i++)
-			{
-				ImGui::Image((void*)(blur_texture[i]->GetShaderResource()), ImVec2(360, 360));
-			}
-			ImGui::TreePop();
-		}
-	}
-#endif
-
+	float off_x = 1.0f;
+	float off_y = 1.0f;
+	float deviation = 0.5f;
+	//framebuffer::ResetRenderTargetViews();
+	FRAMEWORK.framebuffer.Deactivate();
 
 	GaussParamManager gauss;
 	float w = (float)FRAMEWORK.SCREEN_WIDTH;
@@ -2867,6 +2852,7 @@ void SceneGame::RenderBlur()
 
 	if (blur_on)
 	{
+		//FRAMEWORK.framebuffer.GetDefaultRTV();
 		//初回のみ現在の描画を利用する
 		//テクスチャをセット
 		FRAMEWORK.framebuffer.SetRenderTexture(blur_texture[0]->GetRenderTargetView(), true);
@@ -2877,7 +2863,6 @@ void SceneGame::RenderBlur()
 		FRAMEWORK.context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 		//レンダーターゲットビューの設定
-		FRAMEWORK.framebuffer.GetDefaultRTV();
 		//FRAMEWORK.SetViewPort(1920.0f, 1080.0f);
 		FRAMEWORK.framebuffer.Activate(1920.0f, 1080.0f,dsv);
 
@@ -2996,6 +2981,30 @@ void SceneGame::RenderBlur()
 			6,
 			0.0f, 0.0f, 1920.0f, 1080.0f,
 			0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
+
+#ifdef EXIST_IMGUI
+		//ImGui
+		if (Get_Use_ImGui())
+		{
+			if (ImGui::TreeNode(u8"ブルーム"))
+			{
+				ImGui::Checkbox(u8"ブルーム", &blur_on);
+				ImGui::InputFloat("offset.x", &off_x, 0.01f, 0.01f);
+				ImGui::InputFloat("offset.y", &off_y, 0.01f, 0.01f);
+				ImGui::InputFloat("diviation.y", &deviation, 0.01f, 0.01f);
+				ImGui::TreePop();
+			}
+			if (ImGui::TreeNode(u8"ブルームテクスチャ"))
+			{
+				for (int i = 0; i < blur_texture.size(); i++)
+				{
+					ImGui::Image((void*)(blur_texture[i]->GetShaderResource()), ImVec2(360, 360));
+				}
+				ImGui::TreePop();
+			}
+		}
+#endif
+
 		FRAMEWORK.framebuffer.Deactivate();
 		FRAMEWORK.framebuffer.ResetRenderTexture();
 

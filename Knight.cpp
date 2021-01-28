@@ -120,7 +120,7 @@ void Knight::Init(YR_Vector3 InitPos)
 
 	cut_in_timer = 0.0f;
 
-	traject.Init();
+	traject.Init(max_traject_count);
 	traject_timer = 0.0f;
 
 	//Œ•‚ÌŒ´“_À•W‚ð•Û‘¶‚·‚é
@@ -134,6 +134,9 @@ void Knight::Init(YR_Vector3 InitPos)
 
 	sword_head = sword_tail;
 	sword_head.y += 5.0f;
+
+	sword_head = YR_Vector3( 1.0f,1.0f,1.0f );
+	sword_tail = YR_Vector3( -1.0f,-1.0f,-1.0f );
 }
 
 void Knight::Uninit()
@@ -1309,13 +1312,6 @@ void Knight::Draw(
 			if (a.name == std::string("Sword"))
 			{
 				sword_world_transform = DirectX::XMLoadFloat4x4(&return_inverse) * DirectX::XMLoadFloat4x4(&a.world_transform);
-				/*tail = a.translate;
-				tail.x *= a.rotate.x;
-				tail.y *= a.rotate.y;
-				tail.z *= a.rotate.z;
-				tail.x *= 10.0f;
-				tail.y *= 10.0f;
-				tail.z *= 10.0f;*/
 				break;
 			}
 		}
@@ -1329,15 +1325,25 @@ void Knight::Draw(
 		DirectX::XMStoreFloat3(&tail, tail_vec);
 
 		test_pos = tail;
+
+		if (pKeyState.fflg > 0)
+		{
+			sword_head.x += elapsed_time;
+			sword_tail.x += elapsed_time;
+		}
+
+
 		//traject.SetTrajectoryPos(head, tail);
-		//traject.SetTrajectoryPos(sword_head.GetDXFLOAT3(), sword_tail.GetDXFLOAT3());
+		traject.SetTrajectoryPos(sword_head.GetDXFLOAT3(), sword_tail.GetDXFLOAT3());
 		//sword_head.x += 5.0f;
 	//}
 
-	//traject.Update(elapsed_time);
+	traject.Update(elapsed_time);
 
-	//traject.render(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3(), view, projection, material_color);
-	if (now_player == 1)
+	traject.render(
+		pos.GetDXFLOAT3(),
+		scale.GetDXFLOAT3(), angle.GetDXFLOAT3(), view, projection, material_color);
+	/*if (now_player == 1)
 	{
 		test_geo->render(
 			traject.shader.get(),
@@ -1348,7 +1354,7 @@ void Knight::Draw(
 			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 			view, projection,
 			DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
-	}
+	}*/
 
 	TextDraw();
 

@@ -1,9 +1,39 @@
 #include "Trajectory.h"
 #include "framework.h"
 
-void Trajectory::Init()
+#undef min
+
+void Trajectory::Init(size_t max_count)
 {
 	HRESULT hr = S_OK;
+
+	if (sampler_wrap == nullptr)
+	{
+		sampler_wrap = std::make_shared<Sampler>(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP);
+	}
+
+	std::vector<PosData> vertex;
+	vertex.resize(max_count * 2);
+
+	this->max_count = vertex.size();
+
+	D3D11_BUFFER_DESC buffer_desc{};
+	buffer_desc.ByteWidth = sizeof(vertex);
+	buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	buffer_desc.Usage = D3D11_USAGE_DYNAMIC;
+	buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	buffer_desc.MiscFlags = 0;
+	buffer_desc.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA subresource = {};
+	subresource.pSysMem = vertex.data();
+	subresource.SysMemPitch = 0;
+	subresource.SysMemSlicePitch = 0;
+
+	hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, &subresource, vertex_buffer.GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+
 	//ラスタライザーステートオブジェクト生成
 	D3D11_RASTERIZER_DESC rasterizer_desc;
 
@@ -55,6 +85,25 @@ void Trajectory::Init()
 	hr = FRAMEWORK.device->CreateDepthStencilState(&depth_desc, depth_state.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
+
+	ZeroMemory(&buffer_desc, sizeof(D3D11_BUFFER_DESC));
+	ZeroMemory(&subresource, sizeof(D3D11_SUBRESOURCE_DATA));
+	buffer_desc.ByteWidth = sizeof(cbuffer);
+	buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+	buffer_desc.CPUAccessFlags = 0;
+	buffer_desc.MiscFlags = 0;
+	buffer_desc.StructureByteStride = 0;/*
+	subresource.pSysMem = constant_buffer;
+	subresource.SysMemPitch = 0;
+	subresource.SysMemSlicePitch = 0;*/
+
+	//subresource.pSysMem = NULL;
+
+	hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, nullptr/*&subresource*/, constant_buffer.GetAddressOf());
+	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+
 	Index_size = 0;
 
 	//テクスチャ生成
@@ -95,6 +144,8 @@ void Trajectory::Update(float elapsed_time)
 			}
 		}
 
+		DeletePos();
+
 		//バッファをセットするために位置を送る
 		std::vector<PosData> vertex;
 		vertex.resize(UsedArrayBuffer.size() * 2);
@@ -112,24 +163,45 @@ void Trajectory::Update(float elapsed_time)
 			v += amount;
 		}
 
-		Index_size = vertex.size();
 
+		HRESULT hr = S_OK;
+		D3D11_MAP maptype = D3D11_MAP_WRITE_DISCARD;
+		//ID3D11Resource *resouse;
+		/*UINT mapflug;*/
+		D3D11_MAPPED_SUBRESOURCE mapsub;
 
-		D3D11_BUFFER_DESC buffer_desc{};
-		buffer_desc.ByteWidth = vertex.size();
-		buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;// D3D11_USAGE_DYNAMIC;
-		buffer_desc.CPUAccessFlags = 0;// D3D11_CPU_ACCESS_WRITE;
-		buffer_desc.MiscFlags = 0;
-		buffer_desc.StructureByteStride = 0;
-
-		D3D11_SUBRESOURCE_DATA subresource = {};
-		subresource.pSysMem = vertex.data();
-		subresource.SysMemPitch = 0;
-		subresource.SysMemSlicePitch = 0;
-
-		hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, &subresource, vertex_buffer.GetAddressOf());
+		hr = FRAMEWORK.context->Map(vertex_buffer.Get(), 0, maptype, 0, &mapsub);
 		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+
+		PosData *vertics = static_cast<PosData*>(mapsub.pData);
+
+		Index_size = std::min(vertex.size(), max_count);
+
+		size_t i_size = std::min(vertex.size(), max_count);
+
+		for (size_t i = 0; i < i_size; i++)
+		{
+			vertics[i].pos = vertex[i].pos;
+			vertics[i].uv = vertex[i].uv;
+			vertics[i].alpha = vertex[i].alpha;
+		}
+
+		FRAMEWORK.context->Unmap(vertex_buffer.Get(), 0);
+		//D3D11_BUFFER_DESC buffer_desc{};
+		//buffer_desc.ByteWidth = vertex.size();
+		//buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		//buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;// D3D11_USAGE_DYNAMIC;
+		//buffer_desc.CPUAccessFlags = 0;// D3D11_CPU_ACCESS_WRITE;
+		//buffer_desc.MiscFlags = 0;
+		//buffer_desc.StructureByteStride = 0;
+
+		//D3D11_SUBRESOURCE_DATA subresource = {};
+		//subresource.pSysMem = vertex.data();
+		//subresource.SysMemPitch = 0;
+		//subresource.SysMemSlicePitch = 0;
+
+		//hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, &subresource, vertex_buffer.GetAddressOf());
+		//_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 		////インデックス情報セット
 		//ZeroMemory(&buffer_desc, sizeof(D3D11_BUFFER_DESC));
@@ -147,22 +219,6 @@ void Trajectory::Update(float elapsed_time)
 		//hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, &subresource, index_buffer.GetAddressOf());
 		//_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
-		ZeroMemory(&buffer_desc, sizeof(D3D11_BUFFER_DESC));
-		ZeroMemory(&subresource, sizeof(D3D11_SUBRESOURCE_DATA));
-		buffer_desc.ByteWidth = sizeof(cbuffer);
-		buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-		buffer_desc.CPUAccessFlags = 0;
-		buffer_desc.MiscFlags = 0;
-		buffer_desc.StructureByteStride = 0;/*
-		subresource.pSysMem = constant_buffer;
-		subresource.SysMemPitch = 0;
-		subresource.SysMemSlicePitch = 0;*/
-
-		//subresource.pSysMem = NULL;
-
-		hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, nullptr/*&subresource*/, constant_buffer.GetAddressOf());
-		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 	}
 	else
 	{
@@ -172,10 +228,23 @@ void Trajectory::Update(float elapsed_time)
 
 void Trajectory::SetTrajectoryPos(const DirectX::XMFLOAT3& headPos, const DirectX::XMFLOAT3& tailPos)
 {
+	//剣の先端と根本の位置を登録する
 	posArray.push_back(PosBuffer());
 	posArray.back().head = headPos;
 	posArray.back().tail = tailPos;
 	posArray.back().alpha = 1.0f;
+}
+
+
+void Trajectory::DeletePos()
+{
+	//アルファ値が0以下の場合、情報を削除する
+	auto result = std::remove_if(posArray.begin(), posArray.end(),
+		[](PosBuffer& p)
+		{
+			return p.alpha <= 0.0f;
+		});
+	posArray.erase(result, posArray.end());
 }
 
 void Trajectory::render(
@@ -231,9 +300,12 @@ void Trajectory::render(
 		cb.projection = p;
 		cb.at = YRCamera.GetAt();
 		cb.dummy = 0.0f;
+		cb.dummy2 = { 0.0f,0.0f,0.0f,0.0f };
 		FRAMEWORK.context->UpdateSubresource(constant_buffer.Get(), 0, 0, &cb, 0, 0);
 		FRAMEWORK.context->VSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
 		FRAMEWORK.context->PSSetConstantBuffers(NULL, 1, constant_buffer.GetAddressOf());
+
+		sampler_wrap->Set(0);
 
 		//ステート・シェーダー設定
 		if (viewflag)

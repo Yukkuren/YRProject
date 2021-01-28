@@ -21,6 +21,7 @@ private:
 	D3D11_INPUT_ELEMENT_DESC wight		=	{ "WEIGHTS",	0,	DXGI_FORMAT_R32G32B32A32_FLOAT,	0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0 };
 	D3D11_INPUT_ELEMENT_DESC bone		=	{ "BONES",		0,	DXGI_FORMAT_R32G32B32A32_UINT,	0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0 };
 	D3D11_INPUT_ELEMENT_DESC color		=	{ "COLOR",		0,	DXGI_FORMAT_R32G32B32A32_FLOAT, 0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0 };
+	D3D11_INPUT_ELEMENT_DESC alpha		=	{ "ALPHA",		0,	DXGI_FORMAT_R32_FLOAT, 0,	D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA,	0 };
 
 
 	//コンストラクタで頂点データを作成
@@ -118,6 +119,7 @@ private:
 		//trajectory
 		trajectory_element_desc.push_back(pos);
 		trajectory_element_desc.push_back(tex);
+		trajectory_element_desc.push_back(alpha);
 
 		//tessellation
 		tessellation_element_desc.push_back(pos);

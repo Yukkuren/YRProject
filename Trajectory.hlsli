@@ -6,6 +6,7 @@ struct VSInput
 {
     float3 position : POSITION;
     float2 tex : TEXCOORD;
+    float alpha : ALPHA;
 };
 
 struct PSInput
@@ -32,4 +33,5 @@ cbuffer CONSTANT_BUFFER : register(b0)
     row_major float4x4 projection; //透視投影行列
     float3 at; //カメラ座標からカメラの注視点へ向かう単位ベクトル
     float dummy;
+    float4 dummy2;
 }

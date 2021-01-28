@@ -943,6 +943,7 @@ void SceneTitle::Draw(float elapsed_time)
 		NullSetRenderTexture();
 		RenderTexture(elapsed_time);
 		FRAMEWORK.framebuffer.Deactivate();
+		//framebuffer::ResetRenderTargetViews();
 
 		//SceneRender(elapsed_time);
 	}
@@ -982,6 +983,7 @@ YR_Vector3 SceneTitle::PosSet(int select)
 
 void SceneTitle::SetRenderTexture()
 {
+	FRAMEWORK.framebuffer.GetDefaultRTV();
 	FRAMEWORK.framebuffer.SetRenderTexture(color_texture->GetRenderTargetView());
 	//FRAMEWORK.framebuffer.SetRenderTexture(normal_texture->GetRenderTargetView());
 	//FRAMEWORK.framebuffer.SetRenderTexture(position_texture->GetRenderTargetView());
@@ -998,7 +1000,6 @@ void SceneTitle::SetRenderTexture()
 
 	//ビューポート設定
 	//レンダーターゲットビューの設定
-	FRAMEWORK.framebuffer.GetDefaultRTV();
 	FRAMEWORK.framebuffer.Activate(1920.0f, 1080.0f, dsv);
 
 	//ブレンドステート設定

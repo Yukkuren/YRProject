@@ -1,8 +1,8 @@
 #include "flatShader.hlsli"
 
-PSInput main(VSInput input)
+GSInput main(VSInput input)
 {
-	PSInput output = (PSInput)0;
+	GSInput output = (GSInput)0;
 
 	float3 ps = { 0,0,0 };
 	float3 n = { 0,0,0 };

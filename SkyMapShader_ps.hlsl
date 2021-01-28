@@ -9,7 +9,7 @@ PSOutput main(VS_OUT pin) : SV_TARGET
 	float4 color = diffuse_map.Sample(diffuse_map_sampler_state,pin.texcoord);
 
 	Out.Color = color;
-	Out.Luminance = color * lumi_factor;
+    //Out.Luminance = float4(0.0, 0.0, 0.0, 0.0);
 
 	return Out;
 }

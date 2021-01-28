@@ -581,6 +581,9 @@ void framework::update(float elapsed_time/*Elapsed seconds from last frame*/)
 }
 void framework::render(float elapsed_time/*Elapsed seconds from last frame*/)
 {
+	context->ClearState();
+
+	SetViewPort((float)SCREEN_WIDTH, (float)SCREEN_HEIGHT);
 
 	HRESULT hr = S_OK;
 

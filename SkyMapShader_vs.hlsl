@@ -19,8 +19,8 @@ VS_OUT main(VS_INPUT input)
 	float4 N = normalize(mul(input.normal, world));
 	vout.normal = N;
 
-	vout.texcoord.x = input.texcoord.x + Offset_X;
-	vout.texcoord.y = input.texcoord.y + Offset_Y;
+	//vout.texcoord.x = input.texcoord.x + Offset_X;
+	//vout.texcoord.y = input.texcoord.y + Offset_Y;
 
 	return vout;
 }

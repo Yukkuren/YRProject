@@ -7,6 +7,7 @@
 #include "YRShader.h"
 #include "Texture.h"
 #include <memory>
+#include "Sampler.h"
 
 struct PosBuffer
 {
@@ -25,9 +26,11 @@ struct PosData
 class Trajectory
 {
 public:
-	void Init();
+	void Init(size_t max_count);
 	void Update(float elapsed_time);
 	void SetTrajectoryPos(const DirectX::XMFLOAT3& headPos, const DirectX::XMFLOAT3& tailPos);
+
+	void DeletePos();
 
 	void render(
 		const DirectX::XMFLOAT3& pos,
@@ -50,21 +53,26 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState>	filling_state;		//塗りつぶし描画
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>	depth_state;
 
+	std::shared_ptr<Sampler> sampler_wrap = nullptr;
+
 	UINT	Index_size = 0;
+
+	size_t max_count = 0;
 
 
 	std::vector<PosBuffer>		posArray;
-	std::vector<PosData>		VB;
+	//std::vector<PosData>		VB;
 
 	struct cbuffer
 	{
 		DirectX::XMFLOAT4X4		world_view_projection;	//ワールド・ビュー・プロジェクション合成行列
 		DirectX::XMFLOAT4X4		world;					//ワールド変換行列
+		DirectX::XMFLOAT4		material_color;
 		DirectX::XMFLOAT4		eyePos;
 		DirectX::XMFLOAT4X4		view;
 		DirectX::XMFLOAT4X4		projection;
-		DirectX::XMFLOAT4		material_color;
 		DirectX::XMFLOAT3		at;						//カメラ座標からfocusまでの単位ベクトル
 		float					dummy;
+		DirectX::XMFLOAT4		dummy2;
 	};
 };

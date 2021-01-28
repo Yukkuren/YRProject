@@ -18,11 +18,7 @@
 //   row_major float4x4 view;           // Offset: 8400 Size:    64 [unused]
 //   row_major float4x4 projection;     // Offset: 8464 Size:    64 [unused]
 //   float3 at;                         // Offset: 8528 Size:    12 [unused]
-//   float lumi_factor;                 // Offset: 8540 Size:     4 [unused]
-//   float Offset_X;                    // Offset: 8544 Size:     4
-//   float Offset_Y;                    // Offset: 8548 Size:     4
-//   float dummy00;                     // Offset: 8552 Size:     4 [unused]
-//   float dummy01;                     // Offset: 8556 Size:     4 [unused]
+//   float dummy;                       // Offset: 8540 Size:     4 [unused]
 //
 // }
 //
@@ -41,7 +37,7 @@
 // -------------------- ----- ------ -------- -------- ------- ------
 // POSITION                 0   xyzw        0     NONE   float   xyzw
 // NORMAL                   0   xyzw        1     NONE   float   xyzw
-// TEXCOORD                 0   xy          2     NONE   float   xy  
+// TEXCOORD                 0   xy          2     NONE   float       
 //
 //
 // Output signature:
@@ -54,14 +50,13 @@
 //
 vs_5_0
 dcl_globalFlags refactoringAllowed | skipOptimization
-dcl_constantbuffer CB0[535], immediateIndexed
+dcl_constantbuffer CB0[8], immediateIndexed
 dcl_input v0.xyzw
 dcl_input v1.xyzw
-dcl_input v2.xy
 dcl_output_siv o0.xyzw, position
 dcl_output o1.xyzw
 dcl_output o2.xy
-dcl_temps 3
+dcl_temps 4
 //
 // Initial variable locations:
 //   v0.x <- input.position.x; v0.y <- input.position.y; v0.z <- input.position.z; v0.w <- input.position.w; 
@@ -71,40 +66,36 @@ dcl_temps 3
 //   o1.x <- <main return value>.normal.x; o1.y <- <main return value>.normal.y; o1.z <- <main return value>.normal.z; o1.w <- <main return value>.normal.w; 
 //   o0.x <- <main return value>.position.x; o0.y <- <main return value>.position.y; o0.z <- <main return value>.position.z; o0.w <- <main return value>.position.w
 //
-#line 17 "D:\ゲーム制作\YRProject\SkyMapShader_vs.hlsl"
-mul r0.xyzw, v0.xxxx, cb0[0].xyzw
-mul r1.xyzw, v0.yyyy, cb0[1].xyzw
-add r0.xyzw, r0.xyzw, r1.xyzw
-mul r1.xyzw, v0.zzzz, cb0[2].xyzw
-add r0.xyzw, r0.xyzw, r1.xyzw
-mul r1.xyzw, v0.wwww, cb0[3].xyzw
-add r0.xyzw, r0.xyzw, r1.xyzw  // r0.x <- vout.position.x; r0.y <- vout.position.y; r0.z <- vout.position.z; r0.w <- vout.position.w
+#line 15 "D:\ゲーム制作\YRProject\SkyMapShader_vs.hlsl"
+itof r0.xy, l(0, 0, 0, 0)  // r0.x <- vout.texcoord.x; r0.y <- vout.texcoord.y
+
+#line 17
+mul r1.xyzw, v0.xxxx, cb0[0].xyzw
+mul r2.xyzw, v0.yyyy, cb0[1].xyzw
+add r1.xyzw, r1.xyzw, r2.xyzw
+mul r2.xyzw, v0.zzzz, cb0[2].xyzw
+add r1.xyzw, r1.xyzw, r2.xyzw
+mul r2.xyzw, v0.wwww, cb0[3].xyzw
+add r1.xyzw, r1.xyzw, r2.xyzw  // r1.x <- vout.position.x; r1.y <- vout.position.y; r1.z <- vout.position.z; r1.w <- vout.position.w
 
 #line 19
-mul r1.xyzw, v1.xxxx, cb0[4].xyzw
-mul r2.xyzw, v1.yyyy, cb0[5].xyzw
-add r1.xyzw, r1.xyzw, r2.xyzw
-mul r2.xyzw, v1.zzzz, cb0[6].xyzw
-add r1.xyzw, r1.xyzw, r2.xyzw
-mul r2.xyzw, v1.wwww, cb0[7].xyzw
-add r1.xyzw, r1.xyzw, r2.xyzw
-dp4 r2.x, r1.xyzw, r1.xyzw
-rsq r2.x, r2.x
-mul r1.xyzw, r1.xyzw, r2.xxxx  // r1.x <- N.x; r1.y <- N.y; r1.z <- N.z; r1.w <- N.w
+mul r2.xyzw, v1.xxxx, cb0[4].xyzw
+mul r3.xyzw, v1.yyyy, cb0[5].xyzw
+add r2.xyzw, r2.xyzw, r3.xyzw
+mul r3.xyzw, v1.zzzz, cb0[6].xyzw
+add r2.xyzw, r2.xyzw, r3.xyzw
+mul r3.xyzw, v1.wwww, cb0[7].xyzw
+add r2.xyzw, r2.xyzw, r3.xyzw
+dp4 r0.z, r2.xyzw, r2.xyzw
+rsq r0.z, r0.z
+mul r2.xyzw, r0.zzzz, r2.xyzw  // r2.x <- N.x; r2.y <- N.y; r2.z <- N.z; r2.w <- N.w
 
 #line 20
-mov r1.xyzw, r1.xyzw  // r1.x <- vout.normal.x; r1.y <- vout.normal.y; r1.z <- vout.normal.z; r1.w <- vout.normal.w
-
-#line 22
-add r2.x, v2.x, cb0[534].x  // r2.x <- vout.texcoord.x
-
-#line 23
-add r2.y, v2.y, cb0[534].y  // r2.y <- vout.texcoord.y
+mov r2.xyzw, r2.xyzw  // r2.x <- vout.normal.x; r2.y <- vout.normal.y; r2.z <- vout.normal.z; r2.w <- vout.normal.w
 
 #line 25
-mov o0.xyzw, r0.xyzw
-mov o1.xyzw, r1.xyzw
-mov o2.x, r2.x
-mov o2.y, r2.y
+mov o0.xyzw, r1.xyzw
+mov o1.xyzw, r2.xyzw
+mov o2.xy, r0.xyxx
 ret 
-// Approximately 25 instruction slots used
+// Approximately 23 instruction slots used

@@ -1381,13 +1381,13 @@ void Skinned_mesh::Render(
 	//{
 	//	V = view;
 	//}
-	
+
 	//行列合成と変換
 	DirectX::XMMATRIX world_matrix = s*r*t;
 	DirectX::XMFLOAT4X4 world;
 	DirectX::XMStoreFloat4x4(&world, world_matrix);
 
-	
+
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	//ワールド・ビュー・プロジェクション行列作成
@@ -1407,7 +1407,7 @@ void Skinned_mesh::Render(
 		{
 			FRAMEWORK.context->RSSetState(filling_state.Get());
 		}*/
-		
+
 	}
 	else
 	{
@@ -1450,7 +1450,7 @@ void Skinned_mesh::Render(
 			//UNIT.23
 			if (mesh.skeletal_animation.size() > 0)
 			{
-				
+
 				mesh.skeletal_animation.animation_tick = anime_count;
 				int index = static_cast<int>(mesh.skeletal_animation.animation_tick / mesh.skeletal_animation.sampling_time);
 				int indexR = index + 1;
@@ -1470,7 +1470,7 @@ void Skinned_mesh::Render(
 				{
 					skeletal2 = mesh.skeletal_animation.at(frame+1);
 				}*/
-				
+
 				std::vector<bone> &skeletal = mesh.skeletal_animation.at(static_cast<int>(index));
 				std::vector<bone>& skeletal2 = mesh.skeletal_animation.at(static_cast<int>(indexR));
 				size_t number_of_bones = skeletal.size();
@@ -1496,9 +1496,9 @@ void Skinned_mesh::Render(
 					XMVECTOR up_v = XMLoadFloat4(&up);
 
 					XMVECTOR qaxis = XMQuaternionRotationAxis(up_v, XMConvertToRadians(180.0f));
-					
+
 					XMMATRIX W;
-					
+
 					W =
 						XMMatrixScalingFromVector(SA) *
 						XMMatrixRotationQuaternion(RA) *
@@ -1508,7 +1508,7 @@ void Skinned_mesh::Render(
 					/*XMStoreFloat4x4(&cb.bone_transforms[i],
 						XMLoadFloat4x4(
 							&Interpolation(
-								i, 
+								i,
 								mesh.skeletal_animation.animation_tick,
 								mesh.skeletal_animation.sampling_time,
 								skeletal,
@@ -1520,9 +1520,8 @@ void Skinned_mesh::Render(
 				//mesh.skeletal_animation.animation_tick += elapsed_time;
 			}
 			//補間処理は行っていない
-			
+
 			/*static float angle = 0;
-		
 			DirectX::XMStoreFloat4x4(&cb.bone_transforms[0], DirectX::XMMatrixRotationRollPitchYaw(0, 0, sinf(angle * 0.01745f)));
 			DirectX::XMStoreFloat4x4(&cb.bone_transforms[1], DirectX::XMMatrixRotationRollPitchYaw(0, 0, sinf(angle * 0.01745f)));
 			DirectX::XMStoreFloat4x4(&cb.bone_transforms[2], DirectX::XMMatrixRotationRollPitchYaw(0, 0, sinf(angle * 0.01745f)));
