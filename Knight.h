@@ -128,7 +128,7 @@ private:
 	const YR_Vector3 passive_speed = { 70.0f,70.0f };	//受け身状態にスピードに代入する速度
 	const float passive_brake = 200.0f;		//受け身中に減速する速度
 
-	const size_t	max_traject_count = 10;	//剣の軌跡の最大値
+	const size_t	max_traject_count = 128;	//剣の軌跡の最大値
 
 	float		production_time = 0.0f;	//カメラ演出に使う変数
 

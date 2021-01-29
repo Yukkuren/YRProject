@@ -2922,10 +2922,12 @@ void SceneGame::RenderBlur()
 				FRAMEWORK.context->PSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
 			}
 
-
+			ID3D11DepthStencilView* dsv2 = blur_texture[i]->GetDepthStencilView();
+			FRAMEWORK.context->ClearDepthStencilView(dsv2, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 			//レンダーターゲットビューの設定
-			FRAMEWORK.framebuffer.Activate(dsv);
+			FRAMEWORK.framebuffer.Activate(w * 0.5f / riv2, h * 0.5f / riv2,dsv2);
+
 
 			sprite->render(
 				gaussShader.get(),
@@ -2933,6 +2935,7 @@ void SceneGame::RenderBlur()
 				0.0f, 0.0f, 1920.0f * 0.5f / riv2, 1080.0f * 0.5f / riv2,
 				0.0f, 0.0f, 1920.0f*0.5f/riv, 1080.0f*0.5f/riv, 0.0f, 1.0f);
 
+			int hoge = 0;
 			//FRAMEWORK.framebuffer.Deactivate();
 			//FRAMEWORK.framebuffer.ResetRenderTexture();
 		}
@@ -2940,15 +2943,15 @@ void SceneGame::RenderBlur()
 		//全てのテクスチャを合成したマルチガウスのテクスチャを作成する
 
 		//テクスチャをセット
-		FRAMEWORK.framebuffer.SetRenderTexture(multi_blur_texture->GetRenderTargetView(), true);
+		//FRAMEWORK.framebuffer.SetRenderTexture(multi_blur_texture->GetRenderTargetView(), true);
 		//ID3D11DepthStencilView* dsv = color_texture->GetDepthStencilView();
 
 		//画面をクリア
-		FRAMEWORK.framebuffer.Clear();
+		//FRAMEWORK.framebuffer.Clear();
 		//FRAMEWORK.context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 		//レンダーターゲットビューの設定
-		FRAMEWORK.framebuffer.Activate(dsv);
+		//FRAMEWORK.framebuffer.Activate(dsv);
 		//ブレンドステート設定
 		//FRAMEWORK.BlendSet(Blend::ALPHA);
 		//ラスタライザー設定
@@ -2958,7 +2961,9 @@ void SceneGame::RenderBlur()
 
 		//サンプラー設定
 		//sampler_clamp->Set(0);
+
 		FRAMEWORK.framebuffer.SetDefaultRTV();
+		FRAMEWORK.SetViewPort((float)FRAMEWORK.SCREEN_WIDTH, (float)FRAMEWORK.SCREEN_HEIGHT);
 
 		//ブレンドステート設定
 		FRAMEWORK.BlendSet(Blend::ADD);

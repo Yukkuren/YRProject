@@ -18,7 +18,7 @@ void Trajectory::Init(size_t max_count)
 	this->max_count = vertex.size();
 
 	D3D11_BUFFER_DESC buffer_desc{};
-	buffer_desc.ByteWidth = sizeof(vertex);
+	buffer_desc.ByteWidth = sizeof(PosData)*vertex.size();
 	buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	buffer_desc.Usage = D3D11_USAGE_DYNAMIC;
 	buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -52,7 +52,7 @@ void Trajectory::Init(size_t max_count)
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 	rasterizer_desc.FillMode = D3D11_FILL_SOLID;
-	rasterizer_desc.CullMode = D3D11_CULL_BACK;
+	rasterizer_desc.CullMode = D3D11_CULL_NONE;
 	rasterizer_desc.FrontCounterClockwise = FALSE;
 	rasterizer_desc.DepthBias = 0;
 	rasterizer_desc.DepthBiasClamp = 0;
@@ -140,7 +140,7 @@ void Trajectory::Update(float elapsed_time)
 				UsedArrayBuffer.back().head = posArray[i].head;
 				UsedArrayBuffer.back().tail = posArray[i].tail;
 				UsedArrayBuffer.back().alpha = posArray[i].alpha;
-				posArray[i].alpha -= elapsed_time;
+				posArray[i].alpha -= elapsed_time*3.0f;
 			}
 		}
 
@@ -233,6 +233,13 @@ void Trajectory::SetTrajectoryPos(const DirectX::XMFLOAT3& headPos, const Direct
 	posArray.back().head = headPos;
 	posArray.back().tail = tailPos;
 	posArray.back().alpha = 1.0f;
+	/*for (int i = posArray.size() - 1; i > 1; i--)
+	{
+		posArray[i] = posArray[i - 1];
+	}
+	posArray.front().head = headPos;
+	posArray.front().tail = tailPos;
+	posArray.front().alpha = 1.0f;*/
 }
 
 
@@ -283,10 +290,25 @@ void Trajectory::render(
 
 		FRAMEWORK.context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
+		DirectX::XMFLOAT4X4 coodinate_conversion = {
+		1,0,0,0,
+		0,0,1,0,
+		0,1,0,0,
+		0,0,0,1
+		};
+
 		//定数バッファのバインド
 		cbuffer cb = {};
-		cb.world = world;
-		cb.world_view_projection = world_view_projection;
+		/*cb.world = world;
+		cb.world_view_projection = world_view_projection;*/
+		DirectX::XMStoreFloat4x4(&cb.world_view_projection,
+			/*DirectX::XMLoadFloat4x4(&global_transform) **/
+			DirectX::XMLoadFloat4x4(&coodinate_conversion) *
+			DirectX::XMLoadFloat4x4(&world_view_projection));
+		DirectX::XMStoreFloat4x4(&cb.world,
+			/*DirectX::XMLoadFloat4x4(&global_transform) **/
+			DirectX::XMLoadFloat4x4(&coodinate_conversion) *
+			DirectX::XMLoadFloat4x4(&world));
 		cb.material_color = material_color;
 		cb.eyePos.x = YRCamera.GetEye().x;
 		cb.eyePos.y = YRCamera.GetEye().y;

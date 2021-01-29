@@ -864,7 +864,7 @@ void framework::render(float elapsed_time/*Elapsed seconds from last frame*/)
 #endif
 	//0:可変フレーム。1:60FPS固定。2:30FPS固定
 #ifdef _DEBUG
-	chain.Get()->Present(0, 0);
+	chain.Get()->Present(1, 0);
 #else
 	chain.Get()->Present(1, 0);
 #endif // _DEBUG

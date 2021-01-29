@@ -403,10 +403,10 @@ Sprite::Sprite()
 	D3D11_SAMPLER_DESC sample;
 	//ID3D11SamplerState *samplestate;
 
-	sample.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-	sample.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	sample.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	sample.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sample.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sample.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sample.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sample.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 	sample.MipLODBias = 0.0f;
 	sample.MaxAnisotropy = 16;
 	sample.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
@@ -952,6 +952,7 @@ void Sprite::render(
 	FRAMEWORK.context->RSSetState(rastersize.Get());
 	//FRAMEWORK.context->PSSetShaderResources(0, 1, this->shader.GetAddressOf());
 	//FRAMEWORK.context->PSSetSamplers(0, 1, sampler.GetAddressOf());
+	FRAMEWORK.context->PSSetSamplers(0, 1, sampler.GetAddressOf());
 	//テクスチャの設定
 	if (tex) tex->Set(0);
 
@@ -1355,6 +1356,7 @@ void Sprite::render(
 	//FRAMEWORK.context->PSSetSamplers(0, 1, sampler.GetAddressOf());
 	FRAMEWORK.context->PSSetShaderResources(0, srv_size, srv);
 	//FRAMEWORK.context->PSSetSamplers(0, 1, &sampler.GetAddressOf());
+	FRAMEWORK.context->PSSetSamplers(0, 1, sampler.GetAddressOf());
 
 	FRAMEWORK.context->Draw(4, 0);
 

@@ -124,19 +124,28 @@ void Knight::Init(YR_Vector3 InitPos)
 	traject_timer = 0.0f;
 
 	//剣の原点座標を保存する
+	YR_Vector3 master = YR_Vector3(0.0f, 0.0f, 0.0f);
 	for (auto& m : main->GetNodes())
 	{
+		if (m.name == std::string("Master"))
+		{
+			master = m.translate;
+		}
 		if (m.name == std::string("Sword"))
 		{
 			sword_tail = m.translate;
+			sword_tail.x *= master.x;
+			sword_tail.y *= master.y;
+			sword_tail.z *= master.z;
 		}
 	}
 
 	sword_head = sword_tail;
-	sword_head.y += 5.0f;
+	sword_head.y += 0.88f;
+	sword_tail.y += 0.2f;
 
-	sword_head = YR_Vector3( 1.0f,1.0f,1.0f );
-	sword_tail = YR_Vector3( -1.0f,-1.0f,-1.0f );
+	//sword_head = YR_Vector3( 1.0f,1.0f,1.0f );
+	//sword_tail = YR_Vector3( -1.0f,-1.0f,-1.0f );
 }
 
 void Knight::Uninit()
@@ -1305,13 +1314,22 @@ void Knight::Draw(
 		traject_timer = 0.0f;
 		DirectX::XMFLOAT3 head = { 0.0f,0.0f,0.0f };
 		DirectX::XMFLOAT3 tail = { 0.0f,0.0f,0.0f };
+		DirectX::XMFLOAT4X4 coodinate_conversion = {
+		1,0,0,0,
+		0,1,0,0,
+		0,0,1,0,
+		0,0,0,1
+		};
 		//剣のワールド変換行列を取得する
 		DirectX::XMMATRIX sword_world_transform;
 		for (auto& a : anim->GetNodes())
 		{
 			if (a.name == std::string("Sword"))
 			{
-				sword_world_transform = DirectX::XMLoadFloat4x4(&return_inverse) * DirectX::XMLoadFloat4x4(&a.world_transform);
+				/*coodinate_conversion._41 = a.translate.x;
+				coodinate_conversion._42 = a.translate.y;
+				coodinate_conversion._43 = a.translate.z;*/
+				sword_world_transform = DirectX::XMLoadFloat4x4(&a.world_transform);
 				break;
 			}
 		}
@@ -1324,25 +1342,29 @@ void Knight::Draw(
 		DirectX::XMStoreFloat3(&head, head_vec);
 		DirectX::XMStoreFloat3(&tail, tail_vec);
 
-		test_pos = tail;
+		/*head.z -= 1.0f;
+		tail.z -= 1.0f;*/
+		//test_pos = tail;
 
-		if (pKeyState.fflg > 0)
+		/*if (pKeyState.fflg > 0)
 		{
 			sword_head.x += elapsed_time;
 			sword_tail.x += elapsed_time;
+		}*/
+
+		if (timer < non_target && timer>0.0f)
+		{
+			traject.SetTrajectoryPos(head, tail);
 		}
-
-
-		//traject.SetTrajectoryPos(head, tail);
-		traject.SetTrajectoryPos(sword_head.GetDXFLOAT3(), sword_tail.GetDXFLOAT3());
+		//traject.SetTrajectoryPos(sword_head.GetDXFLOAT3(), sword_tail.GetDXFLOAT3());
 		//sword_head.x += 5.0f;
 	//}
 
 	traject.Update(elapsed_time);
 
 	traject.render(
-		pos.GetDXFLOAT3(),
-		scale.GetDXFLOAT3(), angle.GetDXFLOAT3(), view, projection, material_color);
+			pos.GetDXFLOAT3(),
+			scale.GetDXFLOAT3(), angle.GetDXFLOAT3(), view, projection, material_color);
 	/*if (now_player == 1)
 	{
 		test_geo->render(
