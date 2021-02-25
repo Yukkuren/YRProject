@@ -2,6 +2,19 @@
 #include "HitCheak.h"
 #include "framework.h"
 #include "YRSound.h"
+#include <math.h>
+
+#undef max
+
+static std::array<std::string, scastI(SceneTest::IntroState::FIN) + 1> intro_list =
+{
+	u8"プレイヤー1のみ",
+	u8"プレイヤー2までの間",
+	u8"プレイヤー2のみ",
+	u8"同時までの間",
+	u8"同時",
+	u8"最後",
+};
 
 //-------------------------------------------------------------
 // **シーン概要**
@@ -36,7 +49,61 @@ void SceneLoad::Init()
 		spriteShader = std::make_unique<YRShader>(ShaderType::SPRITE);
 		spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
 	}
+	if (titleShader == nullptr)
+	{
+		titleShader = std::make_unique<YRShader>(ShaderType::TITLE);
+		titleShader->Create("./Data/Shader/LoadShader_vs.cso", "./Data/Shader/LoadShader_ps.cso");
+	}
+
+	//Gbuffer用スプライト
+	if (sprite == nullptr)
+	{
+		sprite = std::make_unique<Sprite>();
+	}
+
 	GetSound().BGMPlay(BGMKind::LOAD);
+
+	match_timer = 0.0f;
+	plus_match = 60.0f;
+
+	slow_add = 0.5f;
+
+	timer_Multiply = 3.5f;
+
+	sin_max = 0.05f;
+
+	space_time = 0.8f;
+
+	VS_size = 5.0f;
+
+	VS_alpha = 0.0f;
+
+	flash_size = 0.0f;
+	flash_alpha = 0.0f;
+
+	line_1p_x = 0.0f;
+	line_2p_x = 0.0f;
+
+	line_Multiply = 10000.0f;
+
+	cbuffer_param.Resolution = { 1920.0f ,1080.0f ,((1920.0f) / (1080.0f)) };
+	cbuffer_param.brightness = 15.0f;
+	//cbuffer_param.brightness = 3.0f;
+	cbuffer_param.gamma = 13;
+	//cbuffer_param.gamma = 6;
+	cbuffer_param.spot_brightness = 1.5f;
+	cbuffer_param.ray_density = 1.5f;
+	//cbuffer_param.ray_density = 6.0f;
+	cbuffer_param.curvature = 90.0f;
+	cbuffer_param.red = 10.0f;
+	cbuffer_param.green = 2.8f;
+	cbuffer_param.blue = 4.0f;
+	cbuffer_param.material_color = { 1.0f,1.0f,1.0f,1.0f };
+	cbuffer_param.dummy1 = 0.0f;
+	cbuffer_param.dummy2 = 0.0f;
+	cbuffer_param.dummy3 = 0.0f;
+
+	MatchStart();
 }
 
 void SceneLoad::LoadData()
@@ -62,6 +129,44 @@ void SceneLoad::LoadData()
 			2160.0f);
 	}
 
+	if (knight_1p_cut == nullptr)
+	{
+		knight_1p_cut = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut1.png", 640.0f, 192.0f);
+	}
+	if (knight_2p_cut == nullptr)
+	{
+		knight_2p_cut = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut2.png", 640.0f, 192.0f);
+	}
+	if (knight_name == nullptr)
+	{
+		knight_name = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_name.png", 640.0f, 320.0f);
+	}
+	if (Box == nullptr)
+	{
+		Box = std::make_unique<Sprite>(L"./Data/Image/UI/GameLoad/Box.png", 640.0f, 640.0f);
+	}
+	if (VS_Image == nullptr)
+	{
+		VS_Image = std::make_unique<Sprite>(L"./Data/Image/UI/GameLoad/VS.png", 640.0f, 320.0f);
+	}
+	if (flash == nullptr)
+	{
+		flash = std::make_unique<Sprite>(L"./Data/Image/UI/GameLoad/flash.png", 640.0f, 640.0f);
+	}
+	if (title_texture == nullptr)
+	{
+		title_texture = std::make_unique<Texture>(L"./Data/Shader/noise.png");
+		//title_texture = std::make_unique<Texture>(L"./Data/Image/UI/GameTitle/Title.png");
+	}
+
+	if (sampler_wrap == nullptr)
+	{
+		sampler_wrap = std::make_shared<Sampler>(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP);
+	}
+
+	//コンスタントバッファ作成
+	FRAMEWORK.CreateConstantBuffer(constantBuffer.GetAddressOf(), sizeof(Title_CBuffer));
+
 	load_state = 2;
 }
 
@@ -74,6 +179,19 @@ void SceneLoad::UnInit()
 	//シェーダーも解放
 	spriteShader.reset();
 	spriteShader = nullptr;
+
+	knight_1p_cut.reset();
+	knight_1p_cut = nullptr;
+	knight_2p_cut.reset();
+	knight_2p_cut = nullptr;
+	knight_name.reset();
+	knight_name = nullptr;
+	Box.reset();
+	Box = nullptr;
+	VS_Image.reset();
+	VS_Image = nullptr;
+	flash.reset();
+	flash = nullptr;
 
 	if (load_state < 8)
 	{
@@ -198,6 +316,11 @@ void SceneLoad::Update(float elapsedTime)
 			break;
 		}
 	}
+
+	if (load_fin)
+	{
+		MatchUpdate(elapsedTime);
+	}
 }
 
 void SceneLoad::Draw(float elapsedTime)
@@ -205,22 +328,45 @@ void SceneLoad::Draw(float elapsedTime)
 	//「ロード画面で表示する画像等」がロードできた
 	if (load_fin)
 	{
-		load_bg->DrawRotaGraph(
+		/*load_bg->DrawRotaGraph(
 			spriteShader.get(),
 			static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
 			static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f,
 			0.0f,
 			0.5f
-		);
-
-		load_img->DrawRotaDivGraph(
+		);*/
+		/*knight_1p_cut->DrawRotaGraph(
 			spriteShader.get(),
-			FRAMEWORK.SCREEN_WIDTH * 0.92f,
-			FRAMEWORK.SCREEN_HEIGHT * 0.85f+(sinf(timer)*20.0f),
+			static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
+			static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f,
 			0.0f,
-			2.0f,
-			0.05f,
-			elapsedTime);
+			0.5f
+		);*/
+
+		cbuffer_param.iTime = timer;
+
+		sprite->render(
+			titleShader.get(),
+			title_texture.get(),
+			cbuffer_param,
+			sampler_wrap.get(),
+			constantBuffer,
+			0.0f, 0.0f, 1920.0f, 1080.0f,
+			0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
+
+		MatchDraw(elapsedTime);
+
+		if (load_state < 8)
+		{
+			load_img->DrawRotaDivGraph(
+				spriteShader.get(),
+				FRAMEWORK.SCREEN_WIDTH * 0.92f,
+				FRAMEWORK.SCREEN_HEIGHT * 0.85f + (sinf(timer) * 20.0f),
+				0.0f,
+				2.0f,
+				0.05f,
+				elapsedTime);
+		}
 	}
 
 	//フェード用画像描画
@@ -233,6 +379,17 @@ void SceneLoad::Draw(float elapsedTime)
 		ImGui::Text("Load");
 		ImGui::Text("time : %f", timer);
 		ImGui::Text("load_state : %d", load_state);
+		ImGui::SliderFloat("knight1p_pos_x", &knight_1p_pos_x, -960.0f, 1920.0f + 960.0f);
+		ImGui::SliderFloat("knight2p_pos_x", &knight_2p_pos_x, -960.0f, 1920.0f + 960.0f);
+		ImGui::InputFloat(u8"Sinに乗算する値", &plus_match, 1.0f, 10.0f);
+		ImGui::InputFloat(u8"最低限進む横の値", &slow_add, 1.0f, 10.0f);
+		ImGui::InputFloat(u8"match_timerに乗算する値", &timer_Multiply, 1.0f, 10.0f);
+		ImGui::InputFloat(u8"sinの最大値", &sin_max, 1.0f, 10.0f);
+		ImGui::InputFloat(u8"間の長さ", &space_time, 0.1f, 1.0f);
+		ImGui::InputFloat(u8"ラインに乗算する値", &line_Multiply, 10.0f, 100.0f);
+		ImGui::Text(intro_list[scastI(intro_state)].c_str());
+		ImGui::Text("line1p : %f", line_1p_x);
+		ImGui::Text("line2p : %f", line_2p_x);
 	}
 #endif
 }
@@ -247,4 +404,279 @@ bool SceneLoad::FedoOut(float elapsed_time)
 	}
 
 	return false;
+}
+
+void SceneLoad::MatchStart()
+{
+	knight_1p_pos_x = -(float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
+	knight_2p_pos_x = (float)FRAMEWORK.SCREEN_WIDTH + (float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
+	line_1p_x = -(float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
+	line_2p_x = (float)FRAMEWORK.SCREEN_WIDTH + (float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
+	match_timer = 0.0f;
+	flash_alpha = 0.0f;
+	flash_size = 0.0f;
+	intro_state = IntroState::P1;
+	GetSound().BGMStop(BGMKind::LOAD);
+	GetSound().BGMPlay(BGMKind::LOAD);
+}
+
+void SceneLoad::MatchUpdate(float elapsed_time)
+{
+	//knight_1p_pos_x += ((sin_match * plus_match) + slow_add);
+	//knight_2p_pos_x -= ((sin_match * plus_match) + slow_add);
+
+	switch (intro_state)
+	{
+	case SceneLoad::IntroState::P1:
+		//プレイヤー1だけ表示
+	{
+		//タイマー加算
+		match_timer += elapsed_time * timer_Multiply;
+
+		//sin派を使って速度に緩急をつける
+		float sin_match = 0.0f;
+		sin_match = std::max(sinf(match_timer), sin_max);
+
+		//速度を加算
+		knight_1p_pos_x += ((sin_match * plus_match) + slow_add);
+
+		//ラインは画面外に行くまで加算
+		if (line_1p_x < (float)FRAMEWORK.SCREEN_WIDTH)
+		{
+			line_1p_x += (line_Multiply * elapsed_time);
+		}
+
+		//プレイヤー1が所定の場所に到達したら次のステートへ
+		if (knight_1p_pos_x > (float)FRAMEWORK.SCREEN_WIDTH + ((float)FRAMEWORK.SCREEN_WIDTH * 0.6f))
+		{
+			intro_state = IntroState::SPACE1;
+			match_timer = 0.0f;
+		}
+	}
+	break;
+	case SceneLoad::IntroState::SPACE1:
+		//少し間を置く
+		match_timer += elapsed_time;
+
+		//一定の速度で画面外に
+		knight_1p_pos_x += (plus_match + slow_add);
+		line_1p_x += (line_Multiply * elapsed_time);
+
+		//一定時間経ったら次のステートへ
+		if (match_timer > space_time)
+		{
+			match_timer = 0.0f;
+			intro_state = IntroState::P2;
+		}
+		break;
+	case SceneLoad::IntroState::P2:
+		//プレイヤー2だけ表示
+	{
+		//タイマー加算
+		match_timer += elapsed_time * timer_Multiply;
+
+		//sin派を使って速度に緩急をつける
+		float sin_match = 0.0f;
+		sin_match = std::max(sinf(match_timer), sin_max);
+
+		//速度を加算
+		knight_2p_pos_x -= ((sin_match * plus_match) + slow_add);
+
+		//ラインは画面外に行くまで加算
+		if (line_2p_x > 0.0f)
+		{
+			line_2p_x -= (line_Multiply * elapsed_time);
+		}
+
+		//プレイヤー2が所定の場所に到達したら次のステートへ
+		if (knight_2p_pos_x < 0.0f - ((float)FRAMEWORK.SCREEN_WIDTH * 0.6f))
+		{
+			intro_state = IntroState::SPACE2;
+			match_timer = 0.0f;
+		}
+	}
+	break;
+	case SceneLoad::IntroState::SPACE2:
+		//少し間を置く
+		match_timer += elapsed_time;
+
+		//一定の速度で画面外に
+		knight_2p_pos_x -= (plus_match + slow_add);
+		line_2p_x -= (line_Multiply * elapsed_time);
+
+		//光を少しずつ大きくさせながら表示させる
+		if (flash_alpha < 1.0f)
+		{
+			flash_alpha += elapsed_time * 2.0f;
+		}
+		else
+		{
+			flash_alpha = 1.0f;
+		}
+
+		flash_size += elapsed_time * 10.0f;
+
+		//一定時間経ったら次のステートへ
+		if (match_timer > space_time)
+		{
+			match_timer = 0.0f;
+			knight_1p_pos_x = -(float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
+			knight_2p_pos_x = (float)FRAMEWORK.SCREEN_WIDTH + (float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
+			line_1p_x = -(float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
+			line_2p_x = (float)FRAMEWORK.SCREEN_WIDTH + (float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
+			intro_state = IntroState::P1P2;
+		}
+		break;
+	case SceneLoad::IntroState::P1P2:
+		//両方表示する
+	{
+		//タイマー加算
+		match_timer += elapsed_time * timer_Multiply;
+
+		//sin派を使って速度に緩急をつける
+		float sin_match = 0.0f;
+		sin_match = sinf(match_timer);
+
+		//光を薄くしていく
+		if (flash_alpha > 0.0f)
+		{
+			flash_alpha -= elapsed_time * 2.0f;
+		}
+		else
+		{
+			flash_alpha = 0.0f;
+		}
+
+		//sin派が0以下になったら次のステートへ
+		if (sin_match < sin_max)
+		{
+			intro_state = IntroState::FIN;
+			match_timer = 0.0f;
+		}
+		else
+		{
+			//速度を加算
+			knight_1p_pos_x += ((sin_match * plus_match) + slow_add);
+			knight_2p_pos_x -= ((sin_match * plus_match) + slow_add);
+
+			//ラインは画面外に行くまで加算
+			if (line_1p_x < (float)FRAMEWORK.SCREEN_WIDTH)
+			{
+				line_1p_x += (line_Multiply * elapsed_time);
+			}
+			if (line_2p_x > 0.0f)
+			{
+				line_2p_x -= (line_Multiply * elapsed_time);
+			}
+		}
+
+	}
+	break;
+	case SceneLoad::IntroState::FIN:
+		//少しだけ動かしていく
+		knight_1p_pos_x += slow_add;
+		knight_2p_pos_x -= slow_add;
+		break;
+	default:
+		break;
+	}
+}
+
+void SceneLoad::MatchDraw(float elapsed_time)
+{
+	knight_1p_cut->DrawRotaGraph(
+		spriteShader.get(),
+		knight_1p_pos_x,
+		265.0f,
+		0.0f,
+		2.8f);
+
+	knight_2p_cut->DrawRotaGraph(
+		spriteShader.get(),
+		knight_2p_pos_x,
+		810.0f,
+		0.0f,
+		2.8f,
+		true);
+
+	knight_name->DrawRotaGraph(
+		spriteShader.get(),
+		knight_1p_pos_x - 680.0f,
+		265.0f + 100.0f,
+		0.0f,
+		1.0f);
+
+	knight_name->DrawRotaGraph(
+		spriteShader.get(),
+		knight_2p_pos_x + 680.0f,
+		810.0f + 100.0f,
+		0.0f,
+		1.0f);
+
+	Box->DrawExtendGraph(
+		spriteShader.get(),
+		line_1p_x - 2500.0f,
+		515.0f,
+		line_1p_x,
+		540.0f,
+		SpriteMask::NONE,
+		DirectX::XMFLOAT4(1.0f, 0.1f, 0.1f, 1.0f)
+	);
+	Box->DrawExtendGraph(
+		spriteShader.get(),
+		line_2p_x,
+		540.0f,
+		line_2p_x + 2500.0f,
+		565.0f,
+		SpriteMask::NONE,
+		DirectX::XMFLOAT4(0.1f, 0.1f, 1.0f, 1.0f)
+	);
+
+	flash->DrawRotaGraph(
+		spriteShader.get(),
+		(float)FRAMEWORK.SCREEN_WIDTH / 2.0f,
+		(float)FRAMEWORK.SCREEN_HEIGHT / 2.0f,
+		0.0f,
+		flash_size,
+		false,
+		SpriteMask::NONE,
+		DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, flash_alpha)
+	);
+
+	if (intro_state == IntroState::FIN || intro_state == IntroState::P1P2)
+	{
+		if (VS_alpha < 1.0f)
+		{
+			VS_alpha += elapsed_time * 10.0f;
+		}
+		else
+		{
+			VS_alpha = 1.0f;
+		}
+
+		if (VS_size > 1.0f)
+		{
+			VS_size -= elapsed_time * 10.0f;
+		}
+		else
+		{
+			VS_size = 1.0f;
+		}
+
+		VS_Image->DrawRotaGraph(
+			spriteShader.get(),
+			(float)FRAMEWORK.SCREEN_WIDTH / 2.0f,
+			(float)FRAMEWORK.SCREEN_HEIGHT / 2.0f,
+			0.0f,
+			VS_size,
+			false,
+			SpriteMask::NONE,
+			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, VS_alpha)
+		);
+	}
+	else
+	{
+		VS_alpha = 0.0f;
+		VS_size = 3.0f;
+	}
 }

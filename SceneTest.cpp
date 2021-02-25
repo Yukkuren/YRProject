@@ -1,6 +1,19 @@
 #include "Scene.h"
 #include "framework.h"
 #include "Blur.h"
+#include "YRSound.h"
+#include <math.h>
+#undef max
+
+std::array<std::string, scastI(SceneTest::IntroState::FIN)+1> intro_list =
+{
+	u8"プレイヤー1のみ",
+	u8"プレイヤー2までの間",
+	u8"プレイヤー2のみ",
+	u8"同時までの間",
+	u8"同時",
+	u8"最後",
+};
 
 
 void SceneTest::Init()
@@ -118,6 +131,12 @@ void SceneTest::Init()
 			//knight = std::make_shared<Model>("./Data/FBX/Paimon/paimon.fbx");
 		}
 	}
+
+	if (earth == nullptr)
+	{
+		earth = std::make_shared<Model>("./Data/Assets/earth/earth.fbx");
+	}
+
 	if (wait_R == nullptr)
 	{
 		wait_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_wait_R.fbx");
@@ -155,10 +174,15 @@ void SceneTest::Init()
 		motion->NodeChange(wait_R);
 	}
 
+	if (earth_motion == nullptr)
+	{
+		earth_motion = std::make_unique<ModelAnim>(earth);
+	}
+
 	//画像のロード
 	if (test == nullptr)
 	{
-		//test = std::make_unique<Sprite>(L"./Data/Image/BG/stage1.png", 3840.0f, 2160.0f);
+		test = std::make_unique<Sprite>(L"./Data/Image/BG/stage1.png", 3840.0f, 2160.0f);
 	}
 	if (cutFrame == nullptr)
 	{
@@ -171,6 +195,30 @@ void SceneTest::Init()
 	if (cutIn == nullptr)
 	{
 		cutIn = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut1.png", 1280.0f, 720.0f);
+	}
+	if (knight_1p_cut == nullptr)
+	{
+		knight_1p_cut = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut1.png", 640.0f, 192.0f);
+	}
+	if (knight_2p_cut == nullptr)
+	{
+		knight_2p_cut = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut2.png", 640.0f, 192.0f);
+	}
+	if (knight_name == nullptr)
+	{
+		knight_name = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_name.png", 640.0f, 320.0f);
+	}
+	if (Box == nullptr)
+	{
+		Box = std::make_unique<Sprite>(L"./Data/Image/UI/GameLoad/Box.png", 640.0f, 640.0f);
+	}
+	if (VS_Image == nullptr)
+	{
+		VS_Image = std::make_unique<Sprite>(L"./Data/Image/UI/GameLoad/VS.png", 640.0f, 320.0f);
+	}
+	if (flash == nullptr)
+	{
+		flash = std::make_unique<Sprite>(L"./Data/Image/UI/GameLoad/flash.png", 640.0f, 640.0f);
 	}
 	/*if (cutIn == nullptr)
 	{
@@ -271,6 +319,15 @@ void SceneTest::Init()
 		knight_height_map = std::make_shared<Texture>(L"Data/FBX/Knight/knight_tex_bump.png");
 	}
 
+	if (earth_normal_map == nullptr)
+	{
+		earth_normal_map = std::make_shared<Texture>(L"Data/Assets/earth/earthnormal.jpg");
+	}
+	if (earth_height_map == nullptr)
+	{
+		earth_height_map = std::make_shared<Texture>(L"Data/Assets/earth/earthbump.jpg");
+	}
+
 
 	if (bisuko == nullptr)
 	{
@@ -319,6 +376,29 @@ void SceneTest::Init()
 
 	eye_offset = { 0.2f,0.1f };
 	mouth_offset = { 0.0f,0.0f };
+
+	match_timer = 0.0f;
+	plus_match = 60.0f;
+
+	slow_add = 0.5f;
+
+	timer_Multiply = 3.5f;
+
+	sin_max = 0.05f;
+
+	space_time = 0.8f;
+
+	VS_size = 5.0f;
+
+	VS_alpha = 0.0f;
+
+	flash_size = 0.0f;
+	flash_alpha = 0.0f;
+
+	line_1p_x = 0.0f;
+	line_2p_x = 0.0f;
+
+	line_Multiply = 10000.0f;
 }
 
 void SceneTest::Update(float elapsed_time)
@@ -358,6 +438,8 @@ void SceneTest::Update(float elapsed_time)
 		knight_pos.z = 0.0f;
 		motion->NodeChange(special_R);
 	}
+
+	MatchUpdate(elapsed_time);
 }
 
 void SceneTest::Draw(float elapsed_time)
@@ -549,10 +631,22 @@ void SceneTest::RenderTexture(
 	//static DirectX::XMFLOAT3 sky_scale = { 10.0f,10.0f,10.0f };
 	static float sky_scale[3] = { 1.0f,1.0f,1.0f };
 	static float devide = 0.0f;
+	static float left_x = 0.0f;
+	static float right_x = 0.0f;
+	static float up_y = 0.0f;
+	static float down_y = 0.0f;
+	float sin_match = 0.0f;
+	static float line_size = 2500.0f;
 
+	sin_match = std::max(sinf(match_timer), 0.0f);
 #ifdef EXIST_IMGUI
 	if(Get_Use_ImGui())
 	{
+		if(ImGui::Button("IntroStart"))
+		{
+			MatchStart();
+		}
+
 		ImGui::InputFloat("knight_pos.x", &knight_pos.x, 0.01f, 0.01f);
 		ImGui::InputFloat("knight_pos.y", &knight_pos.y, 0.01f, 0.01f);
 		ImGui::InputFloat("knight_pos.z", &knight_pos.z, 0.01f, 0.01f);
@@ -564,7 +658,24 @@ void SceneTest::RenderTexture(
 		ImGui::InputFloat(u8"空.x", &sky_scale[0], 0.01f, 0.01f);
 		ImGui::InputFloat(u8"空.y", &sky_scale[1], 0.01f, 0.01f);
 		ImGui::InputFloat(u8"空.z", &sky_scale[2], 0.01f, 0.01f);
-		ImGui::SliderFloat("devide", &devide, 0.0f, 10.0f);
+		ImGui::SliderFloat("knight1p_pos_x", &knight_1p_pos_x, -960.0f, 1920.0f + 960.0f);
+		ImGui::SliderFloat("knight2p_pos_x", &knight_2p_pos_x, -960.0f, 1920.0f + 960.0f);
+		ImGui::SliderFloat("left", &left_x, -960.0f, 1920.0f + 960.0f);
+		ImGui::SliderFloat("right", &right_x, -960.0f, 1920.0f + 960.0f);
+		ImGui::SliderFloat("up", &up_y, -960.0f, 1920.0f + 960.0f);
+		ImGui::SliderFloat("down", &down_y, -960.0f, 1920.0f + 960.0f);
+		ImGui::InputFloat(u8"Sinに乗算する値", &plus_match, 1.0f, 10.0f);
+		ImGui::InputFloat(u8"最低限進む横の値", &slow_add, 1.0f, 10.0f);
+		ImGui::InputFloat(u8"match_timerに乗算する値", &timer_Multiply, 1.0f, 10.0f);
+		ImGui::InputFloat(u8"sinの最大値", &sin_max, 1.0f, 10.0f);
+		ImGui::InputFloat(u8"間の長さ", &space_time, 0.1f, 1.0f);
+		ImGui::InputFloat(u8"ラインの長さ", &line_size, 10.0f, 100.0f);
+		ImGui::InputFloat(u8"ラインに乗算する値", &line_Multiply, 10.0f, 100.0f);
+		ImGui::Text(intro_list[scastI(intro_state)].c_str());
+
+		ImGui::Text("match_timer : %f", sin_match);
+		ImGui::Text("line1p : %f", line_1p_x);
+		ImGui::Text("line2p : %f", line_2p_x);
 	}
 #endif // USE_IMGUI
 
@@ -580,6 +691,7 @@ void SceneTest::RenderTexture(
 	testrtv.push_back(normal_texture->GetRenderTargetView());
 	testrtv.push_back(position_texture->GetRenderTargetView());
 	testrtv.push_back(luminance_texture->GetRenderTargetView());*/
+	FRAMEWORK.framebuffer.GetDefaultRTV();
 
 	FRAMEWORK.framebuffer.SetRenderTexture(color_texture->GetRenderTargetView());
 	//FRAMEWORK.framebuffer.SetRenderTexture(normal_texture->GetRenderTargetView());
@@ -607,7 +719,6 @@ void SceneTest::RenderTexture(
 	//FRAMEWORK.SetViewPort(1920.0f, 1080.0f);
 
 	//レンダーターゲットビューの設定
-	FRAMEWORK.framebuffer.GetDefaultRTV();
 	FRAMEWORK.framebuffer.Activate(1920.0f, 1080.0f, dsv);
 
 	//定数バッファの設定
@@ -629,7 +740,7 @@ void SceneTest::RenderTexture(
 	cb.eye_pos.x = YRCamera.GetEye().x;
 	cb.eye_pos.y = YRCamera.GetEye().y;
 	cb.eye_pos.z = YRCamera.GetEye().z;
-	static float wave_time = 0;
+	static float wave_time = 0.0f;
 	wave_time += elapsed_time;
 	cb.wave_time = wave_time;
 	cb.divide = devide;
@@ -675,7 +786,7 @@ void SceneTest::RenderTexture(
 		projection
 	);*/
 
-	//test->DrawExtendGraph(spriteShader.get(), 0.0f, 0.0f, FRAMEWORK.SCREEN_WIDTH, FRAMEWORK.SCREEN_HEIGHT, DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f));
+	//test->DrawExtendGraph(spriteShader.get(), 0.0f, 0.0f, FRAMEWORK.SCREEN_WIDTH, FRAMEWORK.SCREEN_HEIGHT);
 
 	FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[framework::DS_WRITE_FALSE].Get(), 1);
 
@@ -691,10 +802,19 @@ void SceneTest::RenderTexture(
 			toonShader.get(),
 			view, projection, light_direction, light_color, ambient_color,eye_offset,mouth_offset,Model::Material_Attribute::SWORD
 		);
+
+		/*earth_motion->CalculateLocalTransform();
+		earth_motion->CalculateWorldTransform(knight_pos,
+			DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
+			knight_angle);
+		earth_motion->Draw(
+			TessellationShader.get(),
+			view, projection, light_direction, light_color, ambient_color, eye_offset, mouth_offset, Model::Material_Attribute::SWORD
+		);*/
 	}
 	else
 	{
-		sky->Render(skyShader.get(),
+		/*sky->Render(skyShader.get(),
 			knight_pos,
 			DirectX::XMFLOAT3(sky_scale[0], sky_scale[1], sky_scale[2]),
 			DirectX::XMFLOAT3(DirectX::XMConvertToRadians(-90.0f), 0.0f, 0.0f),
@@ -705,7 +825,7 @@ void SceneTest::RenderTexture(
 			ambient_color,
 			elapsed_time,
 			0.0f
-		);
+		);*/
 
 		//sampler_wrap->Set(1);
 		//fur->Set(1);
@@ -717,20 +837,36 @@ void SceneTest::RenderTexture(
 
 		knight_normal_map->Set(1);
 		knight_height_map->Set(2);
+		earth_normal_map->Set(1);
+		earth_height_map->Set(2);
 
 		sampler_clamp->Set(0);
 		sampler_wrap->Set(1);
 
-		motion->CalculateWorldTransform(knight_pos,
+		knight_angle.y += elapsed_time;
+
+		/*earth_motion->CalculateLocalTransform();
+		earth_motion->CalculateWorldTransform(knight_pos,
 			DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
 			knight_angle);
-		motion->Draw(
+		earth_motion->Draw(
 			TessellationShader.get(),
 			view, projection,
 			light_direction, light_color,
 			D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST,
 			ambient_color
-		);
+		);*/
+
+		/*motion->CalculateWorldTransform(knight_pos,
+			DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
+			knight_angle);
+		motion->Draw(
+			toonShader.get(),
+			view, projection,
+			light_direction, light_color,
+			D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST,
+			ambient_color
+		);*/
 		/*motion->Draw(
 			skinShader.get(),
 			view, projection, light_direction, light_color, ambient_color
@@ -840,6 +976,105 @@ void SceneTest::RenderTexture(
 			SpriteMask::INDRAW
 		);
 	}
+
+	knight_1p_cut->DrawRotaGraph(
+		spriteShader.get(),
+		knight_1p_pos_x,
+		265.0f,
+		0.0f,
+		2.8f);
+
+	knight_2p_cut->DrawRotaGraph(
+		spriteShader.get(),
+		knight_2p_pos_x,
+		810.0f,
+		0.0f,
+		2.8f,
+		true);
+
+	knight_name->DrawRotaGraph(
+		spriteShader.get(),
+		knight_1p_pos_x - 680.0f,
+		265.0f + 100.0f,
+		0.0f,
+		1.0f);
+
+	knight_name->DrawRotaGraph(
+		spriteShader.get(),
+		knight_2p_pos_x + 680.0f,
+		810.0f + 100.0f,
+		0.0f,
+		1.0f);
+
+	Box->DrawExtendGraph(
+		spriteShader.get(),
+		line_1p_x-line_size,
+		515.0f,
+		line_1p_x,
+		540.0f,
+		SpriteMask::NONE,
+		DirectX::XMFLOAT4(1.0f, 0.1f, 0.1f, 1.0f)
+	);
+	Box->DrawExtendGraph(
+		spriteShader.get(),
+		line_2p_x,
+		540.0f,
+		line_2p_x+line_size,
+		565.0f,
+		SpriteMask::NONE,
+		DirectX::XMFLOAT4(0.1f, 0.1f, 1.0f, 1.0f)
+	);
+
+	flash->DrawRotaGraph(
+		spriteShader.get(),
+		(float)FRAMEWORK.SCREEN_WIDTH / 2.0f,
+		(float)FRAMEWORK.SCREEN_HEIGHT / 2.0f,
+		0.0f,
+		flash_size,
+		false,
+		SpriteMask::NONE,
+		DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, flash_alpha)
+	);
+
+	if (intro_state == IntroState::FIN || intro_state == IntroState::P1P2)
+	{
+		if (VS_alpha < 1.0f)
+		{
+			VS_alpha += elapsed_time * 10.0f;
+		}
+		else
+		{
+			VS_alpha = 1.0f;
+		}
+
+		if (VS_size > 1.0f)
+		{
+			VS_size -= elapsed_time * 10.0f;
+		}
+		else
+		{
+			VS_size = 1.0f;
+		}
+
+		VS_Image->DrawRotaGraph(
+			spriteShader.get(),
+			(float)FRAMEWORK.SCREEN_WIDTH / 2.0f,
+			(float)FRAMEWORK.SCREEN_HEIGHT / 2.0f,
+			0.0f,
+			VS_size,
+			false,
+			SpriteMask::NONE,
+			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, VS_alpha)
+		);
+	}
+	else
+	{
+		VS_alpha = 0.0f;
+		VS_size = 3.0f;
+	}
+
+
+
 	/*cutIn->DrawRotaGraph(
 		spriteShader.get(),
 		center_x,
@@ -976,9 +1211,11 @@ void SceneTest::RenderBlur(
 				FRAMEWORK.context->PSSetConstantBuffers(0, 1, constantBuffer_Gauss.GetAddressOf());
 			}
 
+			ID3D11DepthStencilView* dsv2 = blur_texture[i]->GetDepthStencilView();
+			FRAMEWORK.context->ClearDepthStencilView(dsv2, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 			//レンダーターゲットビューの設定
-			FRAMEWORK.framebuffer.Activate(dsv);
+			FRAMEWORK.framebuffer.Activate(w * 0.5f / riv2, h * 0.5f / riv2, dsv2);
 
 			sprite->render(
 				gaussShader.get(),
@@ -988,6 +1225,7 @@ void SceneTest::RenderBlur(
 
 			//FRAMEWORK.framebuffer.Deactivate();
 			//FRAMEWORK.framebuffer.ResetRenderTexture();
+			int hoge = 0;
 		}
 
 	//全てのテクスチャを合成したマルチガウスのテクスチャを作成する
@@ -996,15 +1234,15 @@ void SceneTest::RenderBlur(
 		FRAMEWORK.framebuffer.SetDefaultRTV();*/
 
 		//テクスチャをセット
-		FRAMEWORK.framebuffer.SetRenderTexture(multi_blur_texture->GetRenderTargetView(), true);
+		//FRAMEWORK.framebuffer.SetRenderTexture(multi_blur_texture->GetRenderTargetView(), true);
 		//ID3D11DepthStencilView* dsv = color_texture->GetDepthStencilView();
 
 		//画面をクリア
-		FRAMEWORK.framebuffer.Clear();
+		//FRAMEWORK.framebuffer.Clear();
 		//FRAMEWORK.context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 		//レンダーターゲットビューの設定
-		FRAMEWORK.framebuffer.Activate(dsv);
+		//FRAMEWORK.framebuffer.Activate(dsv);
 		//ブレンドステート設定
 		//FRAMEWORK.BlendSet(Blend::ALPHA);
 		//ラスタライザー設定
@@ -1015,6 +1253,7 @@ void SceneTest::RenderBlur(
 		//サンプラー設定
 		//sampler_clamp->Set(0);
 		FRAMEWORK.framebuffer.SetDefaultRTV();
+		FRAMEWORK.SetViewPort((float)FRAMEWORK.SCREEN_WIDTH, (float)FRAMEWORK.SCREEN_HEIGHT);
 
 		//ブレンドステート設定
 		FRAMEWORK.BlendSet(Blend::ADD);
@@ -1066,5 +1305,188 @@ void SceneTest::RenderBlur(
 			multi_blur_texture.get(),
 			0.0f, 0.0f, 1920.0f, 1080.0f,
 			0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);*/
+	}
+}
+
+
+void SceneTest::MatchStart()
+{
+	match_on = true;
+	knight_1p_pos_x = -(float)FRAMEWORK.SCREEN_WIDTH/2.0f;
+	knight_2p_pos_x = (float)FRAMEWORK.SCREEN_WIDTH + (float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
+	line_1p_x = -(float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
+	line_2p_x = (float)FRAMEWORK.SCREEN_WIDTH + (float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
+	match_timer = 0.0f;
+	flash_alpha = 0.0f;
+	flash_size = 0.0f;
+	intro_state = IntroState::P1;
+	GetSound().BGMStop(BGMKind::LOAD);
+	GetSound().BGMPlay(BGMKind::LOAD);
+}
+
+void SceneTest::MatchUpdate(float elapsed_time)
+{
+	if (!match_on)
+	{
+		return;
+	}
+
+	//knight_1p_pos_x += ((sin_match * plus_match) + slow_add);
+	//knight_2p_pos_x -= ((sin_match * plus_match) + slow_add);
+
+	switch (intro_state)
+	{
+	case SceneTest::IntroState::P1:
+		//プレイヤー1だけ表示
+	{
+		//タイマー加算
+		match_timer += elapsed_time * timer_Multiply;
+
+		//sin派を使って速度に緩急をつける
+		float sin_match = 0.0f;
+		sin_match = std::max(sinf(match_timer), sin_max);
+
+		//速度を加算
+		knight_1p_pos_x += ((sin_match * plus_match) + slow_add);
+
+		//ラインは画面外に行くまで加算
+		if (line_1p_x < (float)FRAMEWORK.SCREEN_WIDTH)
+		{
+			line_1p_x += (line_Multiply * elapsed_time);
+		}
+
+		//プレイヤー1が所定の場所に到達したら次のステートへ
+		if (knight_1p_pos_x > (float)FRAMEWORK.SCREEN_WIDTH + ((float)FRAMEWORK.SCREEN_WIDTH * 0.6f))
+		{
+			intro_state = IntroState::SPACE1;
+			match_timer = 0.0f;
+		}
+	}
+		break;
+	case SceneTest::IntroState::SPACE1:
+		//少し間を置く
+		match_timer += elapsed_time;
+
+		//一定の速度で画面外に
+		knight_1p_pos_x += (plus_match + slow_add);
+		line_1p_x += (line_Multiply * elapsed_time);
+
+		//一定時間経ったら次のステートへ
+		if (match_timer > space_time)
+		{
+			match_timer = 0.0f;
+			intro_state = IntroState::P2;
+		}
+		break;
+	case SceneTest::IntroState::P2:
+		//プレイヤー2だけ表示
+	{
+		//タイマー加算
+		match_timer += elapsed_time * timer_Multiply;
+
+		//sin派を使って速度に緩急をつける
+		float sin_match = 0.0f;
+		sin_match = std::max(sinf(match_timer), sin_max);
+
+		//速度を加算
+		knight_2p_pos_x -= ((sin_match * plus_match) + slow_add);
+
+		//ラインは画面外に行くまで加算
+		if (line_2p_x > 0.0f)
+		{
+			line_2p_x -= (line_Multiply * elapsed_time);
+		}
+
+		//プレイヤー2が所定の場所に到達したら次のステートへ
+		if (knight_2p_pos_x < 0.0f - ((float)FRAMEWORK.SCREEN_WIDTH * 0.6f))
+		{
+			intro_state = IntroState::SPACE2;
+			match_timer = 0.0f;
+		}
+	}
+		break;
+	case SceneTest::IntroState::SPACE2:
+		//少し間を置く
+		match_timer += elapsed_time;
+
+		//一定の速度で画面外に
+		knight_2p_pos_x -= (plus_match + slow_add);
+		line_2p_x -= (line_Multiply * elapsed_time);
+
+		//光を少しずつ大きくさせながら表示させる
+		if (flash_alpha < 1.0f)
+		{
+			flash_alpha += elapsed_time * 2.0f;
+		}
+		else
+		{
+			flash_alpha = 1.0f;
+		}
+
+		flash_size += elapsed_time * 10.0f;
+
+		//一定時間経ったら次のステートへ
+		if (match_timer > space_time)
+		{
+			match_timer = 0.0f;
+			knight_1p_pos_x = -(float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
+			knight_2p_pos_x = (float)FRAMEWORK.SCREEN_WIDTH + (float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
+			line_1p_x = -(float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
+			line_2p_x = (float)FRAMEWORK.SCREEN_WIDTH + (float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
+			intro_state = IntroState::P1P2;
+		}
+		break;
+	case SceneTest::IntroState::P1P2:
+		//両方表示する
+	{
+		//タイマー加算
+		match_timer += elapsed_time * timer_Multiply;
+
+		//sin派を使って速度に緩急をつける
+		float sin_match = 0.0f;
+		sin_match = sinf(match_timer);
+
+		//光を薄くしていく
+		if (flash_alpha > 0.0f)
+		{
+			flash_alpha -= elapsed_time * 2.0f;
+		}
+		else
+		{
+			flash_alpha = 0.0f;
+		}
+
+		//sin派が0以下になったら次のステートへ
+		if (sin_match < sin_max)
+		{
+			intro_state = IntroState::FIN;
+			match_timer = 0.0f;
+		}
+		else
+		{
+			//速度を加算
+			knight_1p_pos_x += ((sin_match * plus_match) + slow_add);
+			knight_2p_pos_x -= ((sin_match * plus_match) + slow_add);
+
+			//ラインは画面外に行くまで加算
+			if (line_1p_x < (float)FRAMEWORK.SCREEN_WIDTH)
+			{
+				line_1p_x += (line_Multiply * elapsed_time);
+			}
+			if (line_2p_x > 0.0f)
+			{
+				line_2p_x -= (line_Multiply * elapsed_time);
+			}
+		}
+
+	}
+		break;
+	case SceneTest::IntroState::FIN:
+		//少しだけ動かしていく
+		knight_1p_pos_x += slow_add;
+		knight_2p_pos_x -= slow_add;
+		break;
+	default:
+		break;
 	}
 }

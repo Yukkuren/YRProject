@@ -138,7 +138,7 @@ public:
 };
 
 
-
+//AIコントロールクラス
 class AI_Controller
 {
 public:
@@ -179,7 +179,7 @@ public:
 };
 
 
-
+//コントローラー入力内容保存・表示クラス
 class InputGamePadDraw
 {
 public:
@@ -240,6 +240,7 @@ public:
 };
 
 
+//ゲームシーン
 class SceneGame : public SceneBase
 {
 private:
@@ -282,6 +283,8 @@ public:
 
 	YR_Vector3	Start_Scene_eye;		//ゲーム開始時の初期カメラ座標
 	YR_Vector3	Start_Scene_focus;		//ゲーム開始時の初期カメラ方向
+
+	Title_CBuffer cbuffer_param;
 
 	enum class MAIN_LOOP :int
 	{
@@ -377,6 +380,7 @@ public:
 	std::unique_ptr<YRShader> gaussShader = nullptr;
 	std::unique_ptr<YRShader> multi_gaussShader = nullptr;
 	std::unique_ptr<YRShader> spriteEx = nullptr;
+	std::unique_ptr<YRShader> concentrationShader = nullptr;
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer>	constantBuffer = nullptr;
 
@@ -477,6 +481,7 @@ public:
 };
 
 
+//タイトルシーン
 class SceneTitle : public SceneBase
 {
 
@@ -596,6 +601,8 @@ public:
 	void UnInit() {};
 };
 
+//ロードシーン
+//マッチ画面のイントロを再生するシーン
 class SceneLoad : public SceneBase
 {
 public:
@@ -609,8 +616,68 @@ public:
 	std::unique_ptr<Sprite>	load_img = nullptr;
 	std::unique_ptr<Sprite>	load_bg = nullptr;
 
+	std::shared_ptr<Sampler> sampler_wrap = nullptr;
+
 	//シェーダー
 	std::unique_ptr<YRShader> spriteShader = nullptr;
+
+	float match_timer = 0.0f;
+
+	float plus_match = 0.0f;
+
+	float slow_add = 0.0f;
+
+	float timer_Multiply = 0.0f;
+
+	float sin_max = 0.0f;
+
+	float space_time = 0.0f;
+
+	float VS_size = 0.0f;
+
+	float VS_alpha = 0.0f;
+
+	float flash_size = 0.0f;
+	float flash_alpha = 0.0f;
+
+	float knight_1p_pos_x = 0.0f;
+	float knight_2p_pos_x = 0.0f;
+
+	float line_1p_x = 0.0f;
+	float line_2p_x = 0.0f;
+
+	float line_Multiply = 0.0f;
+
+	std::unique_ptr<Sprite> flash = nullptr;
+
+	enum class IntroState : int
+	{
+		P1,			//プレイヤー1
+		SPACE1,		//少し間をおく
+		P2,			//プレイヤー2
+		SPACE2,		//少し間を置く
+		P1P2,		//同時に出す
+		FIN,		//sin値がmaxに達したらここに移動する(動かなくする)
+	};
+
+	IntroState intro_state = IntroState::P1;
+
+	std::unique_ptr<Sprite> knight_1p_cut = nullptr;
+	std::unique_ptr<Sprite> knight_2p_cut = nullptr;
+	std::unique_ptr<Sprite> knight_name = nullptr;
+	std::unique_ptr<Sprite> Box = nullptr;
+	std::unique_ptr<Sprite> VS_Image = nullptr;
+
+	std::unique_ptr<YRShader> titleShader = nullptr;
+	std::unique_ptr<Texture> title_texture = nullptr;
+
+	//Gbuffer用スプライト
+	std::unique_ptr<Sprite>	sprite = nullptr;
+
+	//定数バッファ
+	Microsoft::WRL::ComPtr<ID3D11Buffer>	constantBuffer = nullptr;
+
+	Title_CBuffer cbuffer_param;
 
 	float timer = 0.0f;
 	void Init();
@@ -620,8 +687,15 @@ public:
 	void LoadData();
 	bool FedoOut(float elapsed_time);
 
+	void MatchStart();
+
+	void MatchUpdate(float elapsed_time);
+
+	void MatchDraw(float elapsed_time);
 };
 
+
+//セレクトシーン
 class SceneSelect : public SceneBase
 {
 public:
@@ -666,6 +740,8 @@ public:
 	YR_Vector3			PosSet(int select);
 };
 
+
+//テストシーン
 class SceneTest : public SceneBase
 {
 public:
@@ -678,11 +754,59 @@ public:
 
 	bool pause = false;
 
+	bool match_on = false;
+	float match_timer = 0.0f;
+
+	float plus_match = 0.0f;
+
+	float slow_add = 0.0f;
+
+	float timer_Multiply = 0.0f;
+
+	float sin_max = 0.0f;
+
+	float space_time = 0.0f;
+
+	float VS_size = 0.0f;
+
+	float VS_alpha = 0.0f;
+
+	float flash_size = 0.0f;
+	float flash_alpha = 0.0f;
+
+	float knight_1p_pos_x = 0.0f;
+	float knight_2p_pos_x = 0.0f;
+
+	float line_1p_x = 0.0f;
+	float line_2p_x = 0.0f;
+
+	float line_Multiply = 0.0f;
+
+	std::unique_ptr<Sprite> flash = nullptr;
+
+	enum class IntroState : int
+	{
+		P1,			//プレイヤー1
+		SPACE1,		//少し間をおく
+		P2,			//プレイヤー2
+		SPACE2,		//少し間を置く
+		P1P2,		//同時に出す
+		FIN,		//sin値がmaxに達したらここに移動する(動かなくする)
+	};
+
+	IntroState intro_state = IntroState::P1;
+
 	std::unique_ptr<Sprite> test = nullptr;
 
 	std::unique_ptr<Sprite> cutFrame = nullptr;
 	std::unique_ptr<Sprite> cutMask = nullptr;
 	std::unique_ptr<Sprite> cutIn = nullptr;
+	std::unique_ptr<Sprite> knight_1p_cut = nullptr;
+	std::unique_ptr<Sprite> knight_2p_cut = nullptr;
+	std::unique_ptr<Sprite> knight_name = nullptr;
+	std::unique_ptr<Sprite> Box = nullptr;
+	std::unique_ptr<Sprite> VS_Image = nullptr;
+
 
 	DirectX::XMFLOAT3	eye_cut = { 34.156f,5.693,-14.232 };
 	DirectX::XMFLOAT3	focus_cut = { 8.539f,5.693f,2.898f };
@@ -699,10 +823,12 @@ public:
 	DirectX::XMFLOAT2	mouth_offset = { 0.0f,0.0f };
 
 	std::shared_ptr<Model> knight = nullptr;
+	std::shared_ptr<Model> earth = nullptr;
 	std::shared_ptr<Model> wait_R = nullptr;
 	std::shared_ptr<Model> special_R = nullptr;
 	std::shared_ptr<Texture> board_texture = nullptr;
 	std::unique_ptr<ModelAnim> motion = nullptr;
+	std::unique_ptr<ModelAnim> earth_motion = nullptr;
 	std::unique_ptr<Skinned_mesh> sky = nullptr;
 
 	std::unique_ptr<geometric_primitive>	geo = nullptr;
@@ -722,6 +848,9 @@ public:
 	std::shared_ptr<Texture> specular_texture = nullptr;
 	std::shared_ptr<Texture> knight_normal_map = nullptr;
 	std::shared_ptr<Texture> knight_height_map = nullptr;
+
+	std::shared_ptr<Texture> earth_normal_map = nullptr;
+	std::shared_ptr<Texture> earth_height_map = nullptr;
 
 
 	//Gbuffer用スプライト
@@ -789,6 +918,10 @@ public:
 		const DirectX::XMFLOAT4& light_color,
 		const DirectX::XMFLOAT4& ambient_color,
 		float						elapsed_time);
+
+	void MatchStart();
+
+	void MatchUpdate(float elapsed_time);
 
 public:
 	struct CB_Multi_Render_Target

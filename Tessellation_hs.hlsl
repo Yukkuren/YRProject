@@ -57,32 +57,72 @@
 
 #include "Tessellation.hlsli"
 
+//HSConstantOutput HSConstant(
+//InputPatch<HSInput, 3> ip,
+//uint pid : SV_PrimitiveID)
+//{
+//    HSConstantOutput output = (HSConstantOutput) 0;;
+//    output.factor[0] = divide;
+//    output.factor[1] = divide;
+//    output.factor[2] = divide;
+//    output.inner_factor = divide;
+//    return output;
+//}
 HSConstantOutput HSConstant(
-InputPatch<HSInput, 3> ip,
-uint pid : SV_PrimitiveID)
+	InputPatch<HSInput, 3> patch /*,uint pid : SV_PrimitiveID*/)
 {
     HSConstantOutput output = (HSConstantOutput) 0;;
+#if 1
     output.factor[0] = divide;
     output.factor[1] = divide;
     output.factor[2] = divide;
     output.inner_factor = divide;
+#else
+	float3 retf;
+	float  ritf, uitf;
+	ProcessTriTessFactorsAvg(divide, divide, retf, ritf, uitf);
+	output.factor[0] = retf.x;
+	output.factor[1] = retf.y;
+	output.factor[2] = retf.z;
+	output.inner_factor = ritf;
+#endif
     return output;
 }
 
-[domain("tri")]
-[partitioning("integer")]
-[outputtopology("triangle_cw")]
+//[domain("tri")]
+//[partitioning("integer")]
+//[outputtopology("triangle_cw")]
+//[outputcontrolpoints(3)]
+//[patchconstantfunc("HSConstant")]
+//DSInput main(InputPatch<HSInput, 3> input,
+//uint cpid : SV_OutputControlPointID,
+//uint pid : SV_PrimitiveID)
+//{
+//    DSInput output = (DSInput) 0;
+//    output.Position = input[cpid].Position;
+//    output.Color = input[cpid].Color;
+//    output.Tex = input[cpid].Tex;
+//    output.Normal = input[cpid].Normal;
+//    return output;
+//}
+
+[domain("tri")] // tri, quad, isoline
+[partitioning("integer")] // integer, fractional_eve, fractional_odd, pow2
+[outputtopology("triangle_cw")] // point, line, triangle_ccw, triangle_cw
 [outputcontrolpoints(3)]
 [patchconstantfunc("HSConstant")]
-DSInput main(InputPatch<HSInput, 3> input,
-uint cpid : SV_OutputControlPointID,
-uint pid : SV_PrimitiveID)
+DSInput main(InputPatch<HSInput, 3> patch,
+	uint cpid : SV_OutputControlPointID /*, uint pid : SV_PrimitiveID*/)
 {
-    DSInput output = (DSInput) 0;
-    output.Position = input[cpid].Position;
-    output.Color = input[cpid].Color;
-    output.Tex = input[cpid].Tex;
-    output.Normal = input[cpid].Normal;
-    return output;
+#if 0
+	DSInput output = (DSInput)0;
+	output.Position = patch[cpid].Position;
+	output.Color = patch[cpid].Color;
+	output.Tex = patch[cpid].Tex;
+	output.Normal = patch[cpid].Normal;
+	return output;
+#else
+    return patch[cpid];
+#endif
 }
 

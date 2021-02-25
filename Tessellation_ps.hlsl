@@ -63,43 +63,89 @@ float3 RimLight(
 
 
 
-PSOutput main(PSInput input) : SV_Target
-{
-    PSOutput Out = (PSOutput) 0;
+//PSOutput main(PSInput input) : SV_Target
+//{
+//    PSOutput Out = (PSOutput) 0;
 
-    Out.Color = float4(1.0, 1.0, 1.0, 1.0);
-    Out.Luminance = float4(1.0, 1.0, 1.0, 1.0);
-    return Out;
+//    //Out.Luminance = float4(1.0, 1.0, 1.0, 1.0);
+//    //return Out;
+//    float4 color = DiffuseTexture.Sample(DecalSampler, input.Tex);
+//    float3 E = normalize(EyePos.xyz - input.wPosition);
+//    float3 L = normalize(LightDir.xyz);
+//    float3 C = LightColor.rgb;
+//	//環境光
+//    float3 A = AmbientColor.rgb;
+
+//	// 法線取得
+//    float3 N = NormalTexture.Sample(DecalSampler, input.Tex).xyz;
+//    N = N * 2.0f - 1.0f;
+
+//	// 接空間軸
+//    float3 vx = normalize(input.vT);
+//    float3 vy = normalize(input.vB);
+//    float3 vz = normalize(input.vN);
+
+//	// 法線ワールド変換
+//    float3x3 mat = { vx, vy, vz };
+
+//	// ワールド変換
+//    N = normalize(mul(N, mat)).xyz;
+
+//	// 拡散反射
+//    float3 Kd = { 1, 1, 1 };
+//    float3 D = HalfLambert(N, L, C, Kd);
+
+//	// 鏡面反射
+//    float3 Ks = { 1, 1, 1 };
+//    float3 S = PhongSpecular(N, L, C, E, Ks, 50);
+//	// リムライト
+//    float3 R = RimLight(N, E, L, C);
+
+//    color *= input.Color;
+//    color.rgb *= float4(A + D + S + R, 1);
+
+//    Out.Color = color;
+//    Out.Color = float4(1.0, 1.0, 1.0, 1.0);
+//    Out.Luminance = float4(0.0, 0.0, 0.0, 0.0);
+//    return Out;
+//}
+
+float4 main(PSInput input) : SV_Target
+{
     float4 color = DiffuseTexture.Sample(DecalSampler, input.Tex);
     float3 E = normalize(EyePos.xyz - input.wPosition);
     float3 L = normalize(LightDir.xyz);
     float3 C = LightColor.rgb;
-    //環境光
+	//環境光
     float3 A = AmbientColor.rgb;
-    // 法線取得
+
+	// 法線取得
     float3 N = NormalTexture.Sample(DecalSampler, input.Tex).xyz;
     N = N * 2.0f - 1.0f;
-    // 接空間軸
+
+	// 接空間軸
     float3 vx = normalize(input.vT);
     float3 vy = normalize(input.vB);
     float3 vz = normalize(input.vN);
-    // 法線ワールド変換
-    row_major float3x3 mat = { vx, vy, vz };
-    // ワールド変換
+
+	// 法線ワールド変換
+    float3x3 mat = { vx, vy, vz };
+
+	// ワールド変換
     N = normalize(mul(N, mat)).xyz;
-    // 拡散反射
+
+	// 拡散反射
     float3 Kd = { 1, 1, 1 };
     float3 D = HalfLambert(N, L, C, Kd);
-    // 鏡面反射
+
+	// 鏡面反射
     float3 Ks = { 1, 1, 1 };
-    float3 S = PhongSpecular(N, L, C, E, Ks, 20);
-    // リムライト
+    float3 S = PhongSpecular(N, L, C, E, Ks, 50);
+	// リムライト
     float3 R = RimLight(N, E, L, C);
+
     color *= input.Color;
     color.rgb *= float4(A + D + S + R, 1);
 
-    Out.Color = color;
-    Out.Color = float4(1.0, 1.0, 1.0, 1.0);
-    Out.Luminance = float4(1.0, 1.0, 1.0, 1.0);
-    return Out;
+    return color;
 }

@@ -185,6 +185,11 @@ void SceneTitle::LoadData()
 	/*if (titleShader == nullptr)
 	{
 		titleShader = std::make_unique<YRShader>(ShaderType::TITLE);
+		titleShader->Create("./Data/Shader/LoadShader_vs.cso", "./Data/Shader/LoadShader_ps.cso");
+	}*/
+	/*if (titleShader == nullptr)
+	{
+		titleShader = std::make_unique<YRShader>(ShaderType::TITLE);
 		titleShader->Create("./Data/Shader/CharaSelectShader_vs.cso", "./Data/Shader/CharaSelectShader_ps.cso");
 	}*/
 	/*if (titleShader == nullptr)

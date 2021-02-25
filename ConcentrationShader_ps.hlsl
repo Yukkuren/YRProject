@@ -10,7 +10,7 @@
 #define SOFTNESS 0.1
 #define WEIRDNESS 0.1
 
-#define ASPECT_AWARE
+//#define ASPECT_AWARE
 
 #define lofi(x,d) (floor((x)/(d))*(d))
 
@@ -82,7 +82,7 @@ PSOutput main(PSInput pin) : SV_TARGET
     mainImage(fragColor, fragCoord);
 
     Out.Color = fragColor;
-    Out.Luminance = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    //Out.Luminance = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
     return Out;
 }

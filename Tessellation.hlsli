@@ -3,6 +3,7 @@
 Texture2D DiffuseTexture : register(t0);
 Texture2D NormalTexture : register(t1);
 Texture2D HeightTexture : register(t2);
+
 SamplerState DecalSampler : register(s0);
 SamplerState WrapSampler : register(s1);
 
@@ -80,8 +81,10 @@ struct PSOutput
 
 cbuffer CONSTANT_BUFFER : register(b0)
 {
-    row_major float4x4 world_view_projection;
-    row_major float4x4 world;
+    //row_major float4x4 world_view_projection;
+    //row_major float4x4 world;
+    matrix World;
+    matrix matWVP;
     float4 material_color;
     float4 light_direction;
     float4 light_color;
@@ -97,4 +100,5 @@ cbuffer CONSTANT_BUFFER : register(b0)
     float Offset_Y; //テクスチャY方向ずれ
     float dummy00;
     float dummy01;
+    float4 dummy02;
 };

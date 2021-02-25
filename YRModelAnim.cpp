@@ -616,7 +616,6 @@ void ModelAnim::Draw(
 		shader->Acivate();
 		FRAMEWORK.context.Get()->IASetVertexBuffers(0, 1, mesh.vertex_buffer.GetAddressOf(), &stride, &offset);
 		FRAMEWORK.context.Get()->IASetIndexBuffer(mesh.index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-		FRAMEWORK.context.Get()->IASetPrimitiveTopology(topology);
 
 		DirectX::XMFLOAT4X4 global_transform =
 		{
@@ -657,6 +656,7 @@ void ModelAnim::Draw(
 			cb.at = YRCamera.GetAt();
 			cb.dummy00 = 0.0f;
 			cb.dummy01 = 0.0f;
+			cb.dummy02 = { 0.0f,0.0f,0.0f,0.0f };
 
 			//ƒuƒ‹[ƒ€‚ÅŒõ‚ç‚¹‚éêŠ‚ðŽw’è‚·‚é
 			switch (blur_material)
@@ -717,6 +717,7 @@ void ModelAnim::Draw(
 			FRAMEWORK.context->GSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
 			FRAMEWORK.context->DSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
 			FRAMEWORK.context->HSSetConstantBuffers(0, 1, constant_buffer.GetAddressOf());
+			FRAMEWORK.context->IASetPrimitiveTopology(topology);
 
 			if (m_model_resource->color_texture_main == nullptr)
 			{
@@ -726,8 +727,8 @@ void ModelAnim::Draw(
 			FRAMEWORK.context->DrawIndexed(subset.index_count, subset.start_index, 0);
 		}
 
-		shader->Inactivate();
 	}
+	shader->Inactivate();
 }
 
 

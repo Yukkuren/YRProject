@@ -3077,6 +3077,7 @@ void Knight::JumpUpdate(float decision, float elapsed_time)
 		//äpìxÇå≥Ç…ñﬂÇ∑
 		angle.y = 0.0f;
 		angle.z = 0.0f;
+		timer = non_target;
 		GetSound().SESinglePlay(SEKind::LANDING);
 		if (rightOrleft > 0)
 		{
@@ -3101,6 +3102,7 @@ void Knight::DamageCheck(float decision)
 		{
 			//çUåÇÇéÛÇØÇƒÇ¢ÇΩ
 			GetSound().SEStop(SEKind::SLIDE);
+			YRGetEffect().StopEffect(EffectKind::SMOKE);
 			rightOrleft = decision;
 			//èåèÇ≤Ç∆Ç…ê›íË
 			switch (hit[i].hit_state)
@@ -3283,6 +3285,7 @@ void Knight::KnockUpdate(float elapsed_time)
 				if (hit[i].hitback.x > Reflection_range_min)
 				{
 					hit[i].hitback.x = (-hit[i].hitback.x*Reflection_attenuation_factor);
+					YRGetEffect().PlayEffect(EffectKind::WALL_SHOCK, DirectX::XMFLOAT3(pos.x-5.0f,pos.y,pos.z), DirectX::XMFLOAT3(5.0f, 5.0f, 5.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), DirectX::XMConvertToRadians(90.0f));
 				}
 			}
 			if (pos.x < Limit::Left_max)
@@ -3291,6 +3294,7 @@ void Knight::KnockUpdate(float elapsed_time)
 				if (hit[i].hitback.x < -Reflection_range_min)
 				{
 					hit[i].hitback.x = (-hit[i].hitback.x * Reflection_attenuation_factor);
+					YRGetEffect().PlayEffect(EffectKind::WALL_SHOCK, DirectX::XMFLOAT3(pos.x + 5.0f, pos.y, pos.z), DirectX::XMFLOAT3(5.0f, 5.0f, 5.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), DirectX::XMConvertToRadians(-90.0f));
 				}
 			}
 			pflag = true;
@@ -3566,6 +3570,15 @@ void Knight::SlamUpdate(float elapsed_time)
 		anim->PlayAnimation(1, true);
 		//ínñ ÇÃÇﬂÇËçûÇ›Çé°Ç∑
 		pos.y = POS_Y;
+
+		YRGetEffect().PlayEffect(EffectKind::SHOCKWAVE, DirectX::XMFLOAT3(pos.x, pos.y - 5.0f, pos.z), DirectX::XMFLOAT3(10.0f, 20.0f, 10.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+
+		float smoke_angle = 0.0f;
+		if (rightOrleft < 1)
+		{
+			smoke_angle = 90.0f;
+		}
+		YRGetEffect().PlayEffect(EffectKind::SMOKE, DirectX::XMFLOAT3(pos.x + Getapply(5.0f), pos.y - 5.0f, pos.z), DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), smoke_angle);
 	}
 
 	//ínñ ÇääÇ¡ÇƒÇ¢ÇÈéû
@@ -3573,6 +3586,7 @@ void Knight::SlamUpdate(float elapsed_time)
 	{
 		GetSound().SEPlay(SEKind::SLIDE);
 		HitBoxTransition(HitBoxState::SLIDE);
+		YRGetEffect().SetLocation(EffectKind::SMOKE, DirectX::XMFLOAT3(pos.x + Getapply(5.0f), pos.y - 5.0f, pos.z));
 		if (speed.x > 0.0f)
 		{
 			speed.x -= (attenuation_slam * elapsed_time);
@@ -3595,6 +3609,7 @@ void Knight::SlamUpdate(float elapsed_time)
 	if (knocktimer < 0.0f)
 	{
 		GetSound().SEStop(SEKind::SLIDE);
+		YRGetEffect().StopEffect(EffectKind::SMOKE);
 		combo_count = 0;
 		if (ground)
 		{

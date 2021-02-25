@@ -417,7 +417,7 @@ void YRSound::SoundDebugDrow()
 
 		ImGui::End();
 	}
-#endif // 
+#endif //
 }
 
 //XVˆ—

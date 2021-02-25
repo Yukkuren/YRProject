@@ -145,6 +145,23 @@ void SceneGame::Init()
 	AI2P.Init();
 
 	input_pad.Init();
+
+	cbuffer_param.Resolution = { 1920.0f,1080.0f,1920.0f / 1080.0f };
+	cbuffer_param.brightness = 15.0f;
+	//cbuffer_param.brightness = 3.0f;
+	cbuffer_param.gamma = 13;
+	//cbuffer_param.gamma = 6;
+	cbuffer_param.spot_brightness = 1.5f;
+	cbuffer_param.ray_density = 1.5f;
+	//cbuffer_param.ray_density = 6.0f;
+	cbuffer_param.curvature = 90.0f;
+	cbuffer_param.red = 10.0f;
+	cbuffer_param.green = 2.8f;
+	cbuffer_param.blue = 4.0f;
+	cbuffer_param.material_color = { 1.0f,1.0f,1.0f,1.0f };
+	cbuffer_param.dummy1 = 0.0f;
+	cbuffer_param.dummy2 = 0.0f;
+	cbuffer_param.dummy3 = 0.0f;
 	//UnInit();
 	//FRAMEWORK.SetScene(SCENE_TABLE::SCENE_TITLE);
 }
@@ -420,6 +437,12 @@ void SceneGame::LoadData()
 	{
 		spriteEx = std::make_unique<YRShader>(ShaderType::SPRITE_EX);
 		spriteEx->Create("./Data/Shader/SpriteEx_vs.cso", "./Data/Shader/SpriteEx_ps.cso");
+	}
+
+	if (concentrationShader == nullptr)
+	{
+		concentrationShader = std::make_unique<YRShader>(ShaderType::TITLE);
+		concentrationShader->Create("./Data/Shader/ConcentrationShader_vs.cso", "./Data/Shader/ConcentrationShader_ps.cso");
 	}
 
 
@@ -903,6 +926,7 @@ void SceneGame::Update(float elapsed_time)
 						{
 							/*PlayerALL::player1p->StopUpdate();
 							PlayerALL::player2p->StopUpdate();*/
+							YRGetEffect().DamageUpdate();
 							if (hit_stop_elapsed > 0.01f)
 							{
 								//ヒットストップ中
@@ -2114,7 +2138,14 @@ void SceneGame::UI_Draw(float elapsed_time)
 	default:
 		break;
 	}
-
+	/*sprite->render(
+		concentrationShader.get(),
+		UI_texture.get(),
+		cbuffer_param,
+		sampler_wrap.get(),
+		constantBuffer,
+		0.0f, 0.0f, 1920.0f, 1080.0f,
+		0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);*/
 	//フェード用画像描画
 	//FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f,false, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
 }
@@ -2321,7 +2352,7 @@ void SceneGame::PauseUpdate()
 	//ポーズ中行う処理
 	if (player1p->pad->x_input[scastI(PAD::START)] == 1 || player2p->pad->x_input[scastI(PAD::START)] == 1)
 	{
-		//pause = false;
+		pause = !pause;
 		//pauseTimer = 20;
 	}
 	if (player1p->pad->x_input[scastI(PAD::LB)] == 1 ||player2p->pad->x_input[scastI(PAD::LB)] == 1)
@@ -2934,8 +2965,6 @@ void SceneGame::RenderBlur()
 				blur_texture[i - 1].get(),
 				0.0f, 0.0f, 1920.0f * 0.5f / riv2, 1080.0f * 0.5f / riv2,
 				0.0f, 0.0f, 1920.0f*0.5f/riv, 1080.0f*0.5f/riv, 0.0f, 1.0f);
-
-			int hoge = 0;
 			//FRAMEWORK.framebuffer.Deactivate();
 			//FRAMEWORK.framebuffer.ResetRenderTexture();
 		}

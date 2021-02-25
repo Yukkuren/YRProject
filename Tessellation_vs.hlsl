@@ -15,6 +15,8 @@ HSInput main(VSInput input)
     }
     input.Position = ps;
     input.Normal = n;
+    output.Position = input.Position;
+    output.Normal = input.Normal;
     //input.Position = mul(float4(ps, 1.0), world_view_projection).xyz;
     //input.Normal = normalize(mul(float4(n, 0.0), world)).xyz;
     output.Color = float4(1.0f, 1.0f, 1.0f, 1.0f);

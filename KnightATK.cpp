@@ -1817,6 +1817,8 @@ void Knight::TrackDash(float decision, float elapsed_time)
 
 		HitBoxTransition(HitBoxState::PROJECTILE_ARMOR);
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+
+		YRGetEffect().PlayEffect(EffectKind::TRACK, pos.GetDXFLOAT3(), DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
 	}
 
 
@@ -1831,6 +1833,8 @@ void Knight::TrackDash(float decision, float elapsed_time)
 		pos.y += ((plusVec.y * track_speed) * elapsed_time);
 
 		GetSound().SEPlay(SEKind::TRACK);
+
+		YRGetEffect().SetLocation(EffectKind::TRACK, pos.GetDXFLOAT3());
 
 		for (auto& a : atk)
 		{
@@ -1867,6 +1871,8 @@ void Knight::TrackDash(float decision, float elapsed_time)
 		//		hit_result = a.hit_result;
 		//	}
 		//}
+
+		YRGetEffect().StopEffect(EffectKind::TRACK);
 
 		//攻撃をすべて消去する
 		AllAttackClear();
@@ -1920,6 +1926,7 @@ void Knight::TrackDash(float decision, float elapsed_time)
 					AllAttackClear();
 					//タイマーをマイナスにする
 					timer = -0.1f;
+					YRGetEffect().StopEffect(EffectKind::TRACK);
 				}
 			}
 		}

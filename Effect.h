@@ -21,6 +21,11 @@ enum class EffectKind : int
 	POWER_DRILL,		//緑のドリル
 	SPECIAL_DRILL,		//白いドリル
 	WIND,				//緑の竜巻
+	SHOCKWAVE,			//衝撃波
+	SMOKE,				//砂煙
+	DAMAGE,				//ダメージエフェクト
+	TRACK,				//ホーミングダッシュ時エフェクト
+	WALL_SHOCK,			//壁激突
 	END,
 };
 
@@ -79,6 +84,8 @@ public:
 	void StopEffect(EffectKind kind,Effekseer::Handle& handle);
 
 	void Update();
+
+	void DamageUpdate();
 
 	//エフェクトの描画
 	void Draw();

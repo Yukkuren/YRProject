@@ -413,7 +413,7 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							}
 
 							//エフェクト生成
-							YRGetEffect().PlayEffect(EffectKind::SWORD, effectpos.GetDXFLOAT3(), DirectX::XMFLOAT3(8.0f, 8.0f, 8.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+							YRGetEffect().PlayEffect(EffectKind::DAMAGE, effectpos.GetDXFLOAT3(), DirectX::XMFLOAT3(8.0f, 8.0f, 8.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
 
 							//SE再生
 							GetSound().SESinglePlay(SEKind::HIT_SWORD);
@@ -545,7 +545,7 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							}
 
 							//エフェクト再生
-							YRGetEffect().PlayEffect(EffectKind::SWORD, effectpos.GetDXFLOAT3(), DirectX::XMFLOAT3(8.0f, 8.0f, 8.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+							YRGetEffect().PlayEffect(EffectKind::DAMAGE, effectpos.GetDXFLOAT3(), DirectX::XMFLOAT3(8.0f, 8.0f, 8.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
 
 							//SE再生
 							GetSound().SESinglePlay(SEKind::HIT_SWORD);
@@ -641,7 +641,7 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							}
 
 							//エフェクト再生
-							YRGetEffect().PlayEffect(EffectKind::SWORD, effectpos.GetDXFLOAT3(), DirectX::XMFLOAT3(8.0f, 8.0f, 8.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+							YRGetEffect().PlayEffect(EffectKind::DAMAGE, effectpos.GetDXFLOAT3(), DirectX::XMFLOAT3(8.0f, 8.0f, 8.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
 
 							//SE再生
 							GetSound().SESinglePlay(SEKind::HIT_SWORD);
@@ -746,7 +746,7 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							}
 
 							//エフェクト再生
-							YRGetEffect().PlayEffect(EffectKind::SWORD, effectpos.GetDXFLOAT3(), DirectX::XMFLOAT3(8.0f, 8.0f, 8.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+							YRGetEffect().PlayEffect(EffectKind::DAMAGE, effectpos.GetDXFLOAT3(), DirectX::XMFLOAT3(8.0f, 8.0f, 8.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
 
 							//SE再生
 							GetSound().SESinglePlay(SEKind::HIT_SWORD);

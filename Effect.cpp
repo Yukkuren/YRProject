@@ -36,6 +36,11 @@ void YR_Effect::Init()
 	effects[scastI(EffectKind::POWER_DRILL)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/power_drill.efk");
 	effects[scastI(EffectKind::SPECIAL_DRILL)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/special_drill.efk");
 	effects[scastI(EffectKind::WIND)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/wind.efk");
+	effects[scastI(EffectKind::SHOCKWAVE)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/ShockWave.efk");
+	effects[scastI(EffectKind::SMOKE)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/smoke.efk");
+	effects[scastI(EffectKind::DAMAGE)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/damage.efk");
+	effects[scastI(EffectKind::TRACK)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/track.efk");
+	effects[scastI(EffectKind::WALL_SHOCK)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/WallShock.efk");
 
 	//ハンドルの初期化
 	for (int i = 0; i < handles.size(); i++)
@@ -72,7 +77,7 @@ void YR_Effect::CameraSet()
 {
 	//カメラの位置を取得
 	DirectX::XMFLOAT3 eye = YRCamera.GetEye();
-	
+
 	//カメラの注視点を取得
 	DirectX::XMFLOAT3 focus = YRCamera.GetFocus();
 
@@ -105,6 +110,11 @@ void YR_Effect::Update()
 {
 	//マネージャーの更新
 	manager->Update();
+}
+
+void YR_Effect::DamageUpdate()
+{
+	manager->UpdateHandle(handles[scastI(EffectKind::DAMAGE)]);
 }
 
 
