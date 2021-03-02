@@ -672,11 +672,11 @@ void SceneGame::Update(float elapsed_time)
 		case MAIN_LOOP::READY:
 			break;
 		case MAIN_LOOP::MAIN:
-			if (FadeOut(elapsed_time))
+			/*if (FadeOut(elapsed_time))
 			{
 				UnInit();
 				FRAMEWORK.SetScene(SCENE_TABLE::SCENE_SELECT);
-			}
+			}*/
 			break;
 		case MAIN_LOOP::FINISH:
 			fado_alpha += (elapsed_time * 5.0f);
@@ -826,16 +826,18 @@ void SceneGame::Update(float elapsed_time)
 					Control2PState(game_speed);
 					timer += elapsed_time;
 #ifdef EXIST_IMGUI
-					if (Get_Use_ImGui())
-					{
-						if (pKeyState.oflg == 1)
-						{
-							player1p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
-							//player2p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
-							player1p->pad->x_input[scastI(PAD::X)] = 1;
-							//player2p->pad->x_input[scastI(PAD::X)] = 1;
-						}
-					}
+					//デバッグ用即死技解禁コマンド
+					//↓このコメントを解除してゲーム中でoキーを押すと弱攻撃が即死になる
+					//if (Get_Use_ImGui())
+					//{
+					//	if (pKeyState.oflg == 1)
+					//	{
+					//		player1p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
+					//		//player2p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
+					//		player1p->pad->x_input[scastI(PAD::X)] = 1;
+					//		//player2p->pad->x_input[scastI(PAD::X)] = 1;
+					//	}
+					//}
 #endif
 				}
 				if (pause)
@@ -1017,7 +1019,7 @@ void SceneGame::Update(float elapsed_time)
 					}
 					else
 					{
-						//未だ勝敗はつかず
+						//勝敗がついていない
 
 						if (player1p->pad->x_input[scastI(PAD::START)] == 1 || player2p->pad->x_input[scastI(PAD::START)] == 1)
 						{
@@ -1090,12 +1092,14 @@ void SceneGame::Update(float elapsed_time)
 			}
 			else
 			{
+				//ゲーム開始後カウント中に動かないようにコントローラーの入力を初期化している
 				player1p->pad->Init();
 				player2p->pad->Init();
 				float pl1_rightorleft = 0.0f;
 				float pl2_rightorleft = 0.0f;
 				p1_elapsed_time = 1.0f;
 				p2_elapsed_time = 1.0f;
+				//1Pが左
 				if (player1p->pos.x < player2p->pos.x)
 				{
 					pl1_rightorleft = 1.0f;
@@ -1573,133 +1577,6 @@ void SceneGame::Draw(float elapsed_time)
 			FRAMEWORK.context->OMSetDepthStencilState(m_depth_stencil_state.Get(), 1);
 #endif // USE_IMGUI
 
-//		//UI描画
-//
-//		//ゲージ描画
-//		PL.gauge1P = (player1p->gauge / GAUGE_MAX) * 640.0f;
-//		PL.gauge2P = (player2p->gauge / GAUGE_MAX) * 640.0f;
-//
-//		PL.power1P = ColorSet(player1p->power);
-//		gauge_img->DrawExtendGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + PL.gauge1P, 1064.0f, SpriteMask::NONE, PL.power1P);
-//		PL.power2P = ColorSet(player2p->power);
-//		gauge_img->DrawExtendGraph(spriteShader.get(), 1800.0f - PL.gauge2P, 1000.0f, 1800.0f, 1064.0f, SpriteMask::NONE, PL.power2P);
-//
-//		//ゲージケース
-//		gaugecase_img->DrawExtendGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + 640.0f, 1064.0f);
-//		gaugecase_img->DrawExtendGraph(spriteShader.get(), 1800.0f - 640.0f, 1000.0f, 1800.0f, 1064.0f);
-//
-//		//ゲージの数字描画
-//		font_img->DrawRotaDivGraph
-//		(
-//			spriteShader.get(),
-//			70.0f,
-//			950.0f,
-//			0.0f,
-//			2.0f,
-//			player1p->power,
-//			SpriteMask::NONE,
-//			PL.power1P
-//		);
-//		font_img->DrawRotaDivGraph
-//		(
-//			spriteShader.get(),
-//			1800.0f,
-//			950.0f,
-//			0.0f,
-//			2.0f,
-//			player2p->power,
-//			SpriteMask::NONE,
-//			PL.power2P
-//		);
-//
-//
-//		switch (YRCamera.camera_state)
-//		{
-//		case Camera::CAMERA_STATE::PLAYER1P:
-//			player1p->DrawCutIn(spriteShader.get(), game_speed);
-//			break;
-//		case Camera::CAMERA_STATE::PLAYER2P:
-//			player2p->DrawCutIn(spriteShader.get(), game_speed);
-//			break;
-//		default:
-//			break;
-//		}
-//
-//#ifdef EXIST_IMGUI
-//		if (Get_Use_ImGui())
-//		{
-//			input_pad.Draw(spriteShader.get());
-//		}
-//#endif // EXIST_IMGUI
-//
-//
-//		if (pause)
-//		{
-//			pause_img->DrawGraph(
-//				spriteShader.get(),
-//				static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
-//				static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f + (sinf(timer)*100.0f)
-//			);
-//		}
-//
-//		//カウント表示
-//		if (!start)
-//		{
-//			//Are You Ready?
-//			if (start_timer < ready_time)
-//			{
-//				call_img->DrawRotaDivGraph
-//				(
-//					spriteShader.get(),
-//					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
-//					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f,
-//					0.0f,
-//					1.0f,
-//					0
-//				);
-//			}
-//			else
-//			{
-//				//Go!!
-//				call_img->DrawRotaDivGraph
-//				(
-//					spriteShader.get(),
-//					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
-//					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f,
-//					0.0f,
-//					1.0f,
-//					1
-//				);
-//			}
-//		}
-//
-//		if (end)
-//		{
-//			//ゲームの決着がついた後
-//			if (endtimer < end_slow_time)
-//			{
-//				//「KO」
-//				KO_img->DrawGraph(
-//					spriteShader.get(),
-//					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
-//					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f
-//				);
-//			}
-//
-//			if (endtimer > end_slow_time)
-//			{
-//				if (judge == JUDGE_VICTORY::DRAW)
-//				{
-//					//「DROW」画像
-//					draw_img->DrawGraph(
-//						spriteShader.get(),
-//						static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
-//						static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f
-//					);
-//				}
-//			}
-//		}
-
 		break;
 	case MAIN_LOOP::WIN1P:
 	{
@@ -1823,6 +1700,8 @@ void SceneGame::HPBar_Draw(
 	const DirectX::XMFLOAT4& ambient_color,
 	float elapsed_time)
 {
+	//ステージとUIの描画を行う
+
 	stage.Draw(view, projection, light_direction, light_color, ambient_color, elapsed_time);
 
 	switch (main_loop)
@@ -2263,59 +2142,6 @@ DirectX::XMFLOAT4 SceneGame::HPColorSet(float hp, float max_hp)
 	return DirectX::XMFLOAT4(0.4f, 1.0f, 0.0f, 1.0f);
 }
 
-void SceneGame::ScoreImageSet()
-{
-	int s[6];
-	int dScore = 0;/*pPlayer.score;*/
-	s[0] = dScore / 100000;
-	dScore = dScore % 100000;
-	s[1] = dScore / 10000;
-	dScore = dScore % 10000;
-	s[2] = dScore / 1000;
-	dScore = dScore % 1000;
-	s[3] = dScore / 100;
-	dScore = dScore % 100;
-	s[4] = dScore / 10;
-	dScore = dScore % 10;
-	s[5] = dScore;
-
-	for (int i = 0; i < 6; i++)
-	{
-		switch (s[i])
-		{
-		case 0:
-			sco[i] = 0;
-			break;
-		case 1:
-			sco[i] = 1;
-			break;
-		case 2:
-			sco[i] = 2;
-			break;
-		case 3:
-			sco[i] = 3;
-			break;
-		case 4:
-			sco[i] = 4;
-			break;
-		case 5:
-			sco[i] = 5;
-			break;
-		case 6:
-			sco[i] = 6;
-			break;
-		case 7:
-			sco[i] = 7;
-			break;
-		case 8:
-			sco[i] = 8;
-			break;
-		case 9:
-			sco[i] = 9;
-			break;
-		}
-	}
-}
 
 
 

@@ -19,7 +19,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     float in_circle = smoothstep(0.95, 0.89, dist);
     vec3 circle = circle_col * (out_circle - in_circle);
 
-    fragColor = vec4(circle * (1.), 1.0);
+    //‚±‚Ì”š‚Åü‚ÌF‚ª•Ï‚í‚é
+    //float4 color = float4(1.0, 0.2, 0.4, 1.0);
+    float4 color = float4(red, green, blue, 1.0);
+    fragColor = vec4(circle * (color.rgb), 1.0);
 }
 
 PSOutput main(PSInput pin) : SV_TARGET

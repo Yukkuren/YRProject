@@ -5,6 +5,8 @@
 using namespace DirectX;
 
 
+//既存のXMFLOAT型を使いやすくするためにラップした構造体
+//GetDXFLOAT関数でDirectXの関数に対応できる
 struct YR_Vector3
 {
 public:

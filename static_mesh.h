@@ -4,6 +4,13 @@
 #include<string>
 #include "YRShader.h"
 
+
+//----------------------------------------------------------------------
+//			Static_Meshクラス
+//----------------------------------------------------------------------
+//・初期に制作した3Dモデルを扱うクラス(obj)
+//・fbxファイルではなくobjファイルのみを扱うクラスなので使用することは基本無い
+//----------------------------------------------------------------------
 class Static_mesh
 {
 public:
@@ -96,7 +103,7 @@ namespace MeshTexShader
 		unsigned int *indexsize,
 		const wchar_t *obj_file,
 		ID3D11Buffer**vertex_buffer,
-		ID3D11Buffer**index_buffer, 
+		ID3D11Buffer**index_buffer,
 		ID3D11Buffer**constant_buffer,
 		std::wstring *mtl_name,
 		std::wstring *texture_name,
@@ -106,7 +113,7 @@ namespace MeshTexShader
 
 	HRESULT TextureNameGet
 	(
-		std::wstring *texture_name, 
+		std::wstring *texture_name,
 		std::wstring *mtl_file,
 		std::vector<Static_mesh::material> *materials
 	);

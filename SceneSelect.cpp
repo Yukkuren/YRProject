@@ -7,6 +7,7 @@
 //・暗転からスタート。画像をロードしたら画面表示
 //・1p,2p両方が選択を終えてスタートボタンを押したら
 //　暗転してSceneLoadに遷移
+//・キャラが一種類の状態では使用しない
 //-------------------------------------------------------------
 
 
@@ -93,12 +94,12 @@ void SceneSelect::Update(float elapsed_time)
 			select_p2 = scastI(PLSELECT::KNIGHT);
 			//フェードアウトが終わったらロード画面へ
 			GetSound().BGMStop(BGMKind::CHARA_SELECT);
-			FRAMEWORK.SetScene(SCENE_LOAD);
+			FRAMEWORK.SetScene(SCENE_TABLE::SCENE_LOAD);
 			UnInit();
 			return;
 		}
 #ifdef EXIST_IMGUI
-		
+
 #endif // USE_IMGUI
 
 		//timerはフローしないようにリセットする
@@ -206,7 +207,7 @@ void SceneSelect::Update(float elapsed_time)
 			{
 				//フェードアウトが終わったらロード画面へ
 				GetSound().BGMStop(BGMKind::CHARA_SELECT);
-				FRAMEWORK.SetScene(SCENE_LOAD);
+				FRAMEWORK.SetScene(SCENE_TABLE::SCENE_LOAD);
 				//FRAMEWORK.SetScene(SCENE_TITLE);
 				UnInit();
 				return;

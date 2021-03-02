@@ -44,7 +44,7 @@ namespace MeshTexShader
 		u_int current_index = 0;
 		//int count = 1;
 
-		std::vector<DirectX::XMFLOAT3> positions; 
+		std::vector<DirectX::XMFLOAT3> positions;
 		std::vector<DirectX::XMFLOAT3> normals;
 		std::vector<DirectX::XMFLOAT2> texcoord;
 		std::wstring name_Front;
@@ -66,7 +66,7 @@ namespace MeshTexShader
 		_ASSERT_EXPR(fin, L"'OBJ file not fuund.");
 		wchar_t command[256];
 
-		while (fin) 
+		while (fin)
 		{
 			fin >> command;
 			if (0 == wcscmp(command, L"mtllib"))
@@ -86,15 +86,15 @@ namespace MeshTexShader
 				subsets->back().index_start = indices.size();
 				fin.ignore(1024, L'\n');
 			}
-			if (0 == wcscmp(command, L"v")) 
-			{ 
+			if (0 == wcscmp(command, L"v"))
+			{
 				float x, y, z;
 				fin >> x >> y >> z;
 				positions.push_back(DirectX::XMFLOAT3(x, y, z));
 				fin.ignore(1024, L'\n');
 			}
-			else if (0 == wcscmp(command, L"vn")) 
-			{ 
+			else if (0 == wcscmp(command, L"vn"))
+			{
 				FLOAT i, j, k;
 				fin >> i >> j >> k;
 				normals.push_back(DirectX::XMFLOAT3(i, j, k));
@@ -107,45 +107,44 @@ namespace MeshTexShader
 				texcoord.push_back(DirectX::XMFLOAT2(p, -n));
 				fin.ignore(1024, L'\n');
 			}
-			else if (0 == wcscmp(command, L"f")) 
+			else if (0 == wcscmp(command, L"f"))
 			{
-				for (u_int i = 0; i < 3; i++) 
+				for (u_int i = 0; i < 3; i++)
 				{
 					Static_mesh::vertex vertex;
 					u_int v, vt, vn;
 					//count++;
 					fin >> v;
 					vertex.position = positions[v - 1];
-					if (L'/' == fin.peek()) 
+					if (L'/' == fin.peek())
 					{
 						//count++;
 						fin.ignore();
-						if (L'/' != fin.peek()) 
-						{ 
+						if (L'/' != fin.peek())
+						{
 							//count++;
-							fin >> vt; 
+							fin >> vt;
 							vertex.texcoord = texcoord[vt - 1];
 						}
-						if (L'/' == fin.peek()) 
-						{ 
+						if (L'/' == fin.peek())
+						{
 							//count++;
 							fin.ignore();
 							fin >> vn;
 							vertex.normal = normals[vn - 1];
 						}
 					}
-					vertices.push_back(vertex); 
+					vertices.push_back(vertex);
 					indices.push_back(current_index++);
-					
-				}    
+				}
 				//subsets->back().index_count++;
 				fin.ignore(1024, L'\n');
 			}
-			else 
-			{ 
+			else
+			{
 				fin.ignore(1024, L'\n');
 			}
-		}  
+		}
 		subsets->back().index_count = indices.size();
 
 		D3D11_BUFFER_DESC buffer_desc{};
@@ -202,7 +201,6 @@ namespace MeshTexShader
 		hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, nullptr/*&subresource*/, constant_buffer);
 		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
-		
 
 		fin.close();
 		name_Front = obj_file;
@@ -280,7 +278,6 @@ namespace MeshTexShader
 		*texture_name=name_Front.substr(0, name_Front.find_last_of(L'/'));
 		*texture_name += L'/';
 		*texture_name += name_Second;
-		
 		return hr;
 	}
 
@@ -422,22 +419,6 @@ Static_mesh::Static_mesh(const wchar_t* obj_name)
 {
 	HRESULT hr = S_OK;
 
-	//D3D11_INPUT_ELEMENT_DESC element_desc[] =
-	//{
-	//	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	//	{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	//	{ "TEXCOORD", 0 , DXGI_FORMAT_R32G32_FLOAT , 0 , D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	//};
-	//UINT numElements = ARRAYSIZE(element_desc);
-	//
-	////頂点シェーダーオブジェクト生成
-	////入力レイアウトオブジェクト生成
-	////ピクセルシェーダーオブジェクト生成
-	//MeshTexShader::create_vertex("./Data/Shader/Mesh_Static_VS.cso", &vertex_shader, element_desc, numElements, &input_layout);
-	//MeshTexShader::CreatePixel("./Data/Shader/Mesh_Static_PS.cso", &pixel_shader);
-
-
-	//geometric_primitive_ps.cso
 	//ラスタライザーステートオブジェクト生成
 	D3D11_RASTERIZER_DESC rasterizer_desc;
 
@@ -533,116 +514,8 @@ Static_mesh::Static_mesh(const wchar_t* obj_name)
 	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
 
 
-	/*FLOAT color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	sample.BorderColor[0] = color[0];
-	sample.BorderColor[1] = color[1];
-	sample.BorderColor[2] = color[2];
-	sample.BorderColor[3] = color[3];*/
-
-
 	hr = FRAMEWORK.device->CreateSamplerState(&sampler_desc, &sampler_state);
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-
-	//vertex vertics[] = {
-	//	//前面
-	//	{ DirectX::XMFLOAT3(0.0f,1.0f,0.0f),DirectX::XMFLOAT3(0.0f,0.0f,-1.0f) },//0
-	//	{ DirectX::XMFLOAT3(1.0f,1.0f,0.0f),DirectX::XMFLOAT3(0.0f,0.0f,-1.0f) },//1
-	//	{ DirectX::XMFLOAT3(1.0f,0.0f,0.0f),DirectX::XMFLOAT3(0.0f,0.0f,-1.0f) },//2
-	//	{ DirectX::XMFLOAT3(0.0f,0.0f,0.0f),DirectX::XMFLOAT3(0.0f,0.0f,-1.0f) },//3
-	//																			 //前面を見て右面
-	//	{ DirectX::XMFLOAT3(1.0f,1.0f,0.0f),DirectX::XMFLOAT3(1.0f,0.0f,0.0f) },//4
-	//	{ DirectX::XMFLOAT3(1.0f,1.0f,1.0f),DirectX::XMFLOAT3(1.0f,0.0f,0.0f) },//5
-	//	{ DirectX::XMFLOAT3(1.0f,0.0f,1.0f),DirectX::XMFLOAT3(1.0f,0.0f,0.0f) },//6
-	//	{ DirectX::XMFLOAT3(1.0f,0.0f,0.0f),DirectX::XMFLOAT3(1.0f,0.0f,0.0f) },//7
-	//																			//前面を見て左面
-	//	{ DirectX::XMFLOAT3(0.0f,1.0f,1.0f),DirectX::XMFLOAT3(-1.0f,0.0f,0.0f) },//8
-	//	{ DirectX::XMFLOAT3(0.0f,1.0f,0.0f),DirectX::XMFLOAT3(-1.0f,0.0f,0.0f) },//9
-	//	{ DirectX::XMFLOAT3(0.0f,0.0f,0.0f),DirectX::XMFLOAT3(-1.0f,0.0f,0.0f) },//10
-	//	{ DirectX::XMFLOAT3(0.0f,0.0f,1.0f),DirectX::XMFLOAT3(-1.0f,0.0f,0.0f) },//11
-	//																			 //裏面
-	//	{ DirectX::XMFLOAT3(1.0f,1.0f,1.0f),DirectX::XMFLOAT3(0.0f,0.0f,1.0f) },//12
-	//	{ DirectX::XMFLOAT3(0.0f,1.0f,1.0f),DirectX::XMFLOAT3(0.0f,0.0f,1.0f) },//13
-	//	{ DirectX::XMFLOAT3(0.0f,0.0f,1.0f),DirectX::XMFLOAT3(0.0f,0.0f,1.0f) },//14
-	//	{ DirectX::XMFLOAT3(1.0f,0.0f,1.0f),DirectX::XMFLOAT3(0.0f,0.0f,1.0f) },//15
-	//																			//上面
-	//	{ DirectX::XMFLOAT3(0.0f,1.0f,1.0f),DirectX::XMFLOAT3(0.0f,1.0f,0.0f) },//16
-	//	{ DirectX::XMFLOAT3(1.0f,1.0f,1.0f),DirectX::XMFLOAT3(0.0f,1.0f,0.0f) },//17
-	//	{ DirectX::XMFLOAT3(1.0f,1.0f,0.0f),DirectX::XMFLOAT3(0.0f,1.0f,0.0f) },//18
-	//	{ DirectX::XMFLOAT3(0.0f,1.0f,0.0f),DirectX::XMFLOAT3(0.0f,1.0f,0.0f) },//19
-	//																			//下面
-	//	{ DirectX::XMFLOAT3(1.0f,0.0f,1.0f),DirectX::XMFLOAT3(0.0f,-1.0f,0.0f) },//20
-	//	{ DirectX::XMFLOAT3(0.0f,0.0f,1.0f),DirectX::XMFLOAT3(0.0f,-1.0f,0.0f) },//21
-	//	{ DirectX::XMFLOAT3(0.0f,0.0f,0.0f),DirectX::XMFLOAT3(0.0f,-1.0f,0.0f) },//22
-	//	{ DirectX::XMFLOAT3(1.0f,0.0f,0.0f),DirectX::XMFLOAT3(0.0f,-1.0f,0.0f) },//23
-	//};
-	//u_int indices[] = {
-	//	//時計回りで表面
-	//	//前面
-	//	0, 1, 2,
-	//	2, 3, 0,
-	//	//前面を見て右面
-	//	4, 5, 6,
-	//	6, 7, 4,
-	//	//前面を見て左面
-	//	8, 9, 10,
-	//	10, 11, 8,
-	//	//裏面
-	//	12,13,14,
-	//	14,15,12,
-	//	//上面
-	//	16,17,18,
-	//	18,19,16,
-	//	//下面
-	//	20,21,22,
-	//	22,23,20,
-	//};
-
-	//D3D11_BUFFER_DESC buffer_desc{};
-	//buffer_desc.ByteWidth = sizeof(vertics);
-	//buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	//buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;// D3D11_USAGE_DYNAMIC;
-	//buffer_desc.CPUAccessFlags = 0;// D3D11_CPU_ACCESS_WRITE;
-	//buffer_desc.MiscFlags = 0;
-	//buffer_desc.StructureByteStride = 0;
-
-	//D3D11_SUBRESOURCE_DATA subresource = {};
-	//subresource.pSysMem = vertics;
-	//subresource.SysMemPitch = 0;
-	//subresource.SysMemSlicePitch = 0;
-
-	//hr = device->CreateBuffer(&buffer_desc, &subresource, &vertex_buffer);
-	//_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-
-	////インデックス情報セット
-	//ZeroMemory(&buffer_desc, sizeof(D3D11_BUFFER_DESC));
-	//ZeroMemory(&subresource, sizeof(D3D11_SUBRESOURCE_DATA));
-	//buffer_desc.ByteWidth = sizeof(indices);
-	//buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	//buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;// D3D11_USAGE_DYNAMIC;
-	//buffer_desc.CPUAccessFlags = 0;// D3D11_CPU_ACCESS_WRITE;
-	//buffer_desc.MiscFlags = 0;
-	//buffer_desc.StructureByteStride = 0;
-	//subresource.pSysMem = indices;
-	//subresource.SysMemPitch = 0;
-	//subresource.SysMemSlicePitch = 0;
-
-	//hr = device->CreateBuffer(&buffer_desc, &subresource, &index_buffer);
-	//_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-
-	//ZeroMemory(&buffer_desc, sizeof(D3D11_BUFFER_DESC));
-	//ZeroMemory(&subresource, sizeof(D3D11_SUBRESOURCE_DATA));
-	//buffer_desc.ByteWidth = sizeof(cbuffer);
-	//buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	//buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-	//buffer_desc.CPUAccessFlags = 0;
-	//buffer_desc.MiscFlags = 0;
-	//buffer_desc.StructureByteStride = 0;/*
-	//									subresource.pSysMem = constant_buffer;
-	//									subresource.SysMemPitch = 0;
-	//									subresource.SysMemSlicePitch = 0;*/
-
-	//hr = device->CreateBuffer(&buffer_desc, nullptr/*&subresource*/, &constant_buffer);
-	//_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 }
 
@@ -686,11 +559,6 @@ void  Static_mesh::render(
 	{
 		FRAMEWORK.context->RSSetState(filling_state);
 	}
-	/*FRAMEWORK.context->IASetInputLayout(input_layout);
-	FRAMEWORK.context->VSSetShader(vertex_shader, NULL, 0);
-	FRAMEWORK.context->PSSetShader(pixel_shader, NULL, 0);*/
-	//context->PSSetShaderResources(0, 1, &shader_view);
-	//context->PSSetSamplers(0, 1, &sampler_state);
 	shader->Acivate();
 
 	//プリミティブの描画
@@ -720,9 +588,3 @@ void  Static_mesh::render(
 	}
 	shader->Inactivate();
 }
-
-
-//void Static_mesh::Mesh_Load(ID3D11Device *device, const wchar_t *obj_file)
-//{
-//
-//}

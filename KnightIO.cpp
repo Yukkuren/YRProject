@@ -3,8 +3,17 @@
 #include "framework.h"
 #include <fstream>
 
+//----------------------------------------------------------------
+//				Knight調整用cpp
+//----------------------------------------------------------------
+//・Knightの当たり判定などの調整を行い、データのロード、書き出しを行っている
+//----------------------------------------------------------------
+
+
 
 #ifdef EXIST_IMGUI
+
+//Imguiで表示するために文字列を保存している
 
 std::array<std::string, scastI(AttackState::ATTACK_END)> attack_name_list =
 {
@@ -169,6 +178,8 @@ std::array<std::string, scastI(AttackKind::END)> attack_kind_name_list =
 
 bool Knight::DEBUGAttackLoad()
 {
+	//Debug用に仮で値を入れている
+
 	//AttackStateの順に生成する
 	attack_list.resize(scastI(AttackState::ATTACK_END));
 
@@ -316,6 +327,7 @@ bool Knight::AttackLoad()
 		attack_list[list].combo = static_cast<AttackState>(next);
 		attack_list[list].conditions_hit = static_cast<HitResult>(result);
 		ifs >> attack_list[list].timer;
+		ifs >> attack_list[list].traject_on;
 
 
 
@@ -543,6 +555,7 @@ bool Knight::AttackClean()
 		attack_list[list].combo = attack_list[list].attack_name;
 		attack_list[list].conditions_hit = HitResult::HIT;
 		attack_list[list].timer = 0.0f;
+		attack_list[list].traject_on = true;
 		//攻撃回数ごとのパラメータ初期化
 		for (int sin = 0; sin < attack_list[list].attack_single.size(); sin++)
 		{
@@ -632,6 +645,7 @@ bool Knight::AttackWrite()
 		outputfile << scastI(attack_list[list].combo) << std::endl;
 		outputfile << scastI(attack_list[list].conditions_hit) << std::endl;
 		outputfile << attack_list[list].timer << std::endl;
+		outputfile << attack_list[list].traject_on << std::endl;
 
 		//攻撃回数ごとのパラメータ書き出し
 		if (!attack_list[list].attack_single.empty())
@@ -771,6 +785,8 @@ void Knight::DrawDEBUG(
 	const DirectX::XMFLOAT4& ambient_color,
 	float						elapsed_time)
 {
+	//Debug表示関数
+
 #ifdef EXIST_IMGUI
 	if (Get_Debug_Draw())
 	{
@@ -1090,6 +1106,7 @@ void Knight::DrawDEBUG(
 				attack_list[list].combo = static_cast<AttackState>(next);
 				ImGui::Text(attack_name_list[scastI(attack_list[list].combo)].c_str());
 				ImGui::Checkbox(u8"しゃがみ攻撃", &attack_list[list].squat_on);
+				ImGui::Checkbox(u8"剣の軌跡を表示する", &attack_list[list].traject_on);
 
 				if (attack_list[list].linkage_stick != PAD::BUTTOM_END)
 				{

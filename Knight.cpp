@@ -9,21 +9,14 @@
 #include "Effect.h"
 #include "YRSound.h"
 
-//#define _CRTDBG_MAP_ALLOC						// mallocによるメモリリーク検出でCPPファイル名と行数出力指定
-//#define DBG_NEW new( _NORMAL_BLOCK , __FILE__ , __LINE__)	// new によるメモリリーク検出でCPPファイル名と行数出力指定
-//#include <stdio.h>
-//#include <crtdbg.h>
-
 
 Knight::~Knight() = default;
 
 void Knight::Init(YR_Vector3 InitPos)
 {
-	//ImGui::Begin("RYU HitBox");
+	//初期化
 	pos = InitPos;
 	scale = YR_Vector3( 0.1f,0.1f,0.1f );
-	//scale = YR_Vector3( 0.05f,0.05f,0.05f );
-	//angle = YR_Vector3(DirectX::XMConvertToRadians(-90.0f), 0.0f, 0.0f);
 	angle = YR_Vector3(0.0f, 0.0f, 0.0f);
 
 	fream = non_target;
@@ -42,7 +35,6 @@ void Knight::Init(YR_Vector3 InitPos)
 	knocktimer = 0.0f;
 	ground = true;
 	jumpflag = false;
-	drawset = false;
 	fast = false;
 	finish = false;
 	stop_pos = { 0.0f,0.0f };
@@ -121,7 +113,6 @@ void Knight::Init(YR_Vector3 InitPos)
 	cut_in_timer = 0.0f;
 
 	traject.Init(max_traject_count);
-	traject_timer = 0.0f;
 
 	//剣の原点座標を保存する
 	YR_Vector3 master = YR_Vector3(0.0f, 0.0f, 0.0f);
@@ -144,8 +135,7 @@ void Knight::Init(YR_Vector3 InitPos)
 	sword_head.y += 0.88f;
 	sword_tail.y += 0.2f;
 
-	//sword_head = YR_Vector3( 1.0f,1.0f,1.0f );
-	//sword_tail = YR_Vector3( -1.0f,-1.0f,-1.0f );
+	traject_on = true;
 }
 
 void Knight::Uninit()
@@ -331,6 +321,8 @@ void Knight::Uninit()
 
 void Knight::Update(float decision, float elapsed_time)
 {
+	//更新処理
+
 	//elapsed_timeが0、つまりヒットストップなどでゲームが止まっている場合
 	if (elapsed_time == 0.0f)
 	{
@@ -357,7 +349,7 @@ void Knight::Update(float decision, float elapsed_time)
 	//-----------------------------------------------------
 	// *概要*
 	//・攻撃を受けるなど操作不能の状態のみステートで区分けし、
-	//　それ以外は操作を受け付けるのでCANACTで処理している
+	//　それ以外は操作を受け付けるのでdefaultで処理している
 	//-----------------------------------------------------
 	switch (act_state)
 	{
@@ -524,12 +516,16 @@ void Knight::Update(float decision, float elapsed_time)
 	JumpUpdate(decision,elapsed_time);
 	AirDash(elapsed_time);
 
+	//速度による位置の更新
 	pos.x += ((speed_X.Update(elapsed_time) * elapsed_time) * rightOrleft);
 	pos.x += (speed.x * elapsed_time);
 
 	speed.y += (speed_Y.Update(elapsed_time) * elapsed_time);
 	pos.y += (speed.y * elapsed_time);
 
+	//当たり判定の更新
+	//コンボ中や個別のステートによっては別途処理が必要になるため、
+	//switch分で個別に分けている
 	for (int list = 0; list < hit.size(); list++)
 	{
 		if (act_state == ActState::ATTACK)
@@ -585,6 +581,7 @@ void Knight::Update(float decision, float elapsed_time)
 		}
 	}
 
+	//アニメーション処理更新
 	GuardAnimSet();
 
 	if (!attack)
@@ -598,16 +595,6 @@ void Knight::Update(float decision, float elapsed_time)
 			anim_ccodinate = ac_act[scastI(act_state)].fream;
 		}
 	}
-	/*if (attack_state != AttackState::D_THU && act_state != ActState::DOWN && act_state != ActState::SQUAT && attack_state != AttackState::D_JAKU)
-	{
-		hit[scastI(KNIGHTHIT::BODY)].Init(pos, YR_Vector3(0.0f, 0.0f), YR_Vector3(2.0f, 2.9f));
-		hit[scastI(KNIGHTHIT::LEG)].Init(pos, YR_Vector3(0.0f, 0.0f), YR_Vector3(1.4f, 0.8f));
-	}
-
-	hit[scastI(KNIGHTHIT::BODY)].Update(pos,elapsed_time);
-	hit[scastI(KNIGHTHIT::LEG)].Update(pos, elapsed_time);*/
-
-
 	EndAttackErase();			//攻撃判定の消去
 
 	FaceAnimation(elapsed_time);
@@ -616,6 +603,8 @@ void Knight::Update(float decision, float elapsed_time)
 
 void Knight::StopHitParamUpdate()
 {
+	//デバッグ用コード
+	//Pause中にパラメーターをいじれるようにするための関数
 	for (int list = 0; list < hit.size(); list++)
 	{
 		if (act_state == ActState::ATTACK)
@@ -867,6 +856,8 @@ void Knight::AttackInput()
 				timer = non_target;
 				//カメラ処理用変数を初期化
 				production_time = 0.0f;
+				//剣の軌跡を表示するかどうかを取得する
+				traject_on = attack_list[real].traject_on;
 				//描画をセット
 				if (rightOrleft > 0)
 				{
@@ -886,8 +877,11 @@ void Knight::AttackInput()
 
 void Knight::AttackSwitch(float decision, float elapsed_time, AttackState attack_state)
 {
-	AttackState now_attack_state;
+	//攻撃ごとに関数を指定する関数
 
+	AttackState now_attack_state;	//現在の攻撃
+
+	//引数で攻撃を指定していればその攻撃を現在の攻撃として使用する
 	if (attack_state == AttackState::NONE)
 	{
 		now_attack_state = this->attack_state;
@@ -1014,6 +1008,7 @@ void Knight::AttackSwitch(float decision, float elapsed_time, AttackState attack
 
 void Knight::Attack(float decision, float elapsed_time)
 {
+	//攻撃中に入る関数
 	if (ground)
 	{
 		if (speed.x > 0.0f)
@@ -1073,9 +1068,11 @@ void Knight::Attack(float decision, float elapsed_time)
 
 		if (ground)
 		{
+			//地面についている場合
 			if (act_state != ActState::WAIT)
 			{
 
+				//もし、下入力がされていた場合、ステートをしゃがみにする
 				if (pad->x_input[scastI(PAD::STICK_D)] > 0 || pad->x_input[scastI(PAD::STICK_RDown)] > 0 || pad->x_input[scastI(PAD::STICK_LDown)] > 0)
 				{
 					act_state = ActState::SQUAT;
@@ -1109,7 +1106,12 @@ void Knight::Attack(float decision, float elapsed_time)
 		}
 		else
 		{
+			//空中にいる場合
+
+			//ステートをジャンプにする
 			act_state = ActState::JUMP;
+
+			//攻撃は何もしていない状態にする
 			attack_state = AttackState::NONE;
 			//描画をセット
 			anim_ccodinate = ac_act[scastI(ActState::JUMP)].timer;
@@ -1121,7 +1123,6 @@ void Knight::Attack(float decision, float elapsed_time)
 			{
 				anim->NodeChange(model_motion.jump_L, scastI(AnimAtk::TIMER));
 			}
-			//max_jump_flag = true;
 		}
 	}
 }
@@ -1137,31 +1138,32 @@ void Knight::Draw(
 	const DirectX::XMFLOAT4& ambient_color,
 	float						elapsed_time)
 {
+	//描画処理
 
-	float game_speed = elapsed_time;
+	float game_speed = elapsed_time;		//基本はゲームのスピードを入力
 
 	if (steal_escape > 0.0f && steal_escape < target_max)
 	{
-		game_speed = 0.0f;
+		game_speed = 0.0f;			//もし掴まれている状態ならアニメーションをさせたくないので0にする
 	}
 
+	//光の当たる角度は向いている向きによって固定化されるので向きを参照している
 	light_direction.x = -rightOrleft;
 
-	DrawFastMove(FastPos);
-	drawset = false;
+	bool invincible = false;	//無敵かどうかを判別するフラグ
 
-	bool invincible = false;
+	//if (attack_state == AttackState::EXTENDATK)
+	//{
+	//	/*for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
+	//	{
+	//		if (hit[i].parameter.state == HitBoxState::INVINCIBLE)
+	//		{
+	//			invincible = true;
+	//		}
+	//	}*/
+	//}
 
-	if (attack_state == AttackState::EXTENDATK)
-	{
-		/*for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
-		{
-			if (hit[i].parameter.state == HitBoxState::INVINCIBLE)
-			{
-				invincible = true;
-			}
-		}*/
-	}
+	//キャラの当たり判定に無敵がついていた場合無敵フラグをtrueに
 	for (int i = 0; i < hit.size(); i++)
 	{
 		if (hit[i].state == HitBoxState::INVINCIBLE)
@@ -1170,15 +1172,6 @@ void Knight::Draw(
 		}
 	}
 
-	//--------------------------------------------------------------------
-	// *メモ*
-	//・過去2Dで制作したときは向いている向きによって描画を変えていたが
-	//　今回は3Dでの制作になる為、angleを変えることに使う
-	//・前回では強攻撃時の画像のサイズが通常と違っていたため
-	//　こういう処理を取らざるを得なかったと考えられる
-	//--------------------------------------------------------------------
-
-	bool inversion = true;//左右反転フラグ
 
 	//Blenderのモデルのサブセットには0.8のmaterial_colorが入っているため逆数を入れている
 	DirectX::XMFLOAT4 material_color = { 1.1f,1.1f,1.1f,1.0f };
@@ -1187,11 +1180,9 @@ void Knight::Draw(
 	//左向き
 	if (rightOrleft < 0)
 	{
-		//angle.y = DirectX::XMConvertToRadians(180.0f);
-		inversion = true;
 		if (invincible)
 		{
-			//無敵状態
+			//無敵なので全て発光させる
 			lumi_material = Model::Material_Attribute::ALL;
 		}
 		else if (lumi_material == Model::Material_Attribute::ALL)
@@ -1204,27 +1195,9 @@ void Knight::Draw(
 	//右向き
 	else
 	{
-		//angle.y = DirectX::XMConvertToRadians(0.0f);
-
-		/*motion.DrawContinue(
-			parallel_shader,
-			pos.GetDXFLOAT3(),
-			scale.GetDXFLOAT3(),
-			angle.GetDXFLOAT3(),
-			view, projection, light_direction, light_color, ambient_color, elapsed_time * anim_ccodinate,
-			inversion, material_color
-		);
-
-		anim->UpdateAnimation(elapsed_time * anim_ccodinate);
-		anim->CalculateLocalTransform();
-		anim->CalculateWorldTransform(DirectX::XMFLOAT3(pos.x,pos.y,pos.z), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
-		anim->Draw(parallel_shader, view, projection, light_direction, light_color, ambient_color, material_color);*/
-
-		//angle.y = DirectX::XMConvertToRadians(80.0f);
-		inversion = false;
 		if (invincible)
 		{
-			//無敵！
+			//無敵なので全て発光させる
 			lumi_material = Model::Material_Attribute::ALL;
 		}
 		else if (lumi_material == Model::Material_Attribute::ALL)
@@ -1234,19 +1207,13 @@ void Knight::Draw(
 	}
 
 	//モデル描画
-	/*base_motion->Render(
-		shader,
-		pos.GetDXFLOAT3(),
-		scale.GetDXFLOAT3(),
-		angle.GetDXFLOAT3(),
-		view, projection, light_direction, light_color, ambient_color, elapsed_time, 0.0f);*/
-
 
 	//カメラの状態によって描画が変更されるため個別で分けている
 
 	const float shadow_y = -5.2f;
 	const float shadow_z = 3.0f;
 
+	//剣の軌跡を描画する際に使用
 	DirectX::XMFLOAT4X4 return_inverse =
 	{
 		1.0f,0.0f,0.0f,0.0f,
@@ -1255,8 +1222,12 @@ void Knight::Draw(
 		0.0f,0.0f,0.0f,1.0f
 	};
 
+
+
+	//カメラの状態によってモデルの描画方法が違うため、分けている
 	if (scastI(YRCamera.camera_state) == now_player)
 	{
+		//カメラがキャラを見ている場合
 		anim->UpdateAnimation(game_speed * anim_ccodinate);
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
@@ -1267,6 +1238,7 @@ void Knight::Draw(
 	}
 	if (YRCamera.camera_state == Camera::CAMERA_STATE::MAIN)
 	{
+		//カメラがゲーム画面全体を見ている場合
 		anim->UpdateAnimation(game_speed * anim_ccodinate);
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
@@ -1277,6 +1249,7 @@ void Knight::Draw(
 	}
 	if (YRCamera.GetRequest() == Camera::Request::WEAKEN)
 	{
+		//カメラがキャラから画面全体を見るように移行している時
 		anim->UpdateAnimation(game_speed* anim_ccodinate);
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
@@ -1287,6 +1260,7 @@ void Knight::Draw(
 	}
 	if (YRCamera.camera_state == Camera::CAMERA_STATE::ZOOM_CAMERA)
 	{
+		//カメラがズームしている時
 		anim->UpdateAnimation(game_speed * anim_ccodinate);
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
@@ -1296,154 +1270,57 @@ void Knight::Draw(
 		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], Model::Material_Attribute::NONE, DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 	}
 
-	/*motion.DrawContinue(
-			parallel_shader,
-			pos.GetDXFLOAT3(),
-			scale.GetDXFLOAT3(),
-			angle.GetDXFLOAT3(),
-			view, projection, light_direction, light_color, ambient_color, elapsed_time*anim_ccodinate,
-			inversion, material_color
-		);*/
 
+	//剣の軌跡描画
 
-	traject_timer += elapsed_time;
-
-
-	/*if (traject_timer > 0.5f)
-	{*/
-		traject_timer = 0.0f;
-		DirectX::XMFLOAT3 head = { 0.0f,0.0f,0.0f };
-		DirectX::XMFLOAT3 tail = { 0.0f,0.0f,0.0f };
-		DirectX::XMFLOAT4X4 coodinate_conversion = {
-		1,0,0,0,
-		0,1,0,0,
-		0,0,1,0,
-		0,0,0,1
-		};
-		//剣のワールド変換行列を取得する
-		DirectX::XMMATRIX sword_world_transform;
-		for (auto& a : anim->GetNodes())
+	DirectX::XMFLOAT3 head = { 0.0f,0.0f,0.0f };
+	DirectX::XMFLOAT3 tail = { 0.0f,0.0f,0.0f };
+	DirectX::XMFLOAT4X4 coodinate_conversion = {
+	1,0,0,0,
+	0,1,0,0,
+	0,0,1,0,
+	0,0,0,1
+	};
+	//剣のワールド変換行列を取得する
+	DirectX::XMMATRIX sword_world_transform;
+	for (auto& a : anim->GetNodes())
+	{
+		if (a.name == std::string("Sword"))
 		{
-			if (a.name == std::string("Sword"))
-			{
-				/*coodinate_conversion._41 = a.translate.x;
-				coodinate_conversion._42 = a.translate.y;
-				coodinate_conversion._43 = a.translate.z;*/
-				sword_world_transform = DirectX::XMLoadFloat4x4(&a.world_transform);
-				break;
-			}
+			/*coodinate_conversion._41 = a.translate.x;
+			coodinate_conversion._42 = a.translate.y;
+			coodinate_conversion._43 = a.translate.z;*/
+			sword_world_transform = DirectX::XMLoadFloat4x4(&a.world_transform);
+			break;
 		}
+	}
 
-		//取得した剣のワールド変換行列を使って剣の先端と根本の座標を割り出す
-		DirectX::XMVECTOR head_vec = DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&sword_head.GetDXFLOAT3()), sword_world_transform);
-		DirectX::XMVECTOR tail_vec = DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&sword_tail.GetDXFLOAT3()), sword_world_transform);
+	//取得した剣のワールド変換行列を使って剣の先端と根本の座標を割り出す
+	DirectX::XMVECTOR head_vec = DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&sword_head.GetDXFLOAT3()), sword_world_transform);
+	DirectX::XMVECTOR tail_vec = DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&sword_tail.GetDXFLOAT3()), sword_world_transform);
 
 
-		DirectX::XMStoreFloat3(&head, head_vec);
-		DirectX::XMStoreFloat3(&tail, tail_vec);
+	DirectX::XMStoreFloat3(&head, head_vec);
+	DirectX::XMStoreFloat3(&tail, tail_vec);
 
-		/*head.z -= 1.0f;
-		tail.z -= 1.0f;*/
-		//test_pos = tail;
-
-		/*if (pKeyState.fflg > 0)
+	if (timer < non_target && timer>0.0f)
+	{
+		//攻撃が出ている状態なら剣の履歴を保存する
+		if (traject_on)
 		{
-			sword_head.x += elapsed_time;
-			sword_tail.x += elapsed_time;
-		}*/
-
-		if (timer < non_target && timer>0.0f)
-		{
+			//攻撃によっては剣の軌跡を表示しない
 			traject.SetTrajectoryPos(head, tail);
 		}
-		//traject.SetTrajectoryPos(sword_head.GetDXFLOAT3(), sword_tail.GetDXFLOAT3());
-		//sword_head.x += 5.0f;
-	//}
+	}
 
 	traject.Update(elapsed_time);
 
 	traject.render(
 			pos.GetDXFLOAT3(),
 			scale.GetDXFLOAT3(), angle.GetDXFLOAT3(), view, projection, material_color);
-	/*if (now_player == 1)
-	{
-		test_geo->render(
-			traject.shader.get(),
-			test_tex.get(),
-			test_pos.GetDXFLOAT3(),
-			pos.GetDXFLOAT3(),
-			DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
-			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-			view, projection,
-			DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
-	}*/
 
+	//テキスト描画
 	TextDraw();
-
-//デバッグ状態なら
-#ifdef EXIST_IMGUI
-		//プレイヤーの中心
-		if (ground)
-		{
-		}
-		else
-		{
-		}
-
-		for (int i = 0; i < 10; i++)
-		{
-			int j = i * 20 + 20;
-		}
-
-		//入力関係を表示してた
-		//GetJoypadXInputState(DX_INPUT_PAD1, &input);
-
-		//if (GetJoypadXInputState(DX_INPUT_PAD1, &input) != -1)
-		//{
-		//	// 画面に XINPUT_STATE の中身を描画
-		//	Color = GetColor(255, 255, 255);
-		//	GetJoypadAnalogInput(&Xbuf, &Ybuf, DX_INPUT_PAD1);
-		//	DrawFormatString(0, 0, Color, "LeftTrigger:%d RightTrigger:%d",
-		//		input.LeftTrigger, input.RightTrigger);
-		//	DrawFormatString(0, 16, Color, "ThumbLX:%d ThumbLY:%d",
-		//		Xbuf, Ybuf);
-		//	DrawFormatString(0, 32, Color, "ThumbRX:%d ThumbRY:%d",
-		//		input.ThumbRX, input.ThumbRY);
-		//	DrawString(0, 64, "Button", Color);
-		//	for (i = 0; i < 16; i++)
-		//	{
-		//		DrawFormatString(64 + i % 8 * 64, 64 + i / 8 * 16, Color,
-		//			"%2d:%d", i, input.Buttons[i]);
-		//	}
-		//}
-
-		{
-			/*bool show_test_window = true;
-			bool show_another_window = true;*/
-			//static float f = 0.0f;
-			//ImGui::Begin("RyuHitBox");
-			/*ImGui::InputFloat("BodyPosX", &Hitplus[scastI(KNIGHTHIT::BODY)].x, 0.1f, 0.1f);
-			ImGui::InputFloat("BodyPosY", &Hitplus[scastI(KNIGHTHIT::BODY)].y, 0.1f, 0.1f);
-			ImGui::InputFloat("BodySizeX", &hit[scastI(KNIGHTHIT::BODY)].size.x, 0.1f, 0.1f);
-			ImGui::InputFloat("BodySizeY", &hit[scastI(KNIGHTHIT::BODY)].size.y, 0.1f, 0.1f);
-
-			ImGui::InputFloat("LegPosX", &Hitplus[scastI(KNIGHTHIT::LEG)].x, 0.1f, 0.1f);
-			ImGui::InputFloat("LegPosY", &Hitplus[scastI(KNIGHTHIT::LEG)].y, 0.1f, 0.1f);
-			ImGui::InputFloat("LegSizeX", &hit[scastI(KNIGHTHIT::LEG)].size.x, 0.1f, 0.1f);
-			ImGui::InputFloat("LegSizeY", &hit[scastI(KNIGHTHIT::LEG)].size.y, 0.1f, 0.1f);*/
-			//ImGui::SliderFloat("camera.y", &camera.y, -world_max_y, world_max_y);
-			//ImGui::SliderFloat("camera.x", &camera.x, -world_max_x, world_max_x);
-			//ImGui::Text("player.y:%f", pos.y);
-			//ImGui::Text("player.x:%f", pos.x);
-
-			//ImGui::ColorEdit3("clear color", (float*)&ImColor(114, 144, 154));
-			//if (ImGui::Button("Test Window")) show_test_window ^= 1;
-			//if (ImGui::Button("Another Window")) show_another_window ^= 1;
-			//ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-			//ImGui::End();
-		}
-#endif
-
 }
 
 void Knight::DrawCutIn(
@@ -1451,6 +1328,8 @@ void Knight::DrawCutIn(
 	float elapsed_time
 )
 {
+	//カットインの表示
+
 	float center_x = static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f;
 	float center_y = static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f;
 
@@ -1552,34 +1431,6 @@ void Knight::DrawCutIn(
 	);
 }
 
-
-
-//残像の描画
-void Knight::DrawFastMove(YR_Vector3 position)
-{
-	if (!fast)
-	{
-		return;
-	}
-	//右
-	if (rightOrleft < 0)
-	{
-
-	}
-	//左
-	else
-	{
-
-	}
-	fast = false;
-}
-
-//残像をセットする
-void Knight::FastSet(YR_Vector3 position)
-{
-	fast = true;
-	FastPos = position;
-}
 
 
 //移動関係(ステップなど)
@@ -1870,7 +1721,7 @@ bool Knight::Step(float elapsed_time)
 					anim_ccodinate = ac_act[scastI(act_state)].later;
 				}
 			}
-			//描画をセットはしないけど移動範囲のセット
+			//移動範囲のセット
 			if (pos.x < Limit::Left_max)
 			{
 				pos.x = Limit::Left_max;
@@ -1880,7 +1731,7 @@ bool Knight::Step(float elapsed_time)
 		}
 		if (rightOrleft < 0)
 		{
-			//逆も然り
+			//逆も同じ
 			if (speed.x < 0.0f)
 			{
 				step = false;
@@ -1896,7 +1747,7 @@ bool Knight::Step(float elapsed_time)
 			{
 				HitBoxTransition(HitBoxState::INVINCIBLE);
 			}
-			//描画をセットはしないけど移動範囲のセット
+			//移動範囲のセット
 			if (pos.x > Limit::Right_max)
 			{
 				pos.x = Limit::Right_max;
@@ -2301,36 +2152,6 @@ void Knight::Move(float decision)
 				act_state = ActState::RETREAT;
 			}
 		}
-		//if (rightOrleft > 0)
-		//{
-
-		//}
-		//else
-		//{
-		//	if (!step)
-		//	{
-		//		speed.x = -dashspeed;
-		//		act_state = ActState::DASH;
-		//		if (!anim->GetLoopAnim())
-		//		{
-		//			//現在のアニメーションがダッシュの開始アニメーションだった場合
-		//			if (anim->GetEndAnim()==-1)
-		//			{
-		//				//アニメーションが終了したら持続アニメーションに切り替える
-		//				anim->NodeChange(model_motion.dash_L, scastI(AnimAtk::TIMER));
-		//				anim_ccodinate = ac_act[scastI(act_state)].timer;
-		//			}
-		//		}
-		//	}
-		//}
-	}
-	else
-	{
-		/*if (pad->x_input[scastI(PAD::STICK_L)] > 0)
-		{
-			speed.x = -walkspeed;
-			act_state = ActState::MOVEL;
-		}*/
 	}
 
 
@@ -2364,36 +2185,6 @@ void Knight::Move(float decision)
 				act_state = ActState::RETREAT;
 			}
 		}
-		//if (rightOrleft < 0)
-		//{
-		//
-		//}
-		//else
-		//{
-		//	if (!step)
-		//	{
-		//		speed.x = dashspeed;
-		//		act_state = ActState::DASH;
-		//		if (!anim->GetLoopAnim())
-		//		{
-		//			//現在のアニメーションがダッシュの開始アニメーションだった場合
-		//			if (anim->GetEndAnim()==-1)
-		//			{
-		//				//アニメーションが終了したら持続アニメーションに切り替える
-		//				anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::TIMER));
-		//				anim_ccodinate = ac_act[scastI(act_state)].timer;
-		//			}
-		//		}
-		//	}
-		//}
-	}
-	else
-	{
-		/*if (pad->x_input[scastI(PAD::STICK_R)] > 0)
-		{
-			speed.x = walkspeed;
-			act_state = ActState::MOVER;
-		}*/
 	}
 
 	MoveStop();
@@ -2457,94 +2248,6 @@ void Knight::MoveStop()
 		}
 		moveflag = false;
 	}
-
-	//if (pad->x_input[static_cast<int>(PAD::L_DASH)] == 0 && pad->x_input[static_cast<int>(PAD::R_DASH)] == 0)
-	//{
-	//	speed.x = 0.0f;
-	//	//if (act_state == ActState::DASH)
-	//	//{
-	//	//	//現在のステートがダッシュだった場合
-	//	//	act_state = ActState::ATTACK;
-	//	//	attack_state = AttackState::NONE;
-	//	//	attack = true;
-	//	//	later = dash_later;
-	//	//	atk_result = HitResult::NOT_OCCURRENCE;
-	//	//	if (rightOrleft > 0)
-	//	//	{
-	//	//		anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::LATER));
-	//	//	}
-	//	//	else
-	//	//	{
-	//	//		anim->NodeChange(model_motion.dash_L, scastI(AnimAtk::LATER));
-	//	//	}
-	//	//	anim->PlayAnimation(scastI(AnimAtk::LATER), false);
-	//	//	moveflag = false;
-	//	//}
-	//	//else
-	//	//{
-	//		act_state = ActState::NONE;
-	//	//}
-	//	moveflag = false;
-	//}
-	//if (pad->x_input[static_cast<int>(PAD::L_DASH)] > 0 && pad->x_input[static_cast<int>(PAD::R_DASH)] > 0)
-	//{
-	//	speed.x = 0.0f;
-	//	//if (act_state == ActState::DASH)
-	//	//{
-	//	//	//現在のステートがダッシュだった場合
-	//	//	act_state = ActState::ATTACK;
-	//	//	attack_state = AttackState::NONE;
-	//	//	attack = true;
-	//	//	later = dash_later;
-	//	//	atk_result = HitResult::NOT_OCCURRENCE;
-	//	//	if (rightOrleft > 0)
-	//	//	{
-	//	//		anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::LATER));
-	//	//	}
-	//	//	else
-	//	//	{
-	//	//		anim->NodeChange(model_motion.dash_L, scastI(AnimAtk::LATER));
-	//	//	}
-	//	//	anim->PlayAnimation(scastI(AnimAtk::LATER), false);
-	//	//	moveflag = false;
-	//	//}
-	//	//else
-	//	//{
-	//		act_state = ActState::NONE;
-	//	//}
-	//	moveflag = false;
-	//}
-
-	////どちらも押されているor押されていないなら元に戻す
-	//if (pad->x_input[static_cast<int>(PAD::STICK_L)] == 0 && pad->x_input[static_cast<int>(PAD::STICK_R)] == 0)
-	//{
-	//	speed.x = 0.0f;
-	//	//if (act_state == ActState::DASH)
-	//	//{
-	//	//	//現在のステートがダッシュだった場合
-	//	//	act_state = ActState::ATTACK;
-	//	//	attack_state = AttackState::NONE;
-	//	//	attack = true;
-	//	//	later = dash_later;
-	//	//	atk_result = HitResult::NOT_OCCURRENCE;
-	//	//	if (rightOrleft > 0)
-	//	//	{
-	//	//		anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::LATER));
-	//	//	}
-	//	//	else
-	//	//	{
-	//	//		anim->NodeChange(model_motion.dash_L, scastI(AnimAtk::LATER));
-	//	//	}
-	//	//	anim->PlayAnimation(scastI(AnimAtk::LATER), false);
-	//	//	moveflag = false;
-	//	//}
-	//	//else
-	//	//{
-	//		act_state = ActState::NONE;
-	//	//}
-	//	moveflag = false;
-	//	//speed.x = 0.0f;
-	//}
 }
 
 
@@ -2569,6 +2272,7 @@ void Knight::MoveAnimSet()
 		return;
 	}
 
+	//スティックの左が入力された
 	if (pad->x_input[static_cast<int>(PAD::STICK_L)] == 1)
 	{
 		moveflag = true;
@@ -2595,6 +2299,7 @@ void Knight::MoveAnimSet()
 			anim_ccodinate = ac_act[scastI(act_state)].fream;
 		}
 	}
+	//スティックの右が入力された
 	if (pad->x_input[static_cast<int>(PAD::STICK_R)] == 1)
 	{
 		moveflag = true;
@@ -2624,6 +2329,9 @@ void Knight::MoveAnimSet()
 
 	if (!moveflag)
 	{
+		//攻撃後にスティックが入力されたままだとアニメーションの遷移が行われないため
+		//moveflagを確認して移動しているかどうかを判別している
+		//左にスティックを倒していた
 		if (pad->x_input[static_cast<int>(PAD::STICK_L)] > 0 )
 		{
 			moveflag = true;
@@ -2650,6 +2358,7 @@ void Knight::MoveAnimSet()
 				anim_ccodinate = ac_act[scastI(act_state)].fream;
 			}
 		}
+		//右スティックを倒していた
 		if (pad->x_input[static_cast<int>(PAD::STICK_R)] > 0)
 		{
 			moveflag = true;
@@ -2682,10 +2391,12 @@ void Knight::MoveAnimSet()
 
 void Knight::GuardAnimSet()
 {
+	//ガード時のアニメーション遷移処理
 	if (act_state == ActState::GUARD)
 	{
 		if (ground)
 		{
+			//スティックの下が入力されている場合は下段ガードに
 			if (pad->x_input[static_cast<int>(PAD::STICK_RDown)] > 0 || pad->x_input[static_cast<int>(PAD::STICK_LDown)] > 0)
 			{
 				//描画をセット
@@ -2701,6 +2412,7 @@ void Knight::GuardAnimSet()
 			}
 			else
 			{
+				//それ以外はガードアニメションに
 				//描画をセット
 				if (rightOrleft > 0)
 				{
@@ -2715,6 +2427,7 @@ void Knight::GuardAnimSet()
 		}
 		else
 		{
+			//空中ガードアニメーション
 			//描画をセット
 			if (rightOrleft > 0)
 			{
@@ -2732,12 +2445,12 @@ void Knight::GuardAnimSet()
 
 void Knight::WaitAnimSet()
 {
+	//待機アニメーション遷移処理
 	if (act_state == ActState::NONE)
 	{
-		//描画をセット
-
 		act_state = ActState::WAIT;
 		lumi_material = Model::Material_Attribute::NONE;
+		//描画をセット
 		if (rightOrleft > 0)
 		{
 			//右向きの時
@@ -2759,8 +2472,10 @@ void Knight::WaitAnimSet()
 
 void Knight::Jump()
 {
+	//ジャンプ開始処理
 	if (step)
 	{
+		//ステップ中はジャンプできないためreturn
 		return;
 	}
 	if (ground)
@@ -2897,6 +2612,9 @@ void Knight::Jump()
 	}
 	else
 	{
+	//空中ジャンプの場合は処理が異なる
+	//スティックを上に倒していると地上ジャンプをした後直ぐに空中ジャンプが出てしまうため
+	//ジャンプタイマーが0以下になるまでは空中ジャンプが出ないようにしている
 		if (jumpcount > 0&&jump_can_timer<=0.0f)
 		{
 			if (pad->x_input[scastI(PAD::STICK_U)] == 1)
@@ -2970,8 +2688,10 @@ void Knight::Jump()
 
 void Knight::JumpUpdate(float decision, float elapsed_time)
 {
+	//ジャンプの更新処理
 	if (jumpcount < 2 && jumpflag)
 	{
+		//現在ジャンプしているようなら入る
 		if (!anim->GetLoopAnim())
 		{
 			//現在のアニメーションがジャンプの開始アニメーションだった場合
@@ -2989,14 +2709,13 @@ void Knight::JumpUpdate(float decision, float elapsed_time)
 				anim_ccodinate = ac_act[scastI(act_state)].timer;
 			}
 		}
+		//ジャンプタイマーを減らしていく
 		if (jump_can_timer > 0.0f)
 		{
 			jump_can_timer -= elapsed_time;
 		}
-		/*if (speed_Y.speed == 0.0f)
-		{
-			pos.y += (speed.y * elapsed_time);
-		}*/
+
+		//ジャンプの最高速度に到達していない場合
 		if (!max_jump_flag)
 		{
 			if (hightrigger)
@@ -3004,31 +2723,30 @@ void Knight::JumpUpdate(float decision, float elapsed_time)
 				speed.y += (high_jump_speed * elapsed_time);
 				if (speed.y > high_jump_max)
 				{
+					//ジャンプの速度が一定に達した
 					max_jump_flag = true;
 				}
 			}
 			else
 			{
 				speed.y += (jump_speed * elapsed_time);
-				/*if (speed_Y.speedY == 0.0f)
-				{
-					pos.y += (speed.y * elapsed_time);
-				}*/
-				//float hei = speed.y * elapsed_time;
 				if (speed.y > jump_max)
 				{
+					//ジャンプの速度が一定に達した
 					max_jump_flag = true;
 				}
 			}
 		}
 	}
 
+	//ジャンプの速度が一定に達した状態
 	if (max_jump_flag)
 	{
 		if (!ground)
 		{
 			if (attack)
 			{
+				//攻撃中の場合攻撃が当たっていれば速度は下げない
 				if (hit_result <= HitResult::HIT && combo_count == 0)
 				{
 					speed.y -= (down_force * elapsed_time);
@@ -3036,6 +2754,7 @@ void Knight::JumpUpdate(float decision, float elapsed_time)
 			}
 			else
 			{
+				//速度を下げて落ちるようにする
 				speed.y -= (down_force * elapsed_time);
 			}
 
@@ -3044,17 +2763,15 @@ void Knight::JumpUpdate(float decision, float elapsed_time)
 		{
 			if (speed.y - (gravity*elapsed_time) < 0.0f)
 			{
-				if (!attack)
-				{
-					//描画をセット
-
-				}
 				hightrigger = false;
 			}
 		}
 	}
 	if (pos.y < POS_Y)
 	{
+		//地面についた場合
+
+		//ジャンプのカウントを戻す
 		jumpcount = 2;
 		air_dash_count = 1;
 		max_jump_flag = false;
@@ -3078,7 +2795,9 @@ void Knight::JumpUpdate(float decision, float elapsed_time)
 		angle.y = 0.0f;
 		angle.z = 0.0f;
 		timer = non_target;
+		//着地音を鳴らす
 		GetSound().SESinglePlay(SEKind::LANDING);
+		//描画をセット
 		if (rightOrleft > 0)
 		{
 			anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::LATER));
@@ -3096,6 +2815,7 @@ void Knight::JumpUpdate(float decision, float elapsed_time)
 
 void Knight::DamageCheck(float decision)
 {
+	//ダメージ処理
 	for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
 	{
 		if (hit[i].hit)
@@ -3273,7 +2993,8 @@ void Knight::DamageCheck(float decision)
 
 void Knight::KnockUpdate(float elapsed_time)
 {
-	bool pflag = false;
+	//のけぞり処理
+	bool pflag = false;		//ノックバックが発動したらtrueにする
 	for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
 	{
 		if (hit[i].hitback.x != 0.0f)
@@ -3386,6 +3107,9 @@ void Knight::KnockUpdate(float elapsed_time)
 
 	if (knocktimer < 0.0f)
 	{
+		//のけぞり時間が経過した
+
+		//コンボカウントを0にする
 		combo_count = 0;
 		if (ground)
 		{
@@ -3407,18 +3131,9 @@ void Knight::KnockUpdate(float elapsed_time)
 		else
 		{
 			//空中でのけぞり状態が解除された
-			//if (pad->x_input[scastI(PAD::STICK_D)] > 0 ||
-			//	pad->x_input[scastI(PAD::STICK_LDown)] > 0 ||
-			//	pad->x_input[scastI(PAD::STICK_RDown)] > 0)
-			//{
-			//	//スティックの下入力がある場合は落下状態にする
-			//	act_state = ActState::FALL;
-			//	speed.y = 0.0f;
-			//}
-			//else
 			if (hp <= 0.0f)
 			{
-
+				//体力が無い場合は自動的に受け身を取らないようにする
 			}
 			else
 			{
@@ -3474,6 +3189,7 @@ void Knight::KnockUpdate(float elapsed_time)
 				}
 			}
 
+			//ホーミングダッシュ回数が0以下にならないように
 			if (trackgauge < 2)
 			{
 				trackgauge = 1;
@@ -3511,10 +3227,13 @@ void Knight::KnockUpdate(float elapsed_time)
 
 void Knight::SlamUpdate(float elapsed_time)
 {
-	bool pflag = false;
+	//叩きつけられ処理
 
-	DirectX::XMFLOAT2 hit_back_s = { 0.0f,0.0f };
+	bool pflag = false;		//ノックバックが発動したらtrueにする
 
+	DirectX::XMFLOAT2 hit_back_s = { 0.0f,0.0f };		//このフレーム中に加算された速度
+
+	//速度を加算する
 	for (int i = 0; i < hit.size(); i++)
 	{
 		if (hit[i].hitback.x != 0.0f)
@@ -3711,8 +3430,11 @@ void Knight::SlamUpdate(float elapsed_time)
 
 void Knight::DownHitUpdate(float elapsed_time)
 {
-	bool pflag = false;
+	//ダウン中の処理
 
+	bool pflag = false;		//ノックバックが発動したらtrueにする
+
+	//速度を加算していく
 	for (int i = 0; i < hit.size(); i++)
 	{
 		if (hit[i].hitback.x != 0.0f)
@@ -3810,6 +3532,7 @@ void Knight::DownHitUpdate(float elapsed_time)
 
 void Knight::Guard(float decision)
 {
+	//ガード処理
 
 	if (step || attack || act_state == ActState::PASSIVE|| act_state == ActState::WAKE)
 	{
@@ -3817,10 +3540,15 @@ void Knight::Guard(float decision)
 		return;
 	}
 
+	//当たり判定のガード状態を解除する(この後の判定処理でガードしていた場合は付与しなおす)
 	HitBoxTransition(HitBoxState::NOGUARD);
 
+	//入力判定処理
+	//・下入力がされていた場合は下段ガードになる
+	//・空中にいる場合は空中ガードになる
 	if (rightOrleft > 0)
 	{
+		//右向きの場合
 		if (pad->x_input[scastI(PAD::STICK_LDown)] > 0)
 		{
 			if (!ground)
@@ -3849,6 +3577,7 @@ void Knight::Guard(float decision)
 	}
 	if (rightOrleft < 0)
 	{
+		//左向きの場合
 		if (pad->x_input[scastI(PAD::STICK_RDown)] > 0)
 		{
 			if (!ground)
@@ -3878,8 +3607,11 @@ void Knight::Guard(float decision)
 
 	if (!ground)
 	{
+		//空中の場合
 		if (decision != rightOrleft)
 		{
+			//向いている方向と現在の処理中の方向が違う場合は両方の向きで判定を取る
+			//(ジャンプで相手を飛び越えた時にガード出来ない現象の救済処置)
 			if (pad->x_input[scastI(PAD::STICK_R)] > 0 || pad->x_input[scastI(PAD::STICK_RDown)] > 0
 				|| pad->x_input[scastI(PAD::STICK_L)] > 0 || pad->x_input[scastI(PAD::STICK_LDown)] > 0)
 			{
@@ -3892,6 +3624,7 @@ void Knight::Guard(float decision)
 	{
 		if (hit[i].guard_ok)
 		{
+			//ガードが出来ているかどうかを当たり判定を見て判定する
 			GaugeUp(hit[i].damege / 4.0f);
 			speed_X.Set(0.0f);
 			speed_Y.Set(0.0f);
@@ -3947,12 +3680,14 @@ void Knight::Guard(float decision)
 
 void Knight::GuardBack(float elapsed_time)
 {
+	//ガードバック処理
+
 	if (act_state != ActState::GUARD)
 	{
 		return;
 	}
 
-	bool hit_on = false;
+	bool hit_on = false;	//ガードバックが発動したらtrueにする
 
 
 	for (int i = 0; i < hit.size(); i++)
@@ -4051,18 +3786,20 @@ void Knight::GuardBack(float elapsed_time)
 
 void Knight::Squat()
 {
+	//しゃがみ処理
+
+	//ガード中、ダッシュ中、バックステップ、空中ダッシュ時は処理を行わない
 	if (act_state == ActState::GUARD || act_state == ActState::DASH|| act_state == ActState::BACK || act_state == ActState::AIR_B || act_state == ActState::AIR_F)
 	{
 		return;
 	}
+	//地面についていないときは処理を行わない
 	if (!ground)
 	{
 		return;
 	}
 	if (pad->x_input[scastI(PAD::STICK_D)] ==1 || pad->x_input[scastI(PAD::STICK_RDown)] == 1 || pad->x_input[scastI(PAD::STICK_LDown)] == 1)
 	{
-		//Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(0.0f, 15.0f);
-		//hit[scastI(KNIGHTHIT::BODY)].size = YR_Vector3(65.0f, 130.0f);
 		moveflag = false;
 		act_state = ActState::SQUAT;
 		//描画をセット
@@ -4078,8 +3815,6 @@ void Knight::Squat()
 	}
 	if (pad->x_input[scastI(PAD::STICK_D)] > 0 || pad->x_input[scastI(PAD::STICK_RDown)] > 0 || pad->x_input[scastI(PAD::STICK_LDown)] > 0)
 	{
-		//Hitplus[scastI(KNIGHTHIT::BODY)] = YR_Vector3(0.0f, 15.0f);
-		//hit[scastI(KNIGHTHIT::BODY)].size = YR_Vector3(65.0f, 130.0f);
 		moveflag = false;
 		act_state = ActState::SQUAT;
 		//描画をセット
@@ -4095,12 +3830,7 @@ void Knight::Squat()
 	}
 	if (pad->x_input[scastI(PAD::STICK_D)] == 0 && pad->x_input[scastI(PAD::STICK_RDown)] == 0 && pad->x_input[scastI(PAD::STICK_LDown)] == 0)
 	{
-		if (act_state == ActState::SQUAT)
-		{
-			//描画をセット
-
-		}
-
+		//下が入力されていない場合は待機に戻す
 		if (act_state != ActState::WAIT)
 		{
 			act_state = ActState::NONE;
@@ -4111,16 +3841,17 @@ void Knight::Squat()
 
 void Knight::FallUpdate(float elapsed_time)
 {
+	//落下中処理
+
 	if (ground)
 	{
+		//地面についたらステートをダウンにする
 		pos.y = POS_Y;
 		if (hp > 0)
 		{
 			speed.y = 5.0f;
 		}
 		act_state = ActState::DOWN;
-		//描画をセット
-
 	}
 	else
 	{
@@ -4129,43 +3860,7 @@ void Knight::FallUpdate(float elapsed_time)
 		{
 			//重力を付与する
 			pos.y -= gravity * elapsed_time;
-			//speed.y += 10.0f * elapsed_time;
 		}
-		//if (pad->x_input[scastI(PAD::X)] == 1 || pad->x_input[scastI(PAD::Y)] == 1 ||
-		//	pad->x_input[scastI(PAD::B)] == 1 || pad->x_input[scastI(PAD::A)] == 1)
-		//{
-		//	speed.x = 0.0f;
-		//	speed.y = 0.0f;
-		//	act_state = ActState::PASSIVE;
-		//	//描画をセット
-
-		//	HitBoxTransition(HitBoxState::INVINCIBLE);
-		//	if (pad->x_input[scastI(PAD::STICK_R)] > 0)
-		//	{
-		//		speed.x = 20.0f;
-		//		speed.y = -10.0f;
-		//	}
-		//	if (pad->x_input[scastI(PAD::STICK_L)] > 0)
-		//	{
-		//		speed.x = -20.0f;
-		//		speed.y = -10.0f;
-		//	}
-		//	if (pad->x_input[scastI(PAD::STICK_U)] > 0)
-		//	{
-		//		speed.y = -20.0f;
-		//	}
-		//	if (pad->x_input[scastI(PAD::STICK_D)] > 0)
-		//	{
-		//		speed.y = 20.0f;
-		//	}
-
-		//	if (pad->x_input[scastI(PAD::STICK_R)] == 0 && pad->x_input[scastI(PAD::STICK_L)] == 0 &&
-		//		pad->x_input[scastI(PAD::STICK_U)] == 0 && pad->x_input[scastI(PAD::STICK_D)] == 0)
-		//	{
-		//		speed.x = Getapply(-20.0f);
-		//		speed.y = -10.0f;
-		//	}
-		//}
 	}
 }
 
@@ -4173,6 +3868,7 @@ void Knight::FallUpdate(float elapsed_time)
 
 void Knight::DownUpdate()
 {
+	//ダウン中処理
 
 	if (ground)
 	{
@@ -4277,6 +3973,8 @@ void Knight::DownUpdate()
 
 void Knight::WakeUp()
 {
+	//起き上がり処理
+
 	//起き上がり開始は無敵
 	HitBoxTransition(HitBoxState::INVINCIBLE);
 
@@ -4292,6 +3990,7 @@ void Knight::WakeUp()
 
 void Knight::PassiveUpdate(float elapsed_time)
 {
+	//受け身処理
 
 	if (rightOrleft > 0)
 	{
@@ -4304,13 +4003,16 @@ void Knight::PassiveUpdate(float elapsed_time)
 		angle.z -= 30.0f * elapsed_time;
 	}
 
+	//地面にめり込まないように
 	if (pos.y < POS_Y)
 	{
 		pos.y = POS_Y;
 	}
 
+	//受け身時間を減らしていく
 	passive_timer -= elapsed_time;
 
+	//それぞれの速度を減算、加算して0に近づけていく
 	if (speed.x > 0)
 	{
 		speed.x -= (passive_brake * elapsed_time);
@@ -4343,6 +4045,8 @@ void Knight::PassiveUpdate(float elapsed_time)
 			speed.y = 0.0f;
 		}
 	}
+
+	//受け身時間が0になったら終了
 	if (passive_timer < 0.0f)
 	{
 		HitBoxTransition(HitBoxState::NOGUARD);
@@ -4378,10 +4082,10 @@ void Knight::PassiveUpdate(float elapsed_time)
 
 void Knight::StateNone(float elapsed_time)
 {
+	//ステート奪われた状態の処理
+
 	if (steal_escape > 0.0f)
 	{
-		//描画をセット
-
 		if (pad->x_input[scastI(PAD::RB)] == 1)
 		{
 			steal_escape = 0.0f;
@@ -4418,44 +4122,18 @@ void Knight::StateNone(float elapsed_time)
 }
 
 
-//float Ryu::GetPosX()
-//{
-//	return pos.x;
-//}
-
 float Knight::Getapply(float n)
 {
+	//現在向いている向きに合わせた数字を返す
+
 	return n * rightOrleft;
 }
 
-HitBox* Knight::GetHit()
-{
-	return hit.data();
-}
-AttackBox* Knight::GetAttack()
-{
-	return atk.data();
-}
-int Knight::GetMax(int n)
-{
-	if (n == 0)
-	{
-		return scastI(KNIGHTHIT::END);
-	}
-	if (n == 1)
-	{
-		return atk.size();
-	}
-	return 0;
-}
-
-//float& Ryu::GetPosX2()
-//{
-//	return pos.x;
-//}
 
 void Knight::NoneChange()
 {
+	//ガードしていない時に何も入力されていない場合はステートをNONEにする処理
+
 	if (act_state != ActState::GUARD)
 	{
 		return;
@@ -4476,6 +4154,8 @@ void Knight::NoneChange()
 
 void Knight::GaugeUp(float add)
 {
+	//ゲージ、パワー増加処理
+
 	gauge += add;
 	if (power > 4)
 	{
@@ -4500,6 +4180,8 @@ void Knight::GaugeUp(float add)
 
 void Knight::StopUpdate()
 {
+	//ヒットストップ中行う処理
+
 	float shift_pos = 0.1f;
 	if (stop_pos == YR_Vector3(0.0f, 0.0f))
 	{
@@ -4533,6 +4215,8 @@ void Knight::StopUpdate()
 }
 void Knight::StopEnd()
 {
+	//ヒットストップ終了時に行う処理
+
 	if (stop_pos == YR_Vector3(0.0f, 0.0f))
 	{
 		return;
@@ -4544,7 +4228,8 @@ void Knight::StopEnd()
 
 void Knight::WinAnimSet()
 {
-	//勝利演出用のセット
+	//勝利演出用のセット処理
+
 	pos = YR_Vector3( 0.0f,0.0f,0.0f );
 	angle = YR_Vector3( 0.0f,0.0f,0.0f );
 
@@ -4569,13 +4254,10 @@ void Knight::WinAnimSet()
 
 bool Knight::WinPerformance(float elapsed_time)
 {
+	//勝利演出処理
+
 	YR_Vector3 focus;
 	YR_Vector3 eye;
-	/*focus = YR_Vector3(pos.x + focus_plus.x, pos.y + focus_plus.y, pos.z + focus_plus.z);
-	eye = YR_Vector3(pos.x + eye_plus.x, pos.y + eye_plus.y, pos.z + eye_plus.z);
-	YRCamera.SetEye(eye.GetDXFLOAT3());
-	YRCamera.SetFocus(focus.GetDXFLOAT3());
-	win_timer += elapsed_time;*/
 
 	float apply = 1.0f;
 	if (now_player == 1)
@@ -4642,12 +4324,6 @@ bool Knight::Intro(float elapsed_time)
 	YR_Vector3	focus;
 	YR_Vector3	eye;
 
-	/*focus = YR_Vector3(pos.x + Getapply(focus_plus.x), pos.y + focus_plus.y, pos.z + focus_plus.z);
-	eye = YR_Vector3(pos.x + Getapply(eye_plus.x), pos.y + eye_plus.y, pos.z + eye_plus.z);*/
-	/*focus = YR_Vector3(pos.x + focus_plus.x, pos.y + focus_plus.y, pos.z + focus_plus.z);
-	eye = YR_Vector3(pos.x + eye_plus.x, pos.y + eye_plus.y, pos.z + eye_plus.z);
-	YRCamera.SetEye(eye.GetDXFLOAT3());
-	YRCamera.SetFocus(focus.GetDXFLOAT3());*/
 	switch (intro_state)
 	{
 	case Knight::INTRO_KNIGHT::SET:
@@ -4899,20 +4575,6 @@ void Knight::EndAttackErase()
 		projectile_atk.erase(result, projectile_atk.end());
 	}
 
-	/*if (!projectile_atk.empty())
-	{
-		for (std::vector<AttackBox>::iterator& m = projectile_atk.begin(); m != projectile_atk.end();)
-		{
-			if (m->fin)
-			{
-				m = projectile_atk.erase(m);
-			}
-			else
-			{
-				m++;
-			}
-		}
-	}*/
 }
 
 //全ての攻撃当たり判定を消去する
@@ -5027,7 +4689,7 @@ void Knight::FaceAnimation(float elapsed_time)
 }
 
 
-//瞬き
+//瞬き処理
 void Knight::FaceWink(float elapsed_time)
 {
 	face_wink_time += elapsed_time;
@@ -5228,6 +4890,8 @@ void Knight::AttackDetailsSet(const AttackState& attack_state)
 
 std::wstring Knight::RandTextSelect()
 {
+	//イントロ中に表示するテキストをランダムに設定する
+
 	TextList rnd = static_cast<TextList>(rand() % scastI(TextList::TEXT_END));
 
 	switch (rnd)
@@ -5251,6 +4915,8 @@ std::wstring Knight::RandTextSelect()
 
 void Knight::TextDraw()
 {
+	//設定されたテキストを表示する
+
 	if (!text_on)
 	{
 		return;
@@ -5265,6 +4931,8 @@ void Knight::TextDraw()
 
 void Knight::HitBoxTransition(HitBoxState state)
 {
+	//全ての当たり判定のステートを変更する
+
 	for (int h = 0; h < hit.size(); h++)
 	{
 		hit[h].state = state;

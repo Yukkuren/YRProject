@@ -24,7 +24,7 @@ std::array<std::string, scastI(SEKind::END)> se_name_list =
 {
 	u8"Œˆ’è‰¹",
 };
-#endif // 
+#endif //
 
 //‰Šú‰»
 void YRSound::Init()

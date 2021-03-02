@@ -9,36 +9,30 @@
 #include "Sampler.h"
 //#include "framework.h"
 
-//-------------------------------------------------------------
-//			生成しながら読み込むのは無理だったため関数で代用
-//-------------------------------------------------------------
-//
-//	・Spriteクラスのポインタをオブジェクトに持たせる
-//	・Initなどで対応するload関数を呼ぶ
-//	・描画関数で対応したDraw関数を呼ぶ
-//-------------------------------------------------------------
-
 //タイトルのシェーダーに使用する定数構造体
+//※スプライトを使用してシェーダーの内容を描画する為、ここで定義している
 struct Title_CBuffer
 {
 public:
-	DirectX::XMFLOAT3		Resolution;
-	float					iTime;
-	float					brightness;
-	float					ray_brightness;
-	float					gamma;
-	float					spot_brightness;
-	float					ray_density;
-	float					curvature;
-	float					red;
-	float					green;
-	float					blue;
-	DirectX::XMFLOAT4		material_color;
-	float					dummy1;
-	float					dummy2;
-	float					dummy3;
+	DirectX::XMFLOAT3		Resolution = { 0.0f,0.0f,0.0f };
+	float					iTime = 0.0f;
+	float					brightness = 0.0f;
+	float					ray_brightness = 0.0f;
+	float					gamma = 0.0f;
+	float					spot_brightness = 0.0f;
+	float					ray_density = 0.0f;
+	float					curvature = 0.0f;
+	float					red = 0.0f;
+	float					green = 0.0f;
+	float					blue = 0.0f;
+	DirectX::XMFLOAT4		material_color = { 0.0f,0.0f,0.0f,0.0f };
+	float					dummy1 = 0.0f;
+	float					dummy2 = 0.0f;
+	float					dummy3 = 0.0f;
 };
 
+
+//スプライトのマスク処理用構造体列挙
 enum class SpriteMask
 {
 	NONE,		//マスクなし(デフォルト)
@@ -53,15 +47,24 @@ enum class SpriteMask
 
 struct Sprite_div
 {
-	float nx;						//分割した画像の始点X
-	float ny;						//分割した画像の始点Y
+	float nx = 0.0f;						//分割した画像の始点X
+	float ny = 0.0f;						//分割した画像の始点Y
 };
+
+//-------------------------------------------------------------
+//		スプライトクラス
+//-------------------------------------------------------------
+//
+//	・Spriteクラスのポインタをオブジェクトに持たせる
+//	・Initなどで生成、読み込みを行う
+//	・描画関数で対応したDraw関数を呼ぶ
+//-------------------------------------------------------------
 
 class Sprite
 {
 public:
 	std::vector<Sprite_div>div;		//分割画像座標保存用変数
-	int max;						//分割最大数
+	int max = 1;					//分割最大数
 	float sx = 0.0f;				//画像始点X(右上)
 	float sy = 0.0f;				//画像始点Y(右上)
 	float sw;						//画像横サイズ
@@ -72,7 +75,6 @@ public:
 	float numY;						//画像縦分割数
 	int	num = 0;
 	float time = 0;
-	//std::shared_ptr<Texture> texture = nullptr;
 public:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader>			vert;
 	Microsoft::WRL::ComPtr<ID3D11PixelShader>			pixel;
@@ -83,8 +85,6 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11SamplerState>			sampler;
 	D3D11_TEXTURE2D_DESC								texture2d_desc;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>		depthstate[static_cast<int>(SpriteMask::END)];
-	//ID3D11BlendState *blendstate;
-	//vertex vertics[4];
 
 	struct vertex
 	{
@@ -221,7 +221,7 @@ public:
 			mask);
 	}
 
-	//画像回転描画(画像描画サイズ決定型)(コンテキスト、描画位置x,y、回転角度、画像拡大率)
+	//画像回転描画(画像描画サイズ決定型)(コンテキスト、描画位置x,y、回転角度、画像サイズ)
 	void DrawRotaGraph(
 		YRShader* shader,
 		float x, float y, float angle,
@@ -244,7 +244,7 @@ public:
 			mask);
 	}
 
-
+	//画像回転描画(画像描画サイズ決定型)(コンテキスト、描画位置x,y、回転角度、画像サイズ、反転するかどうか)
 	void DrawRotaGraph(
 		YRShader* shader,
 		float x, float y, float angle,
@@ -525,6 +525,7 @@ public:
 
 	}
 
+	//分割画像反転描画(シェーダー、描画位置X,Y、回転角度、画像拡大率、画像の番号、カラー)
 	void DrawRotaDivGraphReverse(
 		YRShader* shader,
 		float x, float y, float angle, float size, int num, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1,1,1,1 })
@@ -574,6 +575,7 @@ public:
 		render(shader, x, y, width, height, ssx, srcY, ssw, height, 0.0f, color.x, color.y, color.z, color.w,mask);
 	}
 
+	//画像描画位置指定描画
 	void DrawExtendGraph(YRShader* shader, float x, float y, float x2, float y2, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,1.0f })
 	{
 		float width = x2 - x;
@@ -581,6 +583,7 @@ public:
 		render(shader, x, y, width, height, sx, sy, sw, sh, 0.0f, color.x, color.y, color.z, color.w,mask);
 	}
 
+	//画像指定位置&描画位置指定描画(シェーダー、左端、上端、右端、下端、画像の描画位置X)
 	void DrawExtendSetGraph(YRShader* shader, float x, float y, float x2, float y2, float sx, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,1.0f })
 	{
 		float width = x2 - x;
@@ -588,7 +591,7 @@ public:
 		render(shader, x, y, width, height, sx, sy, sw, sh, 0.0f, color.x, color.y, color.z, color.w, mask);
 	}
 
-
+	//画像描画位置指定アニメーション描画
 	void DrawExtendAnimGraph(YRShader* shader, float x, float y, float x2, float y2, float speed, float elapsed_time, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,1.0f })
 	{
 		sx += (speed * elapsed_time);

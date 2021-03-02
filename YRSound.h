@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <vector>
 
-// チャンクデータの基本構造 
+// チャンクデータの基本構造
 struct Chunk
 {
 	char	id[4]; // チャンク毎のID
@@ -26,6 +26,7 @@ struct FormatChunk
 	WAVEFORMAT	fmt;   // 波形フォーマット
 };
 
+//BGMの種類
 enum class BGMKind : int
 {
 	TITLE = 0,			//タイトル
@@ -36,31 +37,32 @@ enum class BGMKind : int
 	END,
 };
 
+//SEの種類
 enum class SEKind : int
 {
 	SELECT_ENTER = 0,	//選択決定音
 	SELECT_CANCEL,		//選択解除
-	HIT_SWORD,
-	INTRO_WIND,
-	OFFSET,
-	SPECIAL_ATTACK,
-	TORNADO,
-	SPECIAL_ATTACK2,
-	UP_ATTACK,
-	HIT,
-	PROJECTILE,
-	SPECIAL_ATTACK3,
-	SELECT,
-	TRACK,
-	BACKSTEP,
-	SLAM,
-	SLIDE,
-	PASSIVE,
-	READY,
-	GUARD,
-	JUMP,
-	HIGH_JUMP,
-	LANDING,
+	HIT_SWORD,			//剣が当たった時
+	INTRO_WIND,			//イントロの風
+	OFFSET,				//相殺
+	SPECIAL_ATTACK,		//超必
+	SPECIAL_ATTACK2,	//超必2
+	SPECIAL_ATTACK3,	//超必3
+	TORNADO,			//竜巻
+	UP_ATTACK,			//打ち上げ攻撃
+	HIT,				//攻撃が当たった時
+	PROJECTILE,			//飛び道具
+	SELECT,				//選択音
+	TRACK,				//ホーミングダッシュ時
+	BACKSTEP,			//バックステップ
+	SLAM,				//叩き落し
+	SLIDE,				//滑り状態
+	PASSIVE,			//受け身
+	READY,				//開始前
+	GUARD,				//ガード
+	JUMP,				//ジャンプ
+	HIGH_JUMP,			//ハイジャンプ
+	LANDING,			//着地
 	END,
 };
 
@@ -73,6 +75,14 @@ struct AudioSource
 	float					volume = 1.0f;			//ボリューム値
 };
 
+
+//-----------------------------------------------------------------
+//			YRSoundクラス
+//-----------------------------------------------------------------
+//・音声データを全て管理するクラス
+//・ゲームを起動した時点で全ての音声データを読み込むため、
+//  どのシーンでも利用することができる
+//-----------------------------------------------------------------
 
 class YRSound
 {

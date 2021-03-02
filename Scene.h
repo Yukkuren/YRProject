@@ -21,12 +21,14 @@
 #include "collision.h"
 
 
+//ほとんどのシーンで使用するためヘッダーに直接書いている
 constexpr float start_time = 2.0f;			//ゲームが開始するまでの時間
 constexpr float ready_time = 1.0f;			//Readyの表示を出す時間
 constexpr float end_slow_time = 3.0f;		//試合終了後スローにする時間
 constexpr float slow_adjust = 0.2f;			//スロー補正値
 constexpr float game_end_time = 5.0f;		//ゲームが終了して勝利画面に移行する時間
 
+//タイトル画面・ゲームシーンで選択に使用できるボタンの羅列
 constexpr std::array<PAD, 10> any_button =
 {
 	PAD::A,
@@ -41,13 +43,17 @@ constexpr std::array<PAD, 10> any_button =
 	PAD::SELECT,
 };
 
+//コントローラーのプレイヤー保持を記録する構造体列挙
 enum class INPUT_PLAYER : int
 {
-	P1 = 0,
-	NONE,
-	P2
+	NONE = 0,	//まだ何も持っていない状態
+	P1, 		//プレイヤー1
+	P2			//プレイヤー2
 };
 
+
+//全てのシーンのベース
+//※新しくシーンを作成する場合はこのクラスを継承すること
 class SceneBase
 {
 public:
@@ -57,10 +63,10 @@ public:
 	float	fado_alpha;
 	bool	fado_start;
 
-	virtual void Init() {};
-	virtual void Update(float elapsed_time) {};
-	virtual void Draw(float elapsed_time) {};
-	virtual void UnInit() {};
+	virtual void Init() {};						//初期化。読み込むのはシェーダーのみで画像などの読み込みは別スレッドを立ち上げて行う
+	virtual void Update(float elapsed_time) {};	//更新処理
+	virtual void Draw(float elapsed_time) {};	//描画
+	virtual void UnInit() {};					//解放処理
 };
 
 //プレイヤー制御構造体
@@ -68,7 +74,7 @@ public:
 //	HP_MAX～：プレイヤーのHPの最大値
 //	ratio～：HP描画時に使用
 //	power～：ゲージの色
-//	correction_value：意味は知らん。なんか画像の位置調整に使ってる
+//	correction_value：画像の位置調整に使ってる
 //	gauge～：描画時に使用。こちらはゲージ
 //	pos～：プレイヤーの初期位置
 //}
@@ -101,17 +107,16 @@ class Stage
 {
 public:
 
+	//ステージはこの構造体列挙で判別する
 	enum class StageType : int
 	{
-		NORMAL = 0,
+		NORMAL = 0,		//通常ステージ。お城
 	};
 
 public:
 	//FBXデータ
-	//std::shared_ptr<Model> sky = nullptr;
 	std::unique_ptr<Skinned_mesh> sky_data = nullptr;
 	std::shared_ptr<Model> stage_data = nullptr;
-	//std::unique_ptr<ModelAnim> sky_draw = nullptr;
 	std::unique_ptr<ModelAnim> stage_draw = nullptr;
 
 	//シェーダー
@@ -119,6 +124,7 @@ public:
 	std::unique_ptr<YRShader> skinShader = nullptr;
 	std::unique_ptr<YRShader> ToonShader = nullptr;
 
+	//空、ステージの位置調整に使用
 	YR_Vector3	Sky_Pos = YR_Vector3(0.0f, 0.0f, 0.0f);
 	YR_Vector3	Sky_Scale = YR_Vector3(1.0f, 1.0f, 1.0f);
 	YR_Vector3	Sky_Angle = YR_Vector3(DirectX::XMConvertToRadians(-90.0f), 0.0f, 0.0f);
@@ -151,6 +157,7 @@ public:
 
 	float timer = 0.0f;
 
+	//AIの行動リスト
 	enum class AI_State : int
 	{
 		INIT = 0,		//最初の設定
@@ -167,10 +174,11 @@ public:
 		END,
 	};
 
-	AI_State state = AI_State::INIT;
-	AI_State before_state = AI_State::INIT;
-	bool steal_escape = false;
+	AI_State state = AI_State::INIT;			//現在のステート
+	AI_State before_state = AI_State::INIT;		//前回のステート
+	bool steal_escape = false;					//掴み抜けをされたかどうかの判定フラグ
 public:
+	//AIクラスは外部から全てを動かすため、ここで全て宣言している
 	void Init()
 	{
 		state = AI_State::INIT;
@@ -199,9 +207,12 @@ public:
 	std::list<Input_list_pad>		p1_input_list;
 	std::list<Input_list_pad>		p2_input_list;
 
+	//画像スプライト
 	std::unique_ptr<Sprite> button_img = nullptr;
 	std::unique_ptr<Sprite> stick_img = nullptr;
 
+	//ボタンのリスト
+	//・入力されたボタンを画像の並び順に登録している
 	const std::array<int, 8>	button_img_list =
 	{
 		static_cast<int>(PAD::X),
@@ -214,6 +225,9 @@ public:
 		static_cast<int>(PAD::L_TRIGGER)
 	};
 
+	//スティックの入力リスト
+	//・入力されたスティックの向きを画像の並び順に登録している
+	//最後の236、214はコマンドの名称(スティックにはない為追加している)
 	const std::array<int, 10>	stick_img_list =
 	{
 		static_cast<int>(PAD::STICK_U),
@@ -230,11 +244,11 @@ public:
 
 	void Init();
 	void Load();
-	void Update(Player* player1p, Player* player2p);
+	void Update(Player* player1p, Player* player2p);	//プレイヤーの情報が必要になるため引数でポインタを受け取っている
 	void Draw(YRShader* shader);
 
-	int GetButtonNum(int button);
-	int GetStickNum(int stick);
+	int GetButtonNum(int button);						//ボタンの履歴を記録していく
+	int GetStickNum(int stick);							//スティックの履歴を記録していく
 
 	void UnInit();
 };
@@ -244,8 +258,10 @@ public:
 class SceneGame : public SceneBase
 {
 private:
-	POINT mouse_pos;
-	bool camera_move_debug;
+	POINT mouse_pos;						//マウスの座標を保存する変数
+	bool camera_move_debug = false;			//カメラをデバッグ機能として動かす場合はtrue
+
+	//深度ステート
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>	m_depth_stencil_state;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>	m_depth_stencil_state2;
 public:
@@ -260,10 +276,9 @@ public:
 	}; Player2PControl pl2_con = Player2PControl::OPERATION;
 
 
-	InputGamePadDraw	input_pad;
+	InputGamePadDraw	input_pad;		//入力表示クラス
 
-	float	timer = 0.0f;
-	int		sco[6] = { 0,0,0,0,0,0 };
+	float	timer = 0.0f;				//ゲーム内タイマー
 
 	float p1_elapsed_time = 0.0f;
 	float p2_elapsed_time = 0.0f;
@@ -424,7 +439,6 @@ public:
 	void				ComboImageSet();
 
 	DirectX::XMFLOAT2	Distance(DirectX::XMFLOAT2& s_pos, DirectX::XMFLOAT2& e_pos);
-	void				ScoreImageSet();
 
 	void				Control2PState(float elapsed_time);
 	void				HPBar_Draw(	const DirectX::XMMATRIX& view,
@@ -579,27 +593,6 @@ public:
 	STATE state = STATE::HOME;
 };
 
-class SceneClear : public SceneBase
-{
-public:
-	int sco[6] = { 0,0,0,0,0,0 };
-	float timer = 0.0f;
-	void Init();
-	void Update(float elapsed_time);
-	void Draw(float elapsed_time);
-	void ScoreImageSet();
-	void UnInit() {};
-};
-
-class SceneOver : public SceneBase
-{
-public:
-	float timer = 0.0f;
-	void Init();
-	void Update(float elapsed_time);
-	void Draw(float elapsed_time);
-	void UnInit() {};
-};
 
 //ロードシーン
 //マッチ画面のイントロを再生するシーン

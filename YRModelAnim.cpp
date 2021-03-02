@@ -379,22 +379,6 @@ DirectX::XMFLOAT4X4 ModelAnim::Draw(
 
 	const Model* model_res = m_model_resource.get();
 
-	/*for (auto& material : model_res->m_data->materials)
-	{
-		std::string file = material.texture_filename;
-		const char* name = file.c_str();
-		int hoge = 0;
-	}
-
-	for (auto& data : model_res->m_data->meshes)
-	{
-		for (auto& v : data.subsets)
-		{
-			int i = v.material_index;
-			int hoge = 0;
-		}
-	}*/
-
 	for (const Model::Mesh& mesh : model_res->GetMeshes())
 	{
 		// メッシュ用定数バッファ更新
@@ -431,13 +415,6 @@ DirectX::XMFLOAT4X4 ModelAnim::Draw(
 		FRAMEWORK.context.Get()->IASetIndexBuffer(mesh.index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 		FRAMEWORK.context.Get()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		DirectX::XMFLOAT4X4 global_transform =
-		{
-			1, 0, 0, 0,
-			0, 1, 0, 0,
-			0, 0, 1, 0,
-			0, 0, 0, 1
-		};
 
 		for (const Model::Subset& subset : mesh.subsets)
 		{
@@ -571,21 +548,6 @@ void ModelAnim::Draw(
 
 	const Model* model_res = m_model_resource.get();
 
-	/*for (auto& material : model_res->m_data->materials)
-	{
-		std::string file = material.texture_filename;
-		const char* name = file.c_str();
-		int hoge = 0;
-	}
-
-	for (auto& data : model_res->m_data->meshes)
-	{
-		for (auto& v : data.subsets)
-		{
-			int i = v.material_index;
-			int hoge = 0;
-		}
-	}*/
 
 	for (const Model::Mesh& mesh : model_res->GetMeshes())
 	{
@@ -616,14 +578,6 @@ void ModelAnim::Draw(
 		shader->Acivate();
 		FRAMEWORK.context.Get()->IASetVertexBuffers(0, 1, mesh.vertex_buffer.GetAddressOf(), &stride, &offset);
 		FRAMEWORK.context.Get()->IASetIndexBuffer(mesh.index_buffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-
-		DirectX::XMFLOAT4X4 global_transform =
-		{
-			1, 0, 0, 0,
-			0, 1, 0, 0,
-			0, 0, 1, 0,
-			0, 0, 0, 1
-		};
 
 		for (const Model::Subset& subset : mesh.subsets)
 		{
@@ -736,6 +690,8 @@ void ModelAnim::Draw(
 
 void ModelAnim::NodeChange(const std::shared_ptr<Model>& resource)
 {
+	//ノード切り替え(モーション変更)
+
 	PlayAnimation(0, true);
 	// ノード
 	const std::vector<ModelData::Node>& res_nodes = resource->GetNodes();
@@ -760,41 +716,16 @@ void ModelAnim::NodeChange(const std::shared_ptr<Model>& resource)
 		}
 	}
 
-	/*if (res_nodes.size() != m_nodes.size())
-	{
-		for (int i = 0; i < model_resource_anim->m_data->animations.size(); i++)
-		{
-			for (int o = 0; o < model_resource_anim->m_data->animations[i].keyframes.size(); o++)
-			{
-				model_resource_anim->m_data->animations[i].keyframes[o].node_keys.insert(model_resource_anim->m_data->animations[i].keyframes[o].node_keys.begin() + 1, dummy);
-			}
-		}
-	}*/
-
 	res = 0;
 
-	/*for (size_t node_index = 0; node_index < m_nodes.size(); ++node_index)
-	{
-		if (node_index == 1&&m_nodes.size()!=res_nodes.size())
-		{
-			continue;
-		}
-		auto&& src = res_nodes.at(res);
-		auto&& dst = m_nodes.at(node_index);
-
-		dst.name = src.name.c_str();
-		dst.parent = src.parent_index >= 0 ? &m_nodes.at(src.parent_index) : nullptr;
-		dst.scale = src.scale;
-		dst.rotate = src.rotate;
-		dst.translate = src.translate;
-		res++;
-	}*/
-	//m_current_animation = 0;
 	m_current_seconds = 0.0f;
 }
 
 void ModelAnim::NodeChange(const std::shared_ptr<Model>& resource, int anim_num)
 {
+	//ノード切り替え(モーション変更)
+	//こちらは指定したモーション番号に切り替える
+
 	PlayAnimation(anim_num, true);
 	// ノード
 	const std::vector<ModelData::Node>& res_nodes = resource->GetNodes();
@@ -819,35 +750,7 @@ void ModelAnim::NodeChange(const std::shared_ptr<Model>& resource, int anim_num)
 		}
 	}
 
-	/*if (res_nodes.size() != m_nodes.size())
-	{
-		for (int i = 0; i < model_resource_anim->m_data->animations.size(); i++)
-		{
-			for (int o = 0; o < model_resource_anim->m_data->animations[i].keyframes.size(); o++)
-			{
-				model_resource_anim->m_data->animations[i].keyframes[o].node_keys.insert(model_resource_anim->m_data->animations[i].keyframes[o].node_keys.begin() + 1, dummy);
-			}
-		}
-	}*/
-
 	res = 0;
 
-	/*for (size_t node_index = 0; node_index < m_nodes.size(); ++node_index)
-	{
-		if (node_index == 1&&m_nodes.size()!=res_nodes.size())
-		{
-			continue;
-		}
-		auto&& src = res_nodes.at(res);
-		auto&& dst = m_nodes.at(node_index);
-
-		dst.name = src.name.c_str();
-		dst.parent = src.parent_index >= 0 ? &m_nodes.at(src.parent_index) : nullptr;
-		dst.scale = src.scale;
-		dst.rotate = src.rotate;
-		dst.translate = src.translate;
-		res++;
-	}*/
-	//m_current_animation = 0;
 	m_current_seconds = 0.0f;
 }

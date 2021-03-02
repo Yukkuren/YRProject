@@ -3,6 +3,13 @@
 
 #include	"YR_VectorMaster.h"
 
+//-----------------------------------------------------------------
+//			Limitクラス
+//-----------------------------------------------------------------
+//・キャラの移動制限を処理するクラス
+//・キャラの位置からカメラの座標を算出する機能もはたしている
+//-----------------------------------------------------------------
+
 const float limit_size = 21.0f;		//移動量の制限値
 const float adjustment_eye = 8.0f;	//カメラのズーム距離補正値
 const float adjustment_y = 4.0f;	//カメラの高さ距離補正値
@@ -11,8 +18,8 @@ const float adjustment_y = 4.0f;	//カメラの高さ距離補正値
 class Limit
 {
 public:
-	static float Left_max;
-	static float Right_max;
+	static float Left_max;			//スクロール左端
+	static float Right_max;			//スクロール右端
 	static YR_Vector3 Set(YR_Vector3 p1, YR_Vector3 p2,YR_Vector3 start_eye);
 	static void Stop(float& p1, float& p2);
 	static void First_Camera_set(YR_Vector3 camera);

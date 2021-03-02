@@ -7,7 +7,6 @@
 #include <vector>
 using namespace DirectX;
 
-
 //INPUT_ELEMENT_DESC管理用クラス
 class INPUT_ELEMENT_DESC
 {
@@ -157,6 +156,8 @@ public:
 };
 #define				YRINPUT_ELEMENT_DESC (INPUT_ELEMENT_DESC::getInstance())
 
+
+//シェーダータイプ管理構造体列挙
 enum class ShaderType :int
 {
 	SKIN,
@@ -178,6 +179,13 @@ enum class ShaderType :int
 	TESSELLATION,
 };
 
+
+//-----------------------------------------------------------------
+//			YRShaderクラス
+//-----------------------------------------------------------------
+//・上のシェーダータイプから選択して生成することで
+//  それぞれのシェーダーを使い分けることができるクラス
+//-----------------------------------------------------------------
 
 class YRShader
 {

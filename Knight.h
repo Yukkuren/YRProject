@@ -147,9 +147,6 @@ public:
 
 	Model::Material_Attribute		lumi_material;
 
-	//std::array< HitBox, static_cast<int>(KNIGHTHIT::END)> hit;
-	//std::array<YR_Vector3, scastI(KNIGHTHIT::END)> Hitplus;
-	//std::array<YR_Vector3, scastI(KNIGHTHIT::END)> HitSize;
 
 	//カラーチェンジ用テクスチャ
 	std::shared_ptr<Texture>	color_texture_main = nullptr;
@@ -157,12 +154,8 @@ public:
 
 	//剣の軌跡
 	Trajectory					traject;
-	float						traject_timer = 0.0f;
 	YR_Vector3					sword_head = { 0.0f,0.0f,0.0f };
 	YR_Vector3					sword_tail = { 0.0f,0.0f,0.0f };
-	std::unique_ptr<geometric_primitive> test_geo = nullptr;
-	std::unique_ptr<Texture>	test_tex = nullptr;
-	YR_Vector3					test_pos = { 0.0f,0.0f,0.0f };
 
 	~Knight();
 	void Init(YR_Vector3 InitPos);
@@ -260,20 +253,12 @@ public:
 
 	void StateNone(float elapsed_time);
 
-
-	void DrawFastMove(YR_Vector3 position);
-	void FastSet(YR_Vector3 position);
-
 	void PosKnockPlus(float vec);
 
 
 
 	//継承
 	float Getapply(float n);
-	HitBox* GetHit();
-	AttackBox* GetAttack();
-	int GetMax(int n);
-	//float& GetPosX2();
 
 	void StopHitParamUpdate();
 

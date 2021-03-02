@@ -5,10 +5,7 @@
 
 
 
-Texture::Texture() : ShaderResouceView(nullptr)
-{
-
-}
+Texture::Texture() : ShaderResouceView(nullptr){}
 
 Texture::Texture(const wchar_t* filename)
 {
@@ -16,10 +13,7 @@ Texture::Texture(const wchar_t* filename)
 	Load(filename);
 }
 
-Texture::~Texture()
-{
-
-}
+Texture::~Texture(){}
 
 bool Texture::Load(const wchar_t* filename)
 {

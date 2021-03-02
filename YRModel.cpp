@@ -5,12 +5,6 @@
 #include <codecvt>
 #include <array>
 
-
-//#define _CRTDBG_MAP_ALLOC						// mallocによるメモリリーク検出でCPPファイル名と行数出力指定
-//#define DBG_NEW new( _NORMAL_BLOCK , __FILE__ , __LINE__)	// new によるメモリリーク検出でCPPファイル名と行数出力指定
-//#include <stdio.h>
-//#include <crtdbg.h>
-
 using convert_t = std::codecvt_utf8<wchar_t>;
 std::wstring_convert<convert_t, wchar_t> strconverterModel;
 
@@ -72,13 +66,6 @@ Model::Model(const char* filename)
 			std::string tex_file_name = std::string(char_file.data());
 			std::string tex_name;
 			//階層判定
-			//if (Fbx_Tex_LevelCheck(&fbx_name, &tex_file_name))
-			//{
-			//	//同じ階層だった場合の処理を入れる
-			//	int hoge = 0;
-			//}
-			//else
-			//{
 			//相対パスが絶対パスだった場合の処理(大体Maya)
 			if (tex_file_name[0] == 'C')
 			{

@@ -44,20 +44,17 @@ class HitBox
 {
 public:
 	//攻撃を受けた時に中身が代入される変数
-	YR_Vector3	center;			//当たり判定の中心座標
-	bool		hit;			//当たっていたらTRUE
-	float		damege;			//受けたダメージ
-	//bool		hitother;		//相手と当たっていたらtrue
-	float		timer;			//攻撃を受けた時ののけぞり時間
-	YR_Vector3	hitback;		//攻撃を受けた時の吹っ飛びベクトル
-	//int			guard;			//ガードしている場合対応した数値が入る
-	bool		guard_ok;		//ガード成功ならtrue
-	//bool		steal;			//掴まれたらtrue
-	HitStateKind hit_state;		//ヒットした攻撃の属性を保存する
-	float		steal_timer;	//投げ抜け可能時間
+	YR_Vector3	center;							//当たり判定の中心座標
+	bool		hit;							//当たっていたらTRUE
+	float		damege;							//受けたダメージ
+	float		timer;							//攻撃を受けた時ののけぞり時間
+	YR_Vector3	hitback;						//攻撃を受けた時の吹っ飛びベクトル
+	bool		guard_ok;						//ガード成功ならtrue
+	HitStateKind hit_state;						//ヒットした攻撃の属性を保存する
+	float		steal_timer;					//投げ抜け可能時間
 	HitBoxState	state = HitBoxState::NOGUARD;	//現在の当たり判定の状態
 	//常に変動する変数
-	HitParameter	parameter;		//当たり判定のパラメータ
+	HitParameter	parameter;					//当たり判定のパラメータ
 
 
 	void Init();		//全てゼロクリア(プレイヤーの初期位置に当たり判定をつけるためプレイヤーの座標をもらっている)

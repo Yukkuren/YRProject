@@ -246,11 +246,12 @@ public:
 	AttackState						combo;			//連打した時にするコンボ
 	HitResult						conditions_hit;	//キャンセルするための攻撃ヒット条件
 	float							timer;			//飛び道具の場合自身に付与する持続時間
+	bool							traject_on;		//剣の軌跡を表示するならtrue
 public:
 	AttackList() : now_attack_num(0), attack_name(AttackState::NONE), later(0.0f),
 		attack_max(0), linkage_button(PAD::BUTTOM_END), linkage_command(Command::NOCOMMAND), ground_on(Ground_C::GROUND), squat_on(false),
 		need_power(0), linkage_stick(PAD::BUTTOM_END), aid_attack_name(AttackState::NONE), real_attack(attack_name),
-		speed_on(false), speed(0.0f, 0.0f, 0.0f), advance_speed(0.0f), combo(AttackState::NONE), conditions_hit(HitResult::HIT),timer(0.0f) {};
+		speed_on(false), speed(0.0f, 0.0f, 0.0f), advance_speed(0.0f), combo(AttackState::NONE), conditions_hit(HitResult::HIT),timer(0.0f),traject_on(true) {};
 	//攻撃当たり判定を生成する
 	void SetAttack(std::vector<AttackBox> *atk, float rightOrleft, YR_Vector3 pl_pos)
 	{
@@ -332,7 +333,6 @@ public:
 	bool				max_jump_flag = false;					//ジャンプの最大値を超えた
 	float				jump_can_timer = 0.0f;					//ジャンプ可能になるまでの時間を測定する(0.0以下になればジャンプ可能)
 	bool				ground = true;							//TRUEなら地面についている
-	bool				drawset = false;						//特定の画像を描画したときにtrueにして通常の画像を描画しない
 	bool				attack = false;							//TRUEなら攻撃中
 	ActState			act_state = ActState::NONE;				//今の行動。また行動不可ならどういう状態か
 	ActState			rival_state = ActState::NONE;			//相手の今の行動。SceneGameで代入する
@@ -369,6 +369,7 @@ public:
 	std::vector<AttackBox> atk;									//攻撃当たり判定
 	std::vector<AttackBox> projectile_atk;						//飛び道具当たり判定
 	std::vector<HitBox>	hit;									//当たり判定
+	bool				traject_on = true;						//剣の軌跡を表示する場合true(攻撃発生時にパラメーターから取得する)
 
 	std::array<Animation_Coordinate, scastI(AttackState::ATTACK_END)>	ac_attack;	//攻撃ごとのアニメーション調整値
 	std::array<Animation_Coordinate, scastI(ActState::ACT_END)>			ac_act;		//行動ごとのアニメーション調整値
@@ -470,13 +471,6 @@ public:
 	virtual void AttackSwitch(float decision, float elapsed_time, AttackState attack_state = AttackState::NONE) = 0;
 
 	virtual void WinAnimSet() = 0;
-
-	//virtual float GetPosX();
-	virtual HitBox* GetHit() = 0;
-	virtual AttackBox* GetAttack() = 0;
-	virtual int GetMax(int n) = 0;
-	//virtual float& GetPosX2();
-	/*virtual float GetRivalPos(float &pos) = 0;*/
 
 	virtual void NoneChange() = 0;
 

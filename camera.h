@@ -4,21 +4,27 @@
 #include "YRShader.h"
 //#include "YR_VectorMaster.h"
 
+//-----------------------------------------------------------------
+//			カメラクラス
+//-----------------------------------------------------------------
+//・Set関数で値をセットした後Activeで計算を行う
+//-----------------------------------------------------------------
+
 class Camera
 {
 private:
-	DirectX::XMFLOAT4X4		view = 
-	{ 
+	DirectX::XMFLOAT4X4		view =
+	{
 		0.0f,0.0f,0.0f,0.0f,
 		0.0f,0.0f,0.0f,0.0f,
 		0.0f,0.0f,0.0f,0.0f,
 		0.0f,0.0f,0.0f,0.0f };		//視野変換行列
-	DirectX::XMFLOAT4X4		projection = 
-	{ 
+	DirectX::XMFLOAT4X4		projection =
+	{
 		0.0f,0.0f,0.0f,0.0f,
 		0.0f,0.0f,0.0f,0.0f,
 		0.0f,0.0f,0.0f,0.0f,
-		0.0f,0.0f,0.0f,0.0f 
+		0.0f,0.0f,0.0f,0.0f
 	};	//投影変換行列
 	DirectX::XMFLOAT3		eye = { 0.0f,0.0f,0.0f };	//視点
 	DirectX::XMFLOAT3		focus = { 0.0f,0.0f,0.0f };		//注視点
@@ -28,7 +34,7 @@ private:
 	float					nearZ = 0.0f;		//ニアクリップ面までの距離
 	float					farZ = 0.0f;		//ファークリップ面までの距離
 
-	DirectX::XMFLOAT2		start_Pos;	//カメラ移動開始時にカーソルの位置を保存する変数
+	DirectX::XMFLOAT2		start_Pos = { 0.0f,0.0f };	//カメラ移動開始時にカーソルの位置を保存する変数
 
 	DirectX::XMFLOAT3		at = { 0.0f,0.0f,0.0f };
 
@@ -106,37 +112,5 @@ public:
 	}
 };
 
-
-class MainCamera : public Camera
-{
-public:
-	enum MODE
-	{
-		MODE_FIX,
-		MODE_CHASE,
-
-		MODE_NUM,
-	};
-private:
-	MODE				mode = MODE_FIX;	//カメラモード
-	float				timer = 0.0f;		//振動時間
-	float				range = 0.0f;		//振幅幅
-	DirectX::XMFLOAT3	moveTarget;			//ターゲット
-
-
-	void vibrate(float elapsedTime);		//振動カメラ
-	void chase(float elapsedTime);			//追跡カメラ
-	void fix(float elapsedTime);			//固定カメラ
-
-public:
-	static const constexpr float FAR_DIST = 150.0f;
-	static const constexpr float NEAR_DIST = 50.0f;
-
-	void Update(float elapsedTime);				//カメラ更新
-	void SetMode(MODE mode);					//モード設定
-	void SetVibration(float range, float timer);//振動開始
-
-	void SetTarget(const DirectX::XMFLOAT3& moveTarget);
-};
 
 #define YRCamera		(Camera::getInstance())

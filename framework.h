@@ -27,35 +27,36 @@
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-//#define SPRITE_MAX	(1024)
-#ifdef  _DEBUG
-#endif //
-
 
 //ImGuiを完全に出さない場合はこの定義をコメントアウトする
+//その場合、デバッグ表示に使用するメモリを自動的に確保しないようになる
 #define		EXIST_IMGUI
 
 //この関数でImGuiを描画するかどうかを決定する
 bool Get_Use_ImGui();
 bool Get_Debug_Draw();
 
+//フェードアウト、インを行う際に使用
 #define		FADE_MIX( x )		( x * 3.0f)
-//#define		ToRadian( x )		( x * ( PI / 180.0f ) )
 
-
-enum SCENE_TABLE
+//シーンテーブル
+enum class SCENE_TABLE : int
 {
 	SCENE_TITLE,
 	SCENE_SELECT,
 	SCENE_LOAD,
 	SCENE_GAME,
-	SCENE_CLEAR,
-	SCENE_OVER,
 	SCENE_TEST,
 
 
 	SCENE_END,
 };
+
+//-----------------------------------------------------------------
+//			フレームワーククラス
+//-----------------------------------------------------------------
+//・全てのシーンの情報を保存し、このクラスを経由して他のシーンの情報を参照することができる
+//-----------------------------------------------------------------
 
 class framework
 {
@@ -76,14 +77,6 @@ public:
 
 	framebuffer										framebuffer;
 
-	//Microsoft::WRL::ComPtr<geometric_primitive>		cube;
-	//std::unique_ptr<Skinned_mesh>					skin[10];
-	//std::unique_ptr<Skinned_mesh>					skin;
-	//std::unique_ptr<Skinned_mesh>					skin2;
-	//MeshMotion										motion;
-	//MeshMotion										motion2;
-	//std::unique_ptr<Skinned_mesh>					ground;
-
 	static const int Rasterizer_Size = 4;
 	enum
 	{
@@ -103,34 +96,35 @@ public:
 	};
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>	depthstencil_state[Depth_Size];
 
+
+
+	//各シーンクラス
 	SceneGame scenegame;
 	SceneLoad sceneload;
 	SceneTitle scenetitle;
-	SceneClear sceneclear;
-	SceneOver sceneover;
 	SceneSelect sceneselect;
 	SceneTest	scenetest;
-	//SceneBase scenetutorial;
 
-	SceneBase* scene;
-	SceneBase* Nscene;
+	SceneBase* scene = nullptr;		//現在のシーン
+	SceneBase* Nscene = nullptr;	//次のシーン
 
-	SceneBase* scene_tbl[SCENE_END] = {
+	//シーンテーブルにシーンを設定している
+	SceneBase* scene_tbl[static_cast<int>(SCENE_TABLE::SCENE_END)] = {
 		&scenetitle,
 		&sceneselect,
 		&sceneload,
 		&scenegame,
-		&sceneclear,
-		&sceneover,
 		&scenetest,
 	};
 
 
+	//シーン切り替え
+	//設定したシーンが存在すれば切り替えて初期化を行う
 	void SetScene(SCENE_TABLE next)
 	{
-		if (next < SCENE_END)
+		if (next < SCENE_TABLE::SCENE_END)
 		{
-			Nscene = scene_tbl[next];
+			Nscene = scene_tbl[static_cast<int>(next)];
 		}
 
 		if (Nscene) {
@@ -159,11 +153,6 @@ public:
 	}
 	~framework()
 	{
-		/*device->Release();
-		context->Release();
-		chain->Release();
-		view->Release();
-		depth->Release();*/
 		scene->UnInit();
 
 
@@ -340,8 +329,8 @@ public:
 
 private:
 	bool initialize();
-	void update(float elapsed_time/*Elapsed seconds from last frame*/);
-	void render(float elapsed_time/*Elapsed seconds from last frame*/);
+	void update(float elapsed_time);
+	void render(float elapsed_time);
 
 	bool CreateRasterizerState();
 	bool CreateDepthStencilState();
@@ -349,15 +338,12 @@ private:
 	high_resolution_timer timer;
 	void calculate_frame_stats()
 	{
-		// Code computes the average frames per second, and also the 
-		// average time it takes to render one frame.  These stats 
-		// are appended to the window caption bar.
 		static int frames = 0;
 		static float time_tlapsed = 0.0f;
 
 		frames++;
 
-		// Compute averages over one second period.
+		//FPSの表示
 		if ((timer.time_stamp() - time_tlapsed) >= 1.0f)
 		{
 			float fps = static_cast<float>(frames); // fps = frameCnt / 1

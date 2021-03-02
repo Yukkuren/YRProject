@@ -8,6 +8,13 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 
+//-----------------------------------------------------------------
+//			フォントクラス
+//-----------------------------------------------------------------
+//・指定した文字列を表示するクラス
+//・生成する際にフォントを指定できる
+//-----------------------------------------------------------------
+
 class Font
 {
 public:
@@ -31,7 +38,7 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11SamplerState>						samplerState;
 	std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>>	shaderResourceViews;
-	
+
 
 	struct Vertex
 	{

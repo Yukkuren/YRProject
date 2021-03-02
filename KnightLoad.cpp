@@ -8,9 +8,16 @@
 #include "World.h"
 //#include <memory>
 
+//----------------------------------------------------------------
+//				Knightモデルデータ読み込みcpp
+//----------------------------------------------------------------
+//・Knightのモデルデータや画像データを読み込む処理を記述している
+//----------------------------------------------------------------
 
 void Knight::LoadData(int color_number)
 {
+	//別スレッドでデータを読み込む処理
+
 	attack_list.resize(1);
 	hit.resize(scastI(KNIGHTHIT::END));
 #ifdef EXIST_IMGUI
@@ -24,14 +31,6 @@ void Knight::LoadData(int color_number)
 	AttackClean();
 	AttackLoad();
 
-	if (test_geo == nullptr)
-	{
-		test_geo = std::make_unique<geometric_primitive>();
-	}
-	if (test_tex == nullptr)
-	{
-		test_tex = std::make_unique<Texture>(L"./Data/Image/BG/select.png");
-	}
 
 	//カットイン画像読み込み
 	if (cutFrame == nullptr)
@@ -74,16 +73,17 @@ void Knight::LoadData(int color_number)
 	}
 
 
+	//メインのメッシュモデルの読み込み
 	if (main == nullptr)
 	{
 
 		if (color_texture_main != nullptr)
 		{
+			//テクスチャを変える場合
 			main = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx", color_texture_main, color_texture_face);
 		}
 		else
 		{
-			//main = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
 			main = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
 		}
 	}
@@ -422,6 +422,7 @@ void Knight::LoadData(int color_number)
 		model_motion.special_L = std::make_shared<Model>("./Data/FBX/Knight/AnimationL/knight_special_L.fbx");
 	}
 
+	//model_motionに読み込んだデータを追加していく
 	{
 		model_motion.model_R.push_back(model_motion.wait_R);	//攻撃無し(代わりとして待機を入れている)
 		model_motion.model_R.push_back(model_motion.jaku_R);	//弱

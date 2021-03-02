@@ -6,13 +6,19 @@
 #include "YRShader.h"
 #include "Texture.h"
 
+//-----------------------------------------------------------------
+//			板ポリクラス
+//-----------------------------------------------------------------
+//・こちらは普通の板ポリ。アニメーションは再生できないため注意
+//-----------------------------------------------------------------
+
 class board_primitive
 {
 public:
 	Microsoft::WRL::ComPtr<ID3D11Buffer>			vertex_buffer;		//頂点バッファ
 	Microsoft::WRL::ComPtr<ID3D11Buffer>			index_buffer;		//インデックスバッファ
 	Microsoft::WRL::ComPtr<ID3D11Buffer>			constant_buffer;	//定数バッファ
-	Microsoft::WRL::ComPtr<ID3D11Buffer>			cbuffer_off;	//定数バッファ
+	Microsoft::WRL::ComPtr<ID3D11Buffer>			cbuffer_off;		//定数バッファ
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState>	line_state;			//線描画
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState>	filling_state;		//塗りつぶし描画
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>	depth_state;
@@ -52,7 +58,7 @@ public:
 		DirectX::XMFLOAT4X4		world;					//ワールド変換行列
 		DirectX::XMFLOAT4		material_color;			//材質色
 	};
-	
+
 	struct cbuffer_offset
 	{
 		float Offset_X;

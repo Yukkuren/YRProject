@@ -3,18 +3,16 @@
 #include "YRSound.h"
 #include "Blur.h"
 
-constexpr float adjust = 1.0f;
 
 //-------------------------------------------------------------
 // **シーン概要**
-//・ボタンを押すとコントローラー設定が出るようにして
-//　1P,2Pの入力を決定する
-//・設定したら暗転。SceneSelectへ遷移する
-//TODO:出力のDrawエラーを消すにはディファードシェーダーにする必要がある
+//・ボタンを押すとモードセレクトへ
+//・その後の選択でプレイヤー2のコントロールを変更する
 //-------------------------------------------------------------
 
 void SceneTitle::Init()
 {
+	//初期化
 	load_fin = false;
 	load_state = 0;
 	p1_pos = { 680.0f,500.0f };
@@ -28,25 +26,20 @@ void SceneTitle::Init()
 	fado_start = false;
 	fado_alpha = 1.0f;
 
-	//将来的に消す
 	select_p1 = scastI(INPUT_PLAYER::NONE);
 	select_p2 = scastI(INPUT_PLAYER::NONE);
-	//-------------------------------------
 	p1Enter = false;
 	p2Enter = false;
 	end = false;
 	timer = 0.0f;
 
-	//cbuffer_param
-	//cbuffer_param.Resolution = { static_cast<float>(FRAMEWORK.SCREEN_WIDTH),static_cast<float>(FRAMEWORK.SCREEN_HEIGHT),(1920.0f / 1080.0f) };
-	cbuffer_param.Resolution = { 1920.0f/ adjust,1080.0f/ adjust,((1920.0f/ adjust) / (1080.0f/ adjust)) };
+
+	//タイトルシェーダー用パラメータ
+	cbuffer_param.Resolution = { 1920.0f,1080.0f,(1920.0f / 1080.0f) };
 	cbuffer_param.brightness = 15.0f;
-	//cbuffer_param.brightness = 3.0f;
 	cbuffer_param.gamma = 13;
-	//cbuffer_param.gamma = 6;
 	cbuffer_param.spot_brightness = 1.5f;
 	cbuffer_param.ray_density = 1.5f;
-	//cbuffer_param.ray_density = 6.0f;
 	cbuffer_param.curvature = 90.0f;
 	cbuffer_param.red = 10.0f;
 	cbuffer_param.green = 2.8f;
@@ -56,8 +49,6 @@ void SceneTitle::Init()
 	cbuffer_param.dummy2 = 0.0f;
 	cbuffer_param.dummy3 = 0.0f;
 
-	//Resolusion = { 66.0f,54.0f,(1920.0f / 1080.0f) };
-	//Resolusion = { -1.0f,1.0,(1920.0f / 1080.0f) };
 
 	//スプライトのシェーダーはフェード画像に使用するため初期化の時点で読み込む
 	if (spriteShader == nullptr)
@@ -66,9 +57,11 @@ void SceneTitle::Init()
 		spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
 	}
 
-	vs_mode = VS_MODE::PLAYER;
+	//初期モードの設定
+	vs_mode = VS_MODE::CPU;
 	state = STATE::HOME;
 
+	//タイトルのBGMを再生する
 	GetSound().BGMPlay(BGMKind::TITLE);
 }
 
@@ -79,20 +72,9 @@ void SceneTitle::LoadData()
 	{
 		test = std::make_unique<Sprite>(L"./Data/Image/BG/select.png", 1920.0f, 1080.0f);
 	}
-	//if (knight_icon == nullptr)
-	//{
-	//	knight_icon = std::make_unique<Sprite>(L"./Data/Image/Character/Ryu/icon.png", 64.0f, 64.0f);
-	//	//knight_icon->LoadGraph(64.0f, 64.0f);
-	//}
-	//if (ken_icon == nullptr)
-	//{
-	//	ken_icon = std::make_unique<Sprite>(L"./Data/Image/Character/Ken/icon.png", 64.0f, 64.0f);
-	//	//ken_icon->LoadGraph(64.0f, 64.0f);
-	//}
 	if (select_img == nullptr)
 	{
 		select_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameSelect/select.png", 64.0f, 64.0f);
-		//select_img->LoadGraph(64.0f, 64.0f);
 	}
 	if (title_img == nullptr)
 	{
@@ -110,49 +92,29 @@ void SceneTitle::LoadData()
 	{
 		choice_anim = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gauge_anim.png", 640.0f, 64.0f);
 	}
-	/*if (choice_anim == nullptr)
-	{
-		choice_anim = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/gauge_img.png", 640.0f, 64.0f);
-	}*/
 
 	//コンスタントバッファ作成
 	FRAMEWORK.CreateConstantBuffer(constantBuffer.GetAddressOf(), sizeof(Title_CBuffer));
-	//FRAMEWORK.CreateConstantBuffer(constantBuffer.GetAddressOf(), sizeof(GaussParamManager::GaussBlurParam));
 
 	//テクスチャロード
 	if (color_texture == nullptr)
 	{
 		color_texture = std::make_unique<Texture>();
-		//color_texture->Create(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM);
-		color_texture->Create(1920/ adjust, 1080/ adjust, DXGI_FORMAT_R8G8B8A8_UNORM);
-		//color_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
-		color_texture->CreateDepth(1920/ adjust, 1080/ adjust, DXGI_FORMAT_R24G8_TYPELESS);
+		color_texture->Create(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM);
+		color_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
 	}
-	/*if (normal_texture == nullptr)
-	{
-		normal_texture = std::make_unique<Texture>();
-		normal_texture->Create(1920, 1080, DXGI_FORMAT_R16G16B16A16_FLOAT);
-		normal_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
-	}
-	if (position_texture == nullptr)
-	{
-		position_texture = std::make_unique<Texture>();
-		position_texture->Create(1920, 1080, DXGI_FORMAT_R16G16B16A16_FLOAT);
-		position_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
-	}*/
+
 	if (luminance_texture == nullptr)
 	{
 		luminance_texture = std::make_unique<Texture>();
-		//luminance_texture->Create(1920, 1080, DXGI_FORMAT_R16G16B16A16_FLOAT);
-		luminance_texture->Create(1920/ adjust, 1080/ adjust, DXGI_FORMAT_R16G16B16A16_FLOAT);
-		//luminance_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
-		luminance_texture->CreateDepth(1920/ adjust, 1080/ adjust, DXGI_FORMAT_R24G8_TYPELESS);
+		luminance_texture->Create(1920, 1080, DXGI_FORMAT_R16G16B16A16_FLOAT);
+		luminance_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
 	}
 
+	//タイトルシェーダーに送る画像(ノイズ画像を読み込んでいる)
 	if (title_texture == nullptr)
 	{
 		title_texture = std::make_unique<Texture>(L"./Data/Shader/noise.png");
-		//title_texture = std::make_unique<Texture>(L"./Data/Image/UI/GameTitle/Title.png");
 	}
 
 	//Gbuffer用スプライト
@@ -182,6 +144,10 @@ void SceneTitle::LoadData()
 		titleShader = std::make_unique<YRShader>(ShaderType::TITLE);
 		titleShader->Create("./Data/Shader/TitleShader_vs.cso", "./Data/Shader/TitleShader_ps.cso");
 	}
+
+	//シェーダーテスト用
+	//・読み込むシェーダーを変えることでシェーダーの動作をチェックしている
+
 	/*if (titleShader == nullptr)
 	{
 		titleShader = std::make_unique<YRShader>(ShaderType::TITLE);
@@ -213,6 +179,8 @@ void SceneTitle::LoadData()
 
 void SceneTitle::UnInit()
 {
+	//解放処理
+
 	test.reset();
 	test = nullptr;
 	knight_icon.reset();
@@ -308,7 +276,7 @@ void SceneTitle::Update(float elapsed_time)
 		}
 #ifdef EXIST_IMGUI
 
-		if (pKeyState.tflg == 1)
+		/*if (pKeyState.tflg == 1)
 		{
 			GetSound().BGMStop(BGMKind::TITLE);
 			select_p1 = scastI(INPUT_PLAYER::P1);
@@ -317,7 +285,7 @@ void SceneTitle::Update(float elapsed_time)
 			UnInit();
 			FRAMEWORK.SetScene(SCENE_TEST);
 			return;
-		}
+		}*/
 
 #endif // USE_IMGUI
 
@@ -422,7 +390,6 @@ void SceneTitle::Update(float elapsed_time)
 		//	fado_start = true;
 		//}
 
-		//選考会用
 
 		switch (state)
 		{
@@ -508,7 +475,6 @@ void SceneTitle::Update(float elapsed_time)
 			//	return;
 			//}
 
-			//先行会用
 			if (cbuffer_param.curvature <= 0.0f)
 			{
 				if (FedoOut(elapsed_time))
@@ -522,7 +488,7 @@ void SceneTitle::Update(float elapsed_time)
 					FRAMEWORK.sceneselect.select_p1 = scastI(PLSELECT::KNIGHT);
 					FRAMEWORK.sceneselect.select_p2 = scastI(PLSELECT::KNIGHT);
 					//フェードアウトが終わったらロード画面へ
-					FRAMEWORK.SetScene(SCENE_LOAD);
+					FRAMEWORK.SetScene(SCENE_TABLE::SCENE_LOAD);
 					UnInit();
 					return;
 				}
@@ -923,11 +889,7 @@ void SceneTitle::Draw(float elapsed_time)
 		{
 			/*FRAMEWORK.font->Begin(FRAMEWORK.context.Get());
 			FRAMEWORK.font->Draw(static_cast<float>(FRAMEWORK.SCREEN_WIDTH / 2.0f)-150.0f, static_cast<float>(FRAMEWORK.SCREEN_HEIGHT)-100.0f, L"abcdefg");
-			FRAMEWORK.font->Draw(500, 50, L"あいうえお");
-			FRAMEWORK.font->Draw(500, 100, L"カキクケコ");
-			FRAMEWORK.font->Draw(500, 150, L"漢字最高！");
-			FRAMEWORK.font->Draw(500, 200, L"改行が\nできるよ");
-			FRAMEWORK.font->Draw(500, 300, L"色々　改造してね。");
+			FRAMEWORK.font->Draw(500, 50, L"テストテキスト");
 			FRAMEWORK.font->End(FRAMEWORK.context.Get());*/
 		}
 
@@ -1035,5 +997,5 @@ void SceneTitle::RenderTexture(float elapsed_time)
 		spriteEx.get(),
 		color_texture.get(),
 		0.0f, 0.0f, 1920.0f, 1080.0f,
-		0.0f, 0.0f, 1920.0f/ adjust, 1080.0f/ adjust, 0.0f, 1.0f);
+		0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
 }

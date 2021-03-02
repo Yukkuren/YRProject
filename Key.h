@@ -124,11 +124,11 @@ public:
 		else { k6flg = 0; }
 		if (GetAsyncKeyState('7') & 0x8000) { k7flg++; }
 		else { k7flg = 0; }
-		if (GetAsyncKeyState('8') & 0x8000) { k8flg++; } 
+		if (GetAsyncKeyState('8') & 0x8000) { k8flg++; }
 		else { k8flg = 0; }
-		if (GetAsyncKeyState('9') & 0x8000) { k9flg++; } 
+		if (GetAsyncKeyState('9') & 0x8000) { k9flg++; }
 		else { k9flg = 0; }
-		if (GetAsyncKeyState(VK_SPACE) & 0x8000) { spaceflg++; } 
+		if (GetAsyncKeyState(VK_SPACE) & 0x8000) { spaceflg++; }
 		else { spaceflg = 0; }
 		if (GetAsyncKeyState(VK_BACK) & 0x8000) { backflg++; }
 		else { backflg = 0; }

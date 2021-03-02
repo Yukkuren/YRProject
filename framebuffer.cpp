@@ -3,6 +3,7 @@
 #include <assert.h>
 
 
+//レンダーターゲットを全て初期化する
 void framebuffer::ResetRenderTargetViews()
 {
 	ID3D11RenderTargetView* null_render[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT];
@@ -17,12 +18,10 @@ void framebuffer::ResetRenderTargetViews()
 	FRAMEWORK.context->OMSetRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT, null_render, null_depth);
 }
 
+//コンスタントバッファ
+framebuffer::framebuffer(){}
 
-framebuffer::framebuffer()
-{
-
-}
-
+//受け取ったレンダーターゲットビューを配列に追加する
 void framebuffer::SetRenderTexture(ID3D11RenderTargetView* rtv, bool solo_rtv)
 {
 	if (solo_rtv)
@@ -35,6 +34,7 @@ void framebuffer::SetRenderTexture(ID3D11RenderTargetView* rtv, bool solo_rtv)
 	}
 }
 
+//レンダーターゲットを保存する配列の中身を初期化する
 void framebuffer::ResetRenderTexture()
 {
 	if (!render_target_view.empty())
@@ -48,6 +48,8 @@ void framebuffer::ResetRenderTexture()
 	render_target_view.clear();
 }
 
+
+//レンダーターゲットを指定した色で初期化する
 void framebuffer::Clear(float r, float g, float b, float a)
 {
 	float colour[4] = { r, g, b, a };
@@ -64,18 +66,14 @@ void framebuffer::Clear(float r, float g, float b, float a)
 	}
 }
 
+//現在セットされているレンダーターゲットを保存する
 void framebuffer::GetDefaultRTV()
 {
 	FRAMEWORK.context->OMGetRenderTargets(1, default_render_target_view.ReleaseAndGetAddressOf(), default_depth_stencil_view.ReleaseAndGetAddressOf());
 }
 
-//void framebuffer::GetDefaultRTV(UINT num)
-//{
-//	default_render_target_view.size();
-//
-//	FRAMEWORK.context->OMGetRenderTargets(1, default_render_target_view.ReleaseAndGetAddressOf(), default_depth_stencil_view.ReleaseAndGetAddressOf());
-//}
 
+//レンダーターゲットビューをセットする
 void framebuffer::Activate(ID3D11DepthStencilView* pDepthStencilView)
 {
 	if (render_target_view.empty())
@@ -88,7 +86,7 @@ void framebuffer::Activate(ID3D11DepthStencilView* pDepthStencilView)
 	}
 }
 
-
+//レンダーターゲットビューをセットする(ビューポート指定)
 void framebuffer::Activate(int width, int height, ID3D11DepthStencilView* pDepthStencilView)
 {
 	D3D11_VIEWPORT vp = {};
@@ -112,6 +110,7 @@ void framebuffer::Activate(int width, int height, ID3D11DepthStencilView* pDepth
 	}
 }
 
+//レンダーターゲットビューを外す
 void framebuffer:: Deactivate()
 {
 	if (render_target_view.empty())
@@ -133,12 +132,14 @@ void framebuffer:: Deactivate()
 
 }
 
+//前回セットされていたレンダーターゲットをセットする
 void framebuffer::SetDefaultRTV()
 {
 	FRAMEWORK.context->RSSetViewports(number_of_stored_viewports, default_viewports);
 	FRAMEWORK.context->OMSetRenderTargets(1, default_render_target_view.GetAddressOf(), default_depth_stencil_view.Get());
 }
 
+//ビューポートを設定する
 void framebuffer::SetViewPort(int width, int height)
 {
 	D3D11_VIEWPORT vp = {};

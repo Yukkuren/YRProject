@@ -2,7 +2,6 @@
 #include <algorithm>
 //#include"Common.h"
 
-//Vector2 camera = { world_max_x / 2 - (world_max_x / 2 / 2), world_max_y / 2 };
 
 float Limit::Left_max = -100.0f;
 float Limit::Right_max = 100.0f;

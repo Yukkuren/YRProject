@@ -6,6 +6,8 @@
 
 #undef max
 
+#ifdef EXIST_IMGUI
+
 static std::array<std::string, scastI(SceneTest::IntroState::FIN) + 1> intro_list =
 {
 	u8"プレイヤー1のみ",
@@ -16,6 +18,7 @@ static std::array<std::string, scastI(SceneTest::IntroState::FIN) + 1> intro_lis
 	u8"最後",
 };
 
+#endif // EXIST_IMGUI
 //-------------------------------------------------------------
 // **シーン概要**
 //・このシーンではSceneGameのロードを行う
@@ -61,7 +64,7 @@ void SceneLoad::Init()
 		sprite = std::make_unique<Sprite>();
 	}
 
-	GetSound().BGMPlay(BGMKind::LOAD);
+	//GetSound().BGMPlay(BGMKind::LOAD);
 
 	match_timer = 0.0f;
 	plus_match = 60.0f;
@@ -88,16 +91,13 @@ void SceneLoad::Init()
 
 	cbuffer_param.Resolution = { 1920.0f ,1080.0f ,((1920.0f) / (1080.0f)) };
 	cbuffer_param.brightness = 15.0f;
-	//cbuffer_param.brightness = 3.0f;
 	cbuffer_param.gamma = 13;
-	//cbuffer_param.gamma = 6;
 	cbuffer_param.spot_brightness = 1.5f;
 	cbuffer_param.ray_density = 1.5f;
-	//cbuffer_param.ray_density = 6.0f;
 	cbuffer_param.curvature = 90.0f;
-	cbuffer_param.red = 10.0f;
-	cbuffer_param.green = 2.8f;
-	cbuffer_param.blue = 4.0f;
+	cbuffer_param.red = 1.0f;
+	cbuffer_param.green = 1.0f;
+	cbuffer_param.blue = 1.0f;
 	cbuffer_param.material_color = { 1.0f,1.0f,1.0f,1.0f };
 	cbuffer_param.dummy1 = 0.0f;
 	cbuffer_param.dummy2 = 0.0f;
@@ -273,6 +273,7 @@ void SceneLoad::Update(float elapsedTime)
 			delete t;
 			load_fin = true;
 			load_state = 4;
+			GetSound().BGMPlay(BGMKind::LOAD);
 			break;
 		case 4:
 			//意図的に1フレームずらしている
@@ -343,6 +344,7 @@ void SceneLoad::Draw(float elapsedTime)
 			0.5f
 		);*/
 
+		//背景の描画
 		cbuffer_param.iTime = timer;
 
 		sprite->render(
@@ -354,6 +356,7 @@ void SceneLoad::Draw(float elapsedTime)
 			0.0f, 0.0f, 1920.0f, 1080.0f,
 			0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
 
+		//マッチ画面描画
 		MatchDraw(elapsedTime);
 
 		if (load_state < 8)
@@ -416,8 +419,8 @@ void SceneLoad::MatchStart()
 	flash_alpha = 0.0f;
 	flash_size = 0.0f;
 	intro_state = IntroState::P1;
-	GetSound().BGMStop(BGMKind::LOAD);
-	GetSound().BGMPlay(BGMKind::LOAD);
+	/*GetSound().BGMStop(BGMKind::LOAD);
+	GetSound().BGMPlay(BGMKind::LOAD);*/
 }
 
 void SceneLoad::MatchUpdate(float elapsed_time)
@@ -525,6 +528,9 @@ void SceneLoad::MatchUpdate(float elapsed_time)
 			line_1p_x = -(float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
 			line_2p_x = (float)FRAMEWORK.SCREEN_WIDTH + (float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
 			intro_state = IntroState::P1P2;
+			cbuffer_param.red = 1.0f;
+			cbuffer_param.green = 0.2f;
+			cbuffer_param.blue = 0.4f;
 		}
 		break;
 	case SceneLoad::IntroState::P1P2:

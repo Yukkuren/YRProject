@@ -4,6 +4,10 @@
 
 #define BLENDMAX (8)
 
+//-----------------------------------------------------------------
+//			ブレンドクラス
+//-----------------------------------------------------------------
+
 class Blend
 {
 private:
@@ -15,16 +19,16 @@ private:
 
 	}
 public:
-	ID3D11BlendState* blendstate[BLENDMAX];
+	ID3D11BlendState* blendstate[BLENDMAX] = { nullptr };
 
 	enum
 	{
-		NONE,
-		ALPHA,
-		ADD,
-		SUBTRACT,
-		REPLACE,
-		MULTIPLY,
+		NONE,		//ブレンドなし
+		ALPHA,		//アルファブレンド
+		ADD,		//加算
+		SUBTRACT,	//減算
+		REPLACE,	//
+		MULTIPLY,	//乗算
 
 	};
 

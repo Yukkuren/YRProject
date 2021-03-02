@@ -201,15 +201,12 @@
     <ClCompile Include="KnightLoad.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="framework.cpp" />
-    <ClCompile Include="MainCamera.cpp" />
     <ClCompile Include="Stage.cpp" />
     <ClCompile Include="Trajectory.cpp" />
     <ClCompile Include="YRModel.cpp" />
     <ClCompile Include="Sampler.cpp" />
-    <ClCompile Include="SceneClear.cpp" />
     <ClCompile Include="SceneGame.cpp" />
     <ClCompile Include="SceneLoad.cpp" />
-    <ClCompile Include="SceneOver.cpp" />
     <ClCompile Include="SceneSelect.cpp" />
     <ClCompile Include="SceneTest.cpp" />
     <ClCompile Include="SceneTitle.cpp" />

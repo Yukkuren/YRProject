@@ -8,6 +8,17 @@
 #include "framework.h"
 
 
+//------------------------------------------------
+//					攻撃の処理
+//------------------------------------------------
+//・攻撃の処理は技によって異なるものもあるため
+//  こちらに移している
+//
+//・特別な処理を挟まない場合はAttackDefault関数を中で回す
+//------------------------------------------------
+
+
+
 void Knight::PosKnockPlus(float vec)
 {
 	//プレイヤーの位置に引数で受け取った値を与える(ノックバック)
@@ -489,11 +500,6 @@ void Knight::U_Kyo(float elapsed_time)
 		timer -= elapsed_time;
 	}
 
-	//if (atk.empty())
-	//{
-	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-	//	return;
-	//}
 
 	//持続時間が全て終了したことを確認する
 	if (timer < 0.0f)
@@ -650,12 +656,6 @@ void Knight::A_UKyo(float elapsed_time)
 		//持続フレームを減らしていく
 		timer -= elapsed_time;
 	}
-
-	//if (atk.empty())
-	//{
-	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-	//	return;
-	//}
 
 	//持続時間が全て終了したことを確認する
 	if (timer < 0.0f)
@@ -1141,12 +1141,6 @@ void Knight::Thu_Rhurf(float elapsed_time)
 	}
 
 
-	//if (projectile_atk.empty())
-	//{
-	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-	//	return;
-	//}
-
 	if (timer > 0.0f && timer < target_max)
 	{
 		//持続フレームを減らしていく
@@ -1253,12 +1247,6 @@ void Knight::Kyo_Rhurf(float elapsed_time)
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
 
-
-	//if (projectile_atk.empty())
-	//{
-	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-	//	return;
-	//}
 
 	if (timer > 0.0f && timer < target_max)
 	{
@@ -1398,12 +1386,6 @@ void Knight::Jaku_Lhurf(float elapsed_time)
 		timer -= elapsed_time;
 	}
 
-	//if (atk.empty())
-	//{
-	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-	//	return;
-	//}
-
 
 	//持続時間が全て終了したことを確認する
 	if (timer < 0.0f)
@@ -1542,11 +1524,6 @@ void Knight::A_Jaku_Lhurf(float elapsed_time)
 		timer -= elapsed_time;
 	}
 
-	//if (atk.empty())
-	//{
-	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-	//	return;
-	//}
 
 
 	//持続時間が全て終了したことを確認する
@@ -1693,12 +1670,6 @@ void Knight::Thu_Lhurf(float elapsed_time)
 			angle.y += elapsed_time * (50.0f * rightOrleft);
 		}
 	}
-
-	//if (atk.empty())
-	//{
-	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-	//	return;
-	//}
 
 
 	//持続時間が全て終了したことを確認する
@@ -1863,14 +1834,6 @@ void Knight::TrackDash(float decision, float elapsed_time)
 		//speed_Y.Set(attack_list[now_at_list].advance_speed);
 		speed.y = attack_list[now_at_list].advance_speed;
 
-		//for (auto& a : atk)
-		//{
-		//	if (a.hit_result != HitResult::NONE)
-		//	{
-		//		//攻撃が当たっていた場合、その内容を保存する
-		//		hit_result = a.hit_result;
-		//	}
-		//}
 
 		YRGetEffect().StopEffect(EffectKind::TRACK);
 
@@ -1939,11 +1902,6 @@ void Knight::TrackDash(float decision, float elapsed_time)
 		timer -= elapsed_time;
 	}
 
-	//if (atk.empty())
-	//{
-	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-	//	return;
-	//}
 
 	//持続時間が全て終了したことを確認する
 	if (timer < 0.0f&&timer<target_max)
@@ -2210,12 +2168,6 @@ void Knight::SpecialAttack(float elapsed_time)
 		}
 	}
 
-	//if (atk.empty())
-	//{
-	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
-	//	return;
-	//}
-
 	//持続時間が全て終了したことを確認する
 	if (timer < 0.0f)
 	{
@@ -2446,6 +2398,8 @@ bool Knight::ComboSet()
 	//角度を元に戻す
 	angle.y = 0.0f;
 	angle.z = 0.0f;
+	//剣の軌跡を表示するかどうかを取得する
+	traject_on = attack_list[real_num].traject_on;
 	//描画をセット
 	if (rightOrleft > 0)
 	{
@@ -2622,6 +2576,8 @@ void Knight::ComboUpdate()
 	//角度を元に戻す
 	angle.y = 0.0f;
 	angle.z = 0.0f;
+	//剣の軌跡を表示するかどうかを取得する
+	traject_on = attack_list[real_num].traject_on;
 	//描画をセット
 	if (rightOrleft > 0)
 	{
@@ -2689,6 +2645,7 @@ void Knight::ComboB(float decision, float elapsed_time)
 //		掴み攻撃時に
 bool Knight::StealRangeCheck()
 {
+	//最終的には掴み攻撃時に相手に向かって自動的にダッシュするようにしたい
 	return true;
 	if (pos.x > tracking.rival_Pos.x)
 	{

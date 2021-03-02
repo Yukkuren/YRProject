@@ -12,6 +12,10 @@
 #pragma comment(lib,"xinput.lib")
 
 
+//-----------------------------------------------------------------
+//			コントローラー規定クラス
+//-----------------------------------------------------------------
+
 constexpr int X_Input_LEFT_DEADZONE = XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE + 3000;
 
 class InputListor

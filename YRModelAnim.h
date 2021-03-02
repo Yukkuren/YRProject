@@ -5,6 +5,15 @@
 #include "YRModel.h"
 //#include "framework.h"
 
+//-----------------------------------------------------------------
+//			ModelAnimクラス
+//-----------------------------------------------------------------
+//・モデルデータをアニメーションさせるためのクラス
+//・使い方はこのクラスを生成するときにメッシュがあるモデルのModelクラスを渡す
+//・その後、メッシュの無いアニメーションのみのModelクラスをセットすることで
+//  メッシュのアニメーションが出来る
+//-----------------------------------------------------------------
+
 class ModelAnim
 {
 public:
@@ -87,23 +96,6 @@ private:
 	DirectX::XMMATRIX				world_matrix;
 
 	static const int MaxBones = 128;
-	//static const int MaxBones = 300;
-
-	/*struct CbScene
-	{
-		DirectX::XMFLOAT4X4	view_projection;
-		DirectX::XMFLOAT4	light_direction;
-	};
-
-	struct CbMesh
-	{
-		DirectX::XMFLOAT4X4	bone_transforms[MaxBones];
-	};
-
-	struct CbSubset
-	{
-		DirectX::XMFLOAT4	material_color;
-	};*/
 
 	struct cbuffer
 	{
@@ -124,35 +116,17 @@ private:
 		float					dummy00;
 		float					dummy01;
 		DirectX::XMFLOAT4		dummy02;
-		/*int						inverse;
-		int		dummy1;
-		int		dummy2;
-		int		dummy3;*/
 	};
 
 
-	//Microsoft::WRL::ComPtr<ID3D11Buffer>			m_cb_scene;
-	//Microsoft::WRL::ComPtr<ID3D11Buffer>			m_cb_mesh;
-	//Microsoft::WRL::ComPtr<ID3D11Buffer>			m_cb_subset;
 	Microsoft::WRL::ComPtr<ID3D11Buffer>			constant_buffer;
 
-	//Microsoft::WRL::ComPtr<ID3D11VertexShader>		m_vertex_shader;
-	//Microsoft::WRL::ComPtr<ID3D11PixelShader>		m_pixel_shader;
-	//Microsoft::WRL::ComPtr<ID3D11InputLayout>		m_input_layout;
-
-	//Microsoft::WRL::ComPtr<ID3D11BlendState>		m_blend_state;
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState>	m_rasterizer_state;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>	m_depth_stencil_state;
 
 	Microsoft::WRL::ComPtr<ID3D11SamplerState>		m_sampler_state;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>	m_dummy_srv;
 
-	/*DirectX::XMFLOAT4X4 coodinate_conversion = {
-		1,0,0,0,
-		0,0,1,0,
-		0,1,0,0,
-		0,0,0,1
-	};*/
 	DirectX::XMFLOAT4X4 coodinate_conversion = {
 		1,0,0,0,
 		0,0,1,0,

@@ -12,6 +12,7 @@ void Trajectory::Init(size_t max_count)
 		sampler_wrap = std::make_shared<Sampler>(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP);
 	}
 
+	//頂点は2の倍数である必要がある為2で掛けた分のメモリを確保している
 	std::vector<PosData> vertex;
 	vertex.resize(max_count * 2);
 
@@ -187,37 +188,6 @@ void Trajectory::Update(float elapsed_time)
 		}
 
 		FRAMEWORK.context->Unmap(vertex_buffer.Get(), 0);
-		//D3D11_BUFFER_DESC buffer_desc{};
-		//buffer_desc.ByteWidth = vertex.size();
-		//buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		//buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;// D3D11_USAGE_DYNAMIC;
-		//buffer_desc.CPUAccessFlags = 0;// D3D11_CPU_ACCESS_WRITE;
-		//buffer_desc.MiscFlags = 0;
-		//buffer_desc.StructureByteStride = 0;
-
-		//D3D11_SUBRESOURCE_DATA subresource = {};
-		//subresource.pSysMem = vertex.data();
-		//subresource.SysMemPitch = 0;
-		//subresource.SysMemSlicePitch = 0;
-
-		//hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, &subresource, vertex_buffer.GetAddressOf());
-		//_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-
-		////インデックス情報セット
-		//ZeroMemory(&buffer_desc, sizeof(D3D11_BUFFER_DESC));
-		//ZeroMemory(&subresource, sizeof(D3D11_SUBRESOURCE_DATA));
-		//buffer_desc.ByteWidth = sizeof(indices);
-		//buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		//buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;// D3D11_USAGE_DYNAMIC;
-		//buffer_desc.CPUAccessFlags = 0;// D3D11_CPU_ACCESS_WRITE;
-		//buffer_desc.MiscFlags = 0;
-		//buffer_desc.StructureByteStride = 0;
-		//subresource.pSysMem = indices;
-		//subresource.SysMemPitch = 0;
-		//subresource.SysMemSlicePitch = 0;
-
-		//hr = FRAMEWORK.device->CreateBuffer(&buffer_desc, &subresource, index_buffer.GetAddressOf());
-		//_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 	}
 	else
@@ -233,13 +203,6 @@ void Trajectory::SetTrajectoryPos(const DirectX::XMFLOAT3& headPos, const Direct
 	posArray.back().head = headPos;
 	posArray.back().tail = tailPos;
 	posArray.back().alpha = 1.0f;
-	/*for (int i = posArray.size() - 1; i > 1; i--)
-	{
-		posArray[i] = posArray[i - 1];
-	}
-	posArray.front().head = headPos;
-	posArray.front().tail = tailPos;
-	posArray.front().alpha = 1.0f;*/
 }
 
 

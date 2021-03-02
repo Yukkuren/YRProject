@@ -25,14 +25,6 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 		{
 			for (int hitnum = 0; hitnum < hit.size(); hitnum++)
 			{
-				//float a = (pos.x + attack[atknum].parameter.distance.x) - attack[atknum].parameter.size.x;
-				//float b = hit[hitnum].center.x + hit[hitnum].parameter.size.x;
-				//float c = (pos.x + attack[atknum].parameter.distance.x) + attack[atknum].parameter.size.x;
-				//float d = hit[hitnum].center.x - hit[hitnum].parameter.size.x;
-				//float e = (pos.y + attack[atknum].parameter.distance.y) - attack[atknum].parameter.size.y;
-				//float f = hit[hitnum].center.y + hit[hitnum].parameter.size.y;
-				//float g = (pos.y + attack[atknum].parameter.distance.y) + attack[atknum].parameter.size.y;
-				//float h = hit[hitnum].center.y - hit[hitnum].parameter.size.y;
 
 				if (attack[atknum].pos.x - attack[atknum].parameter.size.x<hit[hitnum].center.x + hit[hitnum].parameter.size.x &&
 					attack[atknum].pos.x + attack[atknum].parameter.size.x>hit[hitnum].center.x - hit[hitnum].parameter.size.x)
@@ -41,11 +33,6 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 						attack[atknum].pos.y + attack[atknum].parameter.size.y>hit[hitnum].center.y - hit[hitnum].parameter.size.y)
 					{
 						HitResultState flag = HitResultState::GUARD_OK;
-						//0:ガード成功
-						//1:被弾
-						//2:無敵で回避
-						//3:掴まれた
-						//4:叩きつけ
 
 
 						//各内容にはガードできるものだけ記述していき、それ以外は全部まとめてヒットしたことにする
@@ -356,13 +343,6 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 						case HitResultState::HIT:
 						{
 							//被弾した
-
-							/*if (hei == 0)
-							{
-								hei++;
-								return 0.0f;
-							}
-							hei++;*/
 
 							float add = 0.0f;
 							if (!attack[atknum].parameter.gaugeout)
@@ -810,33 +790,6 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 	return 0.0f;
 }
 
-//void Hitcheak::HitCheak2(AttackBox *attack, int a_max, HitBox *hit, int h_max)
-//{
-//	for (int i = 0; i < a_max; i++)
-//	{
-//		if (attack[i].hit_ok)
-//		{
-//			for (int j = 0; j < h_max; j++)
-//			{
-//				if (attack[i].center.x + attack[i].size.x<hit[j].center.x + hit[j].size.x&&attack[i].center.x - attack[i].size.x>hit[j].center.x - hit[j].size.x)
-//				{
-//					if (attack[i].center.y - attack[i].size.y<hit[j].center.y + hit[j].size.y&&attack[i].center.y + attack[i].size.y>hit[j].center.y - hit[j].size.y)
-//					{
-//						hit[j].hit = true;
-//						attack[i].hit_ok = false;
-//						hit[j].damege = attack[i].damege;
-//						hit[j].timer = 20;
-//						attack[i].damege = 0;
-//						for (int n = 0; n < a_max; n++)
-//						{
-//							attack[n].damege = 0;
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
-//}
 
 void Hitcheak::HitPlayer(std::vector <HitBox>& pl1, float& pos1, std::vector <HitBox>& pl2, float& pos2, float elapsed_time)
 {
@@ -850,26 +803,9 @@ void Hitcheak::HitPlayer(std::vector <HitBox>& pl1, float& pos1, std::vector <Hi
 		if (pl1[p1_h].center.y - pl1[p1_h].parameter.size.y<pl2[p2_h].center.y + pl2[p2_h].parameter.size.y &&
 			pl1[p1_h].center.y + pl1[p1_h].parameter.size.y>pl2[p2_h].center.y - pl2[p2_h].parameter.size.y)
 		{
-			//pl1[0].hitother = true;
-			//pl2[0].hitother = true;
 			float moving_correction = (pl1[p1_h].parameter.size.x / 2.0f) + (pl2[p2_h].parameter.size.x / 2.0f);
 			if (pos1 < pos2)
 			{
-				//while (1)
-				//{
-				//	float distance = pos2 - pos1;
-				//	float p1pos = pos1;
-				//	float p2pos = pos2;
-				//	float p1dist = distance - (pl1[0].size.x / 2);
-				//	float p2dist = distance - (pl2[0].size.x / 2);
-				//	float suns = distance - (p1dist + p2dist);
-				//	pos1=p1pos- suns;
-				//	pos2=p2pos+ suns;
-				//	if (distance > moving_correction)
-				//	{
-				//		//break;
-				//	}
-				//}
 				while (1)
 				{
 					float distance = pos2 - pos1;
@@ -932,9 +868,6 @@ void Hitcheak::HitPlayer(std::vector <HitBox>& pl1, float& pos1, std::vector <Hi
 			return;
 		}
 	}
-
-	//pl1[0].hitother = false;
-	//pl2[0].hitother = false;
 }
 
 

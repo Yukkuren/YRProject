@@ -9,13 +9,22 @@
 #include <memory>
 #include "Sampler.h"
 
+//-----------------------------------------------------------------
+//			剣の軌跡クラス
+//-----------------------------------------------------------------
+//・剣の軌跡を表示するクラス
+//・モデルの剣の座標をフレームごとに保存し、その場所に軌跡を描画する
+//-----------------------------------------------------------------
+
+//モデルから剣の情報を保存する構造体
 struct PosBuffer
 {
-	DirectX::XMFLOAT3	head = { 0.0f,0.0f,0.0f };
-	DirectX::XMFLOAT3	tail = { 0.0f,0.0f,0.0f };
-	float				alpha = 1.0f;
+	DirectX::XMFLOAT3	head = { 0.0f,0.0f,0.0f };	//剣の先端
+	DirectX::XMFLOAT3	tail = { 0.0f,0.0f,0.0f };	//剣の根本
+	float				alpha = 1.0f;				//軌跡のアルファ値
 };
 
+//保存した情報から生成した頂点データを保存するクラス
 struct PosData
 {
 	DirectX::XMFLOAT3	pos = { 0.0f,0.0f,0.0f };
@@ -61,18 +70,54 @@ private:
 
 
 	std::vector<PosBuffer>		posArray;
-	//std::vector<PosData>		VB;
 
 	struct cbuffer
 	{
 		DirectX::XMFLOAT4X4		world_view_projection;	//ワールド・ビュー・プロジェクション合成行列
 		DirectX::XMFLOAT4X4		world;					//ワールド変換行列
-		DirectX::XMFLOAT4		material_color;
-		DirectX::XMFLOAT4		eyePos;
-		DirectX::XMFLOAT4X4		view;
+		DirectX::XMFLOAT4		material_color;			//マテリアルの色
+		DirectX::XMFLOAT4		eyePos;					//カメラの座標
+		DirectX::XMFLOAT4X4		view;					//ビュー行列
 		DirectX::XMFLOAT4X4		projection;
 		DirectX::XMFLOAT3		at;						//カメラ座標からfocusまでの単位ベクトル
 		float					dummy;
 		DirectX::XMFLOAT4		dummy2;
+
+		cbuffer()
+		{
+			world_view_projection =
+			{
+				0.0f,0.0f,0.0f,0.0f,
+				0.0f,0.0f,0.0f,0.0f,
+				0.0f,0.0f,0.0f,0.0f,
+				0.0f,0.0f,0.0f,0.0f
+			};
+			world =
+			{
+				0.0f,0.0f,0.0f,0.0f,
+				0.0f,0.0f,0.0f,0.0f,
+				0.0f,0.0f,0.0f,0.0f,
+				0.0f,0.0f,0.0f,0.0f
+			};
+			material_color = { 0.0f,0.0f,0.0f,0.0f };
+			eyePos = { 0.0f,0.0f,0.0f,0.0f };
+			view =
+			{
+				0.0f,0.0f,0.0f,0.0f,
+				0.0f,0.0f,0.0f,0.0f,
+				0.0f,0.0f,0.0f,0.0f,
+				0.0f,0.0f,0.0f,0.0f
+			};
+			projection =
+			{
+				0.0f,0.0f,0.0f,0.0f,
+				0.0f,0.0f,0.0f,0.0f,
+				0.0f,0.0f,0.0f,0.0f,
+				0.0f,0.0f,0.0f,0.0f
+			};
+			at = { 0.0f,0.0f,0.0f };
+			dummy = 0.0f;
+			dummy2 = { 0.0f,0.0f,0.0f,0.0f };
+		}
 	};
 };

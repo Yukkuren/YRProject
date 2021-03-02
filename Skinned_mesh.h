@@ -7,16 +7,22 @@
 #include<memory>
 #include "Texture.h"
 
-//#include "framework.h"
+//-----------------------------------------------------------------
+//			Skinned_Meshクラス
+//-----------------------------------------------------------------
+//・初期に制作した3Dモデルを扱うクラス(fbx)
+//・アニメーションをFBXモデルに依存させる形でデータを保持するので
+//  必然的にメモリを多大に確保してしまい、モデルの容量も大きくなってしまう
+//・現在はModelクラスがある為、アニメーションのないモデルのみ使用する
+//-----------------------------------------------------------------
 
-
-#define MAX_BONE_INFLUENCES 4
-#define BONE_MAX	(128)
+#define MAX_BONE_INFLUENCES 4		//ボーンの影響度の最大数
+#define BONE_MAX	(128)			//ボーンの最大数
 
 struct bone_influence
 {
-	int index;		//index of bone
-	float weight;	//weight of bone
+	int index;		//インデックス
+	float weight;	//重き
 };
 typedef std::vector<bone_influence> bone_influences_per_control_point;
 
@@ -27,23 +33,6 @@ class Skinned_mesh
 protected:
 	//テクスチャ利用
 	std::shared_ptr<Texture> texture = nullptr;
-private:
-	//レイピック用ポリゴン
-	/*struct Face
-	{
-		std::array<DirectX::XMFLOAT3, 3> position;
-		int materialIndex;
-	};
-	std::vector<Face> faces;*/
-public:
-	//レイピック関数
-	//int RayPick(
-	//	const DirectX::XMFLOAT3& startPosition,	//レイを飛ばす開始座標
-	//	const DirectX::XMFLOAT3& endPosition,	//レイを飛ばす終了座標
-	//	DirectX::XMFLOAT3* outPosition,			//レイが当たった座標
-	//	DirectX::XMFLOAT3* outNormal,			//レイが当たった面の法線
-	//	float* outLength						//レイが当たった面までの距離
-	//);											//戻り値マテリアル番号
 public:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader>			vertex_shader;
 	Microsoft::WRL::ComPtr<ID3D11PixelShader>			pixel_shader;
@@ -53,18 +42,12 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState>		filling_state;
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState>		filling_state_inverse;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>		depth_state;
-	//ID3D11Resource				*pResouce;
 	D3D11_TEXTURE2D_DESC texture2d_desc;
 	unsigned int indexsize;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler_state;
-	
-	
-	//描画用変数
-	//DirectX::XMMATRIX	world_matrix;
-	//DirectX::XMFLOAT4X4 world;
 
-	//UNIT.21
-	//convert coodinate system from 'Up:+Z FRONT:+Y RIGHT HAND' to 'UP:+Y FRONT:+Z LEFT-HAND'
+
+	//Blenderなどと座標軸が違うためこの行列を掛けて矯正する
 	DirectX::XMFLOAT4X4 coodinate_conversion = {
 		1,0,0,0,
 		0,0,1,0,
@@ -80,19 +63,7 @@ public:
 	bool Load(const char* fbx_filename, u_int sampling_rate = 0);
 	bool Load(const char* fbx_filename, std::shared_ptr<Texture> tex, u_int sampling_rate = 0);
 
-	~Skinned_mesh()
-	{
-		//vertex_shader->Release();
-		//pixel_shader->Release();
-		//input_layout->Release();
-		////vertex_buffer->Release();
-		////index_buffer->Release();
-		//constant_buffer->Release();
-		//line_state->Release();
-		//filling_state->Release();
-		//depth_state->Release();
-		////pResouce->Release();
-	}
+	~Skinned_mesh(){}
 
 
 	//基本的にこっちを使う(position,scale,angle直入力型)
@@ -115,7 +86,7 @@ public:
 	);
 
 
-
+	//こちらはテスト版
 	void Render(
 		YRShader					*shader,
 		DirectX::XMFLOAT3			&pos,
@@ -132,21 +103,6 @@ public:
 		const DirectX::XMFLOAT4			material_color = { 1.0f,1.0f,1.0f,1.0f },
 		const bool						viewflag = true
 	);
-
-	//こちらは従来のもの
-	//void Render(
-	//	ID3D11DeviceContext			*context,
-	//	const DirectX::XMFLOAT4X4	&world_view,
-	//	const DirectX::XMFLOAT4X4	&world_matrix,
-	//	const DirectX::XMFLOAT4		&light_direction,
-	//	const DirectX::XMFLOAT4		&material_color,
-	//	const DirectX::XMFLOAT4		&light_color,
-	//	const DirectX::XMFLOAT4		&ambient_color,
-	//	bool						viewflag,
-	//	//UNIT.23
-	//	float						elapsed_time,
-	//	float						anime_count		//アニメのカウント
-	//);
 
 
 	struct Vertex
@@ -172,10 +128,6 @@ public:
 		DirectX::XMFLOAT4X4		projection;
 		DirectX::XMFLOAT3		at;//eyeからfocusに向かう正規化ベクトル
 		float					dummy;
-		/*int						inverse;
-		int		dummy1;
-		int		dummy2;
-		int		dummy3;*/
 	};
 
 	struct material
@@ -226,24 +178,12 @@ public:
 	};
 	std::vector<mesh>meshes;
 
-	/*DirectX::XMFLOAT4X4 Interpolation(
-		int i,
-		float animation_tick,
-		float sampling_time,
-		std::vector<bone> &skeletal,
-		std::vector<bone> &skeletal2
-	);*/
-
 	//アニメーション管理用変数
 
 	bool FinCheck()
 	{
 		for (auto& mesh : meshes)
 		{
-			/*if (!mesh.skeletal_animation.anim_fin)
-			{
-				return false;
-			}*/
 			int frame = static_cast<int>(mesh.skeletal_animation.animation_tick / mesh.skeletal_animation.sampling_time);
 			if (frame <= static_cast<int>(mesh.skeletal_animation.size()))
 			{
@@ -261,13 +201,10 @@ public:
 			//mesh.skeletal_animation.anim_fin = false;
 		}
 	}
-	//void AnimReset();		//アニメーションをリセットする
-	//bool AnimFinCheck();	//アニメーションが終わっているかチェック
-	//bool AnimFinCheck(float check);	//引数付きアニメーションが終わっているかチェック
 };
 
 
-
+//メッシュアニメーション管理クラス
 class MeshMotion
 {
 public:

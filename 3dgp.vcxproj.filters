@@ -228,16 +228,10 @@
     <ClCompile Include="Sampler.cpp">
       <Filter>Souce</Filter>
     </ClCompile>
-    <ClCompile Include="SceneClear.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
     <ClCompile Include="SceneGame.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="SceneLoad.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneOver.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="SceneSelect.cpp">
@@ -277,9 +271,6 @@
       <Filter>Souce</Filter>
     </ClCompile>
     <ClCompile Include="YRShader.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="MainCamera.cpp">
       <Filter>Souce</Filter>
     </ClCompile>
     <ClCompile Include="Blur.cpp">

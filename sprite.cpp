@@ -160,17 +160,6 @@ void Sprite::Init(const wchar_t* wchar)
 	hr = FRAMEWORK.device->CreateBuffer(&bd, &InitData, buffer.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
-	/*D3D11_INPUT_ELEMENT_DESC layout[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0 , DXGI_FORMAT_R32G32_FLOAT , 0 , D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-	UINT numElements = ARRAYSIZE(layout);
-
-	TextureALL::create_vertex_file(FRAMEWORK.device.Get(), "./Data/Shader/sprite_vs.cso", vert.GetAddressOf(), layout, numElements, input.GetAddressOf());
-
-	TextureALL::CreatePixel_files(FRAMEWORK.device.Get(), "./Data/Shader/sprite_ps.cso", pixel.GetAddressOf());*/
 
 	D3D11_RASTERIZER_DESC pRaster = {};
 	pRaster.FillMode = D3D11_FILL_SOLID;
@@ -371,17 +360,6 @@ Sprite::Sprite()
 	hr = FRAMEWORK.device->CreateBuffer(&bd, &InitData, buffer.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
-	/*D3D11_INPUT_ELEMENT_DESC layout[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0 , DXGI_FORMAT_R32G32_FLOAT , 0 , D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-	UINT numElements = ARRAYSIZE(layout);
-
-	TextureALL::create_vertex_file(FRAMEWORK.device.Get(), "./Data/Shader/sprite_vs.cso", vert.GetAddressOf(), layout, numElements, input.GetAddressOf());
-
-	TextureALL::CreatePixel_files(FRAMEWORK.device.Get(), "./Data/Shader/sprite_ps.cso", pixel.GetAddressOf());*/
 
 	D3D11_RASTERIZER_DESC pRaster = {};
 	pRaster.FillMode = D3D11_FILL_SOLID;
@@ -563,18 +541,7 @@ Sprite::Sprite(const wchar_t* wchar, float sw, float sh, int numX, int numY, flo
 	LoadDivGraph(sw, sh, numX, numY, n_x, n_y, max_num);
 }
 
-Sprite::~Sprite()
-{
-	/*vert->Release();
-	pixel->Release();
-	input->Release();
-	buffer->Release();
-	rastersize->Release();
-	shader->Release();
-	sampler->Release();
-	depthstate->Release();*/
-	//blendstate->Release();
-}
+Sprite::~Sprite(){}
 
 void Sprite::render(YRShader* shader, float dx,float dy,float dw,float dh,float sx,float sy,float sw,float sh,float angle,float r,float g,float b,float a, SpriteMask mask)
 {
@@ -879,29 +846,6 @@ void Sprite::render(
 	data[3].Pos.x = x3;
 	data[3].Pos.y = y3;
 	data[3].Pos.z = 0.0f;
-	////回転の中心
-	//float workPosX = dx + dw * 0.5f;
-	//float workPosY = dy + dh * 0.5f;
-
-	////回転処理
-	//for (int i = 0; i < 4; i++) {
-
-	//	float workX = data[i].Pos.x - workPosX;
-	//	float workY = data[i].Pos.y - workPosY;
-	//	data[i].Pos.x = workX * cosf(angle) - workY * sinf(angle) + workPosX;
-	//	data[i].Pos.y = workX * sinf(angle) + workY * cosf(angle) + workPosY;
-	//	data[i].Pos.z = 0.0f;
-	//}
-
-
-
-	// 正規化デバイス座標系
-
-	/*for (int i = 0; i < 4; i++) {
-		data[i].Pos.x = 2.0f * data[i].Pos.x / screen_width - 1.0f;
-		data[i].Pos.y = 1.0f - 2.0f * data[i].Pos.y / screen_height;
-		data[i].Pos.z = 0.0f;
-	}*/
 
 
 	//テクスチャ座標設定
@@ -916,11 +860,6 @@ void Sprite::render(
 	FRAMEWORK.context->Unmap(buffer.Get(), 0);
 
 
-	//UV座標
-	/*for (int i = 0; i < 4; i++) {
-		data[i].Tex.x = data[i].Tex.x / tex->GetWidth();
-		data[i].Tex.y = data[i].Tex.y / tex->GetHeight();
-	}*/
 	//頂点カラー
 	data[0].Color = XMFLOAT4(1, 1, 1, alpha);
 	data[1].Color = XMFLOAT4(1, 1, 1, alpha);
@@ -933,8 +872,6 @@ void Sprite::render(
 	data[3].Normal = XMFLOAT3(0, 0, 1);
 
 	shader->Acivate();
-	//頂点データ更新
-	//FRAMEWORK.context->UpdateSubresource(buffer.Get(), 0, NULL, data, 0, 0);
 
 	//	頂点バッファの指定
 	UINT stride = sizeof(vertex_tex);
@@ -1084,29 +1021,6 @@ void Sprite::render(
 	data[3].Pos.x = x3;
 	data[3].Pos.y = y3;
 	data[3].Pos.z = 0.0f;
-	////回転の中心
-	//float workPosX = dx + dw * 0.5f;
-	//float workPosY = dy + dh * 0.5f;
-
-	////回転処理
-	//for (int i = 0; i < 4; i++) {
-
-	//	float workX = data[i].Pos.x - workPosX;
-	//	float workY = data[i].Pos.y - workPosY;
-	//	data[i].Pos.x = workX * cosf(angle) - workY * sinf(angle) + workPosX;
-	//	data[i].Pos.y = workX * sinf(angle) + workY * cosf(angle) + workPosY;
-	//	data[i].Pos.z = 0.0f;
-	//}
-
-
-
-	// 正規化デバイス座標系
-
-	/*for (int i = 0; i < 4; i++) {
-		data[i].Pos.x = 2.0f * data[i].Pos.x / screen_width - 1.0f;
-		data[i].Pos.y = 1.0f - 2.0f * data[i].Pos.y / screen_height;
-		data[i].Pos.z = 0.0f;
-	}*/
 
 
 	//テクスチャ座標設定
@@ -1121,11 +1035,6 @@ void Sprite::render(
 	FRAMEWORK.context->Unmap(buffer.Get(), 0);
 
 
-	//UV座標
-	/*for (int i = 0; i < 4; i++) {
-		data[i].Tex.x = data[i].Tex.x / tex->GetWidth();
-		data[i].Tex.y = data[i].Tex.y / tex->GetHeight();
-	}*/
 	//頂点カラー
 	data[0].Color = XMFLOAT4(1, 1, 1, alpha);
 	data[1].Color = XMFLOAT4(1, 1, 1, alpha);
@@ -1138,8 +1047,6 @@ void Sprite::render(
 	data[3].Normal = XMFLOAT3(0, 0, 1);
 
 	shader->Acivate();
-	//頂点データ更新
-	//FRAMEWORK.context->UpdateSubresource(buffer.Get(), 0, NULL, data, 0, 0);
 
 	Title_CBuffer cb;
 	cb.Resolution = cbuffer_param.Resolution;
@@ -1336,8 +1243,6 @@ void Sprite::render(
 	data[3].Normal = XMFLOAT3(0, 0, 1);
 
 	shader->Acivate();
-	//頂点データ更新
-	//FRAMEWORK.context->UpdateSubresource(buffer.Get(), 0, NULL, data, 0, 0);
 
 	//	頂点バッファの指定
 	UINT stride = sizeof(vertex_tex);
@@ -1352,10 +1257,7 @@ void Sprite::render(
 	);
 	FRAMEWORK.context->OMSetDepthStencilState(depthstate[scastI(SpriteMask::NONE)].Get(), 1);
 	FRAMEWORK.context->RSSetState(rastersize.Get());
-	//FRAMEWORK.context->PSSetShaderResources(0, 1, this->shader.GetAddressOf());
-	//FRAMEWORK.context->PSSetSamplers(0, 1, sampler.GetAddressOf());
 	FRAMEWORK.context->PSSetShaderResources(0, srv_size, srv);
-	//FRAMEWORK.context->PSSetSamplers(0, 1, &sampler.GetAddressOf());
 	FRAMEWORK.context->PSSetSamplers(0, 1, sampler.GetAddressOf());
 
 	FRAMEWORK.context->Draw(4, 0);
@@ -1365,8 +1267,6 @@ void Sprite::render(
 	FRAMEWORK.context->PSSetShaderResources(0, 7, nullTarget);
 	//シェーダ無効化
 	shader->Inactivate();
-
-	//if (tex) tex->Set(0, FALSE);
 }
 
 
