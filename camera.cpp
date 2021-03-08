@@ -130,9 +130,9 @@ void Camera::RequestCamera(Request request, int now_player)
 	this->request_player = now_player;
 	switch (camera_Request)
 	{
-	case Camera::NONE:
+	case Camera::Request::NONE:
 		break;
-	case Camera::HOLD:
+	case Camera::Request::HOLD:
 		if (request_player > 1)
 		{
 			//リクエストが2P
@@ -144,11 +144,11 @@ void Camera::RequestCamera(Request request, int now_player)
 			camera_state = CAMERA_STATE::PLAYER1P;
 		}
 		break;
-	case Camera::RELEASE:
+	case Camera::Request::RELEASE:
 		break;
-	case Camera::WEAKEN:
+	case Camera::Request::WEAKEN:
 		break;
-	case Camera::ZOOM:
+	case Camera::Request::ZOOM:
 		break;
 	default:
 		break;

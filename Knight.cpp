@@ -1225,43 +1225,68 @@ void Knight::Draw(
 
 
 	//カメラの状態によってモデルの描画方法が違うため、分けている
-	if (scastI(YRCamera.camera_state) == now_player)
+	switch (YRCamera.camera_state)
 	{
-		//カメラがキャラを見ている場合
-		anim->UpdateAnimation(game_speed * anim_ccodinate);
-		anim->CalculateLocalTransform();
-		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
-		return_inverse=anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
-		//影の表示
-		anim->CalculateWorldTransform(DirectX::XMFLOAT3(pos.x, shadow_y,pos.z + shadow_z), DirectX::XMFLOAT3(scale.x, 0.001f, scale.z), DirectX::XMFLOAT3(0.0f,angle.y,0.0f));
-		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], Model::Material_Attribute::NONE, DirectX::XMFLOAT4( 0.0f,0.0f,0.0f,1.0f ));
-	}
-	if (YRCamera.camera_state == Camera::CAMERA_STATE::MAIN)
+	case Camera::CAMERA_STATE::MAIN:
 	{
 		//カメラがゲーム画面全体を見ている場合
 		anim->UpdateAnimation(game_speed * anim_ccodinate);
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
-		return_inverse=anim->Draw(parallel_shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
+		return_inverse = anim->Draw(parallel_shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], lumi_material, material_color);
 		//影の表示
 		anim->CalculateWorldTransform(DirectX::XMFLOAT3(pos.x, shadow_y, pos.z + shadow_z), DirectX::XMFLOAT3(scale.x, 0.001f, scale.z), DirectX::XMFLOAT3(0.0f, angle.y, 0.0f));
 		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], Model::Material_Attribute::NONE, DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 	}
+		break;
+	case Camera::CAMERA_STATE::ZOOM_CAMERA:
+	{
+		//カメラがズームしている時
+		anim->UpdateAnimation(game_speed * anim_ccodinate);
+		anim->CalculateLocalTransform();
+		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
+		return_inverse = anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], lumi_material, material_color);
+		//影の表示
+		anim->CalculateWorldTransform(DirectX::XMFLOAT3(pos.x, shadow_y, pos.z + shadow_z), DirectX::XMFLOAT3(scale.x, 0.001f, scale.z), DirectX::XMFLOAT3(0.0f, angle.y, 0.0f));
+		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], Model::Material_Attribute::NONE, DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	}
+		break;
+	case Camera::CAMERA_STATE::PLAYER1P:
+	case Camera::CAMERA_STATE::PLAYER2P:
+	{
+		if (scastI(YRCamera.camera_state) == now_player)
+		{
+			//カメラがキャラを見ている場合
+			anim->UpdateAnimation(game_speed * anim_ccodinate);
+			anim->CalculateLocalTransform();
+			anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
+			return_inverse = anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], lumi_material, material_color);
+			//影の表示
+			anim->CalculateWorldTransform(DirectX::XMFLOAT3(pos.x, shadow_y, pos.z + shadow_z), DirectX::XMFLOAT3(scale.x, 0.001f, scale.z), DirectX::XMFLOAT3(0.0f, angle.y, 0.0f));
+			anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], Model::Material_Attribute::NONE, DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+		}
+	}
+		break;
+	case Camera::CAMERA_STATE::END_GAME:
+	{
+		//対戦終了時
+		anim->UpdateAnimation(game_speed * anim_ccodinate);
+		anim->CalculateLocalTransform();
+		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
+		return_inverse = anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], lumi_material, material_color);
+		//影の表示
+		anim->CalculateWorldTransform(DirectX::XMFLOAT3(pos.x, shadow_y, pos.z + shadow_z), DirectX::XMFLOAT3(scale.x, 0.001f, scale.z), DirectX::XMFLOAT3(0.0f, angle.y, 0.0f));
+		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], Model::Material_Attribute::NONE, DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	}
+		break;
+	default:
+		break;
+	}
+
 	if (YRCamera.GetRequest() == Camera::Request::WEAKEN)
 	{
 		//カメラがキャラから画面全体を見るように移行している時
 		anim->UpdateAnimation(game_speed* anim_ccodinate);
-		anim->CalculateLocalTransform();
-		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
-		return_inverse = anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);
-		//影の表示
-		anim->CalculateWorldTransform(DirectX::XMFLOAT3(pos.x, shadow_y, pos.z + shadow_z), DirectX::XMFLOAT3(scale.x, 0.001f, scale.z), DirectX::XMFLOAT3(0.0f, angle.y, 0.0f));
-		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)], Model::Material_Attribute::NONE, DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
-	}
-	if (YRCamera.camera_state == Camera::CAMERA_STATE::ZOOM_CAMERA)
-	{
-		//カメラがズームしている時
-		anim->UpdateAnimation(game_speed * anim_ccodinate);
 		anim->CalculateLocalTransform();
 		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
 		return_inverse = anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset[scastI(face_mouth_num)],lumi_material, material_color);

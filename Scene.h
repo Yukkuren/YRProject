@@ -291,6 +291,10 @@ public:
 	YR_Vector3	Scene_eye;
 	YR_Vector3	Scene_focus;
 	YR_Vector3	Scene_up;
+
+	//決着時にカメラの座標を保存する変数
+	YR_Vector3	Scene_End_eye;
+
 	float		Scene_fov = 0.0f;		//画角
 	float		Scene_aspect = 0.0f;	//アスペクト比
 	float		Scene_nearZ = 0.0f;		//ニアクリップ面までの距離
@@ -321,6 +325,14 @@ public:
 		VICTORY2P,
 		DRAW,
 	};
+
+	//決着時カメラ回転用ステート
+	enum class FIN_CAMERA_STATE : int
+	{
+		ROLL = 0,
+		STOP,
+	};
+	FIN_CAMERA_STATE fin_camera_state = FIN_CAMERA_STATE::ROLL;
 
 	MAIN_LOOP		main_loop;	//この変数でゲームメインの遷移を管理する
 
@@ -484,6 +496,8 @@ public:
 	void RenderHP();
 
 	void AIControll(float elapsed_time);
+
+	void EndORGameCameraSet();
 
 	/*struct CB_Multi_Render_Target
 	{

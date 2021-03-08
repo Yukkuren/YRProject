@@ -47,16 +47,17 @@ public:
 
 	DirectX::XMFLOAT3		targetPos = { 0.0f,0.0f,0.0f };		//注視点
 
-	enum CAMERA_STATE
+	enum class CAMERA_STATE :int
 	{
 		MAIN = 0,
 		PLAYER1P,
 		PLAYER2P,
 		ZOOM_CAMERA,
+		END_GAME,
 	};
 	CAMERA_STATE camera_state = CAMERA_STATE::MAIN;
 
-	enum Request
+	enum  class Request : int
 	{
 		NONE,
 		HOLD,		//カメラをつかむ(自分のステートにする)

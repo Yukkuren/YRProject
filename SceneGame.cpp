@@ -41,15 +41,16 @@ std::array<std::string, scastI(AI_Controller::AI_State::END)> p2_AI_state_list =
 	u8"ダウン中"
 };
 
-std::array<std::string, scastI(Camera::CAMERA_STATE::ZOOM_CAMERA+1)> camera_state_list =
+std::array<std::string, scastI(Camera::CAMERA_STATE::END_GAME)+1> camera_state_list =
 {
 	u8"メインカメラ",
 	u8"プレイヤー1P",
 	u8"プレイヤー2P",
 	u8"ズームカメラ",
+	u8"決着時",
 };
 
-std::array<std::string, scastI(Camera::Request::ZOOM + 1)> camera_request_list =
+std::array<std::string, scastI(Camera::Request::ZOOM)+1> camera_request_list =
 {
 	u8"なし",
 	u8"カメラをつかんでいる",
@@ -95,6 +96,9 @@ void SceneGame::Init()
 	endtimer			= 0.0f;
 	mix_fade			= 1.5f;
 	main_loop = MAIN_LOOP::INTRO1P;	//最初は1Pのイントロから開始
+
+	Scene_End_eye = YR_Vector3( 0.0f,0.0f,0.0f );
+	fin_camera_state = FIN_CAMERA_STATE::ROLL;
 
 	//カメラ初期設定
 	StartSet();
@@ -828,16 +832,16 @@ void SceneGame::Update(float elapsed_time)
 #ifdef EXIST_IMGUI
 					//デバッグ用即死技解禁コマンド
 					//↓このコメントを解除してゲーム中でoキーを押すと弱攻撃が即死になる
-					//if (Get_Use_ImGui())
-					//{
-					//	if (pKeyState.oflg == 1)
-					//	{
-					//		player1p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
-					//		//player2p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
-					//		player1p->pad->x_input[scastI(PAD::X)] = 1;
-					//		//player2p->pad->x_input[scastI(PAD::X)] = 1;
-					//	}
-					//}
+					if (Get_Use_ImGui())
+					{
+						if (pKeyState.oflg == 1)
+						{
+							player1p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
+							//player2p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
+							player1p->pad->x_input[scastI(PAD::X)] = 1;
+							//player2p->pad->x_input[scastI(PAD::X)] = 1;
+						}
+					}
 #endif
 				}
 				if (pause)
@@ -957,13 +961,8 @@ void SceneGame::Update(float elapsed_time)
 						Hitcheak::hit = true;
 					}
 
-					//プレイヤーの位置からカメラの位置を決定する
-					YR_Vector3 camera_screen = Limit::Set(player1p->pos, player2p->pos,Start_Scene_eye);
-					Scene_eye.x = camera_screen.x;
-					Scene_eye.y = camera_screen.y;
-					Scene_eye.z = camera_screen.z;
-					Scene_focus.x = camera_screen.x;
-					Scene_focus.y = camera_screen.y;
+					//カメラ座標設定
+					EndORGameCameraSet();
 
 					//ホーミングダッシュ用の値を変更する
 					TrackSet();
@@ -979,14 +978,14 @@ void SceneGame::Update(float elapsed_time)
 						//勝敗がついた
 						endtimer += elapsed_time;
 
-						//勝敗決定後、スローにする時間を作りたいので
+						//勝敗決定後、静止する時間を作りたいので
 						if (endtimer > end_slow_time)
 						{
 							game_speed = elapsed_time;
 						}
 						else
 						{
-							game_speed = elapsed_time * slow_adjust;
+							game_speed = 0.0f;
 						}
 
 						//大体7秒後くらいに勝利画面へ
@@ -1079,6 +1078,8 @@ void SceneGame::Update(float elapsed_time)
 							end = true;
 							player1p->pad->Init();
 							player2p->pad->Init();
+							Scene_End_eye = Scene_eye;
+							YRCamera.camera_state = Camera::CAMERA_STATE::END_GAME;
 						}
 						#ifdef EXIST_IMGUI
 						if (Get_Debug_Draw())
@@ -1318,6 +1319,7 @@ void SceneGame::Draw(float elapsed_time)
 
 		ImGui::SliderFloat("x", &xxx, 0.0f, 1920.0f);
 		ImGui::SliderFloat("y", &yyy, 0.0f, 1080.0f);
+		ImGui::Text("endTimer : %f", endtimer);
 		//ImGui::InputFloat("scroll", &scall, 0.01f, 100.0f);
 		//ImGui::SliderFloat("rollX", &roll.x, 0.0f, 30.00f);
 		//ImGui::SliderFloat("rollY", &roll.y, 0.0f, 30.00f);
@@ -2238,7 +2240,7 @@ void SceneGame::CameraUpdate(float elapsed_time)
 		if (!camera_move_debug)
 		{
 			YRCamera.SetEye(Scene_eye.GetDXFLOAT3());			//視点
-			YRCamera.SetFocus(Scene_focus.GetDXFLOAT3());			//注視点
+			YRCamera.SetFocus(Scene_focus.GetDXFLOAT3());		//注視点
 			YRCamera.SetUp(Scene_up.GetDXFLOAT3());				//上方向
 			YRCamera.SetPerspective(Scene_fov, Scene_aspect, Scene_nearZ, Scene_farZ);
 		}
@@ -2918,5 +2920,75 @@ void SceneGame::Control2PState(float elapsed_time)
 		break;
 	default:
 		break;
+	}
+}
+
+
+
+void SceneGame::EndORGameCameraSet()
+{
+	//ゲーム中、もしくは終了時のカメラの座標を計算する
+	if (end)
+	{
+		//プレイヤーの位置からカメラの位置を決定する
+		YR_Vector3 camera_screen = Limit::Set(player1p->pos, player2p->pos, Start_Scene_eye);
+		Scene_eye.y = camera_screen.y;
+		Scene_focus.y = camera_screen.y;
+
+		//ゲーム終了時カメラを回転させる
+		float count = (game_end_time) - endtimer;
+		float timer = (count * count);
+		float x_circle = cosf(timer);
+		float z_circle = sinf(timer);
+
+		//カメラのステートを固定する
+		YRCamera.camera_state = Camera::CAMERA_STATE::END_GAME;
+
+		switch (fin_camera_state)
+		{
+		case SceneGame::FIN_CAMERA_STATE::ROLL:
+		{
+			//カメラを回転
+			Scene_eye.x = Scene_End_eye.x + (Scene_End_eye.z * x_circle);
+			Scene_eye.z = (Scene_End_eye.z * z_circle);
+
+			//タイマーが一定以上になるまで回転
+			if (endtimer > end_slow_time)
+			{
+				//現在の値がプラスになった(初期位置に戻った)らカメラの回転を止める
+				if (x_circle > 0.0f)
+				{
+					Scene_eye.x = Scene_End_eye.x;
+					Scene_eye.z = Scene_End_eye.z;
+					fin_camera_state = FIN_CAMERA_STATE::STOP;
+				}
+			}
+		}
+			break;
+		case SceneGame::FIN_CAMERA_STATE::STOP:
+		{
+			YRCamera.camera_state = Camera::CAMERA_STATE::MAIN;
+			//プレイヤーの位置からカメラの位置を決定する
+			YR_Vector3 camera_screen = Limit::Set(player1p->pos, player2p->pos, Start_Scene_eye);
+			Scene_eye.x = camera_screen.x;
+			Scene_eye.y = camera_screen.y;
+			Scene_eye.z = camera_screen.z;
+			Scene_focus.x = camera_screen.x;
+			Scene_focus.y = camera_screen.y;
+		}
+			break;
+		default:
+			break;
+		}
+	}
+	else
+	{
+		//プレイヤーの位置からカメラの位置を決定する
+		YR_Vector3 camera_screen = Limit::Set(player1p->pos, player2p->pos, Start_Scene_eye);
+		Scene_eye.x = camera_screen.x;
+		Scene_eye.y = camera_screen.y;
+		Scene_eye.z = camera_screen.z;
+		Scene_focus.x = camera_screen.x;
+		Scene_focus.y = camera_screen.y;
 	}
 }
