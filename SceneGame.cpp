@@ -95,7 +95,24 @@ void SceneGame::Init()
 	end					= false;
 	endtimer			= 0.0f;
 	mix_fade			= 1.5f;
+	roll_timer			= -1.0f;	//回転の中心がずれる為マイナスの値から始めている
 	main_loop = MAIN_LOOP::INTRO1P;	//最初は1Pのイントロから開始
+
+	image_alpha = 0.0f;
+	image_size = 5.0f;
+
+	//ディザスタル関係の変数を初期化
+	desastal_size_p1 = 10.0f;
+	desastal_size_p2 = 10.0f;
+	desastal_alpha_p1 = 0.0f;
+	desastal_alpha_p2 = 0.0f;
+
+	//初期位置Xは画面外に
+	Danger_pos_p1 = { -500.0f,265.0f };
+	Danger_pos_p2 = { (float)FRAMEWORK.SCREEN_WIDTH + 500.0f,265.0f };
+
+	Danger_alpha = 1.0f;
+	Danger_size = 0.5f;
 
 	Scene_End_eye = YR_Vector3( 0.0f,0.0f,0.0f );
 	fin_camera_state = FIN_CAMERA_STATE::ROLL;
@@ -341,6 +358,10 @@ void SceneGame::LoadData()
 	{
 		desastal_case = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/desastal_case.png", 640.0f, 640.0f);
 	}
+	if (desastal_flash == nullptr)
+	{
+		desastal_flash = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/desastal_flash.png", 640.0f, 640.0f);
+	}
 	if (desastal_img == nullptr)
 	{
 		desastal_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/desastal.png", 1920.0f, 1280.0f, 3, 2, 640.0f, 640.0f);
@@ -356,6 +377,10 @@ void SceneGame::LoadData()
 	if (pause_img == nullptr)
 	{
 		pause_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/pause.png", 384.0f, 128.0f);
+	}
+	if (Danger_img == nullptr)
+	{
+		Danger_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/DANGER.png", 1280.0f, 360.0f);
 	}
 	if (p1_icon_img == nullptr)
 	{
@@ -485,6 +510,12 @@ void SceneGame::LoadData()
 	//プレイヤーの向きを指定しておく
 	player1p->rightOrleft = 1;
 	player2p->rightOrleft = -1;
+
+	pl1_before_hp = player1p->hp;
+	pl2_before_hp = player2p->hp;
+
+	pl1_before_power = player1p->power;
+	pl2_before_power = player2p->power;
 
 	//ロード終了
 	FRAMEWORK.sceneload.load_state = 7;
@@ -828,20 +859,19 @@ void SceneGame::Update(float elapsed_time)
 					//パッド更新
 					player1p->pad->Update(game_speed);
 					Control2PState(game_speed);
-					timer += elapsed_time;
 #ifdef EXIST_IMGUI
 					//デバッグ用即死技解禁コマンド
 					//↓このコメントを解除してゲーム中でoキーを押すと弱攻撃が即死になる
-					if (Get_Use_ImGui())
-					{
-						if (pKeyState.oflg == 1)
-						{
-							player1p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
-							//player2p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
-							player1p->pad->x_input[scastI(PAD::X)] = 1;
-							//player2p->pad->x_input[scastI(PAD::X)] = 1;
-						}
-					}
+					//if (Get_Use_ImGui())
+					//{
+					//	if (pKeyState.oflg == 1)
+					//	{
+					//		player1p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
+					//		//player2p->attack_list[scastI(AttackState::JAKU)].attack_single[0].parameter[0].damege = 1000.0f;
+					//		player1p->pad->x_input[scastI(PAD::X)] = 1;
+					//		//player2p->pad->x_input[scastI(PAD::X)] = 1;
+					//	}
+					//}
 #endif
 				}
 				if (pause)
@@ -852,6 +882,7 @@ void SceneGame::Update(float elapsed_time)
 				else
 				{
 					//対戦中
+					timer += elapsed_time;
 
 					//カメラリクエスト更新
 					CameraRequest(game_speed);
@@ -962,12 +993,11 @@ void SceneGame::Update(float elapsed_time)
 					}
 
 					//カメラ座標設定
-					EndORGameCameraSet();
+					EndORGameCameraSet(elapsed_time);
 
 					//ホーミングダッシュ用の値を変更する
 					TrackSet();
 
-					YRGetEffect().Update();
 					if (end)
 					{
 						/*if (pKeyState.pflg == 1)
@@ -982,6 +1012,8 @@ void SceneGame::Update(float elapsed_time)
 						if (endtimer > end_slow_time)
 						{
 							game_speed = elapsed_time;
+							//エフェクト更新
+							YRGetEffect().Update();
 						}
 						else
 						{
@@ -1019,6 +1051,9 @@ void SceneGame::Update(float elapsed_time)
 					else
 					{
 						//勝敗がついていない
+
+						//エフェクト更新
+						YRGetEffect().Update();
 
 						if (player1p->pad->x_input[scastI(PAD::START)] == 1 || player2p->pad->x_input[scastI(PAD::START)] == 1)
 						{
@@ -1070,6 +1105,10 @@ void SceneGame::Update(float elapsed_time)
 
 						//コンボに応じて画像セット
 						ComboImageSet();
+
+						DangerSound();
+
+						DesastalFlash(game_speed);
 
 						//勝敗判定
 						Winjudge();
@@ -1317,9 +1356,13 @@ void SceneGame::Draw(float elapsed_time)
 		float dis = player1p->pos.Distance(player2p->pos);
 		ImGui::Text("%f", dis);
 
-		ImGui::SliderFloat("x", &xxx, 0.0f, 1920.0f);
-		ImGui::SliderFloat("y", &yyy, 0.0f, 1080.0f);
-		ImGui::Text("endTimer : %f", endtimer);
+		/*ImGui::SliderFloat("Danger_p1_x", &Danger_pos_p1.x, 0.0f, 1920.0f);
+		ImGui::SliderFloat("Danger_p1_y", &Danger_pos_p1.y, 0.0f, 1920.0f);
+		ImGui::SliderFloat("Danger_p2_x", &Danger_pos_p2.x, 0.0f, 1920.0f);
+		ImGui::SliderFloat("Danger_p2_y", &Danger_pos_p2.y, 0.0f, 1920.0f);
+		ImGui::SliderFloat("Danger_size", &Danger_size, 0.0f, 10.0f);*/
+		ImGui::SliderFloat("Effect_Z", &Hitcheak::effectpos.z, -50.0f, 50.0f);
+		ImGui::Text("roll_timer : %f", roll_timer);
 		//ImGui::InputFloat("scroll", &scall, 0.01f, 100.0f);
 		//ImGui::SliderFloat("rollX", &roll.x, 0.0f, 30.00f);
 		//ImGui::SliderFloat("rollY", &roll.y, 0.0f, 30.00f);
@@ -1725,6 +1768,7 @@ void SceneGame::HPBar_Draw(
 			break;
 		}
 
+
 		//UI描画
 		//体力バー表示
 		PL.ratio1P = player1p->hp / PL.HP_MAX1P * 800.0f;
@@ -1792,6 +1836,9 @@ void SceneGame::HPBar_Draw(
 		pl1_before_hp = player1p->hp;
 		pl2_before_hp = player2p->hp;
 
+
+		DangerDraw(elapsed_time);
+
 		////エフェクト
 		//YRGetEffect().CameraSet();
 
@@ -1809,6 +1856,69 @@ void SceneGame::HPBar_Draw(
 
 
 
+
+//DANGER描画、更新
+void SceneGame::DangerDraw(float elapsed_time)
+{
+	float pos_plus_speed_D = 5000.0f;
+
+	//サイズを大きくする、小さくするを繰り返す
+	float sin_timer = sinf(timer*5.0f);
+	Danger_size += (sin_timer * 0.001f);
+
+	//1PのDANGER表記
+	if (player1p->hp <= (PL.HP_MAX1P * HP_Danger_point) && player1p->hp != 0.0f)
+	{
+		//座標を指定の位置まで移動させる(数値はImGuiにて設定した値)
+		if (Danger_pos_p1.x < 350.0f)
+		{
+			Danger_pos_p1.x += (pos_plus_speed_D * elapsed_time);
+		}
+		else
+		{
+			Danger_pos_p1.x = 350.0f;
+		}
+
+		Danger_img->DrawRotaGraph(
+			spriteShader.get(),
+			Danger_pos_p1.x,
+			Danger_pos_p1.y,
+			0.0f,
+			Danger_size,
+			false,
+			SpriteMask::NONE,
+			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, Danger_alpha));
+	}
+
+	//2PのDANGER表記
+	if (player2p->hp <= (PL.HP_MAX2P * HP_Danger_point) && player2p->hp != 0.0f)
+	{
+		//座標を指定の位置まで移動させる(数値はImGuiにて設定した値)
+		if (Danger_pos_p2.x > 1570.0f)
+		{
+			Danger_pos_p2.x -= (pos_plus_speed_D * elapsed_time);
+		}
+		else
+		{
+			Danger_pos_p2.x = 1570.0f;
+		}
+
+		Danger_img->DrawRotaGraph(
+			spriteShader.get(),
+			Danger_pos_p2.x,
+			Danger_pos_p2.y,
+			0.0f,
+			Danger_size,
+			false,
+			SpriteMask::NONE,
+			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, Danger_alpha));
+	}
+}
+
+
+
+
+//UIの描画(ゲージなど)
 void SceneGame::UI_Draw(float elapsed_time)
 {
 	NullSetRenderTexture();
@@ -1881,7 +1991,8 @@ void SceneGame::UI_Draw(float elapsed_time)
 		gauge_anim1p->DrawExtendAnimGraph(spriteShader.get(), 100.0f, 1000.0f, 100.0f + PL.gauge1P, 1064.0f, -300.0f, elapsed_time, SpriteMask::INDRAW, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
 		gauge_anim2p->DrawExtendAnimGraph(spriteShader.get(), 1800.0f - PL.gauge2P, 1000.0f, 1800.0f, 1064.0f, 300.0f, elapsed_time, SpriteMask::INDRAW, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
 
-		//ゲージの数字描画
+		//ディザスタル描画
+		//1P
 		desastal_case->DrawRotaGraph
 		(
 			spriteShader.get(),
@@ -1901,7 +2012,19 @@ void SceneGame::UI_Draw(float elapsed_time)
 			SpriteMask::NONE,
 			PL.power1P
 		);
+		desastal_flash->DrawRotaGraph
+		(
+			spriteShader.get(),
+			86.0f,
+			965.0f,
+			0.0f,
+			0.25f + desastal_size_p1,
+			false,
+			SpriteMask::NONE,
+			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, desastal_alpha_p1)
+		);
 
+		//2P
 		desastal_case->DrawRotaGraph
 		(
 			spriteShader.get(),
@@ -1921,6 +2044,17 @@ void SceneGame::UI_Draw(float elapsed_time)
 			player2p->power,
 			SpriteMask::NONE,
 			PL.power2P
+		);
+		desastal_flash->DrawRotaGraph
+		(
+			spriteShader.get(),
+			1838.0f,
+			965.0f,
+			0.0f,
+			0.25f + desastal_size_p2,
+			true,
+			SpriteMask::NONE,
+			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, desastal_alpha_p2)
 		);
 
 
@@ -1978,10 +2112,15 @@ void SceneGame::UI_Draw(float elapsed_time)
 			if (endtimer < end_slow_time)
 			{
 				//「KO」
-				KO_img->DrawGraph(
+				KO_img->DrawRotaGraph(
 					spriteShader.get(),
 					static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
-					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f
+					static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f,
+					0.0f,
+					image_size,
+					false,
+					SpriteMask::NONE,
+					DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, image_alpha)
 				);
 			}
 
@@ -1990,10 +2129,15 @@ void SceneGame::UI_Draw(float elapsed_time)
 				if (judge == JUDGE_VICTORY::DRAW)
 				{
 					//「DROW」画像
-					draw_img->DrawGraph(
+					draw_img->DrawRotaGraph(
 						spriteShader.get(),
 						static_cast<float>(FRAMEWORK.SCREEN_WIDTH) / 2.0f,
-						static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f
+						static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) / 2.0f,
+						0.0f,
+						image_size,
+						false,
+						SpriteMask::NONE,
+						DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, image_alpha)
 					);
 				}
 			}
@@ -2136,7 +2280,7 @@ DirectX::XMFLOAT4 SceneGame::HPColorSet(float hp, float max_hp)
 		return DirectX::XMFLOAT4(0.0f, 0.5f, 1.0f, 1.0f);
 	}
 
-	if (hp <= (max_hp * 0.3f))
+	if (hp <= (max_hp * HP_Danger_point))
 	{
 		return DirectX::XMFLOAT4(1.0f, 0.2f, 0.0f, 1.0f);
 	}
@@ -2185,12 +2329,19 @@ void SceneGame::PauseUpdate()
 	}
 	if (player1p->pad->x_input[scastI(PAD::LB)] == 1 ||player2p->pad->x_input[scastI(PAD::LB)] == 1)
 	{
+		//ゲームリセット
 		//fado_start = true;
 		//FRAMEWORK.SetScene(SCENE_SELECT);
 		player1p->Init(PL.pos1P);
 		player2p->Init(PL.pos2P);
 		Init();
 		pause = false;
+	}
+	if (player1p->pad->x_input[scastI(PAD::RB)] == 1 || player2p->pad->x_input[scastI(PAD::RB)] == 1)
+	{
+		//タイトルに戻る
+		UnInit();
+		FRAMEWORK.SetScene(SCENE_TABLE::SCENE_TITLE);
 	}
 #ifdef EXIST_IMGUI
 	if (pKeyState.pflg == 1)
@@ -2384,6 +2535,7 @@ void SceneGame::CameraRequest(float elapsed_time)
 		DirectX::XMFLOAT3 focus = camerapos.GetDXFLOAT3();
 		DirectX::XMFLOAT3 eye = camerapos.GetDXFLOAT3();
 
+		//ImGuiにて調整した補正値
 		float x_adjust = 70.0f;
 		float y_adjust = 5.0f;
 
@@ -2925,19 +3077,64 @@ void SceneGame::Control2PState(float elapsed_time)
 
 
 
-void SceneGame::EndORGameCameraSet()
+void SceneGame::EndORGameCameraSet(float elapsed_time)
 {
 	//ゲーム中、もしくは終了時のカメラの座標を計算する
 	if (end)
 	{
+		//回転に使用するタイマーを増やす
+		roll_timer += elapsed_time * endtimer * 1.5f;
+
+		//画像表示する際のアルファ値を上げていく
+		if (image_alpha < 1.0f)
+		{
+			image_alpha += elapsed_time * 0.5f;
+		}
+
+		//画像表示する際の大きさを下げていく
+		if (image_size > 1.0f)
+		{
+			image_size -= elapsed_time * 5.0f * endtimer;
+		}
+
 		//プレイヤーの位置からカメラの位置を決定する
-		YR_Vector3 camera_screen = Limit::Set(player1p->pos, player2p->pos, Start_Scene_eye);
-		Scene_eye.y = camera_screen.y;
-		Scene_focus.y = camera_screen.y;
+		float distance = 3.0f;		//カメラ調整値
+		switch (judge)
+		{
+		case SceneGame::JUDGE_VICTORY::VICTORY1P:
+			//1Pが勝利したので2Pをカメラの中心に
+			Scene_eye.y = player2p->pos.y + distance;
+			Scene_focus.y = player2p->pos.y + distance;
+			break;
+		case SceneGame::JUDGE_VICTORY::VICTORY2P:
+			//2Pが勝利したので1Pをカメラの中心に
+			Scene_eye.y = player1p->pos.y + distance;
+			Scene_focus.y = player1p->pos.y + distance;
+			break;
+		case SceneGame::JUDGE_VICTORY::DRAW:
+		{
+			//引き分けなので両方の中心をカメラの中心に
+			if (player1p->pos.y < player2p->pos.y)
+			{
+				//1Pが2Pより下にいる場合
+				distance = player2p->pos.y - player1p->pos.y;
+				Scene_eye.y = player1p->pos.y + distance;
+				Scene_focus.y = player1p->pos.y + distance;
+			}
+			else
+			{
+				distance = player1p->pos.y - player2p->pos.y;
+				Scene_eye.y = player2p->pos.y + distance;
+				Scene_focus.y = player2p->pos.y + distance;
+			}
+		}
+			break;
+		default:
+			break;
+		}
 
 		//ゲーム終了時カメラを回転させる
-		float count = (game_end_time) - endtimer;
-		float timer = (count * count);
+		float timer = roll_timer;
 		float x_circle = cosf(timer);
 		float z_circle = sinf(timer);
 
@@ -2950,16 +3147,16 @@ void SceneGame::EndORGameCameraSet()
 		{
 			//カメラを回転
 			Scene_eye.x = Scene_End_eye.x + (Scene_End_eye.z * x_circle);
-			Scene_eye.z = (Scene_End_eye.z * z_circle);
+			Scene_eye.z = (130.0f * z_circle);
 
 			//タイマーが一定以上になるまで回転
-			if (endtimer > end_slow_time)
+			if (roll_timer > 4.0f)
 			{
 				//現在の値がプラスになった(初期位置に戻った)らカメラの回転を止める
 				if (x_circle > 0.0f)
 				{
 					Scene_eye.x = Scene_End_eye.x;
-					Scene_eye.z = Scene_End_eye.z;
+					Scene_eye.z = 130.0f;
 					fin_camera_state = FIN_CAMERA_STATE::STOP;
 				}
 			}
@@ -2970,11 +3167,25 @@ void SceneGame::EndORGameCameraSet()
 			YRCamera.camera_state = Camera::CAMERA_STATE::MAIN;
 			//プレイヤーの位置からカメラの位置を決定する
 			YR_Vector3 camera_screen = Limit::Set(player1p->pos, player2p->pos, Start_Scene_eye);
-			Scene_eye.x = camera_screen.x;
-			Scene_eye.y = camera_screen.y;
-			Scene_eye.z = camera_screen.z;
-			Scene_focus.x = camera_screen.x;
-			Scene_focus.y = camera_screen.y;
+
+
+			DirectX::XMVECTOR scene_eye_vector = DirectX::XMLoadFloat3(&Scene_eye.GetDXFLOAT3());
+			DirectX::XMVECTOR eye_vector = DirectX::XMLoadFloat3(&camera_screen.GetDXFLOAT3());
+			DirectX::XMVECTOR scene_focus_vector = DirectX::XMLoadFloat3(&Scene_focus.GetDXFLOAT3());
+			DirectX::XMVECTOR focus_vector = DirectX::XMLoadFloat3(&camera_screen.GetDXFLOAT3());
+
+			DirectX::XMVECTOR eye_larp = DirectX::XMVectorLerp(eye_vector, scene_eye_vector, 0.05f);
+			DirectX::XMVECTOR focus_larp = DirectX::XMVectorLerp(focus_vector, scene_focus_vector, 0.05f);
+
+			DirectX::XMFLOAT3 eye = { 0.0f,0.0f,0.0f };
+			DirectX::XMFLOAT3 focus = { 0.0f,0.0f,0.0f };
+
+			DirectX::XMStoreFloat3(&eye, eye_larp);
+			DirectX::XMStoreFloat3(&focus, focus_larp);
+
+			Scene_eye = eye;
+			Scene_focus.x = focus.x;
+			Scene_focus.y = focus.y;
 		}
 			break;
 		default:
@@ -2991,4 +3202,95 @@ void SceneGame::EndORGameCameraSet()
 		Scene_focus.x = camera_screen.x;
 		Scene_focus.y = camera_screen.y;
 	}
+}
+
+
+
+void SceneGame::DangerSound()
+{
+	//HPがDANGER状態になったらサウンドを鳴らす
+
+	//前フレームのHPがDANGERに到達していなかった場合
+	if (pl1_before_hp > (PL.HP_MAX1P * HP_Danger_point))
+	{
+		//現在のHPがDANGERに到達していればサウンドを鳴らす
+		if (player1p->hp <= (PL.HP_MAX1P * HP_Danger_point))
+		{
+			GetSound().SESinglePlay(SEKind::DANGER);
+		}
+	}
+
+	//前フレームのHPがDANGERに到達していなかった場合
+	if (pl2_before_hp > (PL.HP_MAX2P * HP_Danger_point))
+	{
+		//現在のHPがDANGERに到達していればサウンドを鳴らす
+		if (player2p->hp <= (PL.HP_MAX2P * HP_Danger_point))
+		{
+			GetSound().SESinglePlay(SEKind::DANGER);
+		}
+	}
+}
+
+
+void SceneGame::DesastalFlash(float elapsed_time)
+{
+	//ディザスタルが増えた時に数値を変化させて光っているように見せる
+	//その時、サウンドも鳴らす
+
+	float size_up = 1.0f;
+	float alpha_down = 1.0f;
+
+	//1P
+	//前回フレームと現在のディザスタルの数が異なる場合
+	if (pl1_before_power != player1p->power)
+	{
+		desastal_alpha_p1 = 1.0f;
+		desastal_size_p1 = 0.0f;
+		//前回フレームより現在のディザスタルの数が多い場合
+		if (pl1_before_power < player1p->power)
+		{
+			GetSound().SESinglePlay(SEKind::GAUGE_UP);
+		}
+	}
+	if (desastal_size_p1 < 5.0f)
+	{
+		desastal_size_p1 += (size_up * elapsed_time);
+	}
+	if (desastal_alpha_p1 > 0.0f)
+	{
+		desastal_alpha_p1 -= (alpha_down * elapsed_time);
+	}
+	else
+	{
+		desastal_alpha_p1 = 0.0f;
+	}
+
+	//2P
+	//前回フレームと現在のディザスタルの数が異なる場合
+	if (pl2_before_power != player2p->power)
+	{
+		desastal_alpha_p2 = 1.0f;
+		desastal_size_p2 = 0.0f;
+		//前回フレームより現在のディザスタルの数が多い場合
+		if (pl2_before_power < player2p->power)
+		{
+			GetSound().SESinglePlay(SEKind::GAUGE_UP);
+		}
+	}
+	if (desastal_size_p2 < 5.0f)
+	{
+		desastal_size_p2 += (size_up * elapsed_time);
+	}
+	if (desastal_alpha_p2 > 0.0f)
+	{
+		desastal_alpha_p2 -= (alpha_down * elapsed_time);
+	}
+	else
+	{
+		desastal_alpha_p2 = 0.0f;
+	}
+
+
+	pl1_before_power = player1p->power;
+	pl2_before_power = player2p->power;
 }

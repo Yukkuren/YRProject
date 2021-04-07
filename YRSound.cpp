@@ -93,6 +93,8 @@ void YRSound::Init()
 	SELoad("./Data/Sound/SE/jump.wav", SEKind::JUMP);
 	SELoad("./Data/Sound/SE/high_jump.wav", SEKind::HIGH_JUMP);
 	SELoad("./Data/Sound/SE/landing.wav", SEKind::LANDING);
+	SELoad("./Data/Sound/SE/denger.wav", SEKind::DANGER);
+	SELoad("./Data/Sound/SE/gauge_up.wav", SEKind::GAUGE_UP);
 }
 
 //デストラクタ

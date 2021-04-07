@@ -20,7 +20,15 @@ enum class KNIGHTHIT :int
 };
 
 
-//個別モーションデータ格納構造体
+//---------------------------------------------------
+//		個別モーションデータ格納構造体
+//---------------------------------------------------
+//	・現在はキャラが1体しかいないため、直接子クラスに
+//	モデルデータを持たせている
+//
+//	・将来キャラを増やす際は、モデルデータは親クラスに依存させ
+//	CPPで行っている処理も親クラスで行うよう変更する。
+//---------------------------------------------------
 struct Model_MotionData
 {
 	std::shared_ptr<Model>			wait_R = nullptr;
@@ -127,6 +135,7 @@ private:
 	const float track_speed = 100.0f;		//ホーミングダッシュの速度
 	const YR_Vector3 passive_speed = { 70.0f,70.0f };	//受け身状態にスピードに代入する速度
 	const float passive_brake = 200.0f;		//受け身中に減速する速度
+	const float knight_max_hp = 1000.0f;	//ナイトのHPの初期値
 
 	const size_t	max_traject_count = 128;	//剣の軌跡の最大値
 

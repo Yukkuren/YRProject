@@ -63,6 +63,8 @@ enum class SEKind : int
 	JUMP,				//ジャンプ
 	HIGH_JUMP,			//ハイジャンプ
 	LANDING,			//着地
+	DANGER,				//DANGER時アナウンス
+	GAUGE_UP,			//ゲージ増加時
 	END,
 };
 

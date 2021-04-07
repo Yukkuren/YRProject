@@ -362,6 +362,7 @@ public:
 	float				cut_in_timer = 0.0f;					//カットインの表示時間
 	float				passive_timer = 0.0f;					//受け身中の無敵時間測定変数
 	int					combo_count_player = 0;					//コンボカウント。こちらは相手から受け取る
+	int					draw_count = 0.0f;						//描画時に使用するカウント
 	DirectX::XMFLOAT4	light_direction =
 		DirectX::XMFLOAT4(-1.0f, -0.1, 1.0f, 0.0f);				//ライトの進む方向
 	HitResult			hit_result = HitResult::NOT_OCCURRENCE;	//攻撃が当たった場合の結果を保存する

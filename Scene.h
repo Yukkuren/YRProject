@@ -27,6 +27,7 @@ constexpr float ready_time = 1.0f;			//Readyの表示を出す時間
 constexpr float end_slow_time = 3.0f;		//試合終了後スローにする時間
 constexpr float slow_adjust = 0.2f;			//スロー補正値
 constexpr float game_end_time = 5.0f;		//ゲームが終了して勝利画面に移行する時間
+constexpr float HP_Danger_point = 0.3f;		//DANGER状態になるHPの割合量
 
 //タイトル画面・ゲームシーンで選択に使用できるボタンの羅列
 constexpr std::array<PAD, 10> any_button =
@@ -93,7 +94,6 @@ struct PlayerALL
 	float				gauge2P = 0.0f;
 	YR_Vector3			pos1P{ -8.0f,0.0f };
 	YR_Vector3			pos2P{ 8.0f,0.0f };
-
 
 };
 
@@ -300,6 +300,9 @@ public:
 	float		Scene_nearZ = 0.0f;		//ニアクリップ面までの距離
 	float		Scene_farZ = 0.0f;		//ファークリップ面までの距離
 
+	float image_alpha = 0.0f;			//画像表示時に使用するアルファ値
+	float image_size = 5.0f;			//画像表示時に使用する拡大率
+
 	YR_Vector3	Start_Scene_eye;		//ゲーム開始時の初期カメラ座標
 	YR_Vector3	Start_Scene_focus;		//ゲーム開始時の初期カメラ方向
 
@@ -352,10 +355,12 @@ public:
 	std::unique_ptr<Sprite> KO_img = nullptr;
 	std::unique_ptr<Sprite> font_img = nullptr;
 	std::unique_ptr<Sprite> desastal_case = nullptr;
+	std::unique_ptr<Sprite> desastal_flash = nullptr;
 	std::unique_ptr<Sprite> desastal_img = nullptr;
 	std::unique_ptr<Sprite> call_img = nullptr;
 	std::unique_ptr<Sprite> effect_img = nullptr;
 	std::unique_ptr<Sprite> pause_img = nullptr;
+	std::unique_ptr<Sprite> Danger_img = nullptr;
 	std::array<int, 3>		p1combo;
 	std::array<int, 3>		p2combo;
 	std::shared_ptr<Texture> p1_icon_img = nullptr;
@@ -421,6 +426,18 @@ public:
 	float							pl1_before_hp = 0.0f;
 	float							pl2_before_hp = 0.0f;
 
+	int							pl1_before_power = 0;
+	int							pl2_before_power = 0;
+
+	YR_Vector2		Danger_pos_p1 = { 0.0f,0.0f };		//1PのDANGER表記座標
+	YR_Vector2		Danger_pos_p2 = { 0.0f,0.0f };		//2PのDANGER表記座標
+	float			Danger_size = 0.0f;					//DANGER表記の大きさ
+	float			Danger_alpha = 0.0f;				//DANGER表記のアルファ値
+	float			desastal_size_p1 = 0.0f;			//1Pのディザスタル発光時のサイズ
+	float			desastal_size_p2 = 0.0f;			//2Pのディザスタル発光時のサイズ
+	float			desastal_alpha_p1 = 0.0f;			//1Pのディザスタル発光時のアルファ値
+	float			desastal_alpha_p2 = 0.0f;			//2Pのディザスタル発光時のアルファ値
+
 	//ゲームループ制御変数
 	bool			pause = false;						//ポーズ中
 	bool			start = false;						//対戦開始
@@ -429,8 +446,10 @@ public:
 	bool			end = false;						//勝敗がついた
 	bool			fin = false;						//全て終わった
 	float			endtimer = 0.0f;					//勝敗がついてから勝利画面に移行するまでに使用
+	float			roll_timer = -1.0f;					//決着後にカメラを回す際に使用する
 	float			mix_fade = 0.0f;					//フェードインの速度変更用
 	bool			blur_on = false;					//ブルームをかけるフラグ
+
 
 	AI_Controller	AI2P;								//2PのAI情報
 
@@ -497,7 +516,13 @@ public:
 
 	void AIControll(float elapsed_time);
 
-	void EndORGameCameraSet();
+	void EndORGameCameraSet(float elapsed_time);
+
+	void DangerDraw(float elapsed_time);
+
+	void DangerSound();
+
+	void DesastalFlash(float elapsed_time);
 
 	/*struct CB_Multi_Render_Target
 	{

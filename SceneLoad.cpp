@@ -33,7 +33,7 @@ float Hitcheak::add1P = 0.0f;
 float Hitcheak::add2P = 0.0f;
 bool Hitcheak::clash = false;
 YR_Vector3 Hitcheak::clashpos = { 0.0f,0.0f };
-YR_Vector3 Hitcheak::effectpos = { 0.0f,0.0f };
+YR_Vector3 Hitcheak::effectpos = { 0.0f,0.0f,-5.0f };
 int Hitcheak::effecttimer = 0;
 //int Hitcheak::hei = 0;
 

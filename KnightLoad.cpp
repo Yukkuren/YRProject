@@ -84,7 +84,8 @@ void Knight::LoadData(int color_number)
 		}
 		else
 		{
-			main = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
+			//main = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
+			main = std::make_shared<Model>("./Data/FBX/Neru/Neru_main.fbx");
 		}
 	}
 	//------------------------------------------//
@@ -95,7 +96,14 @@ void Knight::LoadData(int color_number)
 	//待機モーション
 	if (model_motion.wait_R == nullptr)
 	{
-		model_motion.wait_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_wait_R.fbx");
+		if (color_number == 1)
+		{
+			model_motion.wait_R = std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_wait_R.fbx");
+		}
+		else
+		{
+			model_motion.wait_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_wait_R.fbx");
+		}
 	}
 	if (model_motion.wait_L == nullptr)
 	{
@@ -225,7 +233,14 @@ void Knight::LoadData(int color_number)
 	//イントロモーション
 	if (model_motion.intro_R == nullptr)
 	{
-		model_motion.intro_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_Intro_R.fbx");
+		if (color_number == 1)
+		{
+			model_motion.intro_R = std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_wait_R.fbx");
+		}
+		else
+		{
+			model_motion.intro_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_Intro_R.fbx");
+		}
 	}
 	if (model_motion.intro_L == nullptr)
 	{
@@ -255,7 +270,14 @@ void Knight::LoadData(int color_number)
 	//弱攻撃
 	if (model_motion.jaku_R == nullptr)
 	{
-		model_motion.jaku_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_jaku_R.fbx");
+		if (color_number == 1)
+		{
+			model_motion.jaku_R = std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_jaku_R.fbx");
+		}
+		else
+		{
+			model_motion.jaku_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_jaku_R.fbx");
+		}
 	}
 	if (model_motion.jaku_L == nullptr)
 	{

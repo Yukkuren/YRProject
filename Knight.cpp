@@ -10,6 +10,15 @@
 #include "YRSound.h"
 
 
+//-----------------------------------------------------------------
+//			Knightクラス
+//-----------------------------------------------------------------
+//	・現在はキャラが1体しかいない為、全ての処理をこのクラスで行っている。
+//
+//	・将来的にキャラを追加する際、このままでは容易に追加することが難しいため
+//	親クラスにほとんどの処理を任せて必要な部分のみこのクラスで行うようにする
+//-----------------------------------------------------------------
+
 Knight::~Knight() = default;
 
 void Knight::Init(YR_Vector3 InitPos)
@@ -28,7 +37,7 @@ void Knight::Init(YR_Vector3 InitPos)
 	jumpcount = 2;
 	air_dash_count = 1;
 	max_jump_flag = false;
-	hp = 1000;
+	hp = knight_max_hp;
 	gravity = 40.0f;
 	down_force = 200.0f;
 	fall_force = 100.0f;
@@ -58,6 +67,8 @@ void Knight::Init(YR_Vector3 InitPos)
 	stop_state = 0;
 	air_dash_state = AirDashState::NONE;
 	power = 1;
+
+	draw_count = 0;
 
 	light_direction = DirectX::XMFLOAT4(-1.0f, -0.1, 1.0f, 0.0f);
 #pragma region HITBOXINIT
@@ -1152,17 +1163,6 @@ void Knight::Draw(
 
 	bool invincible = false;	//無敵かどうかを判別するフラグ
 
-	//if (attack_state == AttackState::EXTENDATK)
-	//{
-	//	/*for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
-	//	{
-	//		if (hit[i].parameter.state == HitBoxState::INVINCIBLE)
-	//		{
-	//			invincible = true;
-	//		}
-	//	}*/
-	//}
-
 	//キャラの当たり判定に無敵がついていた場合無敵フラグをtrueに
 	for (int i = 0; i < hit.size(); i++)
 	{
@@ -1176,6 +1176,23 @@ void Knight::Draw(
 	//Blenderのモデルのサブセットには0.8のmaterial_colorが入っているため逆数を入れている
 	DirectX::XMFLOAT4 material_color = { 1.1f,1.1f,1.1f,1.0f };
 
+
+	//体力が2割以下になった場合
+	if (hp <= knight_max_hp * HP_Danger_point && hp != 0.0f)
+	{
+		//描画用のタイマーを増やす
+		if (elapsed_time != 0.0f)
+		{
+			draw_count++;
+		}
+
+		//特定のタイミングで
+		if (draw_count % 80 < 8)
+		{
+			//赤色にする
+			material_color = { 1.1f,0.3f,0.3f,1.0f };
+		}
+	}
 
 	//左向き
 	if (rightOrleft < 0)
@@ -1307,42 +1324,42 @@ void Knight::Draw(
 	0,0,0,1
 	};
 	//剣のワールド変換行列を取得する
-	DirectX::XMMATRIX sword_world_transform;
-	for (auto& a : anim->GetNodes())
-	{
-		if (a.name == std::string("Sword"))
-		{
-			/*coodinate_conversion._41 = a.translate.x;
-			coodinate_conversion._42 = a.translate.y;
-			coodinate_conversion._43 = a.translate.z;*/
-			sword_world_transform = DirectX::XMLoadFloat4x4(&a.world_transform);
-			break;
-		}
-	}
+	//DirectX::XMMATRIX sword_world_transform;
+	//for (auto& a : anim->GetNodes())
+	//{
+	//	if (a.name == std::string("Sword"))
+	//	{
+	//		/*coodinate_conversion._41 = a.translate.x;
+	//		coodinate_conversion._42 = a.translate.y;
+	//		coodinate_conversion._43 = a.translate.z;*/
+	//		sword_world_transform = DirectX::XMLoadFloat4x4(&a.world_transform);
+	//		break;
+	//	}
+	//}
 
-	//取得した剣のワールド変換行列を使って剣の先端と根本の座標を割り出す
-	DirectX::XMVECTOR head_vec = DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&sword_head.GetDXFLOAT3()), sword_world_transform);
-	DirectX::XMVECTOR tail_vec = DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&sword_tail.GetDXFLOAT3()), sword_world_transform);
+	////取得した剣のワールド変換行列を使って剣の先端と根本の座標を割り出す
+	//DirectX::XMVECTOR head_vec = DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&sword_head.GetDXFLOAT3()), sword_world_transform);
+	//DirectX::XMVECTOR tail_vec = DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&sword_tail.GetDXFLOAT3()), sword_world_transform);
 
 
-	DirectX::XMStoreFloat3(&head, head_vec);
-	DirectX::XMStoreFloat3(&tail, tail_vec);
+	//DirectX::XMStoreFloat3(&head, head_vec);
+	//DirectX::XMStoreFloat3(&tail, tail_vec);
 
-	if (timer < non_target && timer>0.0f)
+	if (timer < non_target && timer > 0.0f)
 	{
 		//攻撃が出ている状態なら剣の履歴を保存する
 		if (traject_on)
 		{
 			//攻撃によっては剣の軌跡を表示しない
-			traject.SetTrajectoryPos(head, tail);
+			//traject.SetTrajectoryPos(head, tail);
 		}
 	}
 
-	traject.Update(elapsed_time);
+	//traject.Update(elapsed_time);
 
-	traject.render(
+	/*traject.render(
 			pos.GetDXFLOAT3(),
-			scale.GetDXFLOAT3(), angle.GetDXFLOAT3(), view, projection, material_color);
+			scale.GetDXFLOAT3(), angle.GetDXFLOAT3(), view, projection, material_color);*/
 
 	//テキスト描画
 	TextDraw();
@@ -2857,6 +2874,7 @@ void Knight::DamageCheck(float decision)
 				act_state = ActState::KNOCK;
 				steal_escape = 0.0f;
 				hit[i].hit_state = HitStateKind::NORMAL;
+				timer = non_target;
 				if (rightOrleft > 0)
 				{
 					anim->NodeChange(model_motion.damage_R_g_u);
@@ -2894,6 +2912,7 @@ void Knight::DamageCheck(float decision)
 				steal_escape = hit[i].steal_timer;
 				hit[i].hit_state = HitStateKind::STEAL;
 				hit[i].steal_timer = 0.0f;
+				timer = non_target;
 				if (rightOrleft > 0)
 				{
 					anim->NodeChange(model_motion.damage_R_g_u);
@@ -2920,6 +2939,7 @@ void Knight::DamageCheck(float decision)
 				}
 				ChangeFace(FaceAnim::Damage);
 				anim_ccodinate = 5.0f;
+				timer = non_target;
 				break;
 			case HitStateKind::DOWN:
 				//ダウン攻撃
