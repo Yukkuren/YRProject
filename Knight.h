@@ -6,7 +6,6 @@
 #include "AttackBox.h"
 #include "HitBox.h"
 #include <vector>
-#include "YRModelAnim.h"
 #include "Trajectory.h"
 #include "Geometric_primitive.h"
 
@@ -20,142 +19,14 @@ enum class KNIGHTHIT :int
 };
 
 
-//---------------------------------------------------
-//		個別モーションデータ格納構造体
-//---------------------------------------------------
-//	・現在はキャラが1体しかいないため、直接子クラスに
-//	モデルデータを持たせている
-//
-//	・将来キャラを増やす際は、モデルデータは親クラスに依存させ
-//	CPPで行っている処理も親クラスで行うよう変更する。
-//---------------------------------------------------
-struct Model_MotionData
-{
-	std::shared_ptr<Model>			wait_R = nullptr;
-	std::shared_ptr<Model>			wait_L = nullptr;
-	std::shared_ptr<Model>			guard_R = nullptr;
-	std::shared_ptr<Model>			guard_L = nullptr;
-	std::shared_ptr<Model>			slid_R = nullptr;
-	std::shared_ptr<Model>			slid_L = nullptr;
-	std::shared_ptr<Model>			air_back_R = nullptr;
-	std::shared_ptr<Model>			air_back_L = nullptr;
-	std::shared_ptr<Model>			air_dash_R = nullptr;
-	std::shared_ptr<Model>			air_dash_L = nullptr;
-	std::shared_ptr<Model>			passive_R = nullptr;
-	std::shared_ptr<Model>			passive_L = nullptr;
-	std::shared_ptr<Model>			squat_R = nullptr;
-	std::shared_ptr<Model>			squat_L = nullptr;
-	std::shared_ptr<Model>			walk_R = nullptr;
-	std::shared_ptr<Model>			walk_L = nullptr;
-	std::shared_ptr<Model>			back_R = nullptr;
-	std::shared_ptr<Model>			back_L = nullptr;
-	std::shared_ptr<Model>			dash_R = nullptr;
-	std::shared_ptr<Model>			dash_L = nullptr;
-	std::shared_ptr<Model>			backstep_R = nullptr;
-	std::shared_ptr<Model>			backstep_L = nullptr;
-	std::shared_ptr<Model>			jump_R = nullptr;
-	std::shared_ptr<Model>			jump_L = nullptr;
-	std::shared_ptr<Model>			air_jump_R = nullptr;
-	std::shared_ptr<Model>			air_jump_L = nullptr;
-	std::shared_ptr<Model>			intro_R = nullptr;
-	std::shared_ptr<Model>			intro_L = nullptr;
-	std::shared_ptr<Model>			win_R = nullptr;
-	std::shared_ptr<Model>			win_L = nullptr;
-	std::shared_ptr<Model>			damage_R_g_u = nullptr;
-	std::shared_ptr<Model>			damage_L_g_u = nullptr;
-	std::shared_ptr<Model>			jaku_R = nullptr;
-	std::shared_ptr<Model>			jaku_L = nullptr;
-	std::shared_ptr<Model>			thu_R = nullptr;
-	std::shared_ptr<Model>			thu_L = nullptr;
-	std::shared_ptr<Model>			kyo_R = nullptr;
-	std::shared_ptr<Model>			kyo_L = nullptr;
-	std::shared_ptr<Model>			d_jaku_R = nullptr;
-	std::shared_ptr<Model>			d_jaku_L = nullptr;
-	std::shared_ptr<Model>			d_thu_R = nullptr;
-	std::shared_ptr<Model>			d_thu_L = nullptr;
-	std::shared_ptr<Model>			u_kyo_R = nullptr;
-	std::shared_ptr<Model>			u_kyo_L = nullptr;
-	std::shared_ptr<Model>			a_jaku_R = nullptr;
-	std::shared_ptr<Model>			a_jaku_L = nullptr;
-	std::shared_ptr<Model>			a_thu_R = nullptr;
-	std::shared_ptr<Model>			a_thu_L = nullptr;
-	std::shared_ptr<Model>			a_kyo_R = nullptr;
-	std::shared_ptr<Model>			a_kyo_L = nullptr;
-	std::shared_ptr<Model>			a_ukyo_R = nullptr;
-	std::shared_ptr<Model>			a_ukyo_L = nullptr;
-	std::shared_ptr<Model>			steal_R = nullptr;
-	std::shared_ptr<Model>			steal_L = nullptr;
-	std::shared_ptr<Model>			slow_R = nullptr;
-	std::shared_ptr<Model>			slow_L = nullptr;
-	std::shared_ptr<Model>			track_R = nullptr;
-	std::shared_ptr<Model>			track_L = nullptr;
-	std::shared_ptr<Model>			jaku_rh_R = nullptr;
-	std::shared_ptr<Model>			jaku_rh_L = nullptr;
-	std::shared_ptr<Model>			thu_rh_R = nullptr;
-	std::shared_ptr<Model>			thu_rh_L = nullptr;
-	std::shared_ptr<Model>			kyo_rh_R = nullptr;
-	std::shared_ptr<Model>			kyo_rh_L = nullptr;
-	std::shared_ptr<Model>			jaku_lh_R = nullptr;
-	std::shared_ptr<Model>			jaku_lh_L = nullptr;
-	std::shared_ptr<Model>			thu_lh_R = nullptr;
-	std::shared_ptr<Model>			thu_lh_L = nullptr;
-	std::shared_ptr<Model>			kyo_lh_R = nullptr;
-	std::shared_ptr<Model>			kyo_lh_L = nullptr;
-	std::shared_ptr<Model>			special_R = nullptr;
-	std::shared_ptr<Model>			special_L = nullptr;
-	std::shared_ptr<Model>			disire_s_R = nullptr;
-	std::shared_ptr<Model>			disire_s_L = nullptr;
-	std::shared_ptr<Model>			disire_m_R = nullptr;
-	std::shared_ptr<Model>			disire_m_L = nullptr;
-	std::shared_ptr<Model>			extend_R = nullptr;
-	std::shared_ptr<Model>			extend_L = nullptr;
-
-public:
-	std::vector <std::shared_ptr<Model>> model_R;
-	std::vector <std::shared_ptr<Model>> model_L;
-};
-
-
 
 //ナイトクラス(キャラ本体)
 class Knight : public Player
 {
 private:
-	const float walkspeed = 20.0f;		//歩く速度(代入)
-	const float dashspeed = 40.0f;		//ダッシュ速度
-	const float backstepS = 116.0f;		//バックステップの速度
-	const float backstepD = 500.0f;		//バックステップの減少速度
-	const float stepspeed = 100.0f;		//空中ステップの速度
-	const float stepD = 500.0f;			//空中ステップの減少速度
-	const float jump_max = 108.0f;		//ジャンプの最大速度(超えると減速し始め落ちる)
-	const float high_jump_max = 47.0f;	//ハイジャンプの最大速度(超えると減速し始め落ちる)
-	const float jump_speed = 108.0f;		//毎フレームジャンプの速度に加算する数値
-	const float high_jump_speed = 139.0f;	//毎フレームハイジャンプの速度に加算する数値
-	const float brake_speed =10000.0f;		//停止時にかかるブレーキ(基本ピタッと止まるので数値は大きめ)
-	const float track_speed = 100.0f;		//ホーミングダッシュの速度
-	const YR_Vector3 passive_speed = { 70.0f,70.0f };	//受け身状態にスピードに代入する速度
-	const float passive_brake = 200.0f;		//受け身中に減速する速度
-	const float knight_max_hp = 1000.0f;	//ナイトのHPの初期値
-
 	const size_t	max_traject_count = 128;	//剣の軌跡の最大値
 
-	float		production_time = 0.0f;	//カメラ演出に使う変数
-
-	std::shared_ptr<Model>			main = nullptr;	//モデルメインデータ(メッシュのみ。アニメーション無し)
-	std::unique_ptr<ModelAnim>		anim = nullptr;	//モデル描画&アニメーション適用変数
-
-	//個別モーション用変数
-	Model_MotionData				model_motion;
-
 public:
-
-	bool fast;
-	YR_Vector3 FastPos;
-	YR_Vector3 hadou;
-	float hadouspeed;
-
-	Model::Material_Attribute		lumi_material;
-
 
 	//カラーチェンジ用テクスチャ
 	std::shared_ptr<Texture>	color_texture_main = nullptr;
@@ -167,7 +38,7 @@ public:
 	YR_Vector3					sword_tail = { 0.0f,0.0f,0.0f };
 
 	~Knight();
-	void Init(YR_Vector3 InitPos);
+	void CharaInit();
 	void Uninit();
 	void LoadData(int color_number);
 	void Update(float decision, float elapsed_time);
@@ -180,55 +51,10 @@ public:
 		const DirectX::XMFLOAT4& ambient_color,
 		float						elapsed_time);
 
-	void DrawDEBUG(
-		YRShader* geoshader,
-		const DirectX::XMMATRIX& view,
-		const DirectX::XMMATRIX& projection,
-		const DirectX::XMFLOAT4& light_direction,
-		const DirectX::XMFLOAT4& light_color,
-		const DirectX::XMFLOAT4& ambient_color,
-		float						elapsed_time);
-	//float GetPosX();
+	void AttackDetailsSet(const AttackState &attack_state)override;
 
-	void DrawCutIn(
-		YRShader* shader,
-		float elapsed_time
-	);
-
-	void Move(float decision);
-	void MoveStop();
-	bool Step(float elapsed_time);
-	void AirDash(float elapsed_time);
-	void MoveAnimSet();
-	void Jump();
-	void JumpUpdate(float decision, float elapsed_time);
-	void DamageCheck(float decision);
-	void KnockUpdate(float elapsed_time);
-	void DownHitUpdate(float elapsed_time);
-	void SlamUpdate(float elapsed_time);
-	void Guard(float decision);
-	void GuardBack(float elapsed_time);
-	void Squat();
-	void FallUpdate(float elapsed_time);
-	void DownUpdate();
-	void PassiveUpdate(float elapsed_time);
-	void WakeUp();
-	void GaugeUp(float add);
-	void AttackDetailsSet(const AttackState &attack_state);
-
-	void HitBoxTransition(HitBoxState state);
-
-	void GuardAnimSet();
-	void WaitAnimSet();
 	void WinAnimSet();
 	bool WinPerformance(float elapsed_time);
-
-
-	void AttackInput();	//攻撃するボタンが押されたか確認し、押されていればその行動をさせる
-	void Attack(float decision, float elapsed_time);		//以下の関数を制御する
-	void AttackSwitch(float decision, float elapsed_time, AttackState attack_state = AttackState::NONE);	//attack_stateによってそれぞれ異なる関数を動かす
-	void AttackDefault(float elapsed_time);//特殊な記述のある攻撃以外はこの関数を使用する
-	void AttackProjectileDefault(float elapsed_time);//特殊な記述のある飛び道具攻撃以外はこの関数を使用する
 
 
 	//----------------------------------//
@@ -257,48 +83,22 @@ public:
 	void Thu_Lhurf(float elapsed_time);
 	void Kyo_Lhurf(float elapsed_time);
 
-	void A_Jaku_Lhurf(float elapsed_time);
+	void A_Jaku_Lhurf(float elapsed_time)override;
 	void ExtendATK(float elapsed_time);
-
-	void StateNone(float elapsed_time);
-
-	void PosKnockPlus(float vec);
 
 
 
 	//継承
-	float Getapply(float n);
-
-	void StopHitParamUpdate();
-
-	void NoneChange();
-
-	void StopUpdate();
-	void StopEnd();
 
 	bool Intro(float elapsed_time);
 
-	bool AttackLoad();			//生成時攻撃パラメーターを読み込む
-	bool AttackWrite();			//デバック時パラメーターを書き出す
-	bool AttackClean();			//デバッグ時パラメーターを全て初期化する
-	bool DEBUGAttackLoad();		//デバッグ時パラメーターを生成する
+	void DrawDEBUGHitParam();
 
-	bool AttackEndCheck();		//攻撃当たり判定が全て終了しているか確認する
-	void EndAttackErase();		//終了した攻撃当たり判定を全て消去する。
-	void AllAttackClear();		//全ての攻撃当たり判定を消去する
-	void AttackUpdate(float elapsed_time);		//攻撃判定が存在する時のみ更新
-	void HitResultUpdate();						//攻撃判定が存在する時のみ更新(当たり判定が取得した結果をプレイヤーに送る)
+	//bool DEBUGAttackLoad();		//デバッグ時パラメーターを生成する
+
 
 	void ReadySet();			//イントロ後、ゲーム開始までの設定を行う
 
-	bool ComboSet();
-	void ComboUpdate();
-
-	void ComboX(float decision, float elapsed_time);	//Xボタンコンボ関数
-	void ComboY(float decision, float elapsed_time);	//Xボタンコンボ関数
-	void ComboB(float decision, float elapsed_time);	//Xボタンコンボ関数
-
-	bool StealRangeCheck();
 
 	//イントロ用列挙
 	enum class INTRO_KNIGHT : int
@@ -362,19 +162,6 @@ public:
 
 public:
 	//テクスチャアニメーション用
-
-	//現在の顔の状態
-	enum class FaceAnim : int
-	{
-		NORMAL = 0,
-		NORMAL_LIP_SYNC,
-		WINK,
-		Damage,
-		YARUKI,
-		KOUHUN,
-		TOZI,
-		YEAH,
-	};
 
 	//目の識別用列挙
 	enum class FaceEye_Num : int
@@ -458,14 +245,11 @@ public:
 	bool FaceWink_bool(float elapsed_time);				//ウインクの処理(口パクなどと合わせる用)
 	void FaceLipSync(float elapsed_time);				//口パクの処理
 
-	void ChangeFace(FaceAnim anim);						//表情を変える関数(enumで定義)
+	void ChangeFace(FaceAnim anim)override;				//表情を変える関数(enumで定義)
 
 	std::wstring RandTextSelect();						//ランダムであらかじめ設定されたテキストを選択して返す
 
-	std::wstring lip_text;								//表示するテキスト
-	bool		text_on = false;						//trueならテキストを表示する
 
-	void TextDraw();									//テキストを描画する
 	enum class TextList : int
 	{
 		NORMAL,

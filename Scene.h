@@ -925,6 +925,8 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11Buffer>	constantBuffer_Gauss = nullptr;
 
 	DirectX::XMFLOAT3 knight_angle = { 0.0f,0.0f,0.0f };
+	DirectX::XMFLOAT3 knight_scale = { 0.1f,0.1f,0.1f };
+	float	knight_scale_all = 0.1f;
 	DirectX::XMFLOAT3 knight_pos = { 0.0f,0.0f,20.0f };
 
 public:

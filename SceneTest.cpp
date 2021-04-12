@@ -133,8 +133,8 @@ void SceneTest::Init()
 		else
 		{
 			//box = std::make_unique<Skinned_mesh>("./Data/FBX/Knight.fbx");
-			knight = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
-			//knight = std::make_shared<Model>("./Data/FBX/Paimon/paimon.fbx");
+			//knight = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
+			knight = std::make_shared<Model>("./Data/FBX/Neru/Neru_main.fbx");
 		}
 	}
 
@@ -145,7 +145,8 @@ void SceneTest::Init()
 
 	if (wait_R == nullptr)
 	{
-		wait_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_wait_R.fbx");
+		wait_R = std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_wait_R.fbx");
+		//wait_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_wait_R.fbx");
 	}
 
 	if (special_R == nullptr)
@@ -656,9 +657,10 @@ void SceneTest::RenderTexture(
 		ImGui::InputFloat("knight_pos.x", &knight_pos.x, 0.01f, 0.01f);
 		ImGui::InputFloat("knight_pos.y", &knight_pos.y, 0.01f, 0.01f);
 		ImGui::InputFloat("knight_pos.z", &knight_pos.z, 0.01f, 0.01f);
-		ImGui::InputFloat("knight_angle.x", &knight_angle.x, 0.01f, 0.01f);
-		ImGui::InputFloat("knight_angle.y", &knight_angle.y, 0.01f, 0.01f);
-		ImGui::InputFloat("knight_angle.z", &knight_angle.z, 0.01f, 0.01f);
+		ImGui::SliderFloat("knight_angle.x", &knight_angle.x, 0.0f, 20.0f);
+		ImGui::SliderFloat("knight_angle.y", &knight_angle.y, 0.0f, 20.0f);
+		ImGui::SliderFloat("knight_angle.z", &knight_angle.z, 0.0f, 20.0f);
+		ImGui::SliderFloat("knight_scale", &knight_scale_all, 0.0f, 10.0f);
 		ImGui::InputFloat(u8"毛の長さ", &Distance, 0.01f, 0.01f);
 		ImGui::InputFloat(u8"毛の密度", &Density, 0.01f, 0.01f);
 		ImGui::InputFloat(u8"空.x", &sky_scale[0], 0.01f, 0.01f);
@@ -684,6 +686,8 @@ void SceneTest::RenderTexture(
 		ImGui::Text("line2p : %f", line_2p_x);
 	}
 #endif // USE_IMGUI
+
+	knight_scale = DirectX::XMFLOAT3(knight_scale_all,knight_scale_all ,knight_scale_all);
 
 	/*std::array<ID3D11RenderTargetView*,4> rtv = {
 		color_texture->GetRenderTargetView(),
@@ -802,7 +806,7 @@ void SceneTest::RenderTexture(
 		motion->UpdateAnimation(0.0f);
 		motion->CalculateLocalTransform();
 		motion->CalculateWorldTransform(knight_pos,
-			DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
+			knight_scale,
 			knight_angle);
 		motion->Draw(
 			toonShader.get(),
@@ -820,7 +824,7 @@ void SceneTest::RenderTexture(
 	}
 	else
 	{
-		/*sky->Render(skyShader.get(),
+		sky->Render(skyShader.get(),
 			knight_pos,
 			DirectX::XMFLOAT3(sky_scale[0], sky_scale[1], sky_scale[2]),
 			DirectX::XMFLOAT3(DirectX::XMConvertToRadians(-90.0f), 0.0f, 0.0f),
@@ -831,25 +835,25 @@ void SceneTest::RenderTexture(
 			ambient_color,
 			elapsed_time,
 			0.0f
-		);*/
+		);
 
 		//sampler_wrap->Set(1);
 		//fur->Set(1);
 		//ブレンドステート設定
 
-		//sampler_wrap->Set(0);
+		sampler_wrap->Set(0);
 		motion->UpdateAnimation(elapsed_time);
 		motion->CalculateLocalTransform();
 
-		knight_normal_map->Set(1);
-		knight_height_map->Set(2);
-		earth_normal_map->Set(1);
-		earth_height_map->Set(2);
+		//knight_normal_map->Set(1);
+		//knight_height_map->Set(2);
+		//earth_normal_map->Set(1);
+		//earth_height_map->Set(2);
 
-		sampler_clamp->Set(0);
-		sampler_wrap->Set(1);
+		//sampler_clamp->Set(0);
+		//sampler_wrap->Set(1);
 
-		knight_angle.y += elapsed_time;
+		//knight_angle.y += elapsed_time;
 
 		/*earth_motion->CalculateLocalTransform();
 		earth_motion->CalculateWorldTransform(knight_pos,
@@ -863,8 +867,8 @@ void SceneTest::RenderTexture(
 			ambient_color
 		);*/
 
-		/*motion->CalculateWorldTransform(knight_pos,
-			DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f),
+		motion->CalculateWorldTransform(knight_pos,
+			knight_scale,
 			knight_angle);
 		motion->Draw(
 			toonShader.get(),
@@ -872,7 +876,7 @@ void SceneTest::RenderTexture(
 			light_direction, light_color,
 			D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST,
 			ambient_color
-		);*/
+		);
 		/*motion->Draw(
 			skinShader.get(),
 			view, projection, light_direction, light_color, ambient_color
@@ -983,7 +987,7 @@ void SceneTest::RenderTexture(
 		);
 	}
 
-	knight_1p_cut->DrawRotaGraph(
+	/*knight_1p_cut->DrawRotaGraph(
 		spriteShader.get(),
 		knight_1p_pos_x,
 		265.0f,
@@ -1040,9 +1044,9 @@ void SceneTest::RenderTexture(
 		false,
 		SpriteMask::NONE,
 		DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, flash_alpha)
-	);
+	);*/
 
-	if (intro_state == IntroState::FIN || intro_state == IntroState::P1P2)
+	/*if (intro_state == IntroState::FIN || intro_state == IntroState::P1P2)
 	{
 		if (VS_alpha < 1.0f)
 		{
@@ -1077,7 +1081,7 @@ void SceneTest::RenderTexture(
 	{
 		VS_alpha = 0.0f;
 		VS_size = 3.0f;
-	}
+	}*/
 
 
 

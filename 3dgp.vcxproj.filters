@@ -285,9 +285,6 @@
     <ClCompile Include="KnightATK.cpp">
       <Filter>Chara\Knight</Filter>
     </ClCompile>
-    <ClCompile Include="KnightIO.cpp">
-      <Filter>Chara\Knight</Filter>
-    </ClCompile>
     <ClCompile Include="Stage.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
@@ -308,6 +305,15 @@
     </ClCompile>
     <ClCompile Include="Trajectory.cpp">
       <Filter>Souce</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerBase.cpp">
+      <Filter>Chara\PlayerBase</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerBaseIO.cpp">
+      <Filter>Chara\PlayerBase</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerBaseATK.cpp">
+      <Filter>Chara\PlayerBase</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -380,9 +386,6 @@
     <ClInclude Include="misc.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerBase.h">
-      <Filter>Chara</Filter>
-    </ClInclude>
     <ClInclude Include="Sampler.h">
       <Filter>Header</Filter>
     </ClInclude>
@@ -451,6 +454,12 @@
     </ClInclude>
     <ClInclude Include="Trajectory.h">
       <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Player_name_list.h">
+      <Filter>Chara\PlayerBase</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerBase.h">
+      <Filter>Chara\PlayerBase</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -635,6 +644,9 @@
     </Filter>
     <Filter Include="Shader\LoadShader">
       <UniqueIdentifier>{7f7ea94d-313f-470f-a963-d73de75c0280}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chara\PlayerBase">
+      <UniqueIdentifier>{af44636f-445c-431c-bb66-d54bc084cf47}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

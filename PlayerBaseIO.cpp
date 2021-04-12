@@ -1,296 +1,54 @@
-#include "Knight.h"
 #include "PlayerBase.h"
 #include "framework.h"
 #include <fstream>
+#include "Player_name_list.h"
 
-//----------------------------------------------------------------
-//				Knight調整用cpp
-//----------------------------------------------------------------
-//・Knightの当たり判定などの調整を行い、データのロード、書き出しを行っている
-//----------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+//							プレイヤーステータス調整用cpp
+//-------------------------------------------------------------------------------------
+//・キャラごとのステータス(ダッシュ速度など)の調整を行い、データのロード、書き出しを行っている
+//-------------------------------------------------------------------------------------
 
 
 
-#ifdef EXIST_IMGUI
 
-//Imguiで表示するために文字列を保存している
-
-std::array<std::string, scastI(AttackState::ATTACK_END)> attack_name_list =
+//テキストファイルから読み込み
+void CharaStateParameter::Load()
 {
-	u8"攻撃無し()の中身は攻撃内容",
-	u8"弱",
-	u8"中(下中攻撃)",
-	u8"下強(中の次に出る強攻撃)",
-	u8"下弱",
-	u8"下中",
-	u8"上強(飛び上がり)",
-	u8"空弱攻撃",
-	u8"空中攻撃",
-	u8"空強攻撃",
-	u8"空上強攻撃(打ち上げ攻撃)",
-	u8"つかみ",
-	u8"投げ",
-	u8"ホーミングダッシュ",
-	u8"前弱必殺",
-	u8"前中必殺",
-	u8"前強必殺",
-	u8"後弱必殺",
-	u8"後中必殺",
-	u8"後強必殺",
-	u8"前超必殺",
-	u8"後超必殺",
-	u8"即死技",
-	u8"無敵攻撃",
-	u8"弱の次に出る中攻撃",
-	u8"中の次に出る強攻撃",
-	u8"空中前弱必殺",
-	u8"空中前中必殺",
-	u8"空中前強必殺",
-	u8"空中後弱必殺",
-	u8"空中後中必殺",
-	u8"空中後強必殺",
-	u8"空中前超必殺",
-	u8"空中後超必殺",
-	u8"Xボタンコンボ",
-	u8"Yボタンコンボ",
-	u8"Bボタンコンボ",
-	u8"Aボタンを押すと出る攻撃(プレイヤー選択)",
-	u8"Aボタンを押すと出る空中攻撃(プレイヤー選択)",
-};
 
-std::array<std::string, scastI(ActState::ACT_END)> act_name_list =
-{
-	u8"何もない",
-	u8"待機",
-	u8"ガード",
-	u8"しゃがみ",
-	u8"後退",
-	u8"ダミー",
-	u8"ダッシュ",
-	u8"バックステップ",
-	u8"ジャンプ",
-	u8"空中前ダッシュ",
-	u8"空中後ダッシュ",
-	u8"ステートを奪われた状態",
-	u8"起き上がり",
-	u8"受け身",
-	u8"ダウン",
-	u8"空中ダウン",
-	u8"のけぞり",
-	u8"叩きつけられ中",
-	u8"ダウン攻撃を受けた",
-	u8"攻撃中",
-};
-
-std::array<std::string, scastI(PAD::PAD_END)> pad_name_list =
-{
-	u8"UP",
-	u8"DOWN",
-	u8"LEFT",
-	u8"RIGHT",
-	u8"START",
-	u8"SELECT",
-	u8"L3",
-	u8"R3",
-	u8"LBボタン",
-	u8"RBボタン",
-	u8"Aボタン",
-	u8"Bボタン",
-	u8"Xボタン",
-	u8"Yボタン",
-	u8"BUTTOM_END",
-	u8"L_TRIGGER",
-	u8"R_TRIGGER",
-	u8"STICK_R",
-	u8"STICK_L",
-	u8"STICK_U",
-	u8"STICK_D",
-	u8"STICK_RDown",
-	u8"STICK_LDown",
-	u8"STICK_RUp",
-	u8"STICK_LUp",
-	u8"HIGH_UP",
-	u8"HIGH_UP_R",
-	u8"HIGH_UP_L",
-	u8"R_DASH",
-	u8"L_DASH",
-};
-
-
-std::array < std::string, scastI(Command::END) > command_name_list =
-{
-	u8"コマンド無し",
-	u8"236コマンド",
-	u8"214コマンド"
-};
-
-std::array<bool, scastI(AttackState::ATTACK_END)> linkage_stick_on = { false };
-
-std::array<std::string, scastI(KNIGHTHIT::END)> hit_name_list =
-{
-	u8"頭",
-	u8"ボディ",
-	u8"足",
-};
-
-std::array<std::string, scastI(HitBoxState::END)> hitstate_name_list =
-{
-	u8"ガードしない",
-	u8"中段ガード",
-	u8"下段ガード",
-	u8"無敵",
-	u8"空中ガード",
-	u8"上段攻撃に対して無敵",
-};
-
-std::array<std::string, scastI(HitResult::END)> result_name_list =
-{
-	u8"まだ発生してない",
-	u8"当たってない",
-	u8"ガードされた",
-	u8"当たった",
-	u8"キャンセルできない",
-};
-
-std::array<std::string, scastI(Ground_C::END)> ground_name_list =
-{
-	u8"空中",
-	u8"地上",
-	u8"どちらでも",
-};
-
-std::array<std::string, scastI(AttackKind::END)> attack_kind_name_list =
-{
-	u8"上段",
-	u8"中段",
-	u8"下段",
-	u8"つかみ",
-	u8"たたきつけ(高さが一定なら滑り状態にする)",
-	u8"ロック技",
-	u8"飛び道具",
-	u8"ホーミングダッシュ",
-	u8"相殺しない攻撃",
-	u8"上段攻撃と相殺しない攻撃",
-	u8"ダウン攻撃",
-};
-
-#endif // USE_IMGUI
-
-bool Knight::DEBUGAttackLoad()
-{
-	//Debug用に仮で値を入れている
-
-	//AttackStateの順に生成する
-	attack_list.resize(scastI(AttackState::ATTACK_END));
-
-	attack_list[scastI(AttackState::NONE)].attack_name = AttackState::NONE;
-	attack_list[scastI(AttackState::JAKU)].attack_name = AttackState::JAKU;
-	attack_list[scastI(AttackState::JAKU)].attack_max = 1;
-	attack_list[scastI(AttackState::JAKU)].later = 0.2f;
-	attack_list[scastI(AttackState::JAKU)].attack_single.resize(attack_list[scastI(AttackState::JAKU)].attack_max);
-	ac_attack[scastI(AttackState::JAKU)].fream = 10.0f;
-	ac_attack[scastI(AttackState::JAKU)].timer = 15.0f;
-	ac_attack[scastI(AttackState::JAKU)].later = 1.5f;
-	attack_list[scastI(AttackState::JAKU)].linkage_button = PAD::X;
-	attack_list[scastI(AttackState::JAKU)].linkage_command = Command::NOCOMMAND;
-	attack_list[scastI(AttackState::JAKU)].ground_on = Ground_C::GROUND;
-	attack_list[scastI(AttackState::JAKU)].squat_on = false;
-	attack_list[scastI(AttackState::JAKU)].linkage_stick = PAD::BUTTOM_END;
-	attack_list[scastI(AttackState::JAKU)].need_power = 0;
-	attack_list[scastI(AttackState::JAKU)].aid_attack_name = AttackState::NONE;
-	attack_list[scastI(AttackState::JAKU)].real_attack = attack_list[scastI(AttackState::JAKU)].attack_name;
-	for (int i = 0; i < attack_list[scastI(AttackState::JAKU)].attack_max; i++)
-	{
-		attack_list[scastI(AttackState::JAKU)].attack_single[i].fream = 0.1f;
-		attack_list[scastI(AttackState::JAKU)].attack_single[i].quantity = 1;
-		attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter.resize(attack_list[scastI(AttackState::JAKU)].attack_single[i].quantity);
-		for (int v = 0; v < attack_list[scastI(AttackState::JAKU)].attack_single[i].quantity; v++)
-		{
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].damege = 5;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].distance.x = 6.0f;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].distance.y = 1.0f;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].gaugeout = true;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].HB_timer = 0.1f;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].hitback.x = Getapply(1.0f);
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].hitback.y = 0.0f;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].knockback = 1.0f;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].size.x = 3.0f;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].size.y = 1.0f;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].stealtimer = 0.0f;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].timer = 0.15f;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].type = AttackKind::MIDDLE;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].HS_timer = HitStopTime::SHORT;
-			attack_list[scastI(AttackState::JAKU)].attack_single[i].parameter[v].gauge_get = 1.0f;
-		}
-	}
-	//attack_list.push_back(AttackList());
-	attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_name = AttackState::SPECIAL_ATTACK;
-	attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_max = 1;
-	attack_list[scastI(AttackState::SPECIAL_ATTACK)].later = 1.5f;
-	attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single.resize(attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_max);
-	ac_attack[scastI(AttackState::SPECIAL_ATTACK)].fream = 1.0f;
-	ac_attack[scastI(AttackState::SPECIAL_ATTACK)].timer = 3.5f;
-	ac_attack[scastI(AttackState::SPECIAL_ATTACK)].later = 0.8f;
-	attack_list[scastI(AttackState::SPECIAL_ATTACK)].linkage_button = PAD::B;
-	attack_list[scastI(AttackState::SPECIAL_ATTACK)].linkage_command = Command::NOCOMMAND;
-	attack_list[scastI(AttackState::SPECIAL_ATTACK)].ground_on = Ground_C::GROUND;
-	attack_list[scastI(AttackState::SPECIAL_ATTACK)].squat_on = false;
-	attack_list[scastI(AttackState::SPECIAL_ATTACK)].linkage_stick = PAD::BUTTOM_END;
-	attack_list[scastI(AttackState::SPECIAL_ATTACK)].need_power = 0;
-	attack_list[scastI(AttackState::SPECIAL_ATTACK)].aid_attack_name = AttackState::NONE;
-	attack_list[scastI(AttackState::SPECIAL_ATTACK)].real_attack = attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_name;
-
-	for (int i = 0; i < attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_max; i++)
-	{
-		attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].fream = 2.0f;
-		attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].quantity = 1;
-		attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter.resize(attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].quantity);
-		for (int v = 0; v < attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].quantity; v++)
-		{
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].damege = 30;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].distance.x = 1.0f;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].distance.y = 2.0f;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].gaugeout = false;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].HB_timer = 1.0f;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].hitback.x = Getapply(1.0f);
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].hitback.y = 1.0f;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].knockback = 1.0f;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].size.x = 5.0f;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].size.y = 5.0f;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].stealtimer = 0.0f;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].timer = 0.3f;
-			attack_list[scastI(AttackState::SPECIAL_ATTACK)].attack_single[i].parameter[v].type = AttackKind::MIDDLE;
-		}
-	}
-
-	AttackState a = AttackState::NONE;
-	for (int i = 0; i < attack_list.size(); i++)
-	{
-		a = static_cast<AttackState>(i);
-		attack_list[i].attack_name = a;
-	}
-
-	hitparam_list.resize(scastI(KNIGHTHIT::END));
-	for (int list = 0; list < hitparam_list[scastI(KNIGHTHIT::BODY)].act_parameter.size(); list++)
-	{
-		hitparam_list[scastI(KNIGHTHIT::BODY)].act_parameter[list].distance = YR_Vector3(0.0f, 0.0f);
-		hitparam_list[scastI(KNIGHTHIT::BODY)].act_parameter[list].size = YR_Vector3(2.0f, 2.9f);
-		//hitparam_list[scastI(KNIGHTHIT::BODY)].act_parameter[list].state = HitBoxState::NOGUARD;
-	}
-	for (int list = 0; list < hitparam_list[scastI(KNIGHTHIT::LEG)].act_parameter.size(); list++)
-	{
-		hitparam_list[scastI(KNIGHTHIT::LEG)].act_parameter[list].distance = YR_Vector3(0.0f, 0.0f);
-		hitparam_list[scastI(KNIGHTHIT::LEG)].act_parameter[list].size = YR_Vector3(1.4f, 0.8f);
-		//hitparam_list[scastI(KNIGHTHIT::LEG)].act_parameter[list].state = HitBoxState::NOGUARD;
-	}
-
-	return true;
 }
 
 
-bool Knight::AttackLoad()
+//テキストファイルに書き出し
+void CharaStateParameter::Save()
 {
-	//書き出されたテキストデータから攻撃リストを生成する
+
+}
+
+
+//デバッグ用ツール描画
+void CharaStateParameter::Draw()
+{
+
+}
+
+
+
+
+
+
+
+
+//-------------------------------------------------------------------------------------
+//							キャラステータス調整
+//-------------------------------------------------------------------------------------
+//・キャラごとの当たり判定などの調整を行い、データのロード、書き出しを行っている
+//-------------------------------------------------------------------------------------
+
+
+//書き出されたテキストデータから攻撃リストを生成する
+bool Player::AttackLoad()
+{
 	attack_list.resize(scastI(AttackState::ATTACK_END));
 	std::ifstream ifs("./Data/CharaParameter/Knight/AttackParam.txt");
 
@@ -301,7 +59,7 @@ bool Knight::AttackLoad()
 	{
 		ifs >> attack_list[list].later;
 		ifs >> attack_list[list].attack_max;
-		int pad,com,stick,aid,real,next,result,ground;
+		int pad, com, stick, aid, real, next, result, ground;
 		ifs >> pad;
 		ifs >> com;
 		attack_list[list].linkage_button = static_cast<PAD>(pad);
@@ -525,99 +283,11 @@ bool Knight::AttackLoad()
 	return true;
 }
 
-bool Knight::AttackClean()
-{
-	jump_later = 1.0f;
-	dash_later = 1.0f;
 
-	//攻撃パラメーターを全て初期化する
-	for (int list = 0; list < attack_list.size(); list++)
-	{
-		attack_list[list].later = 0.1f;
-		attack_list[list].attack_max = 1;
-		attack_list[list].attack_single.resize(attack_list[list].attack_max);
-		ac_attack[list].fream = 1.0f;
-		ac_attack[list].timer = 1.0f;
-		ac_attack[list].later = 1.0f;
-		attack_list[list].now_attack_num = 0;
-		attack_list[list].linkage_button = PAD::BUTTOM_END;
-		attack_list[list].linkage_command = Command::NOCOMMAND;
-		attack_list[list].ground_on = attack_list[list].ground_on;
-		attack_list[list].squat_on = false;
-		attack_list[list].need_power = 0;
-		attack_list[list].linkage_stick = PAD::BUTTOM_END;
-		attack_list[list].aid_attack_name = AttackState::NONE;
-		attack_list[list].attack_name = static_cast<AttackState>(list);
-		attack_list[list].real_attack = attack_list[list].attack_name;
-		attack_list[list].speed_on = false;
-		attack_list[list].speed = YR_Vector3(0.0f, 0.0f);
-		attack_list[list].advance_speed = 0.0f;
-		attack_list[list].combo = attack_list[list].attack_name;
-		attack_list[list].conditions_hit = HitResult::HIT;
-		attack_list[list].timer = 0.0f;
-		attack_list[list].traject_on = true;
-		//攻撃回数ごとのパラメータ初期化
-		for (int sin = 0; sin < attack_list[list].attack_single.size(); sin++)
-		{
-			attack_list[list].attack_single[sin].fream = 0.1f;
-			attack_list[list].attack_single[sin].quantity = 1;
-			attack_list[list].attack_single[sin].parameter.resize(attack_list[list].attack_single[sin].quantity);
-			for (int para = 0; para < attack_list[list].attack_single[sin].parameter.size(); para++)
-			{
-				//攻撃判定内部パラメーター初期化
-				attack_list[list].attack_single[sin].parameter[para].distance.x = 1.0f;
-				attack_list[list].attack_single[sin].parameter[para].distance.y = 1.0f;
-				attack_list[list].attack_single[sin].parameter[para].size.x = 1.0f;
-				attack_list[list].attack_single[sin].parameter[para].size.y = 1.0f;
-				attack_list[list].attack_single[sin].parameter[para].timer = 0.1f;
-				attack_list[list].attack_single[sin].parameter[para].damege = 1.0f;
-				attack_list[list].attack_single[sin].parameter[para].HB_timer = 0.1f;
-				attack_list[list].attack_single[sin].parameter[para].hitback.x = 0.1f;
-				attack_list[list].attack_single[sin].parameter[para].hitback.y = 0.1f;
-				attack_list[list].attack_single[sin].parameter[para].type = AttackKind::MIDDLE;
-				attack_list[list].attack_single[sin].parameter[para].knockback = 0.1f;
-				attack_list[list].attack_single[sin].parameter[para].gaugeout = false;
-				attack_list[list].attack_single[sin].parameter[para].stealtimer = 0.1f;
-				attack_list[list].attack_single[sin].parameter[para].HS_timer = HitStopTime::NORMAL;
-				attack_list[list].attack_single[sin].parameter[para].gauge_get = 0.1f;
-			}
-		}
-	}
 
-	//アニメーション調整値を全て初期化する
-	for (int list = 0; list < ac_attack.size(); list++)
-	{
-		ac_attack[list].fream = 1.0f;
-		ac_attack[list].timer = 1.0f;
-		ac_attack[list].later = 1.0f;
-	}
-	for (int list = 0; list < ac_act.size(); list++)
-	{
-		ac_act[list].fream = 1.0f;
-		ac_act[list].timer = 1.0f;
-		ac_act[list].later = 1.0f;
-	}
 
-	//当たり判定調整値も全て初期化する
-	for (int list = 0; list < hitparam_list.size(); list++)
-	{
-		for (int act = 0; act < hitparam_list[list].act_parameter.size(); act++)
-		{
-			hitparam_list[list].act_parameter[act].distance = YR_Vector3(0.0f, 0.0f);
-			hitparam_list[list].act_parameter[act].size = YR_Vector3(1.0f, 1.0f);
-			//hitparam_list[list].act_parameter[act].state = HitBoxState::NOGUARD;
-		}
-		for (int atk = 0; atk < hitparam_list[list].attack_parameter.size(); atk++)
-		{
-			hitparam_list[list].attack_parameter[atk].distance = YR_Vector3(0.0f, 0.0f);
-			hitparam_list[list].attack_parameter[atk].size = YR_Vector3(1.0f, 1.0f);
-			//hitparam_list[list].attack_parameter[atk].state = HitBoxState::NOGUARD;
-		}
-	}
-	return true;
-}
-
-bool Knight::AttackWrite()
+//テキストデータを書き出す
+bool Player::AttackWrite()
 {
 	//AttackStateの順に保存する
 	std::ofstream outputfile("./Data/CharaParameter/Knight/AttackParam.txt");
@@ -776,7 +446,106 @@ bool Knight::AttackWrite()
 }
 
 
-void Knight::DrawDEBUG(
+
+
+//パラメーターを全て初期化する
+bool Player::AttackClean()
+{
+	jump_later = 1.0f;
+	dash_later = 1.0f;
+
+	//攻撃パラメーターを全て初期化する
+	for (int list = 0; list < attack_list.size(); list++)
+	{
+		attack_list[list].later = 0.1f;
+		attack_list[list].attack_max = 1;
+		attack_list[list].attack_single.resize(attack_list[list].attack_max);
+		ac_attack[list].fream = 1.0f;
+		ac_attack[list].timer = 1.0f;
+		ac_attack[list].later = 1.0f;
+		attack_list[list].now_attack_num = 0;
+		attack_list[list].linkage_button = PAD::BUTTOM_END;
+		attack_list[list].linkage_command = Command::NOCOMMAND;
+		attack_list[list].ground_on = attack_list[list].ground_on;
+		attack_list[list].squat_on = false;
+		attack_list[list].need_power = 0;
+		attack_list[list].linkage_stick = PAD::BUTTOM_END;
+		attack_list[list].aid_attack_name = AttackState::NONE;
+		attack_list[list].attack_name = static_cast<AttackState>(list);
+		attack_list[list].real_attack = attack_list[list].attack_name;
+		attack_list[list].speed_on = false;
+		attack_list[list].speed = YR_Vector3(0.0f, 0.0f);
+		attack_list[list].advance_speed = 0.0f;
+		attack_list[list].combo = attack_list[list].attack_name;
+		attack_list[list].conditions_hit = HitResult::HIT;
+		attack_list[list].timer = 0.0f;
+		attack_list[list].traject_on = true;
+		//攻撃回数ごとのパラメータ初期化
+		for (int sin = 0; sin < attack_list[list].attack_single.size(); sin++)
+		{
+			attack_list[list].attack_single[sin].fream = 0.1f;
+			attack_list[list].attack_single[sin].quantity = 1;
+			attack_list[list].attack_single[sin].parameter.resize(attack_list[list].attack_single[sin].quantity);
+			for (int para = 0; para < attack_list[list].attack_single[sin].parameter.size(); para++)
+			{
+				//攻撃判定内部パラメーター初期化
+				attack_list[list].attack_single[sin].parameter[para].distance.x = 1.0f;
+				attack_list[list].attack_single[sin].parameter[para].distance.y = 1.0f;
+				attack_list[list].attack_single[sin].parameter[para].size.x = 1.0f;
+				attack_list[list].attack_single[sin].parameter[para].size.y = 1.0f;
+				attack_list[list].attack_single[sin].parameter[para].timer = 0.1f;
+				attack_list[list].attack_single[sin].parameter[para].damege = 1.0f;
+				attack_list[list].attack_single[sin].parameter[para].HB_timer = 0.1f;
+				attack_list[list].attack_single[sin].parameter[para].hitback.x = 0.1f;
+				attack_list[list].attack_single[sin].parameter[para].hitback.y = 0.1f;
+				attack_list[list].attack_single[sin].parameter[para].type = AttackKind::MIDDLE;
+				attack_list[list].attack_single[sin].parameter[para].knockback = 0.1f;
+				attack_list[list].attack_single[sin].parameter[para].gaugeout = false;
+				attack_list[list].attack_single[sin].parameter[para].stealtimer = 0.1f;
+				attack_list[list].attack_single[sin].parameter[para].HS_timer = HitStopTime::NORMAL;
+				attack_list[list].attack_single[sin].parameter[para].gauge_get = 0.1f;
+			}
+		}
+	}
+
+	//アニメーション調整値を全て初期化する
+	for (int list = 0; list < ac_attack.size(); list++)
+	{
+		ac_attack[list].fream = 1.0f;
+		ac_attack[list].timer = 1.0f;
+		ac_attack[list].later = 1.0f;
+	}
+	for (int list = 0; list < ac_act.size(); list++)
+	{
+		ac_act[list].fream = 1.0f;
+		ac_act[list].timer = 1.0f;
+		ac_act[list].later = 1.0f;
+	}
+
+	//当たり判定調整値も全て初期化する
+	for (int list = 0; list < hitparam_list.size(); list++)
+	{
+		for (int act = 0; act < hitparam_list[list].act_parameter.size(); act++)
+		{
+			hitparam_list[list].act_parameter[act].distance = YR_Vector3(0.0f, 0.0f);
+			hitparam_list[list].act_parameter[act].size = YR_Vector3(1.0f, 1.0f);
+			//hitparam_list[list].act_parameter[act].state = HitBoxState::NOGUARD;
+		}
+		for (int atk = 0; atk < hitparam_list[list].attack_parameter.size(); atk++)
+		{
+			hitparam_list[list].attack_parameter[atk].distance = YR_Vector3(0.0f, 0.0f);
+			hitparam_list[list].attack_parameter[atk].size = YR_Vector3(1.0f, 1.0f);
+			//hitparam_list[list].attack_parameter[atk].state = HitBoxState::NOGUARD;
+		}
+	}
+	return true;
+}
+
+
+
+
+//デバッグ用ツール表示
+void Player::DrawDEBUG(
 	YRShader* geoshader,
 	const DirectX::XMMATRIX& view,
 	const DirectX::XMMATRIX& projection,
@@ -791,7 +560,7 @@ void Knight::DrawDEBUG(
 	if (Get_Debug_Draw())
 	{
 
-		for (int i = 0; i < scastI(KNIGHTHIT::END); i++)
+		for (int i = 0; i < hit.size(); i++)
 		{
 			hit[i].Draw(geoshader, view, projection, light_direction, light_color, ambient_color);
 		}
@@ -851,9 +620,9 @@ void Knight::DrawDEBUG(
 		now_play += std::string(":RyuHitBox");
 		ImGui::Begin(now_play.c_str());
 		ImGui::Text(u8"行動ステート");
-		ImGui::Text(act_name_list[scastI(act_state)].c_str());
+		ImGui::Text(GetName().act_name_list[scastI(act_state)].c_str());
 		ImGui::Text(u8"攻撃ステート");
-		ImGui::Text(attack_name_list[scastI(attack_state)].c_str());
+		ImGui::Text(GetName().attack_name_list[scastI(attack_state)].c_str());
 
 		ImGui::SliderFloat(u8"ジャンプの着地スキ", &jump_later, 0.0f, 2.0f);
 		ImGui::SliderFloat(u8"ダッシュの着地スキ", &dash_later, 0.0f, 2.0f);
@@ -861,74 +630,18 @@ void Knight::DrawDEBUG(
 		ImGui::Text("timer : "); ImGui::SameLine(); ImGui::Text("%f", timer);
 		ImGui::Text("later : "); ImGui::SameLine(); ImGui::Text("%f", later);
 
-		if (ImGui::TreeNode(u8"プレイヤー当たり判定調整"))
-		{
-			if (ImGui::TreeNode(u8"行動当たり判定"))
-			{
-				for (int act = 0; act < scastI(ActState::ACT_END); act++)
-				{
-					if (ImGui::TreeNode(act_name_list[act].c_str()))
-					{
-						for (int list = 0; list < hitparam_list.size(); list++)
-						{
-							//プレイヤーの当たり判定をそれぞれ出す
-							if (ImGui::TreeNode(hit_name_list[list].c_str()))
-							{
-								ImGui::SliderFloat(u8"プレイヤーとの距離X", &hitparam_list[list].act_parameter[act].distance.x, -50.0f, 50.0f);
-								ImGui::SliderFloat(u8"プレイヤーとの距離Y", &hitparam_list[list].act_parameter[act].distance.y, -50.0f, 50.0f);
-								ImGui::SliderFloat(u8"大きさX", &hitparam_list[list].act_parameter[act].size.x, 0.0f, 50.0f);
-								ImGui::SliderFloat(u8"大きさY", &hitparam_list[list].act_parameter[act].size.y, 0.0f, 50.0f);
-								//int state = scastI(hitparam_list[list].act_parameter[act].state);
-								//ImGui::SliderInt(u8"状態", &state, 0, scastI(HitBoxState::END)-1);
-								//hitparam_list[list].act_parameter[act].state = static_cast<HitBoxState>(state);
-								//ImGui::Text(hitstate_name_list[state].c_str());
-								ImGui::InputFloat(u8"モーション速度 : 発生", &ac_act[act].fream, 0.01f, 0.1f);
-								ImGui::InputFloat(u8"モーション速度 : 持続", &ac_act[act].timer, 0.01f, 0.1f);
-								ImGui::InputFloat(u8"モーション速度 : 後スキ", &ac_act[act].later, 0.01f, 0.1f);
-								ImGui::Text(u8"ものによってはfreamしか使用しないものもあるので注意");
-								ImGui::TreePop();
-							}
-						}
-						ImGui::TreePop();
-					}
-				}
-				ImGui::TreePop();
-			}
+		DrawDEBUGHitParam();
 
-			if (ImGui::TreeNode(u8"攻撃当たり判定"))
-			{
-				for (int atk = 0; atk < scastI(AttackState::ATTACK_END); atk++)
-				{
-					if (ImGui::TreeNode(attack_name_list[atk].c_str()))
-					{
-						for (int list = 0; list < hitparam_list.size(); list++)
-						{
-							if (ImGui::TreeNode(hit_name_list[list].c_str()))
-							{
-								ImGui::SliderFloat(u8"プレイヤーとの距離X", &hitparam_list[list].attack_parameter[atk].distance.x, -50.0f, 50.0f);
-								ImGui::SliderFloat(u8"プレイヤーとの距離Y", &hitparam_list[list].attack_parameter[atk].distance.y, -50.0f, 50.0f);
-								ImGui::SliderFloat(u8"大きさX", &hitparam_list[list].attack_parameter[atk].size.x, 0.0f, 50.0f);
-								ImGui::SliderFloat(u8"大きさY", &hitparam_list[list].attack_parameter[atk].size.y, 0.0f, 50.0f);
-								ImGui::TreePop();
-							}
-						}
-						ImGui::TreePop();
-					}
-				}
-				ImGui::TreePop();
-			}
-			ImGui::TreePop();
-		}
-		ImGui::InputFloat("eye_offset.x", &eye_offset.x, 0.01f, 0.01f);
-		ImGui::InputFloat("eye_offset.y", &eye_offset.y, 0.01f, 0.01f);
-		ImGui::InputFloat("mouse_offset.x", &mouth_offset.x, 0.01f, 0.01f);
-		ImGui::InputFloat("mouse_offset.y", &mouth_offset.y, 0.01f, 0.01f);
+		//ImGui::InputFloat("eye_offset.x", &eye_offset.x, 0.01f, 0.01f);
+		//ImGui::InputFloat("eye_offset.y", &eye_offset.y, 0.01f, 0.01f);
+		//ImGui::InputFloat("mouse_offset.x", &mouth_offset.x, 0.01f, 0.01f);
+		//ImGui::InputFloat("mouse_offset.y", &mouth_offset.y, 0.01f, 0.01f);
 		ImGui::Text("player.x:%f", pos.x);
 		ImGui::Text("player.y:%f", pos.y);
 		ImGui::Text("command_timer:%f", pad->com_list.command_timer);
 		ImGui::Text("track:%d", trackgauge);
 		ImGui::Text("hitState : "); ImGui::SameLine();
-		ImGui::Text(hitstate_name_list[scastI(hit[0].state)].c_str());
+		ImGui::Text(GetName().hitstate_name_list[scastI(hit[0].state)].c_str());
 		if (ImGui::TreeNode("ModelParameter"))
 		{
 			ImGui::SliderFloat("scale_x", &scale.x, -10.0f, 10.0f);
@@ -1086,39 +799,39 @@ void Knight::DrawDEBUG(
 		//攻撃判定を全て出す
 		for (int list = 0; list < attack_list.size(); list++)
 		{
-			if (ImGui::TreeNode(attack_name_list[scastI(attack_list[list].attack_name)].c_str()))
+			if (ImGui::TreeNode(GetName().attack_name_list[scastI(attack_list[list].attack_name)].c_str()))
 			{
 				int real = scastI(attack_list[list].real_attack);
 				int pad = scastI(attack_list[list].linkage_button);
 				ImGui::SliderInt(u8"ボタン", &pad, 0, scastI(PAD::PAD_END));
 				attack_list[list].linkage_button = static_cast<PAD>(pad);
-				ImGui::Text(pad_name_list[pad].c_str());
+				ImGui::Text(GetName().pad_name_list[pad].c_str());
 				int com = scastI(attack_list[list].linkage_command);
 				ImGui::SliderInt(u8"コマンド", &com, 0, scastI(Command::LHURF));
 				attack_list[list].linkage_command = static_cast<Command>(com);
-				ImGui::Text(command_name_list[com].c_str());
+				ImGui::Text(GetName().command_name_list[com].c_str());
 				int ground = scastI(attack_list[list].ground_on);
 				ImGui::SliderInt(u8"攻撃はどこで出せるか", &ground, 0, scastI(Ground_C::END) - 1);
 				attack_list[list].ground_on = static_cast<Ground_C>(ground);
-				ImGui::Text(ground_name_list[ground].c_str());
+				ImGui::Text(GetName().ground_name_list[ground].c_str());
 				int next = scastI(attack_list[list].combo);
 				ImGui::SliderInt(u8"次の攻撃", &next, 0, scastI(AttackState::ATTACK_END) - 1);
 				attack_list[list].combo = static_cast<AttackState>(next);
-				ImGui::Text(attack_name_list[scastI(attack_list[list].combo)].c_str());
+				ImGui::Text(GetName().attack_name_list[scastI(attack_list[list].combo)].c_str());
 				ImGui::Checkbox(u8"しゃがみ攻撃", &attack_list[list].squat_on);
 				ImGui::Checkbox(u8"剣の軌跡を表示する", &attack_list[list].traject_on);
 
 				if (attack_list[list].linkage_stick != PAD::BUTTOM_END)
 				{
-					linkage_stick_on[list] = true;
+					GetName().linkage_stick_on[list] = true;
 				}
 
-				ImGui::Checkbox(u8"スティックの入力を必要とする", &linkage_stick_on[list]);
-				if (linkage_stick_on[list])
+				ImGui::Checkbox(u8"スティックの入力を必要とする", &GetName().linkage_stick_on[list]);
+				if (GetName().linkage_stick_on[list])
 				{
 					int stick = scastI(attack_list[list].linkage_stick);
 					ImGui::SliderInt(u8"スティック", &stick, scastI(PAD::STICK_R), scastI(PAD::STICK_D));
-					ImGui::Text(pad_name_list[stick].c_str());
+					ImGui::Text(GetName().pad_name_list[stick].c_str());
 					attack_list[list].linkage_stick = static_cast<PAD>(stick);
 				}
 				else
@@ -1129,7 +842,7 @@ void Knight::DrawDEBUG(
 				attack_list[list].real_attack = static_cast<AttackState>(real);
 				if (attack_list[list].attack_name != attack_list[list].real_attack)
 				{
-					ImGui::Text(attack_name_list[scastI(attack_list[list].real_attack)].c_str());
+					ImGui::Text(GetName().attack_name_list[scastI(attack_list[list].real_attack)].c_str());
 				}
 				else
 				{
@@ -1142,7 +855,7 @@ void Knight::DrawDEBUG(
 					ImGui::InputFloat(u8"前進する距離", &attack_list[list].advance_speed, 0.01f, 0.1f);
 					ImGui::SliderInt(u8"攻撃遷移条件", &result, 0, scastI(HitResult::END) - 1);
 					attack_list[list].conditions_hit = static_cast<HitResult>(result);
-					ImGui::Text(result_name_list[scastI(attack_list[list].conditions_hit)].c_str());
+					ImGui::Text(GetName().result_name_list[scastI(attack_list[list].conditions_hit)].c_str());
 					ImGui::Checkbox(u8"当たり判定にスピードを付与する", &attack_list[list].speed_on);
 					if (attack_list[list].speed_on)
 					{
@@ -1160,7 +873,7 @@ void Knight::DrawDEBUG(
 					{
 						int aid_attack = scastI(attack_list[list].aid_attack_name);
 						ImGui::SliderInt(u8"ゲージが足りない場合の攻撃", &aid_attack, scastI(AttackState::NONE), scastI(AttackState::ATTACK_END) - 1);
-						ImGui::Text(attack_name_list[aid_attack].c_str());
+						ImGui::Text(GetName().attack_name_list[aid_attack].c_str());
 						attack_list[list].aid_attack_name = static_cast<AttackState>(aid_attack);
 					}
 					else
@@ -1201,14 +914,14 @@ void Knight::DrawDEBUG(
 											ImGui::InputFloat(u8"吹っ飛びX", &attack_list[list].attack_single[sin].parameter[para].hitback.x, 0.01f, 0.1f);
 											ImGui::InputFloat(u8"吹っ飛びY", &attack_list[list].attack_single[sin].parameter[para].hitback.y, 0.01f, 0.1f);
 											int type = scastI(attack_list[list].attack_single[sin].parameter[para].type);
-											ImGui::SliderInt(u8"攻撃タイプ", &type, 0, scastI(AttackKind::END)-1);
+											ImGui::SliderInt(u8"攻撃タイプ", &type, 0, scastI(AttackKind::END) - 1);
 											attack_list[list].attack_single[sin].parameter[para].type = static_cast<AttackKind>(type);
-											ImGui::Text(attack_kind_name_list[type].c_str());
+											ImGui::Text(GetName().attack_kind_name_list[type].c_str());
 											ImGui::InputFloat(u8"ノックバック(Xのみ)", &attack_list[list].attack_single[sin].parameter[para].knockback, 0.01f, 0.1f);
 											ImGui::Checkbox(u8"ゲージを獲得しない", &attack_list[list].attack_single[sin].parameter[para].gaugeout);
 											ImGui::InputFloat(u8"つかみ抜けされる時間", &attack_list[list].attack_single[sin].parameter[para].stealtimer, 0.01f, 0.1f);
 											int hit_stop_time = scastI(attack_list[list].attack_single[sin].parameter[para].HS_timer);
-											ImGui::SliderInt(u8"ヒットストップ時間", &hit_stop_time, 0, scastI(HitStopTime::END)-1);
+											ImGui::SliderInt(u8"ヒットストップ時間", &hit_stop_time, 0, scastI(HitStopTime::END) - 1);
 											ImGui::Text(u8"0:短い。1:普通。2:長い。3:ズームストップ");
 											attack_list[list].attack_single[sin].parameter[para].HS_timer = static_cast<HitStopTime>(hit_stop_time);
 											if (!attack_list[list].attack_single[sin].parameter[para].gaugeout)
@@ -1251,9 +964,9 @@ void Knight::DrawDEBUG(
 		now_com += std::string(":X_Combolist");
 		ImGui::Begin(now_com.c_str());
 
-		ImGui::RadioButton(u8"Xコンボ", &combo_flg,0); ImGui::SameLine();
-		ImGui::RadioButton(u8"Yコンボ", &combo_flg,1); ImGui::SameLine();
-		ImGui::RadioButton(u8"Bコンボ", &combo_flg,2);
+		ImGui::RadioButton(u8"Xコンボ", &combo_flg, 0); ImGui::SameLine();
+		ImGui::RadioButton(u8"Yコンボ", &combo_flg, 1); ImGui::SameLine();
+		ImGui::RadioButton(u8"Bコンボ", &combo_flg, 2);
 
 		switch (combo_flg)
 		{
@@ -1263,7 +976,7 @@ void Knight::DrawDEBUG(
 			static AttackState at_state = AttackState::NONE;
 			int com_attack = scastI(at_state);
 			ImGui::SliderInt(u8"追加するコンボ攻撃", &com_attack, scastI(AttackState::NONE), scastI(AttackState::ATTACK_END) - 1);
-			ImGui::Text(attack_name_list[com_attack].c_str());
+			ImGui::Text(GetName().attack_name_list[com_attack].c_str());
 			at_state = static_cast<AttackState>(com_attack);
 
 			if (ImGui::Button(u8"コンボ追加"))
@@ -1284,19 +997,19 @@ void Knight::DrawDEBUG(
 			{
 				ImGui::BeginChild(ImGui::GetID((void*)0), ImVec2(250, 100), ImGuiWindowFlags_NoTitleBar);
 				for (int i = 0; i < combolist_X.combolist.size(); ++i) {
-					ImGui::Text(attack_name_list[scastI(combolist_X.combolist[i])].c_str());
+					ImGui::Text(GetName().attack_name_list[scastI(combolist_X.combolist[i])].c_str());
 				}
 				ImGui::EndChild();
 			}
 		}
-			break;
+		break;
 		case 1:
 		{
 			//Yコンボリスト作成
 			static AttackState at_state = AttackState::NONE;
 			int com_attack = scastI(at_state);
 			ImGui::SliderInt(u8"追加するコンボ攻撃", &com_attack, scastI(AttackState::NONE), scastI(AttackState::ATTACK_END) - 1);
-			ImGui::Text(attack_name_list[com_attack].c_str());
+			ImGui::Text(GetName().attack_name_list[com_attack].c_str());
 			at_state = static_cast<AttackState>(com_attack);
 
 			if (ImGui::Button(u8"コンボ追加"))
@@ -1317,19 +1030,19 @@ void Knight::DrawDEBUG(
 			{
 				ImGui::BeginChild(ImGui::GetID((void*)0), ImVec2(250, 100), ImGuiWindowFlags_NoTitleBar);
 				for (int i = 0; i < combolist_Y.combolist.size(); ++i) {
-					ImGui::Text(attack_name_list[scastI(combolist_Y.combolist[i])].c_str());
+					ImGui::Text(GetName().attack_name_list[scastI(combolist_Y.combolist[i])].c_str());
 				}
 				ImGui::EndChild();
 			}
 		}
-			break;
+		break;
 		case 2:
 		{
 			//Bコンボリスト作成
 			static AttackState at_state = AttackState::NONE;
 			int com_attack = scastI(at_state);
 			ImGui::SliderInt(u8"追加するコンボ攻撃", &com_attack, scastI(AttackState::NONE), scastI(AttackState::ATTACK_END) - 1);
-			ImGui::Text(attack_name_list[com_attack].c_str());
+			ImGui::Text(GetName().attack_name_list[com_attack].c_str());
 			at_state = static_cast<AttackState>(com_attack);
 
 			if (ImGui::Button(u8"コンボ追加"))
@@ -1350,12 +1063,12 @@ void Knight::DrawDEBUG(
 			{
 				ImGui::BeginChild(ImGui::GetID((void*)0), ImVec2(250, 100), ImGuiWindowFlags_NoTitleBar);
 				for (int i = 0; i < combolist_B.combolist.size(); ++i) {
-					ImGui::Text(attack_name_list[scastI(combolist_B.combolist[i])].c_str());
+					ImGui::Text(GetName().attack_name_list[scastI(combolist_B.combolist[i])].c_str());
 				}
 				ImGui::EndChild();
 			}
 		}
-			break;
+		break;
 		default:
 			break;
 		}
@@ -1383,4 +1096,11 @@ void Knight::DrawDEBUG(
 	}
 
 #endif // USE_IMGUI
+}
+
+
+//デバッグ時当たり判定調整ツール描画
+void Player::DrawDEBUGHitParam()
+{
+	//オーバーライドして使用する
 }

@@ -197,10 +197,12 @@
     <ClCompile Include="InputListProcess.cpp" />
     <ClCompile Include="Knight.cpp" />
     <ClCompile Include="KnightATK.cpp" />
-    <ClCompile Include="KnightIO.cpp" />
     <ClCompile Include="KnightLoad.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="framework.cpp" />
+    <ClCompile Include="PlayerBase.cpp" />
+    <ClCompile Include="PlayerBaseATK.cpp" />
+    <ClCompile Include="PlayerBaseIO.cpp" />
     <ClCompile Include="Stage.cpp" />
     <ClCompile Include="Trajectory.cpp" />
     <ClCompile Include="YRModel.cpp" />
@@ -239,6 +241,7 @@
     <ClInclude Include="HitBox.h" />
     <ClInclude Include="HitCheak.h" />
     <ClInclude Include="Knight.h" />
+    <ClInclude Include="Player_name_list.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Trajectory.h" />
     <ClInclude Include="YRModel.h" />

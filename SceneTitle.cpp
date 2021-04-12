@@ -276,16 +276,16 @@ void SceneTitle::Update(float elapsed_time)
 		}
 #ifdef EXIST_IMGUI
 
-		/*if (pKeyState.tflg == 1)
+		if (pKeyState.tflg == 1)
 		{
 			GetSound().BGMStop(BGMKind::TITLE);
 			select_p1 = scastI(INPUT_PLAYER::P1);
 			select_p2 = scastI(INPUT_PLAYER::P2);
 			FRAMEWORK.scenegame.PadSet(select_p1);
 			UnInit();
-			FRAMEWORK.SetScene(SCENE_TEST);
+			FRAMEWORK.SetScene(SCENE_TABLE::SCENE_TEST);
 			return;
-		}*/
+		}
 
 #endif // USE_IMGUI
 

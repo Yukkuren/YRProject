@@ -21,13 +21,13 @@ void Knight::LoadData(int color_number)
 	attack_list.resize(1);
 	hit.resize(scastI(KNIGHTHIT::END));
 #ifdef EXIST_IMGUI
-	DEBUGAttackLoad();
+	//DEBUGAttackLoad();
 	AttackClean();
 	AttackLoad();
 	//DEBUGAttackLoad();
 #endif // 0
 	//AttackLoad();
-	DEBUGAttackLoad();
+	//DEBUGAttackLoad();
 	AttackClean();
 	AttackLoad();
 
@@ -84,8 +84,8 @@ void Knight::LoadData(int color_number)
 		}
 		else
 		{
-			//main = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
-			main = std::make_shared<Model>("./Data/FBX/Neru/Neru_main.fbx");
+			main = std::make_shared<Model>("./Data/FBX/Knight/knight_main.fbx");
+			//main = std::make_shared<Model>("./Data/FBX/Neru/Neru_main.fbx");
 		}
 	}
 	//------------------------------------------//
@@ -96,11 +96,11 @@ void Knight::LoadData(int color_number)
 	//ë“ã@ÉÇÅ[ÉVÉáÉì
 	if (model_motion.wait_R == nullptr)
 	{
-		if (color_number == 1)
+		/*if (color_number == 1)
 		{
 			model_motion.wait_R = std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_wait_R.fbx");
 		}
-		else
+		else*/
 		{
 			model_motion.wait_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_wait_R.fbx");
 		}
@@ -270,11 +270,11 @@ void Knight::LoadData(int color_number)
 	//é„çUåÇ
 	if (model_motion.jaku_R == nullptr)
 	{
-		if (color_number == 1)
+		/*if (color_number == 1)
 		{
 			model_motion.jaku_R = std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_jaku_R.fbx");
 		}
-		else
+		else*/
 		{
 			model_motion.jaku_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_jaku_R.fbx");
 		}
