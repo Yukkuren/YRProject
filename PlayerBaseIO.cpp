@@ -19,6 +19,32 @@ void CharaStateParameter::Load(PLSELECT chara_name)
 	std::string chara = GetName().chara_name_list[scastI(chara_name)];
 
 	std::string Chara_level = f_level + chara + std::string("/CharaState.txt");
+	std::ifstream ifs(Chara_level);
+
+	ifs >> walkspeed;
+	ifs >> dashspeed;
+	ifs >> backstepS;
+	ifs >> backstepD;
+	ifs >> stepspeed;
+	ifs >> stepD;
+	ifs >> jump_max;
+	ifs >> high_jump_max;
+	ifs >> jump_speed;
+	ifs >> high_jump_speed;
+	ifs >> brake_speed;
+	ifs >> track_speed;
+	ifs >> passive_speed.x;
+	ifs >> passive_speed.y;
+	ifs >> passive_brake;
+	ifs >> max_hp;
+
+	//もし落ちたらエラーを出す
+	if (ifs.fail())
+	{
+		assert("ifs failled");
+	}
+
+	ifs.close();
 }
 
 
@@ -31,20 +57,54 @@ void CharaStateParameter::Save(PLSELECT chara_name)
 	std::string Chara_level = f_level + chara + std::string("/CharaState.txt");
 	std::ofstream outputfile(Chara_level);
 
-	//outputfile <<  << std::endl;
+	outputfile << walkspeed << std::endl;
+	outputfile << dashspeed << std::endl;
+	outputfile << backstepS << std::endl;
+	outputfile << backstepD << std::endl;
+	outputfile << stepspeed << std::endl;
+	outputfile << stepD << std::endl;
+	outputfile << jump_max << std::endl;
+	outputfile << high_jump_max << std::endl;
+	outputfile << jump_speed << std::endl;
+	outputfile << high_jump_speed << std::endl;
+	outputfile << brake_speed << std::endl;
+	outputfile << track_speed << std::endl;
+	outputfile << passive_speed.x << std::endl;
+	outputfile << passive_speed.y << std::endl;
+	outputfile << passive_brake << std::endl;
+	outputfile << max_hp << std::endl;
 
 	outputfile.close();
 }
 
 
 //デバッグ用ツール描画
-void CharaStateParameter::Draw(PLSELECT chara_name)
+void CharaStateParameter::Draw()
 {
 #ifdef EXIST_IMGUI
 
 	if (Get_Use_ImGui())
 	{
-
+		if (ImGui::TreeNode(u8"ステータス調整"))
+		{
+			ImGui::SliderFloat(u8"後退速度", &walkspeed, 0.0f, 100.0f);
+			ImGui::SliderFloat(u8"ダッシュスピード", &dashspeed, 0.0f, 100.0f);
+			ImGui::SliderFloat(u8"バックステップ速度", &backstepS, 0.0f, 300.0f);
+			ImGui::SliderFloat(u8"バックステップブレーキ", &backstepD, 0.0f, 800.0f);
+			ImGui::SliderFloat(u8"ステップ速度", &stepspeed, 0.0f, 300.0f);
+			ImGui::SliderFloat(u8"ステップブレーキ", &stepD, 0.0f, 800.0f);
+			ImGui::SliderFloat(u8"ジャンプ初速度", &jump_speed, 0.0f, 300.0f);
+			ImGui::SliderFloat(u8"ジャンプ最大速度", &jump_max, 0.0f, 300.0f);
+			ImGui::SliderFloat(u8"ハイジャンプ最大速度", &high_jump_speed, 0.0f, 200.0f);
+			ImGui::SliderFloat(u8"ハイジャンプ最大速度", &high_jump_max, 0.0f, 200.0f);
+			ImGui::SliderFloat(u8"ダッシュブレーキ", &brake_speed, 0.0f, 20000.0f);
+			ImGui::SliderFloat(u8"ホーミングダッシュ速度", &track_speed, 0.0f, 200.0f);
+			ImGui::SliderFloat(u8"受け身初速度X", &passive_speed.x, 0.0f, 300.0f);
+			ImGui::SliderFloat(u8"受け身初速度Y", &passive_speed.y, 0.0f, 300.0f);
+			ImGui::SliderFloat(u8"受け身ブレーキ", &passive_brake, 0.0f, 500.0f);
+			ImGui::SliderFloat(u8"最大HP", &max_hp, 0.0f, 3000.0f);
+			ImGui::TreePop();
+		}
 	}
 
 #endif // EXIST_IMGUI
@@ -310,6 +370,8 @@ bool Player::AttackLoad()
 	//ファイルを閉じる
 	hit_ifs.close();
 
+	//キャラステータスを読み込む
+	chara_state.Load(this->chara_name);
 
 	return true;
 }
@@ -481,6 +543,9 @@ bool Player::AttackWrite()
 		}
 	}
 	combo_B_out.close();
+
+	//キャラステータスを書き出す
+	chara_state.Save(this->chara_name);
 
 	return true;
 }
@@ -671,6 +736,8 @@ void Player::DrawDEBUG(
 		ImGui::Text("later : "); ImGui::SameLine(); ImGui::Text("%f", later);
 
 		DrawDEBUGHitParam();
+
+		chara_state.Draw();
 
 		//ImGui::InputFloat("eye_offset.x", &eye_offset.x, 0.01f, 0.01f);
 		//ImGui::InputFloat("eye_offset.y", &eye_offset.y, 0.01f, 0.01f);

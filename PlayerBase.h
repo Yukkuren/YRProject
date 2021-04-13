@@ -445,7 +445,7 @@ public:
 	void Load(PLSELECT chara_name);		//テキストファイルから読み込み
 	void Save(PLSELECT chara_name);		//テキストファイル書き出し
 
-	void Draw(PLSELECT chara_name);		//デバッグ用のツールを表示する
+	void Draw();		//デバッグ用のツールを表示する
 };
 
 
