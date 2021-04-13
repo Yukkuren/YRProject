@@ -13,22 +13,41 @@
 
 
 //テキストファイルから読み込み
-void CharaStateParameter::Load()
+void CharaStateParameter::Load(PLSELECT chara_name)
 {
+	std::string f_level = std::string("./Data/CharaParameter/");
+	std::string chara = GetName().chara_name_list[scastI(chara_name)];
 
+	std::string Chara_level = f_level + chara + std::string("/CharaState.txt");
 }
 
 
 //テキストファイルに書き出し
-void CharaStateParameter::Save()
+void CharaStateParameter::Save(PLSELECT chara_name)
 {
+	std::string f_level = std::string("./Data/CharaParameter/");
+	std::string chara = GetName().chara_name_list[scastI(chara_name)];
 
+	std::string Chara_level = f_level + chara + std::string("/CharaState.txt");
+	std::ofstream outputfile(Chara_level);
+
+	//outputfile <<  << std::endl;
+
+	outputfile.close();
 }
 
 
 //デバッグ用ツール描画
-void CharaStateParameter::Draw()
+void CharaStateParameter::Draw(PLSELECT chara_name)
 {
+#ifdef EXIST_IMGUI
+
+	if (Get_Use_ImGui())
+	{
+
+	}
+
+#endif // EXIST_IMGUI
 
 }
 
@@ -50,13 +69,19 @@ void CharaStateParameter::Draw()
 bool Player::AttackLoad()
 {
 	attack_list.resize(scastI(AttackState::ATTACK_END));
-	std::ifstream ifs("./Data/CharaParameter/Knight/AttackParam.txt");
+
+	std::string f_level = std::string("./Data/CharaParameter/");
+	std::string chara_name = GetName().chara_name_list[scastI(this->chara_name)];
+
+	std::string AP_level = f_level + chara_name + std::string("/AttackParam.txt");
+	std::ifstream ifs(AP_level);
 
 	ifs >> jump_later;
 	ifs >> dash_later;
 
 	for (int list = 0; list < attack_list.size(); list++)
 	{
+		attack_list[list].attack_name = static_cast<AttackState>(list);
 		ifs >> attack_list[list].later;
 		ifs >> attack_list[list].attack_max;
 		int pad, com, stick, aid, real, next, result, ground;
@@ -135,7 +160,8 @@ bool Player::AttackLoad()
 	ifs.close();
 
 	//アニメーション調整値を読み込む
-	std::ifstream anim_ifs("./Data/CharaParameter/Knight/AnimParam.txt");
+	std::string Anim_level = f_level + chara_name + std::string("/AnimParam.txt");
+	std::ifstream anim_ifs(Anim_level);
 	for (int list = 0; list < ac_attack.size(); list++)
 	{
 		anim_ifs >> ac_attack[list].fream;
@@ -153,7 +179,8 @@ bool Player::AttackLoad()
 
 
 	//アニメーション調整値を読み込む
-	std::ifstream anim_act_ifs("./Data/CharaParameter/Knight/AnimActParam.txt");
+	std::string Anim_Act_level = f_level + chara_name + std::string("/AnimActParam.txt");
+	std::ifstream anim_act_ifs(Anim_Act_level);
 	for (int list = 0; list < ac_act.size(); list++)
 	{
 		anim_act_ifs >> ac_act[list].fream;
@@ -170,7 +197,8 @@ bool Player::AttackLoad()
 
 
 	//Xボタンコンボリストを読み込む
-	std::ifstream combo_X_ifs("./Data/CharaParameter/Knight/Combo_X.txt");
+	std::string ComboX_level = f_level + chara_name + std::string("/Combo_X.txt");
+	std::ifstream combo_X_ifs(ComboX_level);
 	int size = -1;
 	int  com = 0;
 	combo_X_ifs >> size;
@@ -197,7 +225,8 @@ bool Player::AttackLoad()
 
 
 	//Yボタンコンボリストを読み込む
-	std::ifstream combo_Y_ifs("./Data/CharaParameter/Knight/Combo_Y.txt");
+	std::string ComboY_level = f_level + chara_name + std::string("/Combo_Y.txt");
+	std::ifstream combo_Y_ifs(ComboY_level);
 	int size_y = -1;
 	int  com_y = 0;
 	combo_Y_ifs >> size_y;
@@ -224,7 +253,8 @@ bool Player::AttackLoad()
 
 
 	//Bボタンコンボリストを読み込む
-	std::ifstream combo_B_ifs("./Data/CharaParameter/Knight/Combo_B.txt");
+	std::string ComboB_level = f_level + chara_name + std::string("/Combo_B.txt");
+	std::ifstream combo_B_ifs(ComboB_level);
 	int size_b = -1;
 	int  com_b = 0;
 	combo_B_ifs >> size_b;
@@ -251,7 +281,8 @@ bool Player::AttackLoad()
 
 
 	//当たり判定調整値を読み込む
-	std::ifstream hit_ifs("./Data/CharaParameter/Knight/HitParam.txt");
+	std::string Hit_level = f_level + chara_name + std::string("/HitParam.txt");
+	std::ifstream hit_ifs(Hit_level);
 	for (int list = 0; list < hitparam_list.size(); list++)
 	{
 		for (int act = 0; act < hitparam_list[list].act_parameter.size(); act++)
@@ -290,7 +321,11 @@ bool Player::AttackLoad()
 bool Player::AttackWrite()
 {
 	//AttackStateの順に保存する
-	std::ofstream outputfile("./Data/CharaParameter/Knight/AttackParam.txt");
+	std::string f_level = std::string("./Data/CharaParameter/");
+	std::string chara_name = GetName().chara_name_list[scastI(this->chara_name)];
+
+	std::string AP_level = f_level + chara_name + std::string("/AttackParam.txt");
+	std::ofstream outputfile(AP_level);
 
 	outputfile << jump_later << std::endl;
 	outputfile << dash_later << std::endl;
@@ -360,7 +395,8 @@ bool Player::AttackWrite()
 	outputfile.close();
 
 	//アニメーション調整値も書き出す
-	std::ofstream animout("./Data/CharaParameter/Knight/AnimParam.txt");
+	std::string Anim_level = f_level + chara_name + std::string("/AnimParam.txt");
+	std::ofstream animout(Anim_level);
 	for (int list = 0; list < ac_attack.size(); list++)
 	{
 		animout << ac_attack[list].fream << std::endl;
@@ -370,7 +406,8 @@ bool Player::AttackWrite()
 
 	animout.close();
 
-	std::ofstream animactout("./Data/CharaParameter/Knight/AnimActParam.txt");
+	std::string Anim_Act_level = f_level + chara_name + std::string("/AnimActParam.txt");
+	std::ofstream animactout(Anim_Act_level);
 	for (int list = 0; list < ac_act.size(); list++)
 	{
 		animactout << ac_act[list].fream << std::endl;
@@ -381,7 +418,8 @@ bool Player::AttackWrite()
 	animactout.close();
 
 	//当たり判定調整値も書き出す
-	std::ofstream hitout("./Data/CharaParameter/Knight/HitParam.txt");
+	std::string Hit_level = f_level + chara_name + std::string("/HitParam.txt");
+	std::ofstream hitout(Hit_level);
 	for (int list = 0; list < hitparam_list.size(); list++)
 	{
 		for (int act = 0; act < hitparam_list[list].act_parameter.size(); act++)
@@ -403,7 +441,8 @@ bool Player::AttackWrite()
 	}
 	hitout.close();
 
-	std::ofstream combo_X_out("./Data/CharaParameter/Knight/Combo_X.txt");
+	std::string ComboX_level = f_level + chara_name + std::string("/Combo_X.txt");
+	std::ofstream combo_X_out(ComboX_level);
 	if (!combolist_X.combolist.empty())
 	{
 		combo_X_out << combolist_X.combolist.size() << std::endl;
@@ -413,10 +452,11 @@ bool Player::AttackWrite()
 			combo_X_out << scastI(combolist_X.combolist[list]) << std::endl;
 		}
 	}
-
 	combo_X_out.close();
 
-	std::ofstream combo_Y_out("./Data/CharaParameter/Knight/Combo_Y.txt");
+
+	std::string ComboY_level = f_level + chara_name + std::string("/Combo_Y.txt");
+	std::ofstream combo_Y_out(ComboY_level);
 	if (!combolist_Y.combolist.empty())
 	{
 		combo_Y_out << combolist_Y.combolist.size() << std::endl;
@@ -426,10 +466,11 @@ bool Player::AttackWrite()
 			combo_Y_out << scastI(combolist_Y.combolist[list]) << std::endl;
 		}
 	}
-
 	combo_Y_out.close();
 
-	std::ofstream combo_B_out("./Data/CharaParameter/Knight/Combo_B.txt");
+
+	std::string ComboB_level = f_level + chara_name + std::string("/Combo_B.txt");
+	std::ofstream combo_B_out(ComboB_level);
 	if (!combolist_B.combolist.empty())
 	{
 		combo_B_out << combolist_B.combolist.size() << std::endl;
@@ -439,7 +480,6 @@ bool Player::AttackWrite()
 			combo_B_out << scastI(combolist_B.combolist[list]) << std::endl;
 		}
 	}
-
 	combo_B_out.close();
 
 	return true;
@@ -617,7 +657,7 @@ void Player::DrawDEBUG(
 		FRAMEWORK.font->End(FRAMEWORK.context.Get());
 
 		std::string now_play = std::to_string(now_player);
-		now_play += std::string(":RyuHitBox");
+		now_play += std::string("P : ") + GetName().chara_name_list[scastI(this->chara_name)];
 		ImGui::Begin(now_play.c_str());
 		ImGui::Text(u8"行動ステート");
 		ImGui::Text(GetName().act_name_list[scastI(act_state)].c_str());
@@ -799,7 +839,7 @@ void Player::DrawDEBUG(
 		//攻撃判定を全て出す
 		for (int list = 0; list < attack_list.size(); list++)
 		{
-			if (ImGui::TreeNode(GetName().attack_name_list[scastI(attack_list[list].attack_name)].c_str()))
+			if (ImGui::TreeNode(GetName().attack_name_list[list].c_str()))
 			{
 				int real = scastI(attack_list[list].real_attack);
 				int pad = scastI(attack_list[list].linkage_button);

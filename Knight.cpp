@@ -34,6 +34,7 @@ Knight::~Knight() = default;
 void Knight::CharaInit()
 {
 	//初期化
+
 	scale = YR_Vector3( 0.1f,0.1f,0.1f );
 	angle = YR_Vector3(0.0f, 0.0f, 0.0f);
 
@@ -462,26 +463,26 @@ void Knight::Draw(
 	0,0,0,1
 	};
 	//剣のワールド変換行列を取得する
-	//DirectX::XMMATRIX sword_world_transform;
-	//for (auto& a : anim->GetNodes())
-	//{
-	//	if (a.name == std::string("Sword"))
-	//	{
-	//		/*coodinate_conversion._41 = a.translate.x;
-	//		coodinate_conversion._42 = a.translate.y;
-	//		coodinate_conversion._43 = a.translate.z;*/
-	//		sword_world_transform = DirectX::XMLoadFloat4x4(&a.world_transform);
-	//		break;
-	//	}
-	//}
+	DirectX::XMMATRIX sword_world_transform;
+	for (auto& a : anim->GetNodes())
+	{
+		if (a.name == std::string("Sword"))
+		{
+			/*coodinate_conversion._41 = a.translate.x;
+			coodinate_conversion._42 = a.translate.y;
+			coodinate_conversion._43 = a.translate.z;*/
+			sword_world_transform = DirectX::XMLoadFloat4x4(&a.world_transform);
+			break;
+		}
+	}
 
-	////取得した剣のワールド変換行列を使って剣の先端と根本の座標を割り出す
-	//DirectX::XMVECTOR head_vec = DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&sword_head.GetDXFLOAT3()), sword_world_transform);
-	//DirectX::XMVECTOR tail_vec = DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&sword_tail.GetDXFLOAT3()), sword_world_transform);
+	//取得した剣のワールド変換行列を使って剣の先端と根本の座標を割り出す
+	DirectX::XMVECTOR head_vec = DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&sword_head.GetDXFLOAT3()), sword_world_transform);
+	DirectX::XMVECTOR tail_vec = DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&sword_tail.GetDXFLOAT3()), sword_world_transform);
 
 
-	//DirectX::XMStoreFloat3(&head, head_vec);
-	//DirectX::XMStoreFloat3(&tail, tail_vec);
+	DirectX::XMStoreFloat3(&head, head_vec);
+	DirectX::XMStoreFloat3(&tail, tail_vec);
 
 	if (timer < non_target && timer > 0.0f)
 	{
@@ -489,15 +490,15 @@ void Knight::Draw(
 		if (traject_on)
 		{
 			//攻撃によっては剣の軌跡を表示しない
-			//traject.SetTrajectoryPos(head, tail);
+			traject.SetTrajectoryPos(head, tail);
 		}
 	}
 
-	//traject.Update(elapsed_time);
+	traject.Update(elapsed_time);
 
-	/*traject.render(
+	traject.render(
 			pos.GetDXFLOAT3(),
-			scale.GetDXFLOAT3(), angle.GetDXFLOAT3(), view, projection, material_color);*/
+			scale.GetDXFLOAT3(), angle.GetDXFLOAT3(), view, projection, material_color);
 
 	//テキスト描画
 	TextDraw();

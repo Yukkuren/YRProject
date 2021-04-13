@@ -70,11 +70,11 @@ void SceneGame::SetPlayerCharacter(std::unique_ptr<Player>* player, int select)
 	case scastI(PLSELECT::KNIGHT):
 		*player = std::make_unique<Knight>();
 		break;
-	case scastI(PLSELECT::KEN):
+	case scastI(PLSELECT::NERU):
 		*player = std::make_unique<Knight>();
 		break;
-
 	}
+	player->get()->chara_name = static_cast<PLSELECT>(select);
 }
 
 

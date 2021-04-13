@@ -37,7 +37,7 @@ constexpr float passive_max_time = 0.2f;				//受け身中無敵時間
 enum class PLSELECT :int
 {
 	KNIGHT = 0,
-	KEN,
+	NERU,
 	PLSELECT_END,
 };
 
@@ -442,10 +442,10 @@ public:
 	float max_hp = 1000.0f;						//HPの初期値
 
 public:
-	void Load();		//テキストファイルから読み込み
-	void Save();		//テキストファイル書き出し
+	void Load(PLSELECT chara_name);		//テキストファイルから読み込み
+	void Save(PLSELECT chara_name);		//テキストファイル書き出し
 
-	void Draw();		//デバッグ用のツールを表示する
+	void Draw(PLSELECT chara_name);		//デバッグ用のツールを表示する
 };
 
 
@@ -466,6 +466,7 @@ public:
 public:
 	//ゲーム内処理用変数
 	CharaStateParameter	chara_state;							//キャラパラメーター(ダッシュ速度など)
+	PLSELECT			chara_name = PLSELECT::KNIGHT;			//キャラ名
 	float				hp = 0;									//体力
 	int					jumpcount = 2;							//ジャンプの回数保持
 	int					air_dash_count = 1;						//空中ダッシュの回数保持

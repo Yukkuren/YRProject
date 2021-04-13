@@ -20,12 +20,13 @@ void Knight::LoadData(int color_number)
 
 	attack_list.resize(1);
 	hit.resize(scastI(KNIGHTHIT::END));
-#ifdef EXIST_IMGUI
-	//DEBUGAttackLoad();
-	AttackClean();
-	AttackLoad();
-	//DEBUGAttackLoad();
-#endif // 0
+	hitparam_list.resize(scastI(KNIGHTHIT::END));
+//#ifdef EXIST_IMGUI
+//	//DEBUGAttackLoad();
+//	AttackClean();
+//	AttackLoad();
+//	//DEBUGAttackLoad();
+//#endif // 0
 	//AttackLoad();
 	//DEBUGAttackLoad();
 	AttackClean();
@@ -233,11 +234,11 @@ void Knight::LoadData(int color_number)
 	//イントロモーション
 	if (model_motion.intro_R == nullptr)
 	{
-		if (color_number == 1)
+		/*if (color_number == 1)
 		{
 			model_motion.intro_R = std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_wait_R.fbx");
 		}
-		else
+		else*/
 		{
 			model_motion.intro_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_Intro_R.fbx");
 		}

@@ -11,6 +11,14 @@ struct Name_list
 {
 public:
 
+	//キャラ名リスト(ファイル読み込みに使用する為、読み込むファイルの名前と同じにすること)
+	std::array<std::string, scastI(PLSELECT::PLSELECT_END)> chara_name_list =
+	{
+		u8"Knight",
+		u8"Neru",
+	};
+
+
 	std::array<std::string, scastI(AttackState::ATTACK_END)> attack_name_list =
 	{
 		u8"攻撃無し()の中身は攻撃内容",

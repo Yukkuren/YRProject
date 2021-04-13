@@ -128,9 +128,9 @@ void SceneSelect::Update(float elapsed_time)
 			if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::STICK_R)] == 1)
 			{
 				select_p1++;
-				if (select_p1 > scastI(PLSELECT::KEN))
+				if (select_p1 > scastI(PLSELECT::NERU))
 				{
-					select_p1 = scastI(PLSELECT::KEN);
+					select_p1 = scastI(PLSELECT::NERU);
 				}
 			}
 			if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::STICK_L)] == 1)
@@ -162,9 +162,9 @@ void SceneSelect::Update(float elapsed_time)
 			if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::STICK_R)] == 1)
 			{
 				select_p2++;
-				if (select_p2 > scastI(PLSELECT::KEN))
+				if (select_p2 > scastI(PLSELECT::NERU))
 				{
-					select_p2 = scastI(PLSELECT::KEN);
+					select_p2 = scastI(PLSELECT::NERU);
 				}
 			}
 			if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::STICK_L)] == 1)
@@ -372,7 +372,7 @@ YR_Vector3 SceneSelect::PosSet(int select)
 	case scastI(PLSELECT::KNIGHT):
 		return knight_pos;
 		break;
-	case scastI(PLSELECT::KEN):
+	case scastI(PLSELECT::NERU):
 		return kenpos;
 		break;
 	}
