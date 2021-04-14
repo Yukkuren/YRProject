@@ -15,7 +15,7 @@
 
 enum class EffectKind : int
 {
-	NONE = 0,
+	NONE = 0,			//âΩÇ‡Ç»Çµ
 	GUARD,				//ÉKÅ[Éh
 	TORNADE,			//ó≥ä™
 	SWORD,				//éaåÇ

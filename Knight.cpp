@@ -513,6 +513,7 @@ void Knight::WinAnimSet()
 
 	pos = YR_Vector3( 0.0f,0.0f,0.0f );
 	angle = YR_Vector3( 0.0f,0.0f,0.0f );
+	hp = chara_state.max_hp;
 
 	YR_Vector3 eye = YR_Vector3(pos.x, pos.y + 5.0f, pos.z - 80.0f);
 	YR_Vector3 focus = YR_Vector3(pos.x, pos.y + 3.5f, pos.z);

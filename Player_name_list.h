@@ -172,6 +172,27 @@ public:
 		u8"ダウン攻撃",
 	};
 
+
+	std::array<std::string, scastI(EffectKind::END)> effect_kind_name_list =
+	{
+		u8"何もなし",
+		u8"ガード",
+		u8"竜巻",
+		u8"剣ヒットエフェクト",
+		u8"ドリル",
+		u8"相殺",
+		u8"赤いドリル",
+		u8"緑のドリル",
+		u8"白いドリル",
+		u8"緑の竜巻",
+		u8"衝撃波",
+		u8"砂煙",
+		u8"ダメージエフェクト",
+		u8"ホーミングダッシュ時エフェクト",
+		u8"壁激突",
+	};
+
+
 	static Name_list& getInstance()
 	{
 		static Name_list instance;

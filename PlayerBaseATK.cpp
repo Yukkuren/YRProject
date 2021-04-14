@@ -209,9 +209,9 @@ void Player::AttackProjectileDefault(float elapsed_time)
 
 		attack_list[now_at_list].SetAttack(&projectile_atk, rightOrleft, pos, attack_list[now_at_list].speed);
 
-		YRGetEffect().PlayEffect(EffectKind::DRILL, projectile_atk.back().handle, projectile_atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -90.0f * rightOrleft);
+		//YRGetEffect().PlayEffect(EffectKind::DRILL, projectile_atk.back().handle, projectile_atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -90.0f * rightOrleft);
 
-		projectile_atk.back().effect_kind = EffectKind::DRILL;
+		//projectile_atk.back().effect_kind = EffectKind::DRILL;
 
 		//SEçƒê∂
 		GetSound().SESinglePlay(SEKind::PROJECTILE);

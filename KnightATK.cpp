@@ -870,9 +870,9 @@ void Knight::Thu_Rhurf(float elapsed_time)
 
 		attack_list[now_at_list].SetAttack(&projectile_atk, rightOrleft, pos, attack_list[now_at_list].speed);
 
-		YRGetEffect().PlayEffect(EffectKind::FIRE_DRILL, projectile_atk.back().handle, projectile_atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -90.0f * rightOrleft);
+		//YRGetEffect().PlayEffect(EffectKind::FIRE_DRILL, projectile_atk.back().handle, projectile_atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -90.0f * rightOrleft);
 
-		projectile_atk.back().effect_kind = EffectKind::FIRE_DRILL;
+		//projectile_atk.back().effect_kind = EffectKind::FIRE_DRILL;
 
 		//SE再生
 		GetSound().SESinglePlay(SEKind::PROJECTILE);
@@ -977,9 +977,9 @@ void Knight::Kyo_Rhurf(float elapsed_time)
 
 		attack_list[now_at_list].SetAttack(&projectile_atk, rightOrleft, pos, attack_list[now_at_list].speed);
 
-		YRGetEffect().PlayEffect(EffectKind::POWER_DRILL, projectile_atk.back().handle, projectile_atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(1.5f, 1.5f, 1.5f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -90.0f * rightOrleft);
+		//YRGetEffect().PlayEffect(EffectKind::POWER_DRILL, projectile_atk.back().handle, projectile_atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(1.5f, 1.5f, 1.5f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -90.0f * rightOrleft);
 
-		projectile_atk.back().effect_kind = EffectKind::POWER_DRILL;
+		//projectile_atk.back().effect_kind = EffectKind::POWER_DRILL;
 
 		//SE再生
 		GetSound().SESinglePlay(SEKind::PROJECTILE);
@@ -1091,8 +1091,8 @@ void Knight::Jaku_Lhurf(float elapsed_time)
 			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos);
 		}
 
-		atk.back().effect_kind = EffectKind::TORNADE;
-		YRGetEffect().PlayEffect(EffectKind::TORNADE, atk.back().handle, atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+		//atk.back().effect_kind = EffectKind::TORNADE;
+		//YRGetEffect().PlayEffect(EffectKind::TORNADE, atk.back().handle, atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
 		fream = non_target;
 		//持続時間を設定
 		timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
@@ -1225,8 +1225,8 @@ void Knight::A_Jaku_Lhurf(float elapsed_time)
 			//付与しない場合
 			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos);
 		}
-		atk.back().effect_kind = EffectKind::TORNADE;
-		YRGetEffect().PlayEffect(EffectKind::TORNADE, atk.back().handle, atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+		//atk.back().effect_kind = EffectKind::TORNADE;
+		//YRGetEffect().PlayEffect(EffectKind::TORNADE, atk.back().handle, atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
 
 		GetSound().SESinglePlay(SEKind::TORNADO);
 
@@ -1364,8 +1364,8 @@ void Knight::Thu_Lhurf(float elapsed_time)
 			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos);
 		}
 
-		atk.back().effect_kind = EffectKind::TORNADE;
-		YRGetEffect().PlayEffect(EffectKind::TORNADE, atk.back().handle, atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+		//atk.back().effect_kind = EffectKind::TORNADE;
+		//YRGetEffect().PlayEffect(EffectKind::TORNADE, atk.back().handle, atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
 		fream = non_target;
 
 		GetSound().SESinglePlay(SEKind::TORNADO);
@@ -1535,7 +1535,7 @@ void Knight::TrackDash(float decision, float elapsed_time)
 		HitBoxTransition(HitBoxState::PROJECTILE_ARMOR);
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 
-		YRGetEffect().PlayEffect(EffectKind::TRACK, pos.GetDXFLOAT3(), DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+		//YRGetEffect().PlayEffect(EffectKind::TRACK, pos.GetDXFLOAT3(), DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
 	}
 
 
@@ -1551,7 +1551,7 @@ void Knight::TrackDash(float decision, float elapsed_time)
 
 		GetSound().SEPlay(SEKind::TRACK);
 
-		YRGetEffect().SetLocation(EffectKind::TRACK, pos.GetDXFLOAT3());
+		//YRGetEffect().SetLocation(EffectKind::TRACK, pos.GetDXFLOAT3());
 
 		for (auto& a : atk)
 		{
@@ -1581,7 +1581,10 @@ void Knight::TrackDash(float decision, float elapsed_time)
 		speed.y = attack_list[now_at_list].advance_speed;
 
 
-		YRGetEffect().StopEffect(EffectKind::TRACK);
+		//YRGetEffect().StopEffect(EffectKind::TRACK);
+
+		//エフェクトを止める為、一度更新処理を掛ける
+		AttackUpdate(0.0f);
 
 		//攻撃をすべて消去する
 		AllAttackClear();
@@ -1631,11 +1634,13 @@ void Knight::TrackDash(float decision, float elapsed_time)
 				{
 					//当たらなかった場合、一定の距離以上に近づいていれば強制的に終了させる
 
+					//エフェクトを止める為、一度更新処理を掛ける
+					AttackUpdate(0.0f);
 					//攻撃をすべて消去する
 					AllAttackClear();
 					//タイマーをマイナスにする
 					timer = -0.1f;
-					YRGetEffect().StopEffect(EffectKind::TRACK);
+					//YRGetEffect().StopEffect(EffectKind::TRACK);
 				}
 			}
 		}
@@ -1853,7 +1858,7 @@ void Knight::SpecialAttack(float elapsed_time)
 		//エフェクト生成
 		YRGetEffect().PlayEffect(EffectKind::SPECIAL_DRILL, atk.back().handle, atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -90.0f * rightOrleft);
 
-		atk.back().effect_kind = EffectKind::SPECIAL_DRILL;
+		atk.back().effect_param.effect_kind = EffectKind::SPECIAL_DRILL;
 
 		fream = non_target;
 		if (rightOrleft > 0)

@@ -882,7 +882,7 @@ void SceneGame::Update(float elapsed_time)
 				else
 				{
 					//対戦中
-					timer += elapsed_time;
+					timer += game_speed;
 
 					//カメラリクエスト更新
 					CameraRequest(game_speed);
@@ -1837,7 +1837,7 @@ void SceneGame::HPBar_Draw(
 		pl2_before_hp = player2p->hp;
 
 
-		DangerDraw(elapsed_time);
+		DangerDraw(game_speed);
 
 		////エフェクト
 		//YRGetEffect().CameraSet();
@@ -1860,11 +1860,19 @@ void SceneGame::HPBar_Draw(
 //DANGER描画、更新
 void SceneGame::DangerDraw(float elapsed_time)
 {
+	if (end)
+	{
+		return;
+	}
+
 	float pos_plus_speed_D = 5000.0f;
 
 	//サイズを大きくする、小さくするを繰り返す
-	float sin_timer = sinf(timer*5.0f);
-	Danger_size += (sin_timer * 0.001f);
+	if (!pause)
+	{
+		float sin_timer = sinf(timer * 5.0f);
+		Danger_size += (sin_timer * 0.001f);
+	}
 
 	//1PのDANGER表記
 	if (player1p->hp <= (PL.HP_MAX1P * HP_Danger_point) && player1p->hp != 0.0f)

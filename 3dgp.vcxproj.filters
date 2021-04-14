@@ -166,6 +166,12 @@
     <FxCompile Include="LoadShader_vs.hlsl">
       <Filter>Shader\LoadShader</Filter>
     </FxCompile>
+    <FxCompile Include="SilexarsShader_vs.hlsl">
+      <Filter>Shader\SilexarsShader</Filter>
+    </FxCompile>
+    <FxCompile Include="SilexarsShader_ps.hlsl">
+      <Filter>Shader\SilexarsShader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="1PGamePad.cpp">
@@ -538,6 +544,9 @@
     <None Include="LoadShader.hlsli">
       <Filter>Shader\LoadShader</Filter>
     </None>
+    <None Include="SilexarsShader.hlsli">
+      <Filter>Shader\SilexarsShader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shader">
@@ -647,6 +656,9 @@
     </Filter>
     <Filter Include="Chara\PlayerBase">
       <UniqueIdentifier>{af44636f-445c-431c-bb66-d54bc084cf47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\SilexarsShader">
+      <UniqueIdentifier>{49f006fe-6b47-458f-93ee-a55ca94f386d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

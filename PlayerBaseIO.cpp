@@ -144,7 +144,7 @@ bool Player::AttackLoad()
 		attack_list[list].attack_name = static_cast<AttackState>(list);
 		ifs >> attack_list[list].later;
 		ifs >> attack_list[list].attack_max;
-		int pad, com, stick, aid, real, next, result, ground;
+		int pad, com, stick, aid, real, next, result, ground,effect_k;
 		ifs >> pad;
 		ifs >> com;
 		attack_list[list].linkage_button = static_cast<PAD>(pad);
@@ -171,7 +171,19 @@ bool Player::AttackLoad()
 		attack_list[list].conditions_hit = static_cast<HitResult>(result);
 		ifs >> attack_list[list].timer;
 		ifs >> attack_list[list].traject_on;
-
+		ifs >> effect_k;
+		attack_list[list].effect_param.effect_kind = static_cast<EffectKind>(effect_k);
+		ifs >> attack_list[list].effect_param.distance.x;
+		ifs >> attack_list[list].effect_param.distance.y;
+		ifs >> attack_list[list].effect_param.distance.z;
+		ifs >> attack_list[list].effect_param.scale.x;
+		ifs >> attack_list[list].effect_param.scale.y;
+		ifs >> attack_list[list].effect_param.scale.z;
+		ifs >> attack_list[list].effect_param.axis.x;
+		ifs >> attack_list[list].effect_param.axis.y;
+		ifs >> attack_list[list].effect_param.axis.z;
+		ifs >> attack_list[list].effect_param.angle;
+		ifs >> attack_list[list].effect_param.rightORleft;
 
 
 		//攻撃回数ごとのパラメータ読み込み
@@ -413,6 +425,19 @@ bool Player::AttackWrite()
 		outputfile << scastI(attack_list[list].conditions_hit) << std::endl;
 		outputfile << attack_list[list].timer << std::endl;
 		outputfile << attack_list[list].traject_on << std::endl;
+
+		outputfile << scastI(attack_list[list].effect_param.effect_kind) << std::endl;
+		outputfile << attack_list[list].effect_param.distance.x << std::endl;
+		outputfile << attack_list[list].effect_param.distance.y << std::endl;
+		outputfile << attack_list[list].effect_param.distance.z << std::endl;
+		outputfile << attack_list[list].effect_param.scale.x << std::endl;
+		outputfile << attack_list[list].effect_param.scale.y << std::endl;
+		outputfile << attack_list[list].effect_param.scale.z << std::endl;
+		outputfile << attack_list[list].effect_param.axis.x << std::endl;
+		outputfile << attack_list[list].effect_param.axis.y << std::endl;
+		outputfile << attack_list[list].effect_param.axis.z << std::endl;
+		outputfile << attack_list[list].effect_param.angle << std::endl;
+		outputfile << attack_list[list].effect_param.rightORleft << std::endl;
 
 		//攻撃回数ごとのパラメータ書き出し
 		if (!attack_list[list].attack_single.empty())
@@ -927,6 +952,39 @@ void Player::DrawDEBUG(
 				ImGui::Text(GetName().attack_name_list[scastI(attack_list[list].combo)].c_str());
 				ImGui::Checkbox(u8"しゃがみ攻撃", &attack_list[list].squat_on);
 				ImGui::Checkbox(u8"剣の軌跡を表示する", &attack_list[list].traject_on);
+
+				int effect_k = scastI(attack_list[list].effect_param.effect_kind);
+				ImGui::SliderInt(u8"エフェクトの種類", &effect_k, 0, scastI(EffectKind::END) - 1);
+				ImGui::Text(GetName().effect_kind_name_list[scastI(attack_list[list].effect_param.effect_kind)].c_str());
+				attack_list[list].effect_param.effect_kind = static_cast<EffectKind>(effect_k);
+
+				if (attack_list[list].effect_param.effect_kind != EffectKind::NONE)
+				{
+					if (ImGui::TreeNode(u8"エフェクト詳細設定"))
+					{
+						ImGui::SliderFloat(u8"座標X", &attack_list[list].effect_param.distance.x, -50.0f, 50.0f);
+						ImGui::SliderFloat(u8"座標Y", &attack_list[list].effect_param.distance.y, -50.0f, 50.0f);
+						ImGui::SliderFloat(u8"座標Z", &attack_list[list].effect_param.distance.z, -50.0f, 50.0f);
+						float scale_all = attack_list[list].effect_param.scale.x;
+						ImGui::SliderFloat(u8"大きさ全体", &scale_all, 0.0f, 50.0f);
+						ImGui::SliderFloat(u8"大きさX", &attack_list[list].effect_param.scale.x, 0.0f, 50.0f);
+						ImGui::SliderFloat(u8"大きさY", &attack_list[list].effect_param.scale.y, 0.0f, 50.0f);
+						ImGui::SliderFloat(u8"大きさZ", &attack_list[list].effect_param.scale.z, 0.0f, 50.0f);
+						if (attack_list[list].effect_param.scale.x == attack_list[list].effect_param.scale.y == attack_list[list].effect_param.scale.z)
+						{
+							attack_list[list].effect_param.scale.x = scale_all;
+							attack_list[list].effect_param.scale.y = scale_all;
+							attack_list[list].effect_param.scale.z = scale_all;
+						}
+						ImGui::SliderFloat(u8"方向X", &attack_list[list].effect_param.axis.x, 0.0, 1.0f);
+						ImGui::SliderFloat(u8"方向Y", &attack_list[list].effect_param.axis.y, 0.0, 1.0f);
+						ImGui::SliderFloat(u8"方向Z", &attack_list[list].effect_param.axis.z, 0.0, 1.0f);
+						ImGui::SliderFloat(u8"角度", &attack_list[list].effect_param.angle, -360.0f, 360.0f);
+						ImGui::Checkbox(u8"角度をプレイヤー依存にするか", &attack_list[list].effect_param.rightORleft);
+
+						ImGui::TreePop();
+					}
+				}
 
 				if (attack_list[list].linkage_stick != PAD::BUTTOM_END)
 				{

@@ -54,6 +54,7 @@ void Knight::LoadData(int color_number)
 		if (cutIn == nullptr)
 		{
 			cutIn = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut1.png", 640.0f, 192.0f);
+			//cutIn = std::make_unique<Sprite>(L"./Data/Image/Character/Neru/Neru_cut1.png", 640.0f, 192.0f);
 		}
 
 		break;

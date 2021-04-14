@@ -69,6 +69,23 @@ public:
 	float		stealtimer; //掴みぬけされる時間
 	HitStopTime	HS_timer;	//ヒットストップ時間(3パターン)
 	float		gauge_get;	//ゲージの獲得量
+
+	AttackParameter() : distance(0.0f, 0.0f, 0.0f), size(0.0f, 0.0f, 0.0f), timer(0.0f), damege(0.0f), HB_timer(0.0f), hitback(0.0f, 0.0f, 0.0f),
+		type(AttackKind::MIDDLE), knockback(0.0f), gaugeout(false), stealtimer(0.0f), HS_timer(HitStopTime::SHORT), gauge_get(0.0f) {};
+};
+
+
+struct EffectParameter
+{
+	EffectKind			effect_kind;	//エフェクトの種類
+	YR_Vector3			distance;		//攻撃判定との座標の位置の差
+	YR_Vector3			scale;			//大きさ
+	YR_Vector3			axis;			//角度の方向
+	float				angle;			//角度
+	bool				rightORleft;	//角度をプレイヤーに依存させるか
+
+	EffectParameter() : effect_kind(EffectKind::NONE), distance(0.0f, 0.0f, 0.0f), scale(1.0f, 1.0f, 1.0f), axis(0.0f, 0.0f, 0.0f),
+	angle(0.0f),rightORleft(false){}
 };
 
 
@@ -90,18 +107,15 @@ public:
 	YR_Vector3			speed;		//攻撃の移動速度
 	YR_Vector3			plus_speed;	//飛び道具用の常に付与するスピード
 
+	EffectParameter		effect_param;//エフェクトのパラメーター
 	Effekseer::Handle	handle;		//エフェクトのハンドル
-	EffectKind			effect_kind;//エフェクトの種類
 
-	AttackBox()
-	{
-		effect_kind = EffectKind::NONE;
-
-	};
+	AttackBox() : fin(false), attack(false), hit_ok(true), knock_start(false), plus(false), rightOrleft(0.0f), hit_result(HitResult::NONE), attack_name(0),
+		parameter(), pos(0.0f, 0.0f, 0.0f), speed(0.0f, 0.0f, 0.0f), plus_speed(0.0f, 0.0f, 0.0f), effect_param(), handle() {};
 	~AttackBox();
 
-	void Init(int attack_name, AttackParameter& param, float rightOrleft, YR_Vector3 pl_pos);
-	void Init(int attack_name, AttackParameter& param, float rightOrleft, YR_Vector3 pl_pos, YR_Vector3 plus_speed);
+	void Init(int attack_name, AttackParameter& param, float rightOrleft, YR_Vector3 pl_pos, EffectParameter effect_param);
+	void Init(int attack_name, AttackParameter& param, float rightOrleft, YR_Vector3 pl_pos, YR_Vector3 plus_speed, EffectParameter effect_param);
 	void Update(YR_Vector3 pl_pos, float elapsed_time);
 	void Draw(YRShader* shader,
 		const DirectX::XMMATRIX& view,

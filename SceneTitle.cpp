@@ -173,6 +173,11 @@ void SceneTitle::LoadData()
 		titleShader = std::make_unique<YRShader>(ShaderType::TITLE);
 		titleShader->Create("./Data/Shader/ModeSelectShader_vs.cso", "./Data/Shader/ModeSelectShader_ps.cso");
 	}*/
+	/*if (titleShader == nullptr)
+	{
+		titleShader = std::make_unique<YRShader>(ShaderType::TITLE);
+		titleShader->Create("./Data/Shader/SilexarsShader_vs.cso", "./Data/Shader/SilexarsShader_ps.cso");
+	}*/
 
 	load_state = 3;
 }
@@ -276,15 +281,18 @@ void SceneTitle::Update(float elapsed_time)
 		}
 #ifdef EXIST_IMGUI
 
-		if (pKeyState.tflg == 1)
+		if (Get_Use_ImGui())
 		{
-			GetSound().BGMStop(BGMKind::TITLE);
-			select_p1 = scastI(INPUT_PLAYER::P1);
-			select_p2 = scastI(INPUT_PLAYER::P2);
-			FRAMEWORK.scenegame.PadSet(select_p1);
-			UnInit();
-			FRAMEWORK.SetScene(SCENE_TABLE::SCENE_TEST);
-			return;
+			if (pKeyState.tflg == 1)
+			{
+				GetSound().BGMStop(BGMKind::TITLE);
+				select_p1 = scastI(INPUT_PLAYER::P1);
+				select_p2 = scastI(INPUT_PLAYER::P2);
+				FRAMEWORK.scenegame.PadSet(select_p1);
+				UnInit();
+				FRAMEWORK.SetScene(SCENE_TABLE::SCENE_TEST);
+				return;
+			}
 		}
 
 #endif // USE_IMGUI
@@ -407,7 +415,7 @@ void SceneTitle::Update(float elapsed_time)
 
 			if (vs_mode == VS_MODE::CPU)
 			{
-				if (g1.x_input[scastI(PAD::STICK_R)] == 1)
+				if (g1.x_input[scastI(PAD::STICK_R)] == 1 || g2.x_input[scastI(PAD::STICK_R)] == 1)
 				{
 					vs_mode = VS_MODE::PLAYER;
 					//SE再生
@@ -416,7 +424,7 @@ void SceneTitle::Update(float elapsed_time)
 			}
 			if (vs_mode == VS_MODE::PLAYER)
 			{
-				if (g1.x_input[scastI(PAD::STICK_L)] == 1)
+				if (g1.x_input[scastI(PAD::STICK_L)] == 1 || g2.x_input[scastI(PAD::STICK_L)] == 1)
 				{
 					vs_mode = VS_MODE::CPU;
 					//SE再生
@@ -425,7 +433,7 @@ void SceneTitle::Update(float elapsed_time)
 			}
 			for (int i = 0; i < any_button.size(); i++)
 			{
-				if (g1.x_input[scastI(any_button[i])] == 1)
+				if (g1.x_input[scastI(any_button[i])] == 1 || g2.x_input[scastI(any_button[i])] == 1)
 				{
 					if (any_button[i] == PAD::B)
 					{

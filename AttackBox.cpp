@@ -6,14 +6,11 @@
 
 AttackBox::~AttackBox()
 {
-	if (parameter.timer > 0.0f)
-	{
-		//YRGetEffect().StopEffect(effect_kind, handle);
-	}
+	//YRGetEffect().StopEffect(effect_kind, handle);
 }
 
 
-void AttackBox::Init(int attack_name, AttackParameter& param, float rightOrleft,YR_Vector3 pl_pos)
+void AttackBox::Init(int attack_name, AttackParameter& param, float rightOrleft,YR_Vector3 pl_pos, EffectParameter effect_param)
 {
 	attack = true;
 	fin = false;
@@ -33,13 +30,31 @@ void AttackBox::Init(int attack_name, AttackParameter& param, float rightOrleft,
 		hit_ok = true;
 	}
 
-	effect_kind = EffectKind::NONE;
+	this->effect_param = effect_param;
+
+	if (effect_param.rightORleft)
+	{
+		//プレイヤーの角度を依存させる場合
+		YRGetEffect().PlayEffect(
+			effect_param.effect_kind, handle,
+			DirectX::XMFLOAT3(pos.x + effect_param.distance.x, pos.y + effect_param.distance.y, pos.z + effect_param.distance.z),
+			effect_param.scale.GetDXFLOAT3(), effect_param.axis.GetDXFLOAT3(), effect_param.angle * rightOrleft);
+	}
+	else
+	{
+		//依存させない場合
+		YRGetEffect().PlayEffect(
+			effect_param.effect_kind, handle,
+			DirectX::XMFLOAT3(pos.x + effect_param.distance.x, pos.y + effect_param.distance.y, pos.z + effect_param.distance.z),
+			effect_param.scale.GetDXFLOAT3(), effect_param.axis.GetDXFLOAT3(), effect_param.angle);
+	}
+	//YRGetEffect().PlayEffect(effect_kind, handle, pos.GetDXFLOAT3(), DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
 
 	pos.x = pl_pos.x + ((parameter.distance.x) * rightOrleft);	//X座標更新
 	pos.y = pl_pos.y + ((parameter.distance.y));	//Y座標更新
 }
 
-void AttackBox::Init(int attack_name, AttackParameter& param, float rightOrleft, YR_Vector3 pl_pos, YR_Vector3 plus_speed)
+void AttackBox::Init(int attack_name, AttackParameter& param, float rightOrleft, YR_Vector3 pl_pos, YR_Vector3 plus_speed, EffectParameter effect_param)
 {
 	attack = true;
 	fin = false;
@@ -65,8 +80,24 @@ void AttackBox::Init(int attack_name, AttackParameter& param, float rightOrleft,
 		//属性が遠距離攻撃ならスピードを付与する
 		speed = plus_speed;
 	}
+	this->effect_param = effect_param;
 
-	effect_kind = EffectKind::NONE;
+	if (effect_param.rightORleft)
+	{
+		//プレイヤーの角度を依存させる場合
+		YRGetEffect().PlayEffect(
+			effect_param.effect_kind, handle,
+			DirectX::XMFLOAT3(pos.x + effect_param.distance.x, pos.y + effect_param.distance.y, pos.z + effect_param.distance.z),
+			effect_param.scale.GetDXFLOAT3(), effect_param.axis.GetDXFLOAT3(), effect_param.angle * rightOrleft);
+	}
+	else
+	{
+		//依存させない場合
+		YRGetEffect().PlayEffect(
+			effect_param.effect_kind, handle,
+			DirectX::XMFLOAT3(pos.x + effect_param.distance.x, pos.y + effect_param.distance.y, pos.z + effect_param.distance.z),
+			effect_param.scale.GetDXFLOAT3(), effect_param.axis.GetDXFLOAT3(), effect_param.angle);
+	}
 
 	pos.x = pl_pos.x + (parameter.distance.x * rightOrleft);	//X座標更新
 	pos.y = pl_pos.y + (parameter.distance.y);	//Y座標更新
@@ -79,21 +110,23 @@ void AttackBox::Update(YR_Vector3 pl_pos, float elapsed_time)
 	{
 		pos.x += ((speed.x * rightOrleft) * elapsed_time);	//X座標更新
 		pos.y += (speed.y * elapsed_time);	//Y座標更新
-		YRGetEffect().SetLocation(effect_kind, handle, DirectX::XMFLOAT3(pos.x + (rightOrleft * parameter.size.x), pos.y, pos.z));
+		YRGetEffect().SetLocation(effect_param.effect_kind, handle, DirectX::XMFLOAT3(pos.x + (rightOrleft * parameter.size.x) + effect_param.distance.x, pos.y + effect_param.distance.y, pos.z + effect_param.distance.z));
 	}
 	else
 	{
 		pos.x = pl_pos.x + ((parameter.distance.x + speed.x) * rightOrleft);	//X座標更新
 		pos.y = pl_pos.y + ((parameter.distance.y + speed.y));	//Y座標更新
 
-		if (effect_kind == EffectKind::TORNADE)
+		YRGetEffect().SetLocation(effect_param.effect_kind, handle, DirectX::XMFLOAT3(pos.x + (rightOrleft * parameter.size.x) + effect_param.distance.x, pos.y + effect_param.distance.y, pos.z + effect_param.distance.z));
+
+		/*if (effect_param.effect_kind == EffectKind::TORNADE)
 		{
 			YRGetEffect().SetLocation(effect_kind, handle, DirectX::XMFLOAT3(pos.x + (rightOrleft * parameter.size.x), pos.y - 5.0f, pos.z));
 		}
 		else
 		{
 			YRGetEffect().SetLocation(effect_kind, handle, DirectX::XMFLOAT3(pos.x + (rightOrleft * parameter.size.x), pos.y , pos.z));
-		}
+		}*/
 
 		if (plus)
 		{
@@ -109,6 +142,7 @@ void AttackBox::Update(YR_Vector3 pl_pos, float elapsed_time)
 		parameter.damege = 0.0f;
 		parameter.HB_timer = 0.0f;
 		parameter.timer = -1.0f;
+		YRGetEffect().StopEffect(effect_param.effect_kind, handle);
 	}
 
 	if (parameter.timer < 0.0f)
@@ -121,7 +155,7 @@ void AttackBox::Update(YR_Vector3 pl_pos, float elapsed_time)
 		parameter.HB_timer = 0.0f;
 		parameter.hitback = YR_Vector3(0.0f, 0.0f);
 
-		YRGetEffect().StopEffect(effect_kind, handle);
+		YRGetEffect().StopEffect(effect_param.effect_kind, handle);
 	}
 }
 
