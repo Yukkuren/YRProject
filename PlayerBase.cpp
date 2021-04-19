@@ -2172,6 +2172,9 @@ void Player::JumpUpdate(float decision, float elapsed_time)
 			anim->NodeChange(model_motion.jump_L, scastI(AnimAtk::LATER));
 		}
 		anim->PlayAnimation(scastI(AnimAtk::LATER), false);
+		//UŒ‚”»’è‚ğˆê“x‚¾‚¯XV‚·‚é
+		AttackUpdate(0.0f);
+
 		//UŒ‚”»’è‚ğ‚·‚×‚ÄÁ‹‚·‚é
 		AllAttackClear();
 	}
@@ -3746,6 +3749,8 @@ void Player::AllAttackClear()
 		{
 			atk[a].fin = true;
 		}
+
+		AttackUpdate(0.0f);
 
 		EndAttackErase();
 	}

@@ -157,6 +157,11 @@ void AttackBox::Update(YR_Vector3 pl_pos, float elapsed_time)
 
 		YRGetEffect().StopEffect(effect_param.effect_kind, handle);
 	}
+
+	if (fin)
+	{
+		YRGetEffect().StopEffect(effect_param.effect_kind, handle);
+	}
 }
 
 void AttackBox::SpeedPlus(YR_Vector3 plus_speed, float elapsed_time)
