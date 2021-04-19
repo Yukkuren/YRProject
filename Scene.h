@@ -738,6 +738,21 @@ public:
 
 	//シェーダー
 	std::unique_ptr<YRShader> spriteShader = nullptr;
+	std::unique_ptr<YRShader> selectShader = nullptr;
+	std::unique_ptr<YRShader> spriteEx = nullptr;
+
+	//画面描画用テクスチャ
+	std::unique_ptr<Texture> color_texture = nullptr;
+	std::unique_ptr<Texture> luminance_texture = nullptr;
+
+	std::unique_ptr<Texture> select_texture = nullptr;
+
+	//サンプラー
+	std::shared_ptr<Sampler> sampler_clamp = nullptr;
+	std::shared_ptr<Sampler> sampler_wrap = nullptr;
+
+	//Gbuffer用スプライト
+	std::unique_ptr<Sprite>	sprite = nullptr;
 
 	//画像描画関係
 	YR_Vector3			p1;
@@ -754,11 +769,16 @@ public:
 	int					select_p2 = 0;
 
 public:
-	std::unique_ptr<Sprite>	back_img = nullptr;
+	//std::unique_ptr<Sprite>	back_img = nullptr;
 	std::unique_ptr<Sprite>	knight_icon = nullptr;
 	std::unique_ptr<Sprite>	ken_icon = nullptr;
 	std::unique_ptr<Sprite>	select_img = nullptr;
 	//std::unique_ptr<Sprite>	back = nullptr;
+
+	//定数バッファ
+	Microsoft::WRL::ComPtr<ID3D11Buffer>	constantBuffer = nullptr;
+
+	Title_CBuffer cbuffer_param;
 
 public:
 
@@ -768,6 +788,9 @@ public:
 	void				UnInit();
 	void				LoadData();
 	bool				FadoOut(float elapsed_time);
+	void				SetRenderTexture();
+	void				NullSetRenderTexture();
+	void				RenderTexture();
 
 	YR_Vector3			PosSet(int select);
 };

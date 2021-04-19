@@ -202,12 +202,19 @@ void SceneTitle::UnInit()
 	titleShader = nullptr;
 	sampler_clamp.reset();
 	sampler_clamp = nullptr;
+	sampler_wrap.reset();
+	sampler_wrap = nullptr;
 	sprite.reset();
 	sprite = nullptr;
 	color_texture.reset();
 	color_texture = nullptr;
 	luminance_texture.reset();
 	luminance_texture = nullptr;
+	title_texture.reset();
+	title_texture = nullptr;
+
+	constantBuffer.Reset();
+	constantBuffer = nullptr;
 
 	title_img.reset();
 	title_img = nullptr;
@@ -915,6 +922,7 @@ void SceneTitle::Draw(float elapsed_time)
 #endif
 	if (load_fin)
 	{
+		//ImGuiの表示の関係上、処理を分けている
 		NullSetRenderTexture();
 		RenderTexture(elapsed_time);
 		FRAMEWORK.framebuffer.Deactivate();

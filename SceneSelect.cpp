@@ -34,6 +34,21 @@ void SceneSelect::Init()
 	end = false;
 	timer = 0.0f;
 
+	//タイトルシェーダー用パラメータ
+	cbuffer_param.Resolution = { 1920.0f,1080.0f,(1920.0f / 1080.0f) };
+	cbuffer_param.brightness = 15.0f;
+	cbuffer_param.gamma = 13;
+	cbuffer_param.spot_brightness = 1.5f;
+	cbuffer_param.ray_density = 1.5f;
+	cbuffer_param.curvature = 90.0f;
+	cbuffer_param.red = 10.0f;
+	cbuffer_param.green = 2.8f;
+	cbuffer_param.blue = 4.0f;
+	cbuffer_param.material_color = { 1.0f,1.0f,1.0f,1.0f };
+	cbuffer_param.dummy1 = 0.0f;
+	cbuffer_param.dummy2 = 0.0f;
+	cbuffer_param.dummy3 = 0.0f;
+
 	if (spriteShader == nullptr)
 	{
 		spriteShader = std::make_unique<YRShader>(ShaderType::SPRITE);
@@ -44,11 +59,29 @@ void SceneSelect::Init()
 
 void SceneSelect::LoadData()
 {
-	if (back_img == nullptr)
+	//if (back_img == nullptr)
+	//{
+	//	back_img = std::make_unique<Sprite>(L"./Data/Image/BG/select.png", 1920.0f, 1080.0f);
+	//	//back_img->LoadGraph(1920.0f, 1080.0f);
+	//}
+
+	//サンプラー生成
+	if (sampler_clamp == nullptr)
 	{
-		back_img = std::make_unique<Sprite>(L"./Data/Image/BG/select.png", 1920.0f, 1080.0f);
-		//back_img->LoadGraph(1920.0f, 1080.0f);
+		sampler_clamp = std::make_shared<Sampler>(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_CLAMP);
 	}
+	if (sampler_wrap == nullptr)
+	{
+		sampler_wrap = std::make_shared<Sampler>(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP);
+	}
+
+	//Gbuffer用スプライト
+	if (sprite == nullptr)
+	{
+		sprite = std::make_unique<Sprite>();
+	}
+
+	//画像読み込み
 	if (knight_icon == nullptr)
 	{
 		knight_icon = std::make_unique<Sprite>(L"./Data/Image/Character/Ryu/icon.png", 64.0f, 64.0f);
@@ -65,6 +98,42 @@ void SceneSelect::LoadData()
 		//select_img->LoadGraph(64.0f, 64.0f);
 	}
 
+	//コンスタントバッファ作成
+	FRAMEWORK.CreateConstantBuffer(constantBuffer.GetAddressOf(), sizeof(Title_CBuffer));
+
+	//シェーダー読み込み
+	if (spriteEx == nullptr)
+	{
+		spriteEx = std::make_unique<YRShader>(ShaderType::SPRITE_EX);
+		spriteEx->Create("./Data/Shader/SpriteEx_vs.cso", "./Data/Shader/SpriteEx_ps.cso");
+	}
+	if (selectShader == nullptr)
+	{
+		selectShader = std::make_unique<YRShader>(ShaderType::TITLE);
+		selectShader->Create("./Data/Shader/CharaSelectShader_vs.cso", "./Data/Shader/CharaSelectShader_ps.cso");
+	}
+
+	//テクスチャロード
+	if (color_texture == nullptr)
+	{
+		color_texture = std::make_unique<Texture>();
+		color_texture->Create(1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM);
+		color_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
+	}
+
+	if (luminance_texture == nullptr)
+	{
+		luminance_texture = std::make_unique<Texture>();
+		luminance_texture->Create(1920, 1080, DXGI_FORMAT_R16G16B16A16_FLOAT);
+		luminance_texture->CreateDepth(1920, 1080, DXGI_FORMAT_R24G8_TYPELESS);
+	}
+
+	//タイトルシェーダーに送る画像(ノイズ画像を読み込んでいる)
+	if (select_texture == nullptr)
+	{
+		select_texture = std::make_unique<Texture>(L"./Data/Shader/noise.png");
+	}
+
 	load_state = 3;
 }
 
@@ -73,14 +142,30 @@ void SceneSelect::UnInit()
 {
 	knight_icon.reset();
 	knight_icon = nullptr;
-	back_img.reset();
-	back_img = nullptr;
 	ken_icon.reset();
 	ken_icon = nullptr;
 	select_img.reset();
 	select_img = nullptr;
 	spriteShader.reset();
 	spriteShader = nullptr;
+	select_texture.reset();
+	select_texture = nullptr;
+
+	sampler_clamp.reset();
+	sampler_clamp = nullptr;
+	sampler_wrap.reset();
+	sampler_wrap = nullptr;
+
+	color_texture.reset();
+	color_texture = nullptr;
+	luminance_texture.reset();
+	luminance_texture = nullptr;
+
+	constantBuffer.Reset();
+	constantBuffer = nullptr;
+
+	selectShader.reset();
+	selectShader = nullptr;
 }
 
 void SceneSelect::Update(float elapsed_time)
@@ -270,14 +355,27 @@ void SceneSelect::Draw(float elapsedTime)
 	//画像はロードが終わるまで描画しない
 	if (load_fin)
 	{
+		SetRenderTexture();
+
 		//テスト描画なので後で削除
 		//背景
-		back_img->DrawRotaGraph(
+		/*back_img->DrawRotaGraph(
 			spriteShader.get(),
 			FRAMEWORK.SCREEN_WIDTH / 2.0f,
 			FRAMEWORK.SCREEN_HEIGHT / 2.0f,
 			0.0f,
-			1.0f);
+			1.0f);*/
+
+		//背景スプライト描画
+		sprite->render(
+			selectShader.get(),
+			select_texture.get(),
+			cbuffer_param,
+			sampler_wrap.get(),
+			constantBuffer,
+			0.0f, 0.0f, 1920.0f, 1080.0f,
+			0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
+
 		//アイコン描画
 		knight_icon->DrawRotaGraph(
 			spriteShader.get(),
@@ -360,7 +458,21 @@ void SceneSelect::Draw(float elapsedTime)
 				);
 			}
 		}
+
+		NullSetRenderTexture();
+		RenderTexture();
+		FRAMEWORK.framebuffer.Deactivate();
 	}
+
+	//if (load_fin)
+	//{
+	//	NullSetRenderTexture();
+	//	RenderTexture(elapsed_time);
+	//	FRAMEWORK.framebuffer.Deactivate();
+	//	//framebuffer::ResetRenderTargetViews();
+
+	//	//SceneRender(elapsed_time);
+	//}
 	//フェード用画像
 	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, false, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
 }
@@ -379,6 +491,7 @@ YR_Vector3 SceneSelect::PosSet(int select)
 	return YR_Vector3(0.0f, 0.0f);
 }
 
+
 bool SceneSelect::FadoOut(float elapsed_time)
 {
 	fado_alpha += FADE_MIX(elapsed_time);
@@ -389,4 +502,57 @@ bool SceneSelect::FadoOut(float elapsed_time)
 	}
 
 	return false;
+}
+
+
+void SceneSelect::SetRenderTexture()
+{
+	FRAMEWORK.framebuffer.GetDefaultRTV();
+	FRAMEWORK.framebuffer.SetRenderTexture(color_texture->GetRenderTargetView());
+	//FRAMEWORK.framebuffer.SetRenderTexture(normal_texture->GetRenderTargetView());
+	//FRAMEWORK.framebuffer.SetRenderTexture(position_texture->GetRenderTargetView());
+	FRAMEWORK.framebuffer.SetRenderTexture(luminance_texture->GetRenderTargetView());
+
+	ID3D11DepthStencilView* dsv = color_texture->GetDepthStencilView();
+
+	//画面クリア
+	FRAMEWORK.framebuffer.Clear();
+	FRAMEWORK.context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	//ビュー更新
+	YRCamera.Active();
+
+	//ビューポート設定
+	//レンダーターゲットビューの設定
+	FRAMEWORK.framebuffer.Activate(1920.0f, 1080.0f, dsv);
+
+	//ブレンドステート設定
+	FRAMEWORK.BlendSet(Blend::ALPHA);
+	//ラスタライザー設定
+	FRAMEWORK.context->RSSetState(FRAMEWORK.rasterizer_state[framework::RS_CULL_BACK].Get());
+	//デプスステンシルステート設定
+	FRAMEWORK.context->OMSetDepthStencilState(FRAMEWORK.depthstencil_state[framework::DS_TRUE].Get(), 1);
+
+	//サンプラー設定
+	sampler_clamp->Set(0);
+}
+
+
+void SceneSelect::NullSetRenderTexture()
+{
+	//レンダーターゲットの回復
+	//FRAMEWORK.context.Get()->OMSetRenderTargets(testrtv.size(), testrtv.data(), FRAMEWORK.depth.Get());
+	FRAMEWORK.framebuffer.ResetRenderTexture();
+	FRAMEWORK.framebuffer.SetDefaultRTV();
+}
+
+
+void SceneSelect::RenderTexture()
+{
+	//Gbuffer描画
+	sprite->render(
+		spriteEx.get(),
+		color_texture.get(),
+		0.0f, 0.0f, 1920.0f, 1080.0f,
+		0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
 }
