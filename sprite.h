@@ -221,6 +221,27 @@ public:
 			mask);
 	}
 
+	//画像回転描画&描画位置指定(コンテキスト、描画位置x,y、回転角度、画像拡大率)
+	void DrawRotaSetGraph(YRShader* shader, float x, float y, float sx, float sw, float angle, float size, bool reverse = false, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1,1,1,1 })
+	{
+		render(
+			shader,
+			x - (sw / 2 * size),
+			y - (sh / 2 * size),
+			sw * size,
+			sh * size,
+			sx,
+			sy,
+			sw,
+			sh,
+			angle,
+			color.x,
+			color.y,
+			color.z,
+			color.w,
+			mask);
+	}
+
 	//画像回転描画(画像描画サイズ決定型)(コンテキスト、描画位置x,y、回転角度、画像サイズ)
 	void DrawRotaGraph(
 		YRShader* shader,

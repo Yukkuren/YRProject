@@ -1,6 +1,22 @@
 #include "Scene.h"
 #include "framework.h"
 #include "YRSound.h"
+#include "Player_name_list.h"
+#include <codecvt>
+
+// w_string型変更用関数
+using convert_t = std::codecvt_utf8<wchar_t>;
+std::wstring_convert<convert_t, wchar_t> strconverter_Icon;
+
+std::string to_string_Icon(std::wstring wstr)
+{
+	return strconverter_Icon.to_bytes(wstr);
+}
+
+std::wstring to_wstring_Icon(std::string str)
+{
+	return strconverter_Icon.from_bytes(str);
+}
 
 //-------------------------------------------------------------
 // **シーン概要**
@@ -15,24 +31,36 @@ void SceneSelect::Init()
 {
 	load_fin = false;
 	load_state = 0;
-	knight_pos = { 680.0f,500.0f };
-	kenpos = { 1100.0f,500.0f };
-	p1 = knight_pos;
-	p2 = kenpos;
-	Rato = 3.0f;
+	knight_icon_pos = { 630.0f,360.0f };
+	p1_cut_pos = { 480.0f,870.0f };
+	p2_cut_pos = { 1500.0f,870.0f };
+	name_distance = { 0.0f,0.0f };
+	p1 = knight_icon_pos;
+	p2 = knight_icon_pos;
+	Rato = 1.5f;
+	case_rato = 0.4f;
+	cursor_rato = 0.4f;
+	cut_rato = 1.7f;
+	icon_range = 630.0f;
+	name_rato = 1.0f;
+	sx = 135.0f;
+	sw = 310.0f;
+
 	FRAMEWORK.scenegame.pad1->Init();
 	FRAMEWORK.scenegame.pad2->Init();
 	fado_start = false;
 	fado_alpha = 1.0f;
 
-	//将来的に消す
-	select_p1 = scastI(PLSELECT::KNIGHT);
-	select_p2 = scastI(PLSELECT::KNIGHT);
-	//-------------------------------------
+	//初期値として-1を入れておく
+	select_p1 = -1;
+	select_p2 = -1;
+
 	p1Enter = false;
 	p2Enter = false;
 	end = false;
 	timer = 0.0f;
+
+	cursor_speed = 15.0f;
 
 	//タイトルシェーダー用パラメータ
 	cbuffer_param.Resolution = { 1920.0f,1080.0f,(1920.0f / 1080.0f) };
@@ -48,6 +76,12 @@ void SceneSelect::Init()
 	cbuffer_param.dummy1 = 0.0f;
 	cbuffer_param.dummy2 = 0.0f;
 	cbuffer_param.dummy3 = 0.0f;
+
+	for (int i = 0; i < select_p.size(); i++)
+	{
+		select_p[i].pos = YR_Vector3(knight_icon_pos.x + (static_cast<float>(i) * icon_range), knight_icon_pos.y);
+		select_p[i].select = Select_P::NONE;
+	}
 
 	if (spriteShader == nullptr)
 	{
@@ -82,20 +116,37 @@ void SceneSelect::LoadData()
 	}
 
 	//画像読み込み
-	if (knight_icon == nullptr)
+	IconLoad();
+
+	//NONEは使用しないが万が一アクセスした場合のことを考えて1Pの画像を読み込ませている
+	if (select_img[scastI(Select_P::NONE)] == nullptr)
 	{
-		knight_icon = std::make_unique<Sprite>(L"./Data/Image/Character/Ryu/icon.png", 64.0f, 64.0f);
-		//knight_icon->LoadGraph(64.0f, 64.0f);
+		select_img[scastI(Select_P::NONE)] = std::make_unique<Sprite>(L"./Data/Image/UI/GameSelect/select1P.png", 1280.0f, 1024.0f);
 	}
-	if (ken_icon == nullptr)
+
+	if (select_img[scastI(Select_P::P1)] == nullptr)
 	{
-		ken_icon = std::make_unique<Sprite>(L"./Data/Image/Character/Ken/icon.png", 64.0f, 64.0f);
-		//ken_icon->LoadGraph(64.0f, 64.0f);
+		select_img[scastI(Select_P::P1)] = std::make_unique<Sprite>(L"./Data/Image/UI/GameSelect/select1P.png", 1280.0f, 1024.0f);
 	}
-	if (select_img == nullptr)
+
+	if (select_img[scastI(Select_P::P2)] == nullptr)
 	{
-		select_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameSelect/select.png", 64.0f, 64.0f);
-		//select_img->LoadGraph(64.0f, 64.0f);
+		select_img[scastI(Select_P::P2)] = std::make_unique<Sprite>(L"./Data/Image/UI/GameSelect/select2P.png", 1280.0f, 1024.0f);
+	}
+
+	if (select_img[scastI(Select_P::ALL)] == nullptr)
+	{
+		select_img[scastI(Select_P::ALL)] = std::make_unique<Sprite>(L"./Data/Image/UI/GameSelect/selectall.png", 1280.0f, 1024.0f);
+	}
+
+	if (chara_case == nullptr)
+	{
+		chara_case = std::make_unique<Sprite>(L"./Data/Image/UI/GameSelect/chara_case.png", 1280.0f, 1024.0f);
+	}
+
+	if (select_point == nullptr)
+	{
+		select_point = std::make_unique<Sprite>(L"./Data/Image/UI/GameSelect/select_point.png", 640.0f, 640.0f);
 	}
 
 	//コンスタントバッファ作成
@@ -140,12 +191,30 @@ void SceneSelect::LoadData()
 
 void SceneSelect::UnInit()
 {
-	knight_icon.reset();
+	/*knight_icon.reset();
 	knight_icon = nullptr;
 	ken_icon.reset();
-	ken_icon = nullptr;
-	select_img.reset();
-	select_img = nullptr;
+	ken_icon = nullptr;*/
+
+	for (int i = 0; i < select_p.size(); i++)
+	{
+		select_p[i].icon_image.reset();
+		select_p[i].icon_image = nullptr;
+		select_p[i].name_image.reset();
+		select_p[i].name_image = nullptr;
+	}
+
+	for (int i = 0; i < select_img.size(); i++)
+	{
+		select_img[i].reset();
+		select_img[i] = nullptr;
+	}
+
+	chara_case.reset();
+	chara_case = nullptr;
+	select_point.reset();
+	select_point = nullptr;
+
 	spriteShader.reset();
 	spriteShader = nullptr;
 	select_texture.reset();
@@ -173,16 +242,16 @@ void SceneSelect::Update(float elapsed_time)
 	//ロード終了
 	if (load_fin)
 	{
-		if (pKeyState.nflg == 1 || FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::START)] == 1)
-		{
-			select_p1 = scastI(PLSELECT::KNIGHT);
-			select_p2 = scastI(PLSELECT::KNIGHT);
-			//フェードアウトが終わったらロード画面へ
-			GetSound().BGMStop(BGMKind::CHARA_SELECT);
-			FRAMEWORK.SetScene(SCENE_TABLE::SCENE_LOAD);
-			UnInit();
-			return;
-		}
+		//if (pKeyState.nflg == 1 || FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::START)] == 1)
+		//{
+		//	select_p1 = scastI(PLSELECT::KNIGHT);
+		//	select_p2 = scastI(PLSELECT::KNIGHT);
+		//	//フェードアウトが終わったらロード画面へ
+		//	GetSound().BGMStop(BGMKind::CHARA_SELECT);
+		//	FRAMEWORK.SetScene(SCENE_TABLE::SCENE_LOAD);
+		//	UnInit();
+		//	return;
+		//}
 #ifdef EXIST_IMGUI
 
 #endif // USE_IMGUI
@@ -200,76 +269,14 @@ void SceneSelect::Update(float elapsed_time)
 		FRAMEWORK.scenegame.pad1->Update(elapsed_time);
 		FRAMEWORK.scenegame.pad2->Update(elapsed_time);
 
-		//プレイヤー1のカーソル移動処理
-		if (p1Enter)
-		{
-			if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::B)] == 1)
-			{
-				p1Enter = false;
-			}
-		}
-		else
-		{
-			if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::STICK_R)] == 1)
-			{
-				select_p1++;
-				if (select_p1 > scastI(PLSELECT::NERU))
-				{
-					select_p1 = scastI(PLSELECT::NERU);
-				}
-			}
-			if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::STICK_L)] == 1)
-			{
-				select_p1--;
-				if (select_p1 < 0)
-				{
-					select_p1 = scastI(PLSELECT::KNIGHT);
-				}
-			}
+		//プレイヤーのカーソル移動処理
+		PosSet();
 
-			if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::A)] == 1)
-			{
-				p1Enter = true;
-				//PlaySE(SE_ENTER);
-			}
-		}
+		//カーソルの判定処理
+		SelectCheck();
 
-		//プレイヤー2のカーソル移動処理
-		if (p2Enter)
-		{
-			if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::B)] == 1)
-			{
-				p2Enter = false;
-			}
-		}
-		else
-		{
-			if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::STICK_R)] == 1)
-			{
-				select_p2++;
-				if (select_p2 > scastI(PLSELECT::NERU))
-				{
-					select_p2 = scastI(PLSELECT::NERU);
-				}
-			}
-			if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::STICK_L)] == 1)
-			{
-				select_p2--;
-				if (select_p2 < 0)
-				{
-					select_p2 = scastI(PLSELECT::KNIGHT);
-				}
-			}
-			if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::A)] == 1)
-			{
-				p2Enter = true;
-				//PlaySE(SE_ENTER);
-			}
-		}
-
-
-		p1 = PosSet(select_p1);
-		p2 = PosSet(select_p2);
+		/*p1 = PosSet(select_p1);
+		p2 = PosSet(select_p2);*/
 
 		//両方のプレイヤーが決定したら
 		if (p1Enter && p2Enter)
@@ -350,6 +357,27 @@ void SceneSelect::Draw(float elapsedTime)
 	{
 		ImGui::Text("time : %f", timer);
 		ImGui::Text("select");
+		ImGui::SliderFloat(u8"画像のサイズ", &Rato, 0.0f, 10.0f);
+		ImGui::SliderFloat(u8"キャラケースの大きさ", &case_rato, 0.0f, 10.0f);
+		ImGui::SliderFloat(u8"カーソルの大きさ", &cursor_rato, 0.0f, 10.0f);
+		ImGui::SliderFloat(u8"選択キャラ大きさ", &cut_rato, 0.0f, 10.0f);
+		ImGui::SliderFloat(u8"名前の大きさ", &name_rato, 0.0f, 10.0f);
+		ImGui::SliderFloat(u8"画像の位置X", &knight_icon_pos.x, 0.0f, (float)FRAMEWORK.SCREEN_WIDTH);
+		ImGui::SliderFloat(u8"画像の位置Y", &knight_icon_pos.y, 0.0f, (float)FRAMEWORK.SCREEN_HEIGHT);
+		ImGui::SliderFloat(u8"画像の距離", &icon_range, 0.0f, 800.0f);
+		ImGui::SliderFloat(u8"1P選択キャラの位置X", &p1_cut_pos.x, 0.0f, (float)FRAMEWORK.SCREEN_WIDTH);
+		ImGui::SliderFloat(u8"2P選択キャラの位置X", &p2_cut_pos.x, 0.0f, (float)FRAMEWORK.SCREEN_WIDTH);
+		ImGui::SliderFloat(u8"選択キャラの位置Y", &p1_cut_pos.y, 0.0f, (float)FRAMEWORK.SCREEN_HEIGHT);
+		ImGui::SliderFloat(u8"名前の距離X", &name_distance.x, 0.0f, (float)FRAMEWORK.SCREEN_WIDTH);
+		ImGui::SliderFloat(u8"名前の距離Y", &name_distance.y, 0.0f, (float)FRAMEWORK.SCREEN_WIDTH);
+		p2_cut_pos.y = p1_cut_pos.y;
+		ImGui::SliderFloat("sx", &sx, 0.0f, 640.0f);
+		ImGui::SliderFloat("sw", &sw, 0.0f, 640.0f);
+		ImGui::SliderFloat(u8"カーソルの速度", &cursor_speed, 0.0f, 50.0f);
+		for (int i = 0; i < select_p.size(); i++)
+		{
+			select_p[i].pos = YR_Vector3(knight_icon_pos.x + (static_cast<float>(i) * icon_range), knight_icon_pos.y);
+		}
 	}
 #endif
 	//画像はロードが終わるまで描画しない
@@ -367,6 +395,8 @@ void SceneSelect::Draw(float elapsedTime)
 			1.0f);*/
 
 		//背景スプライト描画
+		cbuffer_param.iTime = timer;
+
 		sprite->render(
 			selectShader.get(),
 			select_texture.get(),
@@ -377,7 +407,7 @@ void SceneSelect::Draw(float elapsedTime)
 			0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
 
 		//アイコン描画
-		knight_icon->DrawRotaGraph(
+		/*knight_icon->DrawRotaGraph(
 			spriteShader.get(),
 			knight_pos.x,
 			knight_pos.y,
@@ -390,74 +420,139 @@ void SceneSelect::Draw(float elapsedTime)
 			kenpos.y,
 			0.0f,
 			Rato
-		);
+		);*/
 
-		//選択画像描画
-		//1P
-		if (p1Enter)
+
+		for (int i = 0; i < select_p.size(); i++)
 		{
-			select_img->DrawRotaGraph
-			(
+
+			select_p[i].icon_image->DrawRotaSetGraph(
+				spriteShader.get(),
+				select_p[i].pos.x,
+				select_p[i].pos.y,
+				sx,
+				sw,
+				0.0f,
+				Rato
+			);
+
+			//選択状態を描画
+			DrawSelect(i);
+
+			chara_case->DrawRotaGraph(
+				spriteShader.get(),
+				select_p[i].pos.x,
+				select_p[i].pos.y,
+				0.0f,
+				case_rato
+			);
+		}
+
+		//選択されたキャラの描画
+		DrawChara();
+
+		//カーソルの描画
+
+		//1P
+		if (!p1Enter)
+		{
+			select_point->DrawRotaGraph(
 				spriteShader.get(),
 				p1.x,
 				p1.y,
 				0.0f,
-				Rato,
+				cursor_rato,
 				false,
 				SpriteMask::NONE,
 				DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
 			);
 		}
-		else
-		{
-			if (static_cast<int>(timer * 10.0f) % 5 > 0)
-			{
-				select_img->DrawRotaGraph
-				(
-					spriteShader.get(),
-					p1.x,
-					p1.y,
-					0.0f,
-					Rato,
-					false,
-					SpriteMask::NONE,
-					DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
-				);
-			}
-		}
 
 		//2P
-		if (p2Enter)
+		if (!p2Enter)
 		{
-			select_img->DrawRotaGraph
-			(
+			select_point->DrawRotaGraph(
 				spriteShader.get(),
 				p2.x,
 				p2.y,
 				0.0f,
-				Rato,
+				cursor_rato,
 				false,
 				SpriteMask::NONE,
 				DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)
 			);
 		}
-		else
-		{
-			if (static_cast<int>(timer * 10.0f) % 5 > 0)
-			{
-				select_img->DrawRotaGraph
-				(
-					spriteShader.get(),
-					p2.x,
-					p2.y,
-					0.0f,
-					Rato,
-					false,
-					SpriteMask::NONE,
-					DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)
-				);
-			}
-		}
+
+
+
+
+
+		//選択画像描画
+		//1P
+		//if (p1Enter)
+		//{
+		//	select_img->DrawRotaGraph
+		//	(
+		//		spriteShader.get(),
+		//		p1.x,
+		//		p1.y,
+		//		0.0f,
+		//		Rato,
+		//		false,
+		//		SpriteMask::NONE,
+		//		DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
+		//	);
+		//}
+		//else
+		//{
+		//	if (static_cast<int>(timer * 10.0f) % 5 > 0)
+		//	{
+		//		select_img->DrawRotaGraph
+		//		(
+		//			spriteShader.get(),
+		//			p1.x,
+		//			p1.y,
+		//			0.0f,
+		//			Rato,
+		//			false,
+		//			SpriteMask::NONE,
+		//			DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
+		//		);
+		//	}
+		//}
+
+		////2P
+		//if (p2Enter)
+		//{
+		//	select_img->DrawRotaGraph
+		//	(
+		//		spriteShader.get(),
+		//		p2.x,
+		//		p2.y,
+		//		0.0f,
+		//		Rato,
+		//		false,
+		//		SpriteMask::NONE,
+		//		DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)
+		//	);
+		//}
+		//else
+		//{
+		//	if (static_cast<int>(timer * 10.0f) % 5 > 0)
+		//	{
+		//		select_img->DrawRotaGraph
+		//		(
+		//			spriteShader.get(),
+		//			p2.x,
+		//			p2.y,
+		//			0.0f,
+		//			Rato,
+		//			false,
+		//			SpriteMask::NONE,
+		//			DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)
+		//		);
+		//	}
+		//}
 
 		NullSetRenderTexture();
 		RenderTexture();
@@ -477,19 +572,245 @@ void SceneSelect::Draw(float elapsedTime)
 	FRAMEWORK.fade_img->DrawRotaGraph(spriteShader.get(), FRAMEWORK.SCREEN_WIDTH / 2.0f, FRAMEWORK.SCREEN_HEIGHT / 2.0f, 0.0f, 1.0f, false, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, fado_alpha));
 }
 
-YR_Vector3 SceneSelect::PosSet(int select)
+
+
+void SceneSelect::DrawSelect(int num)
 {
-	switch (select)
+	switch (select_p[num].select)
 	{
-	case scastI(PLSELECT::KNIGHT):
-		return knight_pos;
+	case SceneSelect::Select_P::NONE:
+		//何も描画しない
 		break;
-	case scastI(PLSELECT::NERU):
-		return kenpos;
+	case SceneSelect::Select_P::P1:
+		select_img[scastI(Select_P::P1)]->DrawRotaGraph(
+			spriteShader.get(),
+			select_p[num].pos.x,
+			select_p[num].pos.y,
+			0.0f,
+			case_rato
+		);
+		break;
+	case SceneSelect::Select_P::P2:
+		select_img[scastI(Select_P::P2)]->DrawRotaGraph(
+			spriteShader.get(),
+			select_p[num].pos.x,
+			select_p[num].pos.y,
+			0.0f,
+			case_rato
+		);
+		break;
+	case SceneSelect::Select_P::ALL:
+		select_img[scastI(Select_P::ALL)]->DrawRotaGraph(
+			spriteShader.get(),
+			select_p[num].pos.x,
+			select_p[num].pos.y,
+			0.0f,
+			case_rato
+		);
+		break;
+	case SceneSelect::Select_P::P_END:
+		//何も描画しない
+		break;
+	default:
 		break;
 	}
-	return YR_Vector3(0.0f, 0.0f);
 }
+
+
+
+
+void SceneSelect::PosSet()
+{
+	//プレイヤー1のカーソル移動処理
+	if (p1Enter)
+	{
+		//キャンセル
+		if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::B)] == 1)
+		{
+			p1Enter = false;
+		}
+	}
+	else
+	{
+		//決定していない場合のみ移動する
+		if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::STICK_R)] > 0)
+		{
+			p1.x += cursor_speed;
+		}
+		if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::STICK_L)] > 0)
+		{
+			p1.x -= cursor_speed;
+		}
+		if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::STICK_U)] > 0)
+		{
+			p1.y -= cursor_speed;
+		}
+		if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::STICK_D)] > 0)
+		{
+			p1.y += cursor_speed;
+		}
+		if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::STICK_LDown)] > 0)
+		{
+			p1.y += cursor_speed;
+			p1.x -= cursor_speed;
+		}
+		if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::STICK_RDown)] > 0)
+		{
+			p1.y += cursor_speed;
+			p1.x += cursor_speed;
+		}
+
+		if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::A)] == 1)
+		{
+			if (select_p1 != -1)
+			{
+				//キャラが選択されたときのみ
+				p1Enter = true;
+			}
+			//PlaySE(SE_ENTER);
+		}
+	}
+
+	//プレイヤー2のカーソル移動処理
+	if (p2Enter)
+	{
+		//キャンセル
+		if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::B)] == 1)
+		{
+			p2Enter = false;
+		}
+	}
+	else
+	{
+		//決定していない場合のみ移動する
+		if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::STICK_R)] > 0)
+		{
+			p2.x += cursor_speed;
+		}
+		if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::STICK_L)] > 0)
+		{
+			p2.x -= cursor_speed;
+		}
+		if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::STICK_U)] > 0)
+		{
+			p2.y -= cursor_speed;
+		}
+		if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::STICK_D)] > 0)
+		{
+			p2.y += cursor_speed;
+		}
+		if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::STICK_LDown)] > 0)
+		{
+			p2.y += cursor_speed;
+			p2.x -= cursor_speed;
+		}
+		if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::STICK_RDown)] > 0)
+		{
+			p2.y += cursor_speed;
+			p2.x += cursor_speed;
+		}
+
+		if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::A)] == 1)
+		{
+			if (select_p2 != -1)
+			{
+				//キャラが選択されたときのみ
+				p2Enter = true;
+				//PlaySE(SE_ENTER);
+			}
+		}
+	}
+
+	//移動制限
+	const float margin = 100.0f;
+
+	if (p1.x < margin)
+	{
+		p1.x = margin;
+	}
+	if (p2.x < margin)
+	{
+		p2.x = margin;
+	}
+
+	if (p1.x > (float)FRAMEWORK.SCREEN_WIDTH - margin)
+	{
+		p1.x = (float)FRAMEWORK.SCREEN_WIDTH - margin;
+	}
+	if (p2.x > (float)FRAMEWORK.SCREEN_WIDTH - margin)
+	{
+		p2.x = (float)FRAMEWORK.SCREEN_WIDTH - margin;
+	}
+
+	if (p1.y < margin)
+	{
+		p1.y = margin;
+	}
+	if (p2.y < margin)
+	{
+		p2.y = margin;
+	}
+
+	if (p1.y > (float)FRAMEWORK.SCREEN_HEIGHT - margin)
+	{
+		p1.y = (float)FRAMEWORK.SCREEN_HEIGHT - margin;
+	}
+	if (p2.y > (float)FRAMEWORK.SCREEN_HEIGHT - margin)
+	{
+		p2.y = (float)FRAMEWORK.SCREEN_HEIGHT - margin;
+	}
+}
+
+
+
+void SceneSelect::SelectCheck()
+{
+	//各プレイヤーがどのキャラを選択しているかを判定する
+
+	//処理前に選択状態を初期化する
+	select_p1 = -1;
+	select_p2 = -1;
+
+	for (int i = 0; i < select_p.size(); i++)
+	{
+		Select_P p = Select_P::NONE;
+
+		if (p1.x >= (select_p[i].pos.x - ((sw * 0.5f) * Rato)) && p1.x <= (select_p[i].pos.x + ((sw * 0.5f) * Rato)))
+		{
+			if (p1.y >= (select_p[i].pos.y - ((select_p[i].icon_image->sh * 0.5f) * Rato)) && p1.y <= (select_p[i].pos.y + ((select_p[i].icon_image->sh * 0.5f) * Rato)))
+			{
+				//1Pが選択している
+				p = Select_P::P1;
+				//1Pの選択情報を保存する
+				select_p1 = i;
+			}
+		}
+
+		if (p2.x >= (select_p[i].pos.x - ((sw * 0.5f) * Rato)) && p2.x <= (select_p[i].pos.x + ((sw * 0.5f) * Rato)))
+		{
+			if (p2.y >= (select_p[i].pos.y - ((select_p[i].icon_image->sh * 0.5f) * Rato)) && p2.y <= (select_p[i].pos.y + ((select_p[i].icon_image->sh * 0.5f) * Rato)))
+			{
+				//2Pの選択情報を保存する
+				select_p2 = i;
+
+				if (p == Select_P::P1)
+				{
+					//両方選択している
+					p = Select_P::ALL;
+				}
+				else
+				{
+					//2Pが選択している
+					p = Select_P::P2;
+				}
+			}
+		}
+
+		select_p[i].select = p;
+	}
+}
+
+
 
 
 bool SceneSelect::FadoOut(float elapsed_time)
@@ -555,4 +876,77 @@ void SceneSelect::RenderTexture()
 		color_texture.get(),
 		0.0f, 0.0f, 1920.0f, 1080.0f,
 		0.0f, 0.0f, 1920.0f, 1080.0f, 0.0f, 1.0f);
+}
+
+
+//アイコン画像読み込み
+void SceneSelect::IconLoad()
+{
+	std::string front = std::string("./Data/Image/Character/");
+	std::string back = std::string("_cut1.png");
+	std::string back_name = std::string("_name.png");
+
+	for (int icon_num = 0; icon_num < select_p.size(); icon_num++)
+	{
+		std::string contents = front + GetName().chara_name_list[icon_num] +
+			std::string("/") + GetName().chara_name_list[icon_num] + back;
+		std::wstring icon_name = to_wstring_Icon(contents);
+
+		std::string contents_name = front + GetName().chara_name_list[icon_num] +
+			std::string("/") + GetName().chara_name_list[icon_num] + back_name;
+		std::wstring name_name = to_wstring_Icon(contents_name);
+
+		if (select_p[icon_num].icon_image == nullptr)
+		{
+			select_p[icon_num].icon_image = std::make_unique<Sprite>(icon_name.data(), 640.0f, 192.0f);
+		}
+
+		if (select_p[icon_num].name_image == nullptr)
+		{
+			select_p[icon_num].name_image = std::make_unique<Sprite>(name_name.data(), 640.0f, 320.0f);
+		}
+	}
+}
+
+
+//キャラを選択した時にカットイン画像を下に描画する
+void SceneSelect::DrawChara()
+{
+	if (select_p1 != -1)
+	{
+		select_p[select_p1].icon_image->DrawRotaGraph(
+			spriteShader.get(),
+			p1_cut_pos.x,
+			p1_cut_pos.y,
+			0.0f,
+			cut_rato
+		);
+
+		select_p[select_p1].name_image->DrawRotaGraph(
+			spriteShader.get(),
+			p1_cut_pos.x + name_distance.x,
+			p1_cut_pos.y + name_distance.y,
+			0.0f,
+			name_rato
+		);
+	}
+
+	if (select_p2 != -1)
+	{
+		select_p[select_p2].icon_image->DrawRotaGraph(
+			spriteShader.get(),
+			p2_cut_pos.x,
+			p2_cut_pos.y,
+			0.0f,
+			cut_rato
+		);
+
+		select_p[select_p2].name_image->DrawRotaGraph(
+			spriteShader.get(),
+			p2_cut_pos.x + name_distance.x,
+			p2_cut_pos.y + name_distance.y,
+			0.0f,
+			name_rato
+		);
+	}
 }

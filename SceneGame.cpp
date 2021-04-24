@@ -73,6 +73,9 @@ void SceneGame::SetPlayerCharacter(std::unique_ptr<Player>* player, int select)
 	case scastI(PLSELECT::NERU):
 		*player = std::make_unique<Knight>();
 		break;
+	default:
+		assert("select is broken");
+		break;
 	}
 	player->get()->chara_name = static_cast<PLSELECT>(select);
 }

@@ -503,7 +503,8 @@ void SceneTitle::Update(float elapsed_time)
 					FRAMEWORK.sceneselect.select_p1 = scastI(PLSELECT::KNIGHT);
 					FRAMEWORK.sceneselect.select_p2 = scastI(PLSELECT::KNIGHT);
 					//フェードアウトが終わったらロード画面へ
-					FRAMEWORK.SetScene(SCENE_TABLE::SCENE_LOAD);
+					//FRAMEWORK.SetScene(SCENE_TABLE::SCENE_LOAD);
+					FRAMEWORK.SetScene(SCENE_TABLE::SCENE_SELECT);
 					UnInit();
 					return;
 				}

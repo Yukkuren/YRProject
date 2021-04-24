@@ -77,7 +77,7 @@
 ds_5_0
 dcl_input_control_point_count 3
 dcl_tessellator_domain domain_tri
-dcl_globalFlags refactoringAllowed | skipOptimization
+dcl_globalFlags refactoringAllowed
 dcl_constantbuffer CB0[8], immediateIndexed
 dcl_sampler s1, mode_default
 dcl_resource_texture2d (float,float,float,float) t2
@@ -93,156 +93,48 @@ dcl_output o3.xy
 dcl_output o4.xyz
 dcl_output o5.xyz
 dcl_output o6.xyz
-dcl_temps 8
-//
-// Initial variable locations:
-//   vpc3.x <- input.inner_factor; 
-//   vpc0.x <- input.factor[0]; 
-//   vpc1.x <- input.factor[1]; 
-//   vpc2.x <- input.factor[2]; 
-//   vDomain.x <- UV.x; vDomain.y <- UV.y; vDomain.z <- UV.z; 
-//   o6.x <- <main return value>.vN.x; o6.y <- <main return value>.vN.y; o6.z <- <main return value>.vN.z; 
-//   o5.x <- <main return value>.vB.x; o5.y <- <main return value>.vB.y; o5.z <- <main return value>.vB.z; 
-//   o4.x <- <main return value>.vT.x; o4.y <- <main return value>.vT.y; o4.z <- <main return value>.vT.z; 
-//   o3.x <- <main return value>.Tex.x; o3.y <- <main return value>.Tex.y; 
-//   o2.x <- <main return value>.wPosition.x; o2.y <- <main return value>.wPosition.y; o2.z <- <main return value>.wPosition.z; 
-//   o1.x <- <main return value>.Color.x; o1.y <- <main return value>.Color.y; o1.z <- <main return value>.Color.z; o1.w <- <main return value>.Color.w; 
-//   o0.x <- <main return value>.Position.x; o0.y <- <main return value>.Position.y; o0.z <- <main return value>.Position.z; o0.w <- <main return value>.Position.w; 
-//   vicp[0][0].x <- patch[0].Position.x; vicp[0][0].y <- patch[0].Position.y; vicp[0][0].z <- patch[0].Position.z; 
-//   vicp[0][1].x <- patch[0].Normal.x; vicp[0][1].y <- patch[0].Normal.y; vicp[0][1].z <- patch[0].Normal.z; 
-//   vicp[0][2].x <- patch[0].Tex.x; vicp[0][2].y <- patch[0].Tex.y; 
-//   vicp[0][3].x <- patch[0].Color.x; vicp[0][3].y <- patch[0].Color.y; vicp[0][3].z <- patch[0].Color.z; vicp[0][3].w <- patch[0].Color.w; 
-//   vicp[1][0].x <- patch[1].Position.x; vicp[1][0].y <- patch[1].Position.y; vicp[1][0].z <- patch[1].Position.z; 
-//   vicp[1][1].x <- patch[1].Normal.x; vicp[1][1].y <- patch[1].Normal.y; vicp[1][1].z <- patch[1].Normal.z; 
-//   vicp[1][2].x <- patch[1].Tex.x; vicp[1][2].y <- patch[1].Tex.y; 
-//   vicp[1][3].x <- patch[1].Color.x; vicp[1][3].y <- patch[1].Color.y; vicp[1][3].z <- patch[1].Color.z; vicp[1][3].w <- patch[1].Color.w; 
-//   vicp[2][0].x <- patch[2].Position.x; vicp[2][0].y <- patch[2].Position.y; vicp[2][0].z <- patch[2].Position.z; 
-//   vicp[2][1].x <- patch[2].Normal.x; vicp[2][1].y <- patch[2].Normal.y; vicp[2][1].z <- patch[2].Normal.z; 
-//   vicp[2][2].x <- patch[2].Tex.x; vicp[2][2].y <- patch[2].Tex.y; 
-//   vicp[2][3].x <- patch[2].Color.x; vicp[2][3].y <- patch[2].Color.y; vicp[2][3].z <- patch[2].Color.z; vicp[2][3].w <- patch[2].Color.w
-//
-#line 46 "D:\ゲーム制作\YRProject\Tessellation_ds.hlsl"
-mul r0.x, vDomain.x, vicp[0][3].x
-mul r0.y, vDomain.y, vicp[1][3].y
-add r0.x, r0.y, r0.x
-mul r0.y, vDomain.z, vicp[2][3].z
-add r0.xyzw, r0.yyyy, r0.xxxx  // r0.x <- C.x; r0.y <- C.y; r0.z <- C.z; r0.w <- C.w
-
-#line 49
-mul r1.xy, vDomain.xxxx, vicp[0][2].xyxx
-mul r1.zw, vDomain.yyyy, vicp[1][2].xxxy
-add r1.xy, r1.zwzz, r1.xyxx
-mul r1.zw, vDomain.zzzz, vicp[2][2].xxxy
-add r1.xy, r1.zwzz, r1.xyxx  // r1.x <- Tex.x; r1.y <- Tex.y
-
-#line 52
-mul r2.xyz, vDomain.xxxx, vicp[0][1].xyzx
-mul r3.xyz, vDomain.yyyy, vicp[1][1].xyzx
-add r2.xyz, r2.xyzx, r3.xyzx
-mul r3.xyz, vDomain.zzzz, vicp[2][1].xyzx
-add r2.xyz, r2.xyzx, r3.xyzx  // r2.x <- N.x; r2.y <- N.y; r2.z <- N.z
-
-#line 55
-mul r3.xyz, r2.xxxx, cb0[0].xyzx
-mul r4.xyz, r2.yyyy, cb0[1].xyzx
-add r3.xyz, r3.xyzx, r4.xyzx
-mul r4.xyz, r2.zzzz, cb0[2].xyzx
-add r3.xyz, r3.xyzx, r4.xyzx
-dp3 r1.z, r3.xyzx, r3.xyzx
-rsq r1.z, r1.z
-mul r3.xyz, r1.zzzz, r3.xyzx  // r3.x <- wN.x; r3.y <- wN.y; r3.z <- wN.z
-
-#line 58
-mov r3.xyz, r3.xyzx  // r3.x <- vN.x; r3.y <- vN.y; r3.z <- vN.z
-
-#line 59
-itof r4.yz, l(0, 0, 1, 0)  // r4.y <- vB.x; r4.z <- vB.y
-mov r4.x, l(0.001000)  // r4.x <- vB.z
-
-#line 61
-dp3 r1.z, r4.xyzx, r4.xyzx
-rsq r1.z, r1.z
-mul r4.xyz, r1.zzzz, r4.xyzx
-
-#line 62
-mul r5.xyz, r3.zxyz, r4.zxyz
-mul r4.xyz, r3.yzxy, r4.xyzx
-mov r4.xyz, -r4.xyzx
-add r4.xyz, r4.xyzx, r5.xyzx
-dp3 r1.z, r4.xyzx, r4.xyzx
-rsq r1.z, r1.z
-mul r4.xyz, r1.zzzz, r4.xyzx  // r4.x <- vT.x; r4.y <- vT.y; r4.z <- vT.z
-
-#line 63
-mul r5.xyz, r3.yzxy, r4.zxyz
-mul r6.xyz, r3.zxyz, r4.yzxy
-mov r6.xyz, -r6.xyzx
-add r5.xyz, r5.xyzx, r6.xyzx
-dp3 r1.z, r5.xyzx, r5.xyzx
-rsq r1.z, r1.z
-mul r5.xyz, r1.zzzz, r5.xyzx  // r5.x <- vB.x; r5.y <- vB.y; r5.z <- vB.z
-
-#line 66
-itof r1.z, l(0)
-sample_l_indexable(texture2d)(float,float,float,float) r1.z, r1.xyxx, t2.yzxw, s1, r1.z
-mov r1.z, r1.z  // r1.z <- H
-
-#line 69
-mul r6.xyz, vDomain.xxxx, vicp[0][0].xyzx
-mul r7.xyz, vDomain.yyyy, vicp[1][0].xyzx
-add r6.xyz, r6.xyzx, r7.xyzx
-mul r7.xyz, vDomain.zzzz, vicp[2][0].xyzx
-add r6.xyz, r6.xyzx, r7.xyzx  // r6.x <- pos.x; r6.y <- pos.y; r6.z <- pos.z
-
-#line 70
-mul r2.xyz, r1.zzzz, r2.xyzx
-mul r2.xyz, r2.xyzx, l(0.100000, 0.100000, 0.100000, 0.000000)
-add r2.xyz, r2.xyzx, r6.xyzx  // r2.x <- pos.x; r2.y <- pos.y; r2.z <- pos.z
-
-#line 71
-mov r2.xyz, r2.xyzx  // r2.x <- P.x; r2.y <- P.y; r2.z <- P.z
-mov r1.z, l(1.000000)  // r1.z <- P.w
-
-#line 74
-mul r6.xyzw, r2.xxxx, cb0[4].xyzw
-mul r7.xyzw, r2.yyyy, cb0[5].xyzw
-add r6.xyzw, r6.xyzw, r7.xyzw
-mul r7.xyzw, r2.zzzz, cb0[6].xyzw
-add r6.xyzw, r6.xyzw, r7.xyzw
-mul r7.xyzw, r1.zzzz, cb0[7].xyzw
-add r6.xyzw, r6.xyzw, r7.xyzw  // r6.x <- output.Position.x; r6.y <- output.Position.y; r6.z <- output.Position.z; r6.w <- output.Position.w
-
-#line 75
-mul r7.xyz, r2.xxxx, cb0[0].xyzx
-mul r2.xyw, r2.yyyy, cb0[1].xyxz
-add r2.xyw, r2.xyxw, r7.xyxz
-mul r7.xyz, r2.zzzz, cb0[2].xyzx
-add r2.xyz, r2.xywx, r7.xyzx
-mul r7.xyz, r1.zzzz, cb0[3].xyzx
-add r2.xyz, r2.xyzx, r7.xyzx  // r2.x <- output.wPosition.x; r2.y <- output.wPosition.y; r2.z <- output.wPosition.z
-
-#line 76
-mov r0.xyzw, r0.xyzw  // r0.x <- output.Color.x; r0.y <- output.Color.y; r0.z <- output.Color.z; r0.w <- output.Color.w
-
-#line 77
-mov r1.xy, r1.xyxx  // r1.x <- output.Tex.x; r1.y <- output.Tex.y
-
-#line 80
-mov r4.xyz, r4.xyzx  // r4.x <- output.vT.x; r4.y <- output.vT.y; r4.z <- output.vT.z
-
-#line 81
-mov r5.xyz, r5.xyzx  // r5.x <- output.vB.x; r5.y <- output.vB.y; r5.z <- output.vB.z
-
-#line 82
-mov r3.xyz, r3.xyzx  // r3.x <- output.vN.x; r3.y <- output.vN.y; r3.z <- output.vN.z
-
-#line 84
-mov o0.xyzw, r6.xyzw
-mov o1.xyzw, r0.xyzw
-mov o2.xyz, r2.xyzx
-mov o4.xyz, r4.xyzx
-mov o5.xyz, r5.xyzx
-mov o6.xyz, r3.xyzx
+dcl_temps 3
+mul r0.xyz, vDomain.yyyy, vicp[1][0].xyzx
+mad r0.xyz, vicp[0][0].xyzx, vDomain.xxxx, r0.xyzx
+mad r0.xyz, vicp[2][0].xyzx, vDomain.zzzz, r0.xyzx
+mul r1.xy, vDomain.yyyy, vicp[1][2].xyxx
+mad r1.xy, vicp[0][2].xyxx, vDomain.xxxx, r1.xyxx
+mad r1.xy, vicp[2][2].xyxx, vDomain.zzzz, r1.xyxx
+sample_l_indexable(texture2d)(float,float,float,float) r0.w, r1.xyxx, t2.yzwx, s1, l(0.000000)
 mov o3.xy, r1.xyxx
+mul r1.xyz, vDomain.yyyy, vicp[1][1].xyzx
+mad r1.xyz, vicp[0][1].xyzx, vDomain.xxxx, r1.xyzx
+mad r1.xyz, vicp[2][1].xyzx, vDomain.zzzz, r1.xyzx
+mul r2.xyz, r0.wwww, r1.xyzx
+mad r0.xyz, r2.xyzx, l(0.100000, 0.100000, 0.100000, 0.000000), r0.xyzx
+mul r2.xyzw, r0.yyyy, cb0[5].xyzw
+mad r2.xyzw, cb0[4].xyzw, r0.xxxx, r2.xyzw
+mad r2.xyzw, cb0[6].xyzw, r0.zzzz, r2.xyzw
+add o0.xyzw, r2.xyzw, cb0[7].xyzw
+mul r0.w, vDomain.y, vicp[1][3].y
+mad r0.w, vicp[0][3].x, vDomain.x, r0.w
+mad o1.xyzw, vicp[2][3].zzzz, vDomain.zzzz, r0.wwww
+mul r2.xyz, r0.yyyy, cb0[1].xyzx
+mad r0.xyw, cb0[0].xyxz, r0.xxxx, r2.xyxz
+mad r0.xyz, cb0[2].xyzx, r0.zzzz, r0.xywx
+add o2.xyz, r0.xyzx, cb0[3].xyzx
+mul r0.xyz, r1.yyyy, cb0[1].xyzx
+mad r0.xyz, cb0[0].xyzx, r1.xxxx, r0.xyzx
+mad r0.xyz, cb0[2].xyzx, r1.zzzz, r0.xyzx
+dp3 r0.w, r0.xyzx, r0.xyzx
+rsq r0.w, r0.w
+mul r0.xyz, r0.wwww, r0.xyzx
+mul r1.xyz, r0.yzxy, l(0.001000, 0.000000, 1.000000, 0.000000)
+mad r1.xyz, r0.zxyz, l(1.000000, 0.001000, 0.000000, 0.000000), -r1.xyzx
+dp3 r0.w, r1.xyzx, r1.xyzx
+rsq r0.w, r0.w
+mul r1.xyz, r0.wwww, r1.xyzx
+mov o4.xyz, r1.xyzx
+mul r2.xyz, r0.zxyz, r1.yzxy
+mad r1.xyz, r0.yzxy, r1.zxyz, -r2.xyzx
+mov o6.xyz, r0.xyzx
+dp3 r0.x, r1.xyzx, r1.xyzx
+rsq r0.x, r0.x
+mul o5.xyz, r0.xxxx, r1.xyzx
 ret 
-// Approximately 83 instruction slots used
+// Approximately 43 instruction slots used

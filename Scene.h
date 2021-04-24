@@ -755,25 +755,59 @@ public:
 	std::unique_ptr<Sprite>	sprite = nullptr;
 
 	//画像描画関係
-	YR_Vector3			p1;
-	YR_Vector3			p2;
-	YR_Vector3			knight_pos;
-	YR_Vector3			kenpos;
-	float				Rato = 0.0f;
-	bool				p1Enter = false;
-	bool				p2Enter = false;
+	YR_Vector3			p1;					//プレイヤー1のカーソルの位置
+	YR_Vector3			p2;					//プレイヤー2のカーソルの位置
+	YR_Vector3			knight_icon_pos;	//ナイトのアイコンの位置
+	YR_Vector3			p1_cut_pos;			//プレイヤー１のキャラ画像の位置
+	YR_Vector3			p2_cut_pos;			//プレイヤー１のキャラ画像の位置
+	YR_Vector3			name_distance;		//名前の位置(カットインからどれだけ離すか)
+	float				sx = 0.0f;			//カットイン画像の描画指定位置
+	float				sw = 0.0f;			//カットイン画像の描画指定大きさ
+	float				icon_range = 0.0f;	//アイコン同士の距離
+	float				Rato = 0.0f;		//アイコンの大きさ
+	float				case_rato = 0.0f;	//アイコンケースの大きさ
+	float				cursor_rato = 0.0f;	//選択したキャラ画像の大きさ
+	float				cut_rato = 0.0f;	//カーソルの大きさ
+	float				name_rato = 0.0f;	//名前の大きさ
+	bool				p1Enter = false;	//プレイヤー1が決定したらtrue
+	bool				p2Enter = false;	//プレイヤー1が決定したらtrue
 	float				timer = 0.0f;
 	bool				end = false;
+	float				cursor_speed = 1.0f;//カーソルの速度
 
-	int					select_p1 = 0;
-	int					select_p2 = 0;
+	int					select_p1 = -1;
+	int					select_p2 = -1;
 
 public:
-	//std::unique_ptr<Sprite>	back_img = nullptr;
-	std::unique_ptr<Sprite>	knight_icon = nullptr;
-	std::unique_ptr<Sprite>	ken_icon = nullptr;
-	std::unique_ptr<Sprite>	select_img = nullptr;
+
+	//std::unique_ptr<Sprite>	select_img = nullptr;
 	//std::unique_ptr<Sprite>	back = nullptr;
+
+	//アイコン画像
+	//std::array<std::unique_ptr<Sprite>, scastI(PLSELECT::PLSELECT_END)> icon_image;
+	std::unique_ptr<Sprite> chara_case = nullptr;
+	std::unique_ptr<Sprite> select_point = nullptr;
+
+	//キャラ選択判定用列挙
+	enum class Select_P : int
+	{
+		NONE,
+		P1,
+		P2,
+		ALL,
+		P_END
+	};
+	std::array<std::unique_ptr<Sprite>, scastI(Select_P::P_END)> select_img;
+
+	//キャラ画像描画用構造体
+	struct Select_Chara_Case
+	{
+		YR_Vector3					pos;					//座標
+		Select_P					select = Select_P::NONE;//選択状態
+		std::unique_ptr<Sprite>		icon_image = nullptr;	//アイコン画像
+		std::unique_ptr<Sprite>		name_image = nullptr;	//名前画像
+	};
+	std::array<Select_Chara_Case, scastI(PLSELECT::PLSELECT_END)> select_p;
 
 	//定数バッファ
 	Microsoft::WRL::ComPtr<ID3D11Buffer>	constantBuffer = nullptr;
@@ -787,12 +821,16 @@ public:
 	void				Draw(float elapsed_time);
 	void				UnInit();
 	void				LoadData();
+	void				IconLoad();
 	bool				FadoOut(float elapsed_time);
 	void				SetRenderTexture();
 	void				NullSetRenderTexture();
 	void				RenderTexture();
 
-	YR_Vector3			PosSet(int select);
+	void				PosSet();
+	void				SelectCheck();
+	void				DrawSelect(int num);
+	void				DrawChara();
 };
 
 
