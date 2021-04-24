@@ -774,6 +774,9 @@ public:
 	float				timer = 0.0f;
 	bool				end = false;
 	float				cursor_speed = 1.0f;//カーソルの速度
+	float				image_alpha = 0.0f;	//画像のアルファ値
+	float				p1_chara_alpha = 0.0f;//キャラ画像発光時に使用
+	float				p2_chara_alpha = 0.0f;//キャラ画像発光時に使用
 
 	int					select_p1 = -1;
 	int					select_p2 = -1;
@@ -787,6 +790,7 @@ public:
 	//std::array<std::unique_ptr<Sprite>, scastI(PLSELECT::PLSELECT_END)> icon_image;
 	std::unique_ptr<Sprite> chara_case = nullptr;
 	std::unique_ptr<Sprite> select_point = nullptr;
+	std::unique_ptr<Sprite> white_box = nullptr;
 
 	//キャラ選択判定用列挙
 	enum class Select_P : int

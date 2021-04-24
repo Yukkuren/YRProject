@@ -32,9 +32,9 @@ void SceneSelect::Init()
 	load_fin = false;
 	load_state = 0;
 	knight_icon_pos = { 630.0f,360.0f };
-	p1_cut_pos = { 480.0f,870.0f };
-	p2_cut_pos = { 1500.0f,870.0f };
-	name_distance = { 0.0f,0.0f };
+	p1_cut_pos = { 480.0f,785.0f };
+	p2_cut_pos = { 1500.0f,785.0f };
+	name_distance = { 0.0f,175.0f };
 	p1 = knight_icon_pos;
 	p2 = knight_icon_pos;
 	Rato = 1.5f;
@@ -46,10 +46,14 @@ void SceneSelect::Init()
 	sx = 135.0f;
 	sw = 310.0f;
 
+	p1_chara_alpha = 0.0f;
+	p2_chara_alpha = 0.0f;
+
 	FRAMEWORK.scenegame.pad1->Init();
 	FRAMEWORK.scenegame.pad2->Init();
 	fado_start = false;
 	fado_alpha = 1.0f;
+	image_alpha = 0.0f;
 
 	//初期値として-1を入れておく
 	select_p1 = -1;
@@ -88,7 +92,6 @@ void SceneSelect::Init()
 		spriteShader = std::make_unique<YRShader>(ShaderType::SPRITE);
 		spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
 	}
-	GetSound().BGMPlay(BGMKind::CHARA_SELECT);
 }
 
 void SceneSelect::LoadData()
@@ -147,6 +150,11 @@ void SceneSelect::LoadData()
 	if (select_point == nullptr)
 	{
 		select_point = std::make_unique<Sprite>(L"./Data/Image/UI/GameSelect/select_point.png", 640.0f, 640.0f);
+	}
+
+	if (white_box == nullptr)
+	{
+		white_box = std::make_unique<Sprite>(L"./Data/Shader/decoi.png", 1024.0f, 1024.0f);
 	}
 
 	//コンスタントバッファ作成
@@ -252,6 +260,36 @@ void SceneSelect::Update(float elapsed_time)
 		//	UnInit();
 		//	return;
 		//}
+
+		//アルファ値増加
+		if (image_alpha < 1.0f)
+		{
+			image_alpha += elapsed_time;
+		}
+		else
+		{
+			image_alpha = 1.0f;
+		}
+
+		//アルファ値減少
+		if (p1_chara_alpha > 0.0f)
+		{
+			p1_chara_alpha -= elapsed_time;
+		}
+		else
+		{
+			p1_chara_alpha = 0.0f;
+		}
+
+		if (p2_chara_alpha > 0.0f)
+		{
+			p2_chara_alpha -= elapsed_time;
+		}
+		else
+		{
+			p2_chara_alpha = 0.0f;
+		}
+
 #ifdef EXIST_IMGUI
 
 #endif // USE_IMGUI
@@ -335,6 +373,7 @@ void SceneSelect::Update(float elapsed_time)
 			if (1/*Fedo::getInstance().FedoOut()*/)
 			{
 				load_state = 4;
+				GetSound().BGMPlay(BGMKind::CHARA_SELECT);
 				//pFedo.Set();
 			}
 			break;
@@ -368,8 +407,8 @@ void SceneSelect::Draw(float elapsedTime)
 		ImGui::SliderFloat(u8"1P選択キャラの位置X", &p1_cut_pos.x, 0.0f, (float)FRAMEWORK.SCREEN_WIDTH);
 		ImGui::SliderFloat(u8"2P選択キャラの位置X", &p2_cut_pos.x, 0.0f, (float)FRAMEWORK.SCREEN_WIDTH);
 		ImGui::SliderFloat(u8"選択キャラの位置Y", &p1_cut_pos.y, 0.0f, (float)FRAMEWORK.SCREEN_HEIGHT);
-		ImGui::SliderFloat(u8"名前の距離X", &name_distance.x, 0.0f, (float)FRAMEWORK.SCREEN_WIDTH);
-		ImGui::SliderFloat(u8"名前の距離Y", &name_distance.y, 0.0f, (float)FRAMEWORK.SCREEN_WIDTH);
+		ImGui::SliderFloat(u8"名前の距離X", &name_distance.x, -500.0f, 500.0f);
+		ImGui::SliderFloat(u8"名前の距離Y", &name_distance.y, -500.0f, 500.0f);
 		p2_cut_pos.y = p1_cut_pos.y;
 		ImGui::SliderFloat("sx", &sx, 0.0f, 640.0f);
 		ImGui::SliderFloat("sw", &sw, 0.0f, 640.0f);
@@ -433,7 +472,10 @@ void SceneSelect::Draw(float elapsedTime)
 				sx,
 				sw,
 				0.0f,
-				Rato
+				Rato,
+				false,
+				SpriteMask::NONE,
+				DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, image_alpha)
 			);
 
 			//選択状態を描画
@@ -444,7 +486,10 @@ void SceneSelect::Draw(float elapsedTime)
 				select_p[i].pos.x,
 				select_p[i].pos.y,
 				0.0f,
-				case_rato
+				case_rato,
+				false,
+				SpriteMask::NONE,
+				DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, image_alpha)
 			);
 		}
 
@@ -459,12 +504,12 @@ void SceneSelect::Draw(float elapsedTime)
 			select_point->DrawRotaGraph(
 				spriteShader.get(),
 				p1.x,
-				p1.y,
+				p1.y + (sinf(timer * 10.0f) * 5.0f),
 				0.0f,
 				cursor_rato,
 				false,
 				SpriteMask::NONE,
-				DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
+				DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, image_alpha)
 			);
 		}
 
@@ -474,12 +519,12 @@ void SceneSelect::Draw(float elapsedTime)
 			select_point->DrawRotaGraph(
 				spriteShader.get(),
 				p2.x,
-				p2.y,
+				p2.y + (sinf(timer * 10.0f) * 5.0f),
 				0.0f,
 				cursor_rato,
 				false,
 				SpriteMask::NONE,
-				DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)
+				DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, image_alpha)
 			);
 		}
 
@@ -587,7 +632,10 @@ void SceneSelect::DrawSelect(int num)
 			select_p[num].pos.x,
 			select_p[num].pos.y,
 			0.0f,
-			case_rato
+			case_rato,
+			false,
+			SpriteMask::NONE,
+			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, image_alpha)
 		);
 		break;
 	case SceneSelect::Select_P::P2:
@@ -596,7 +644,10 @@ void SceneSelect::DrawSelect(int num)
 			select_p[num].pos.x,
 			select_p[num].pos.y,
 			0.0f,
-			case_rato
+			case_rato,
+			false,
+			SpriteMask::NONE,
+			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, image_alpha)
 		);
 		break;
 	case SceneSelect::Select_P::ALL:
@@ -605,7 +656,10 @@ void SceneSelect::DrawSelect(int num)
 			select_p[num].pos.x,
 			select_p[num].pos.y,
 			0.0f,
-			case_rato
+			case_rato,
+			false,
+			SpriteMask::NONE,
+			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, image_alpha)
 		);
 		break;
 	case SceneSelect::Select_P::P_END:
@@ -628,6 +682,8 @@ void SceneSelect::PosSet()
 		if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::B)] == 1)
 		{
 			p1Enter = false;
+			p1_chara_alpha = 0.0f;
+			GetSound().SESinglePlay(SEKind::SELECT_CANCEL);
 		}
 	}
 	else
@@ -666,6 +722,8 @@ void SceneSelect::PosSet()
 			{
 				//キャラが選択されたときのみ
 				p1Enter = true;
+				GetSound().SESinglePlay(SEKind::OFFSET);
+				p1_chara_alpha = 1.0f;
 			}
 			//PlaySE(SE_ENTER);
 		}
@@ -678,6 +736,8 @@ void SceneSelect::PosSet()
 		if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::B)] == 1)
 		{
 			p2Enter = false;
+			GetSound().SESinglePlay(SEKind::SELECT_CANCEL);
+			p2_chara_alpha = 0.0f;
 		}
 	}
 	else
@@ -716,6 +776,8 @@ void SceneSelect::PosSet()
 			{
 				//キャラが選択されたときのみ
 				p2Enter = true;
+				GetSound().SESinglePlay(SEKind::OFFSET);
+				p2_chara_alpha = 1.0f;
 				//PlaySE(SE_ENTER);
 			}
 		}
@@ -919,7 +981,10 @@ void SceneSelect::DrawChara()
 			p1_cut_pos.x,
 			p1_cut_pos.y,
 			0.0f,
-			cut_rato
+			cut_rato,
+			false,
+			SpriteMask::NONE,
+			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, image_alpha)
 		);
 
 		select_p[select_p1].name_image->DrawRotaGraph(
@@ -927,7 +992,47 @@ void SceneSelect::DrawChara()
 			p1_cut_pos.x + name_distance.x,
 			p1_cut_pos.y + name_distance.y,
 			0.0f,
-			name_rato
+			name_rato,
+			false,
+			SpriteMask::NONE,
+			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, image_alpha)
+		);
+
+
+		//マスク値設定
+		select_p[select_p1].icon_image->DrawRotaGraph(
+			spriteShader.get(),
+			p1_cut_pos.x,
+			p1_cut_pos.y,
+			0.0f,
+			cut_rato,
+			false,
+			SpriteMask::WRITE,
+			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, image_alpha)
+		);
+
+		select_p[select_p1].name_image->DrawRotaGraph(
+			spriteShader.get(),
+			p1_cut_pos.x + name_distance.x,
+			p1_cut_pos.y + name_distance.y,
+			0.0f,
+			name_rato,
+			false,
+			SpriteMask::WRITE,
+			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, image_alpha)
+		);
+
+
+		//マスク内に白画像描画
+		white_box->DrawRotaGraph(
+			spriteShader.get(),
+			p1_cut_pos.x,
+			p1_cut_pos.y,
+			0.0f,
+			0.8f,
+			false,
+			SpriteMask::INDRAW,
+			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, p1_chara_alpha)
 		);
 	}
 
@@ -938,7 +1043,10 @@ void SceneSelect::DrawChara()
 			p2_cut_pos.x,
 			p2_cut_pos.y,
 			0.0f,
-			cut_rato
+			cut_rato,
+			false,
+			SpriteMask::NONE,
+			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, image_alpha)
 		);
 
 		select_p[select_p2].name_image->DrawRotaGraph(
@@ -946,7 +1054,45 @@ void SceneSelect::DrawChara()
 			p2_cut_pos.x + name_distance.x,
 			p2_cut_pos.y + name_distance.y,
 			0.0f,
-			name_rato
+			name_rato,
+			false,
+			SpriteMask::NONE,
+			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, image_alpha)
+		);
+
+		//マスク値書き込み
+		select_p[select_p2].icon_image->DrawRotaGraph(
+			spriteShader.get(),
+			p2_cut_pos.x,
+			p2_cut_pos.y,
+			0.0f,
+			cut_rato,
+			false,
+			SpriteMask::WRITE,
+			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, image_alpha)
+		);
+
+		select_p[select_p2].name_image->DrawRotaGraph(
+			spriteShader.get(),
+			p2_cut_pos.x + name_distance.x,
+			p2_cut_pos.y + name_distance.y,
+			0.0f,
+			name_rato,
+			false,
+			SpriteMask::WRITE,
+			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, image_alpha)
+		);
+
+		//マスク内に白画像描画
+		white_box->DrawRotaGraph(
+			spriteShader.get(),
+			p2_cut_pos.x,
+			p2_cut_pos.y,
+			0.0f,
+			0.8f,
+			false,
+			SpriteMask::INDRAW,
+			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, p2_chara_alpha)
 		);
 	}
 }
