@@ -479,7 +479,7 @@ bool framework::initialize()
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
-	io.Fonts->AddFontFromFileTTF("./imgui/mplus-1p-regular.ttf", 20.0f, NULL,
+	io.Fonts->AddFontFromFileTTF("./Data/Font/mplus-1p-regular.ttf", 20.0f, NULL,
 		io.Fonts->GetGlyphRangesJapanese());
 
 	ImGui::StyleColorsDark();

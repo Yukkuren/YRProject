@@ -283,7 +283,7 @@ void SceneTitle::Update(float elapsed_time)
 
 		if (Get_Use_ImGui())
 		{
-			if (pKeyState.tflg == 1)
+			/*if (pKeyState.tflg == 1)
 			{
 				GetSound().BGMStop(BGMKind::TITLE);
 				select_p1 = scastI(INPUT_PLAYER::P1);
@@ -292,7 +292,7 @@ void SceneTitle::Update(float elapsed_time)
 				UnInit();
 				FRAMEWORK.SetScene(SCENE_TABLE::SCENE_TEST);
 				return;
-			}
+			}*/
 		}
 
 #endif // USE_IMGUI

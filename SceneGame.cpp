@@ -1792,7 +1792,7 @@ void SceneGame::HPBar_Draw(
 		{
 			if (PL.Damage_ratio1P <= PL.correction_value)
 			{
-				PL.Damage_ratio1P += elapsed_time * 10.0f;
+				PL.Damage_ratio1P += game_speed * 10.0f;
 			}
 		}
 
@@ -1800,7 +1800,7 @@ void SceneGame::HPBar_Draw(
 		{
 			if (PL.Damage_ratio2P >= PL.ratio2P)
 			{
-				PL.Damage_ratio2P -= elapsed_time * 10.0f;
+				PL.Damage_ratio2P -= game_speed * 10.0f;
 			}
 		}
 
