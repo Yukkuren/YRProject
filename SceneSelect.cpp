@@ -35,8 +35,6 @@ void SceneSelect::Init()
 	p1_cut_pos = { 480.0f,785.0f };
 	p2_cut_pos = { 1500.0f,785.0f };
 	name_distance = { 0.0f,175.0f };
-	p1 = knight_icon_pos;
-	p2 = knight_icon_pos;
 	Rato = 1.5f;
 	case_rato = 0.4f;
 	cursor_rato = 0.4f;
@@ -92,6 +90,16 @@ void SceneSelect::Init()
 		spriteShader = std::make_unique<YRShader>(ShaderType::SPRITE);
 		spriteShader->Create("./Data/Shader/sprite_vs.cso", "./Data/Shader/sprite_ps.cso");
 	}
+
+	//初期位置
+	p1 = select_p[scastI(PLSELECT::KNIGHT)].pos;
+	p2 = select_p[scastI(PLSELECT::NERU)].pos;
+
+	color_p1 = PLCOLOR::ORIGINAL;
+	color_p2 = PLCOLOR::ORIGINAL;
+
+	old_select_p1 = select_p1;
+	old_select_p2 = select_p2;
 }
 
 void SceneSelect::LoadData()
@@ -206,10 +214,15 @@ void SceneSelect::UnInit()
 
 	for (int i = 0; i < select_p.size(); i++)
 	{
-		select_p[i].icon_image.reset();
-		select_p[i].icon_image = nullptr;
 		select_p[i].name_image.reset();
 		select_p[i].name_image = nullptr;
+		select_p[i].edge_image.reset();
+		select_p[i].edge_image = nullptr;
+		for (int n = 0; n < select_p[i].icon_image.size(); n++)
+		{
+			select_p[i].icon_image[n].reset();
+			select_p[i].icon_image[n] = nullptr;
+		}
 	}
 
 	for (int i = 0; i < select_img.size(); i++)
@@ -312,6 +325,13 @@ void SceneSelect::Update(float elapsed_time)
 
 		//カーソルの判定処理
 		SelectCheck();
+
+		//カラーを調整する
+		ColorChange();
+
+		//このフレームのカラー情報を保存
+		old_select_p1 = select_p1;
+		old_select_p2 = select_p2;
 
 		/*p1 = PosSet(select_p1);
 		p2 = PosSet(select_p2);*/
@@ -465,7 +485,7 @@ void SceneSelect::Draw(float elapsedTime)
 		for (int i = 0; i < select_p.size(); i++)
 		{
 
-			select_p[i].icon_image->DrawRotaSetGraph(
+			select_p[i].icon_image[scastI(PLCOLOR::ORIGINAL)]->DrawRotaSetGraph(
 				spriteShader.get(),
 				select_p[i].pos.x,
 				select_p[i].pos.y,
@@ -729,6 +749,7 @@ void SceneSelect::PosSet()
 		}
 	}
 
+
 	//プレイヤー2のカーソル移動処理
 	if (p2Enter)
 	{
@@ -821,6 +842,28 @@ void SceneSelect::PosSet()
 	{
 		p2.y = (float)FRAMEWORK.SCREEN_HEIGHT - margin;
 	}
+
+
+	//カラー変更
+	if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::LB)] == 1)
+	{
+		Color_Sub(color_p1);
+	}
+
+	if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::RB)] == 1)
+	{
+		Color_Add(color_p1);
+	}
+
+	if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::LB)] == 1)
+	{
+		Color_Sub(color_p2);
+	}
+
+	if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::RB)] == 1)
+	{
+		Color_Add(color_p2);
+	}
 }
 
 
@@ -839,7 +882,7 @@ void SceneSelect::SelectCheck()
 
 		if (p1.x >= (select_p[i].pos.x - ((sw * 0.5f) * Rato)) && p1.x <= (select_p[i].pos.x + ((sw * 0.5f) * Rato)))
 		{
-			if (p1.y >= (select_p[i].pos.y - ((select_p[i].icon_image->sh * 0.5f) * Rato)) && p1.y <= (select_p[i].pos.y + ((select_p[i].icon_image->sh * 0.5f) * Rato)))
+			if (p1.y >= (select_p[i].pos.y - ((select_p[i].icon_image[scastI(PLCOLOR::ORIGINAL)]->sh * 0.5f) * Rato)) && p1.y <= (select_p[i].pos.y + ((select_p[i].icon_image[scastI(PLCOLOR::ORIGINAL)]->sh * 0.5f) * Rato)))
 			{
 				//1Pが選択している
 				p = Select_P::P1;
@@ -850,7 +893,7 @@ void SceneSelect::SelectCheck()
 
 		if (p2.x >= (select_p[i].pos.x - ((sw * 0.5f) * Rato)) && p2.x <= (select_p[i].pos.x + ((sw * 0.5f) * Rato)))
 		{
-			if (p2.y >= (select_p[i].pos.y - ((select_p[i].icon_image->sh * 0.5f) * Rato)) && p2.y <= (select_p[i].pos.y + ((select_p[i].icon_image->sh * 0.5f) * Rato)))
+			if (p2.y >= (select_p[i].pos.y - ((select_p[i].icon_image[scastI(PLCOLOR::ORIGINAL)]->sh * 0.5f) * Rato)) && p2.y <= (select_p[i].pos.y + ((select_p[i].icon_image[scastI(PLCOLOR::ORIGINAL)]->sh * 0.5f) * Rato)))
 			{
 				//2Pの選択情報を保存する
 				select_p2 = i;
@@ -946,7 +989,9 @@ void SceneSelect::IconLoad()
 {
 	std::string front = std::string("./Data/Image/Character/");
 	std::string back = std::string("_cut1.png");
+	std::string color2 = std::string("_cut2.png");
 	std::string back_name = std::string("_name.png");
+	std::string back_edge = std::string("_name_edge.png");
 
 	for (int icon_num = 0; icon_num < select_p.size(); icon_num++)
 	{
@@ -954,18 +999,36 @@ void SceneSelect::IconLoad()
 			std::string("/") + GetName().chara_name_list[icon_num] + back;
 		std::wstring icon_name = to_wstring_Icon(contents);
 
+		std::string contents_color2 = front + GetName().chara_name_list[icon_num] +
+			std::string("/") + GetName().chara_name_list[icon_num] + color2;
+		std::wstring color2_name = to_wstring_Icon(contents_color2);
+
 		std::string contents_name = front + GetName().chara_name_list[icon_num] +
 			std::string("/") + GetName().chara_name_list[icon_num] + back_name;
 		std::wstring name_name = to_wstring_Icon(contents_name);
 
-		if (select_p[icon_num].icon_image == nullptr)
+		std::string contents_edge = front + GetName().chara_name_list[icon_num] +
+			std::string("/") + GetName().chara_name_list[icon_num] + back_edge;
+		std::wstring edge_name = to_wstring_Icon(contents_edge);
+
+		if (select_p[icon_num].icon_image[scastI(PLCOLOR::ORIGINAL)] == nullptr)
 		{
-			select_p[icon_num].icon_image = std::make_unique<Sprite>(icon_name.data(), 640.0f, 192.0f);
+			select_p[icon_num].icon_image[scastI(PLCOLOR::ORIGINAL)] = std::make_unique<Sprite>(icon_name.data(), 640.0f, 192.0f);
+		}
+
+		if (select_p[icon_num].icon_image[scastI(PLCOLOR::COLOR_2)] == nullptr)
+		{
+			select_p[icon_num].icon_image[scastI(PLCOLOR::COLOR_2)] = std::make_unique<Sprite>(color2_name.data(), 640.0f, 192.0f);
 		}
 
 		if (select_p[icon_num].name_image == nullptr)
 		{
 			select_p[icon_num].name_image = std::make_unique<Sprite>(name_name.data(), 640.0f, 320.0f);
+		}
+
+		if (select_p[icon_num].edge_image == nullptr)
+		{
+			select_p[icon_num].edge_image = std::make_unique<Sprite>(edge_name.data(), 640.0f, 320.0f);
 		}
 	}
 }
@@ -976,7 +1039,8 @@ void SceneSelect::DrawChara()
 {
 	if (select_p1 != -1)
 	{
-		select_p[select_p1].icon_image->DrawRotaGraph(
+		//キャラアイコン
+		select_p[select_p1].icon_image[scastI(color_p1)]->DrawRotaGraph(
 			spriteShader.get(),
 			p1_cut_pos.x,
 			p1_cut_pos.y,
@@ -987,7 +1051,8 @@ void SceneSelect::DrawChara()
 			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, image_alpha)
 		);
 
-		select_p[select_p1].name_image->DrawRotaGraph(
+		//名前画像(縁)
+		select_p[select_p1].edge_image->DrawRotaGraph(
 			spriteShader.get(),
 			p1_cut_pos.x + name_distance.x,
 			p1_cut_pos.y + name_distance.y,
@@ -998,9 +1063,21 @@ void SceneSelect::DrawChara()
 			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, image_alpha)
 		);
 
+		//名前画像(中)
+		select_p[select_p1].name_image->DrawRotaGraph(
+			spriteShader.get(),
+			p1_cut_pos.x + name_distance.x,
+			p1_cut_pos.y + name_distance.y,
+			0.0f,
+			name_rato,
+			false,
+			SpriteMask::NONE,
+			DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, image_alpha)
+		);
+
 
 		//マスク値設定
-		select_p[select_p1].icon_image->DrawRotaGraph(
+		select_p[select_p1].icon_image[scastI(color_p1)]->DrawRotaGraph(
 			spriteShader.get(),
 			p1_cut_pos.x,
 			p1_cut_pos.y,
@@ -1011,7 +1088,7 @@ void SceneSelect::DrawChara()
 			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, image_alpha)
 		);
 
-		select_p[select_p1].name_image->DrawRotaGraph(
+		select_p[select_p1].edge_image->DrawRotaGraph(
 			spriteShader.get(),
 			p1_cut_pos.x + name_distance.x,
 			p1_cut_pos.y + name_distance.y,
@@ -1038,7 +1115,8 @@ void SceneSelect::DrawChara()
 
 	if (select_p2 != -1)
 	{
-		select_p[select_p2].icon_image->DrawRotaGraph(
+		//キャラアイコン
+		select_p[select_p2].icon_image[scastI(color_p2)]->DrawRotaGraph(
 			spriteShader.get(),
 			p2_cut_pos.x,
 			p2_cut_pos.y,
@@ -1049,7 +1127,8 @@ void SceneSelect::DrawChara()
 			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, image_alpha)
 		);
 
-		select_p[select_p2].name_image->DrawRotaGraph(
+		//名前画像(縁)
+		select_p[select_p2].edge_image->DrawRotaGraph(
 			spriteShader.get(),
 			p2_cut_pos.x + name_distance.x,
 			p2_cut_pos.y + name_distance.y,
@@ -1060,8 +1139,20 @@ void SceneSelect::DrawChara()
 			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, image_alpha)
 		);
 
+		//名前画像(中)
+		select_p[select_p2].name_image->DrawRotaGraph(
+			spriteShader.get(),
+			p2_cut_pos.x + name_distance.x,
+			p2_cut_pos.y + name_distance.y,
+			0.0f,
+			name_rato,
+			false,
+			SpriteMask::NONE,
+			DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, image_alpha)
+		);
+
 		//マスク値書き込み
-		select_p[select_p2].icon_image->DrawRotaGraph(
+		select_p[select_p2].icon_image[scastI(color_p2)]->DrawRotaGraph(
 			spriteShader.get(),
 			p2_cut_pos.x,
 			p2_cut_pos.y,
@@ -1072,7 +1163,7 @@ void SceneSelect::DrawChara()
 			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, image_alpha)
 		);
 
-		select_p[select_p2].name_image->DrawRotaGraph(
+		select_p[select_p2].edge_image->DrawRotaGraph(
 			spriteShader.get(),
 			p2_cut_pos.x + name_distance.x,
 			p2_cut_pos.y + name_distance.y,
@@ -1094,5 +1185,49 @@ void SceneSelect::DrawChara()
 			SpriteMask::INDRAW,
 			DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, p2_chara_alpha)
 		);
+	}
+}
+
+
+
+void SceneSelect::Color_Add(PLCOLOR& color)
+{
+	//カラー番号を増やす(最大数より増えたらオリジナルカラーに戻す)
+	int color_int = scastI(color) + 1;
+
+	if (color_int >= scastI(PLCOLOR::COLOR_END))
+	{
+		color_int = scastI(PLCOLOR::ORIGINAL);
+	}
+
+	color = static_cast<PLCOLOR>(color_int);
+}
+
+void SceneSelect::Color_Sub(PLCOLOR& color)
+{
+	//カラー番号を減らす(オリジナルより減ったら一番後ろに戻す)
+	int color_int = scastI(color) - 1;
+
+	if (color_int < scastI(PLCOLOR::ORIGINAL))
+	{
+		color_int = scastI(PLCOLOR::COLOR_END) - 1;
+	}
+
+	color = static_cast<PLCOLOR>(color_int);
+}
+
+
+
+void SceneSelect::ColorChange()
+{
+	//前フレームと選択されたキャラが違う場合、カラーをオリジナルに戻す
+	if (old_select_p1 != select_p1)
+	{
+		color_p1 = PLCOLOR::ORIGINAL;
+	}
+
+	if (old_select_p2 != select_p2)
+	{
+		color_p2 = PLCOLOR::ORIGINAL;
 	}
 }

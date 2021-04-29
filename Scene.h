@@ -778,8 +778,13 @@ public:
 	float				p1_chara_alpha = 0.0f;//キャラ画像発光時に使用
 	float				p2_chara_alpha = 0.0f;//キャラ画像発光時に使用
 
-	int					select_p1 = -1;
-	int					select_p2 = -1;
+	//キャラ選択
+	int					select_p1 = -1;		//プレイヤー1のキャラ番号
+	int					select_p2 = -1;		//プレイヤー2のキャラ番号
+	int					old_select_p1 = -1;	//プレイヤー1の前フレームのカラー番号
+	int					old_select_p2 = -1;	//プレイヤー2の前フレームのカラー番号
+	PLCOLOR				color_p1 = PLCOLOR::ORIGINAL;	//プレイヤー1のカラー番号
+	PLCOLOR				color_p2 = PLCOLOR::ORIGINAL;	//プレイヤー2のカラー番号
 
 public:
 
@@ -806,10 +811,11 @@ public:
 	//キャラ画像描画用構造体
 	struct Select_Chara_Case
 	{
-		YR_Vector3					pos;					//座標
-		Select_P					select = Select_P::NONE;//選択状態
-		std::unique_ptr<Sprite>		icon_image = nullptr;	//アイコン画像
-		std::unique_ptr<Sprite>		name_image = nullptr;	//名前画像
+		YR_Vector3					pos;							//座標
+		Select_P					select = Select_P::NONE;		//選択状態
+		std::unique_ptr<Sprite>		name_image = nullptr;			//名前画像
+		std::unique_ptr<Sprite>		edge_image = nullptr;			//名前縁画像
+		std::array<std::unique_ptr<Sprite>,scastI(PLCOLOR::COLOR_END)>	icon_image;			//アイコン画像
 	};
 	std::array<Select_Chara_Case, scastI(PLSELECT::PLSELECT_END)> select_p;
 
@@ -835,6 +841,11 @@ public:
 	void				SelectCheck();
 	void				DrawSelect(int num);
 	void				DrawChara();
+
+	void				Color_Add(PLCOLOR& color);
+	void				Color_Sub(PLCOLOR& color);
+
+	void				ColorChange();
 };
 
 
