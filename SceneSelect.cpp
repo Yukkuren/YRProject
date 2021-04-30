@@ -329,6 +329,9 @@ void SceneSelect::Update(float elapsed_time)
 		//カラーを調整する
 		ColorChange();
 
+		//カラー被りを無くす
+		ColorAdjustment();
+
 		//このフレームのカラー情報を保存
 		old_select_p1 = select_p1;
 		old_select_p2 = select_p2;
@@ -1229,5 +1232,32 @@ void SceneSelect::ColorChange()
 	if (old_select_p2 != select_p2)
 	{
 		color_p2 = PLCOLOR::ORIGINAL;
+	}
+}
+
+
+void SceneSelect::ColorAdjustment()
+{
+	//同じキャラ、同じカラーを選択していた場合、後から選択したほうのカラーを強制的に変える
+	if (select_p1 == select_p2)
+	{
+		if (color_p1 == color_p2)
+		{
+			if (select_p1 == old_select_p1)
+			{
+				//1Pが先に選択していた
+				Color_Add(color_p2);
+			}
+			else if (select_p2 == old_select_p2)
+			{
+				//1Pが先に選択していた
+				Color_Add(color_p1);
+			}
+			else
+			{
+				//両方同じタイミングなら
+				Color_Add(color_p2);
+			}
+		}
 	}
 }

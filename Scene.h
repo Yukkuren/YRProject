@@ -846,6 +846,7 @@ public:
 	void				Color_Sub(PLCOLOR& color);
 
 	void				ColorChange();
+	void				ColorAdjustment();
 };
 
 
