@@ -646,7 +646,7 @@ public:
 
 	//ロード時の画像
 	std::unique_ptr<Sprite>	load_img = nullptr;
-	std::unique_ptr<Sprite>	load_bg = nullptr;
+	//std::unique_ptr<Sprite>	load_bg = nullptr;
 
 	std::shared_ptr<Sampler> sampler_wrap = nullptr;
 
@@ -672,8 +672,8 @@ public:
 	float flash_size = 0.0f;
 	float flash_alpha = 0.0f;
 
-	float knight_1p_pos_x = 0.0f;
-	float knight_2p_pos_x = 0.0f;
+	float p1_pos_x = 0.0f;
+	float p2_pos_x = 0.0f;
 
 	float line_1p_x = 0.0f;
 	float line_2p_x = 0.0f;
@@ -694,9 +694,12 @@ public:
 
 	IntroState intro_state = IntroState::P1;
 
-	std::unique_ptr<Sprite> knight_1p_cut = nullptr;
-	std::unique_ptr<Sprite> knight_2p_cut = nullptr;
-	std::unique_ptr<Sprite> knight_name = nullptr;
+	std::unique_ptr<Sprite> p1_cut = nullptr;
+	std::unique_ptr<Sprite> p2_cut = nullptr;
+	std::unique_ptr<Sprite> p1_name = nullptr;
+	std::unique_ptr<Sprite> p2_name = nullptr;
+	std::unique_ptr<Sprite> p1_name_edge = nullptr;
+	std::unique_ptr<Sprite> p2_name_edge = nullptr;
 	std::unique_ptr<Sprite> Box = nullptr;
 	std::unique_ptr<Sprite> VS_Image = nullptr;
 
@@ -711,19 +714,17 @@ public:
 
 	Title_CBuffer cbuffer_param;
 
-	float timer = 0.0f;
-	void Init();
-	void Update(float elapsed_time);
-	void Draw(float elapsed_time);
-	void UnInit();
-	void LoadData();
-	bool FedoOut(float elapsed_time);
-
-	void MatchStart();
-
-	void MatchUpdate(float elapsed_time);
-
-	void MatchDraw(float elapsed_time);
+	float				timer = 0.0f;
+	void				Init();
+	void				Update(float elapsed_time);
+	void				Draw(float elapsed_time);
+	void				UnInit();
+	void				LoadData();
+	bool				FedoOut(float elapsed_time);
+	void				MatchStart();
+	void				MatchUpdate(float elapsed_time);
+	void				MatchDraw(float elapsed_time);
+	void				IconLoad();
 };
 
 
@@ -781,10 +782,12 @@ public:
 	//キャラ選択
 	int					select_p1 = -1;		//プレイヤー1のキャラ番号
 	int					select_p2 = -1;		//プレイヤー2のキャラ番号
-	int					old_select_p1 = -1;	//プレイヤー1の前フレームのカラー番号
-	int					old_select_p2 = -1;	//プレイヤー2の前フレームのカラー番号
+	int					old_select_p1 = -1;	//プレイヤー1の前フレームのキャラ番号
+	int					old_select_p2 = -1;	//プレイヤー2の前フレームのキャラ番号
 	PLCOLOR				color_p1 = PLCOLOR::ORIGINAL;	//プレイヤー1のカラー番号
 	PLCOLOR				color_p2 = PLCOLOR::ORIGINAL;	//プレイヤー2のカラー番号
+	PLCOLOR				old_color_p1 = PLCOLOR::ORIGINAL;	//プレイヤー1の前フレームのカラー番号
+	PLCOLOR				old_color_p2 = PLCOLOR::ORIGINAL;	//プレイヤー2の前フレームのカラー番号
 
 public:
 

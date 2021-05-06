@@ -580,7 +580,7 @@ public:
 	virtual void Init(YR_Vector3 InitPos);
 	virtual void CharaInit() = 0;
 
-	virtual void LoadData(int color_number) = 0;
+	virtual void LoadData(PLCOLOR color_number) = 0;
 	virtual void Uninit() = 0;
 	virtual void Update(float decision,float elapsed_time);
 	virtual void Draw(

@@ -490,8 +490,8 @@ void SceneGame::LoadData()
 	player1p->now_player = 1;
 	player2p->now_player = 2;
 	//生成後初期化する(座標系、HP、UI座標など)
-	player1p->LoadData(1);
-	player2p->LoadData(2);
+	player1p->LoadData(FRAMEWORK.sceneselect.color_p1);
+	player2p->LoadData(FRAMEWORK.sceneselect.color_p2);
 
 	PL.pos1P = { -11.0f,0.0f };
 	PL.pos2P = { 11.0f,0.0f };

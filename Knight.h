@@ -40,7 +40,7 @@ public:
 	~Knight();
 	void CharaInit();
 	void Uninit();
-	void LoadData(int color_number);
+	void LoadData(PLCOLOR color_number);
 	void Update(float decision, float elapsed_time);
 	void Draw(
 		YRShader				*parallel_shader,

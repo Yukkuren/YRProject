@@ -100,6 +100,9 @@ void SceneSelect::Init()
 
 	old_select_p1 = select_p1;
 	old_select_p2 = select_p2;
+
+	old_color_p1 = color_p1;
+	old_color_p2 = color_p2;
 }
 
 void SceneSelect::LoadData()
@@ -332,9 +335,13 @@ void SceneSelect::Update(float elapsed_time)
 		//カラー被りを無くす
 		ColorAdjustment();
 
-		//このフレームのカラー情報を保存
+		//このフレームのキャラ情報を保存
 		old_select_p1 = select_p1;
 		old_select_p2 = select_p2;
+
+		//このフレームのカラー情報を保存
+		old_color_p1 = color_p1;
+		old_color_p2 = color_p2;
 
 		/*p1 = PosSet(select_p1);
 		p2 = PosSet(select_p2);*/
@@ -991,8 +998,8 @@ void SceneSelect::RenderTexture()
 void SceneSelect::IconLoad()
 {
 	std::string front = std::string("./Data/Image/Character/");
-	std::string back = std::string("_cut1.png");
-	std::string color2 = std::string("_cut2.png");
+	std::string back = std::string("_cut0.png");
+	std::string color2 = std::string("_cut1.png");
 	std::string back_name = std::string("_name.png");
 	std::string back_edge = std::string("_name_edge.png");
 
@@ -1243,20 +1250,43 @@ void SceneSelect::ColorAdjustment()
 	{
 		if (color_p1 == color_p2)
 		{
-			if (select_p1 == old_select_p1)
+			if (old_select_p1 == old_select_p2)
 			{
-				//1Pが先に選択していた
-				Color_Add(color_p2);
-			}
-			else if (select_p2 == old_select_p2)
-			{
-				//1Pが先に選択していた
-				Color_Add(color_p1);
+				//キャラを選択している状態からカラーを変更する場合
+				if (color_p1 == old_color_p1)
+				{
+					//1Pが既にそのカラーを選択していた
+					Color_Add(color_p2);
+				}
+				else if (color_p2 == old_color_p2)
+				{
+					//2Pが既にそのカラーを選択していた
+					Color_Add(color_p1);
+				}
+				else
+				{
+					//両方同時にカラーを変更した場合
+					Color_Add(color_p2);
+				}
 			}
 			else
 			{
-				//両方同じタイミングなら
-				Color_Add(color_p2);
+				//キャラを選択していない場合
+				if (select_p1 == old_select_p1)
+				{
+					//1Pが先に選択していた
+					Color_Add(color_p2);
+				}
+				else if (select_p2 == old_select_p2)
+				{
+					//2Pが先に選択していた
+					Color_Add(color_p1);
+				}
+				else
+				{
+					//両方同じタイミングなら
+					Color_Add(color_p2);
+				}
 			}
 		}
 	}

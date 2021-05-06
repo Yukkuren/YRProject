@@ -3,6 +3,22 @@
 #include "framework.h"
 #include "YRSound.h"
 #include <math.h>
+#include "Player_name_list.h"
+#include <codecvt>
+
+// w_string型変更用関数
+using convert_t = std::codecvt_utf8<wchar_t>;
+std::wstring_convert<convert_t, wchar_t> strconverter_Load;
+
+std::string to_string_Load(std::wstring wstr)
+{
+	return strconverter_Load.to_bytes(wstr);
+}
+
+std::wstring to_wstring_Load(std::string str)
+{
+	return strconverter_Load.from_bytes(str);
+}
 
 #undef max
 
@@ -121,26 +137,17 @@ void SceneLoad::LoadData()
 			100.0f);
 	}
 
-	if (load_bg == nullptr)
+	/*if (load_bg == nullptr)
 	{
 		load_bg = std::make_unique<Sprite>(
 			L"./Data/Image/BG/Load_BG.png",
 			3840.0f,
 			2160.0f);
-	}
+	}*/
 
-	if (knight_1p_cut == nullptr)
-	{
-		knight_1p_cut = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut1.png", 640.0f, 192.0f);
-	}
-	if (knight_2p_cut == nullptr)
-	{
-		knight_2p_cut = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut2.png", 640.0f, 192.0f);
-	}
-	if (knight_name == nullptr)
-	{
-		knight_name = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_name.png", 640.0f, 320.0f);
-	}
+
+	IconLoad();
+
 	if (Box == nullptr)
 	{
 		Box = std::make_unique<Sprite>(L"./Data/Image/UI/GameLoad/Box.png", 640.0f, 640.0f);
@@ -180,12 +187,21 @@ void SceneLoad::UnInit()
 	spriteShader.reset();
 	spriteShader = nullptr;
 
-	knight_1p_cut.reset();
-	knight_1p_cut = nullptr;
-	knight_2p_cut.reset();
-	knight_2p_cut = nullptr;
-	knight_name.reset();
-	knight_name = nullptr;
+	p1_cut.reset();
+	p1_cut = nullptr;
+	p2_cut.reset();
+	p2_cut = nullptr;
+
+	p1_name.reset();
+	p1_name = nullptr;
+	p2_name.reset();
+	p2_name = nullptr;
+
+	p1_name_edge.reset();
+	p1_name_edge = nullptr;
+	p2_name_edge.reset();
+	p2_name_edge = nullptr;
+
 	Box.reset();
 	Box = nullptr;
 	VS_Image.reset();
@@ -382,8 +398,8 @@ void SceneLoad::Draw(float elapsedTime)
 		ImGui::Text("Load");
 		ImGui::Text("time : %f", timer);
 		ImGui::Text("load_state : %d", load_state);
-		ImGui::SliderFloat("knight1p_pos_x", &knight_1p_pos_x, -960.0f, 1920.0f + 960.0f);
-		ImGui::SliderFloat("knight2p_pos_x", &knight_2p_pos_x, -960.0f, 1920.0f + 960.0f);
+		ImGui::SliderFloat("knight1p_pos_x", &p1_pos_x, -960.0f, 1920.0f + 960.0f);
+		ImGui::SliderFloat("knight2p_pos_x", &p2_pos_x, -960.0f, 1920.0f + 960.0f);
 		ImGui::InputFloat(u8"Sinに乗算する値", &plus_match, 1.0f, 10.0f);
 		ImGui::InputFloat(u8"最低限進む横の値", &slow_add, 1.0f, 10.0f);
 		ImGui::InputFloat(u8"match_timerに乗算する値", &timer_Multiply, 1.0f, 10.0f);
@@ -411,8 +427,8 @@ bool SceneLoad::FedoOut(float elapsed_time)
 
 void SceneLoad::MatchStart()
 {
-	knight_1p_pos_x = -(float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
-	knight_2p_pos_x = (float)FRAMEWORK.SCREEN_WIDTH + (float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
+	p1_pos_x = -(float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
+	p2_pos_x = (float)FRAMEWORK.SCREEN_WIDTH + (float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
 	line_1p_x = -(float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
 	line_2p_x = (float)FRAMEWORK.SCREEN_WIDTH + (float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
 	match_timer = 0.0f;
@@ -441,7 +457,7 @@ void SceneLoad::MatchUpdate(float elapsed_time)
 		sin_match = std::max(sinf(match_timer), sin_max);
 
 		//速度を加算
-		knight_1p_pos_x += ((sin_match * plus_match) + slow_add);
+		p1_pos_x += ((sin_match * plus_match) + slow_add);
 
 		//ラインは画面外に行くまで加算
 		if (line_1p_x < (float)FRAMEWORK.SCREEN_WIDTH)
@@ -450,7 +466,7 @@ void SceneLoad::MatchUpdate(float elapsed_time)
 		}
 
 		//プレイヤー1が所定の場所に到達したら次のステートへ
-		if (knight_1p_pos_x > (float)FRAMEWORK.SCREEN_WIDTH + ((float)FRAMEWORK.SCREEN_WIDTH * 0.6f))
+		if (p1_pos_x > (float)FRAMEWORK.SCREEN_WIDTH + ((float)FRAMEWORK.SCREEN_WIDTH * 0.6f))
 		{
 			intro_state = IntroState::SPACE1;
 			match_timer = 0.0f;
@@ -462,7 +478,7 @@ void SceneLoad::MatchUpdate(float elapsed_time)
 		match_timer += elapsed_time;
 
 		//一定の速度で画面外に
-		knight_1p_pos_x += (plus_match + slow_add);
+		p1_pos_x += (plus_match + slow_add);
 		line_1p_x += (line_Multiply * elapsed_time);
 
 		//一定時間経ったら次のステートへ
@@ -483,7 +499,7 @@ void SceneLoad::MatchUpdate(float elapsed_time)
 		sin_match = std::max(sinf(match_timer), sin_max);
 
 		//速度を加算
-		knight_2p_pos_x -= ((sin_match * plus_match) + slow_add);
+		p2_pos_x -= ((sin_match * plus_match) + slow_add);
 
 		//ラインは画面外に行くまで加算
 		if (line_2p_x > 0.0f)
@@ -492,7 +508,7 @@ void SceneLoad::MatchUpdate(float elapsed_time)
 		}
 
 		//プレイヤー2が所定の場所に到達したら次のステートへ
-		if (knight_2p_pos_x < 0.0f - ((float)FRAMEWORK.SCREEN_WIDTH * 0.6f))
+		if (p2_pos_x < 0.0f - ((float)FRAMEWORK.SCREEN_WIDTH * 0.6f))
 		{
 			intro_state = IntroState::SPACE2;
 			match_timer = 0.0f;
@@ -504,7 +520,7 @@ void SceneLoad::MatchUpdate(float elapsed_time)
 		match_timer += elapsed_time;
 
 		//一定の速度で画面外に
-		knight_2p_pos_x -= (plus_match + slow_add);
+		p2_pos_x -= (plus_match + slow_add);
 		line_2p_x -= (line_Multiply * elapsed_time);
 
 		//光を少しずつ大きくさせながら表示させる
@@ -523,8 +539,8 @@ void SceneLoad::MatchUpdate(float elapsed_time)
 		if (match_timer > space_time)
 		{
 			match_timer = 0.0f;
-			knight_1p_pos_x = -(float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
-			knight_2p_pos_x = (float)FRAMEWORK.SCREEN_WIDTH + (float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
+			p1_pos_x = -(float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
+			p2_pos_x = (float)FRAMEWORK.SCREEN_WIDTH + (float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
 			line_1p_x = -(float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
 			line_2p_x = (float)FRAMEWORK.SCREEN_WIDTH + (float)FRAMEWORK.SCREEN_WIDTH / 2.0f;
 			intro_state = IntroState::P1P2;
@@ -562,8 +578,8 @@ void SceneLoad::MatchUpdate(float elapsed_time)
 		else
 		{
 			//速度を加算
-			knight_1p_pos_x += ((sin_match * plus_match) + slow_add);
-			knight_2p_pos_x -= ((sin_match * plus_match) + slow_add);
+			p1_pos_x += ((sin_match * plus_match) + slow_add);
+			p2_pos_x -= ((sin_match * plus_match) + slow_add);
 
 			//ラインは画面外に行くまで加算
 			if (line_1p_x < (float)FRAMEWORK.SCREEN_WIDTH)
@@ -580,8 +596,8 @@ void SceneLoad::MatchUpdate(float elapsed_time)
 	break;
 	case SceneLoad::IntroState::FIN:
 		//少しだけ動かしていく
-		knight_1p_pos_x += slow_add;
-		knight_2p_pos_x -= slow_add;
+		p1_pos_x += slow_add;
+		p2_pos_x -= slow_add;
 		break;
 	default:
 		break;
@@ -590,34 +606,59 @@ void SceneLoad::MatchUpdate(float elapsed_time)
 
 void SceneLoad::MatchDraw(float elapsed_time)
 {
-	knight_1p_cut->DrawRotaGraph(
+	//カットイメージ描画
+	p1_cut->DrawRotaGraph(
 		spriteShader.get(),
-		knight_1p_pos_x,
+		p1_pos_x,
 		265.0f,
 		0.0f,
 		2.8f);
 
-	knight_2p_cut->DrawRotaGraph(
+	p2_cut->DrawRotaGraph(
 		spriteShader.get(),
-		knight_2p_pos_x,
+		p2_pos_x,
 		810.0f,
 		0.0f,
 		2.8f,
 		true);
 
-	knight_name->DrawRotaGraph(
+
+	//名前縁画像描画
+	p1_name_edge->DrawRotaGraph(
 		spriteShader.get(),
-		knight_1p_pos_x - 680.0f,
+		p1_pos_x - 680.0f,
 		265.0f + 100.0f,
 		0.0f,
 		1.0f);
 
-	knight_name->DrawRotaGraph(
+	p2_name_edge->DrawRotaGraph(
 		spriteShader.get(),
-		knight_2p_pos_x + 680.0f,
+		p2_pos_x + 680.0f,
 		810.0f + 100.0f,
 		0.0f,
 		1.0f);
+
+
+	//名前画像描画
+	p1_name->DrawRotaGraph(
+		spriteShader.get(),
+		p1_pos_x - 680.0f,
+		265.0f + 100.0f,
+		0.0f,
+		1.0f,
+		false,
+		SpriteMask::NONE,
+		DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f));
+
+	p2_name->DrawRotaGraph(
+		spriteShader.get(),
+		p2_pos_x + 680.0f,
+		810.0f + 100.0f,
+		0.0f,
+		1.0f,
+		false,
+		SpriteMask::NONE,
+		DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f));
 
 	Box->DrawExtendGraph(
 		spriteShader.get(),
@@ -684,5 +725,80 @@ void SceneLoad::MatchDraw(float elapsed_time)
 	{
 		VS_alpha = 0.0f;
 		VS_size = 3.0f;
+	}
+}
+
+
+
+//アイコン画像読み込み
+void SceneLoad::IconLoad()
+{
+	std::string front = std::string("./Data/Image/Character/");
+	std::string cut = std::string("_cut");
+	std::string png = std::string(".png");
+	std::string back_name = std::string("_name.png");
+	std::string back_edge = std::string("_name_edge.png");
+
+
+	int p1_chara = FRAMEWORK.sceneselect.select_p1;
+	int p2_chara = FRAMEWORK.sceneselect.select_p2;
+
+	int p1_color = scastI(FRAMEWORK.sceneselect.color_p1);
+	int p2_color = scastI(FRAMEWORK.sceneselect.color_p2);
+
+
+	//プレイヤー1の選択キャラの画像参照用文字列作成
+	std::string contents_p1_chara = front + GetName().chara_name_list[p1_chara] +
+		std::string("/") + GetName().chara_name_list[p1_chara] + cut + std::to_string(p1_color) + png;
+	std::wstring icon_name_p1_chara = to_wstring_Load(contents_p1_chara);
+
+	//プレイヤー2の選択キャラの画像参照用文字列作成
+	std::string contents_p2_chara = front + GetName().chara_name_list[p2_chara] +
+		std::string("/") + GetName().chara_name_list[p2_chara] + cut + std::to_string(p2_color) + png;
+	std::wstring icon_name_p2_chara = to_wstring_Load(contents_p2_chara);
+
+	//プレイヤー1の選択キャラの名前画像参照用文字列作成
+	std::string contents_p1_name = front + GetName().chara_name_list[p1_chara] +
+		std::string("/") + GetName().chara_name_list[p1_chara] + back_name;
+	std::wstring name_name_p1 = to_wstring_Load(contents_p1_name);
+
+	//プレイヤー1の選択キャラの名前縁画像参照用文字列作成
+	std::string contents_p1_edge = front + GetName().chara_name_list[p1_chara] +
+		std::string("/") + GetName().chara_name_list[p1_chara] + back_edge;
+	std::wstring edge_name_p1 = to_wstring_Load(contents_p1_edge);
+
+	//プレイヤー2の選択キャラの名前画像参照用文字列作成
+	std::string contents_p2_name = front + GetName().chara_name_list[p2_chara] +
+		std::string("/") + GetName().chara_name_list[p2_chara] + back_name;
+	std::wstring name_name_p2 = to_wstring_Load(contents_p2_name);
+
+	//プレイヤー2の選択キャラの名前縁画像参照用文字列作成
+	std::string contents_p2_edge = front + GetName().chara_name_list[p2_chara] +
+		std::string("/") + GetName().chara_name_list[p2_chara] + back_edge;
+	std::wstring edge_name_p2 = to_wstring_Load(contents_p2_edge);
+
+	if (p1_cut == nullptr)
+	{
+		p1_cut = std::make_unique<Sprite>(icon_name_p1_chara.data(), 640.0f, 192.0f);
+	}
+	if (p2_cut == nullptr)
+	{
+		p2_cut = std::make_unique<Sprite>(icon_name_p2_chara.data(), 640.0f, 192.0f);
+	}
+	if (p1_name == nullptr)
+	{
+		p1_name = std::make_unique<Sprite>(name_name_p1.data(), 640.0f, 320.0f);
+	}
+	if (p2_name == nullptr)
+	{
+		p2_name = std::make_unique<Sprite>(name_name_p2.data(), 640.0f, 320.0f);
+	}
+	if (p1_name_edge == nullptr)
+	{
+		p1_name_edge = std::make_unique<Sprite>(edge_name_p1.data(), 640.0f, 320.0f);
+	}
+	if (p2_name_edge == nullptr)
+	{
+		p2_name_edge = std::make_unique<Sprite>(edge_name_p2.data(), 640.0f, 320.0f);
 	}
 }

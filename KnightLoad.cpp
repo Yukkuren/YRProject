@@ -14,7 +14,7 @@
 //・Knightのモデルデータや画像データを読み込む処理を記述している
 //----------------------------------------------------------------
 
-void Knight::LoadData(int color_number)
+void Knight::LoadData(PLCOLOR color_number)
 {
 	//別スレッドでデータを読み込む処理
 
@@ -33,7 +33,7 @@ void Knight::LoadData(int color_number)
 	AttackLoad();
 
 
-	//カットイン画像読み込み
+	//カットインフレーム読み込み
 	if (cutFrame == nullptr)
 	{
 		cutFrame = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/CutIn_Frame.png", 1920.0f, 1440.0f, 3, 4, 640.0f, 360.0f, 10);
@@ -46,27 +46,28 @@ void Knight::LoadData(int color_number)
 
 	switch (color_number)
 	{
-	case 1:
+	case PLCOLOR::ORIGINAL:
 		color_texture_main = nullptr;
 		color_texture_face = nullptr;
 
 		//カットイン画像読み込み
 		if (cutIn == nullptr)
 		{
-			cutIn = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut1.png", 640.0f, 192.0f);
+			cutIn = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut0.png", 640.0f, 192.0f);
 			//cutIn = std::make_unique<Sprite>(L"./Data/Image/Character/Neru/Neru_cut1.png", 640.0f, 192.0f);
 		}
-
 		break;
-	case 2:
+	case PLCOLOR::COLOR_2:
 		color_texture_main = std::make_shared<Texture>(L"./Data/FBX/Knight/knight_tex_nofaces2.png");
 		color_texture_face = std::make_shared<Texture>(L"./Data/FBX/Knight/knight_tex_face2.png");
 
 		//カットイン画像読み込み
 		if (cutIn == nullptr)
 		{
-			cutIn = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut2.png", 640.0f, 192.0f);
+			cutIn = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut1.png", 640.0f, 192.0f);
 		}
+		break;
+	case PLCOLOR::COLOR_END:
 		break;
 	default:
 		color_texture_main = nullptr;
