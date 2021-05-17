@@ -29,6 +29,8 @@ std::wstring to_wstring_Icon(std::string str)
 
 void SceneSelect::Init()
 {
+	//各数値はImGuiにて設定済み
+
 	load_fin = false;
 	load_state = 0;
 	knight_icon_pos = { 630.0f,360.0f };
@@ -103,6 +105,18 @@ void SceneSelect::Init()
 
 	old_color_p1 = color_p1;
 	old_color_p2 = color_p2;
+
+	ready_pos = { -(FRAMEWORK.SCREEN_WIDTH * 0.5f),(FRAMEWORK.SCREEN_HEIGHT * 0.5f) };
+
+	ready_rato = 1.0f;
+
+	line_red = { 0.0f,490.0f };
+	line_blue = { 0.0f,605.0f };
+
+	line_Multiply = 5000.0f;
+	ready_Multiply = 4000.0f;
+
+	line_breadth = 20.0f;
 }
 
 void SceneSelect::LoadData()
@@ -163,9 +177,19 @@ void SceneSelect::LoadData()
 		select_point = std::make_unique<Sprite>(L"./Data/Image/UI/GameSelect/select_point.png", 640.0f, 640.0f);
 	}
 
+	if (ready_to_start == nullptr)
+	{
+		ready_to_start = std::make_unique<Sprite>(L"./Data/Image/UI/GameSelect/Ready_to_Start.png", 1280.0f, 360.0f);
+	}
+
 	if (white_box == nullptr)
 	{
 		white_box = std::make_unique<Sprite>(L"./Data/Shader/decoi.png", 1024.0f, 1024.0f);
+	}
+
+	if (Box_sprite == nullptr)
+	{
+		Box_sprite = std::make_unique<Sprite>(L"./Data/Image/UI/GameLoad/Box.png", 640.0f, 640.0f);
 	}
 
 	//コンスタントバッファ作成
@@ -259,6 +283,9 @@ void SceneSelect::UnInit()
 
 	selectShader.reset();
 	selectShader = nullptr;
+
+	Box_sprite.reset();
+	Box_sprite = nullptr;
 }
 
 void SceneSelect::Update(float elapsed_time)
@@ -346,6 +373,8 @@ void SceneSelect::Update(float elapsed_time)
 		/*p1 = PosSet(select_p1);
 		p2 = PosSet(select_p2);*/
 
+		ReadyStep(elapsed_time);
+
 		//両方のプレイヤーが決定したら
 		if (p1Enter && p2Enter)
 		{
@@ -431,6 +460,8 @@ void SceneSelect::Draw(float elapsedTime)
 		ImGui::SliderFloat(u8"カーソルの大きさ", &cursor_rato, 0.0f, 10.0f);
 		ImGui::SliderFloat(u8"選択キャラ大きさ", &cut_rato, 0.0f, 10.0f);
 		ImGui::SliderFloat(u8"名前の大きさ", &name_rato, 0.0f, 10.0f);
+		ImGui::SliderFloat(u8"Readyの大きさ", &ready_rato, 0.0f, 10.0f);
+		ImGui::Text(u8"------------------------------------------------");
 		ImGui::SliderFloat(u8"画像の位置X", &knight_icon_pos.x, 0.0f, (float)FRAMEWORK.SCREEN_WIDTH);
 		ImGui::SliderFloat(u8"画像の位置Y", &knight_icon_pos.y, 0.0f, (float)FRAMEWORK.SCREEN_HEIGHT);
 		ImGui::SliderFloat(u8"画像の距離", &icon_range, 0.0f, 800.0f);
@@ -439,10 +470,20 @@ void SceneSelect::Draw(float elapsedTime)
 		ImGui::SliderFloat(u8"選択キャラの位置Y", &p1_cut_pos.y, 0.0f, (float)FRAMEWORK.SCREEN_HEIGHT);
 		ImGui::SliderFloat(u8"名前の距離X", &name_distance.x, -500.0f, 500.0f);
 		ImGui::SliderFloat(u8"名前の距離Y", &name_distance.y, -500.0f, 500.0f);
+		ImGui::SliderFloat(u8"Readyの位置X", &ready_pos.x, -(float)FRAMEWORK.SCREEN_WIDTH, (float)FRAMEWORK.SCREEN_WIDTH);
+		ImGui::SliderFloat(u8"Readyの位置Y", &ready_pos.y, -(float)FRAMEWORK.SCREEN_HEIGHT, (float)FRAMEWORK.SCREEN_HEIGHT);
 		p2_cut_pos.y = p1_cut_pos.y;
 		ImGui::SliderFloat("sx", &sx, 0.0f, 640.0f);
 		ImGui::SliderFloat("sw", &sw, 0.0f, 640.0f);
 		ImGui::SliderFloat(u8"カーソルの速度", &cursor_speed, 0.0f, 50.0f);
+		ImGui::Text(u8"------------------------------------------------");
+		ImGui::SliderFloat(u8"ラインの右端座標X", &line_red.x, 0.0f, (float)FRAMEWORK.SCREEN_WIDTH);
+		ImGui::SliderFloat(u8"ラインの立幅", &line_breadth, 0.0f, 10.0f);
+		ImGui::SliderFloat(u8"赤ラインの座標Y", &line_red.y, 0.0f, (float)FRAMEWORK.SCREEN_HEIGHT);
+		ImGui::SliderFloat(u8"青ラインの座標Y", &line_blue.y, 0.0f, (float)FRAMEWORK.SCREEN_HEIGHT);
+		ImGui::SliderFloat(u8"ラインの移動速度に乗算する値", &line_Multiply, 0.0f, 10000.0f);
+		ImGui::SliderFloat(u8"Readyの移動速度に乗算する値", &ready_Multiply, 0.0f, 10000.0f);
+		ImGui::Text(u8"------------------------------------------------");
 		for (int i = 0; i < select_p.size(); i++)
 		{
 			select_p[i].pos = YR_Vector3(knight_icon_pos.x + (static_cast<float>(i) * icon_range), knight_icon_pos.y);
@@ -559,6 +600,11 @@ void SceneSelect::Draw(float elapsedTime)
 		}
 
 
+		if (p1Enter && p2Enter)
+		{
+			//両方決定していた場合「Ready to Start」を表示する
+			DrawReady();
+		}
 
 
 
@@ -1290,4 +1336,69 @@ void SceneSelect::ColorAdjustment()
 			}
 		}
 	}
+}
+
+
+//Ready表示の動き
+void SceneSelect::ReadyStep(float elapsed_time)
+{
+	if (p1Enter && p2Enter)
+	{
+		//両方決定した場合横移動させる
+		line_red.x += line_Multiply * elapsed_time;
+		ready_pos.x += ready_Multiply * elapsed_time;
+
+		//上限設定
+		if (line_red.x > (float)FRAMEWORK.SCREEN_WIDTH)
+		{
+			line_red.x = (float)FRAMEWORK.SCREEN_WIDTH;
+		}
+		if (ready_pos.x > (float)FRAMEWORK.SCREEN_WIDTH * 0.5f)
+		{
+			ready_pos.x = (float)FRAMEWORK.SCREEN_WIDTH * 0.5f;
+		}
+	}
+	else
+	{
+		line_red.x = 0.0f;
+		ready_pos.x = 0.0f;
+	}
+
+	//ラインのX座標は同期させる
+	line_blue.x = line_red.x;
+}
+
+//Ready表示
+void SceneSelect::DrawReady()
+{
+	//赤ラインの描画
+	Box_sprite->DrawExtendGraph(
+		spriteShader.get(),
+		0.0f,
+		line_red.y - line_breadth,
+		line_red.x,
+		line_red.y + line_breadth,
+		SpriteMask::NONE,
+		DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
+	);
+
+	//青ラインの描画
+	Box_sprite->DrawExtendGraph(
+		spriteShader.get(),
+		0.0f,
+		line_blue.y - line_breadth,
+		line_blue.x,
+		line_blue.y + line_breadth,
+		SpriteMask::NONE,
+		DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)
+	);
+
+	//Readyの描画
+	ready_to_start->DrawRotaGraph(
+		spriteShader.get(),
+		ready_pos.x,
+		ready_pos.y,
+		0.0f,
+		ready_rato
+	);
 }

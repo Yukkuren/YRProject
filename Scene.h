@@ -678,6 +678,7 @@ public:
 	float line_1p_x = 0.0f;
 	float line_2p_x = 0.0f;
 
+	//ラインに乗算する値
 	float line_Multiply = 0.0f;
 
 	std::unique_ptr<Sprite> flash = nullptr;
@@ -779,6 +780,9 @@ public:
 	float				p1_chara_alpha = 0.0f;//キャラ画像発光時に使用
 	float				p2_chara_alpha = 0.0f;//キャラ画像発光時に使用
 
+	YR_Vector2			ready_pos = { 0.0f,0.0f };	//Ready to Start画像の座標
+	float				ready_rato = 1.0f;			//Ready to Start画像の大きさ
+
 	//キャラ選択
 	int					select_p1 = -1;		//プレイヤー1のキャラ番号
 	int					select_p2 = -1;		//プレイヤー2のキャラ番号
@@ -788,6 +792,19 @@ public:
 	PLCOLOR				color_p2 = PLCOLOR::ORIGINAL;	//プレイヤー2のカラー番号
 	PLCOLOR				old_color_p1 = PLCOLOR::ORIGINAL;	//プレイヤー1の前フレームのカラー番号
 	PLCOLOR				old_color_p2 = PLCOLOR::ORIGINAL;	//プレイヤー2の前フレームのカラー番号
+
+	//ライン座標(必ず画面左から出てくる為、右端の座標のみ)
+	YR_Vector2			line_red = { 0.0f, 0.0f };
+	YR_Vector2			line_blue = { 0.0f, 0.0f };
+
+	//ラインに乗算する値
+	float line_Multiply = 0.0f;
+
+	//Readyに乗算する値
+	float ready_Multiply = 0.0f;
+
+	//ラインの太さ(縦)
+	float line_breadth = 1.0f;
 
 public:
 
@@ -799,6 +816,8 @@ public:
 	std::unique_ptr<Sprite> chara_case = nullptr;
 	std::unique_ptr<Sprite> select_point = nullptr;
 	std::unique_ptr<Sprite> white_box = nullptr;
+	std::unique_ptr<Sprite> Box_sprite = nullptr;
+	std::unique_ptr<Sprite> ready_to_start = nullptr;
 
 	//キャラ選択判定用列挙
 	enum class Select_P : int
@@ -850,6 +869,9 @@ public:
 
 	void				ColorChange();
 	void				ColorAdjustment();
+
+	void				ReadyStep(float elapsed_time);
+	void				DrawReady();
 };
 
 
