@@ -112,98 +112,6 @@ public:
 	};
 };
 
-//---------------------------------------------------
-//		個別モーションデータ格納構造体
-//---------------------------------------------------
-//	・現在はキャラが1体しかいないため、直接子クラスに
-//	モデルデータを持たせている
-//---------------------------------------------------
-struct Model_MotionData
-{
-	std::shared_ptr<Model>			wait_R = nullptr;
-	std::shared_ptr<Model>			wait_L = nullptr;
-	std::shared_ptr<Model>			guard_R = nullptr;
-	std::shared_ptr<Model>			guard_L = nullptr;
-	std::shared_ptr<Model>			slid_R = nullptr;
-	std::shared_ptr<Model>			slid_L = nullptr;
-	std::shared_ptr<Model>			air_back_R = nullptr;
-	std::shared_ptr<Model>			air_back_L = nullptr;
-	std::shared_ptr<Model>			air_dash_R = nullptr;
-	std::shared_ptr<Model>			air_dash_L = nullptr;
-	std::shared_ptr<Model>			passive_R = nullptr;
-	std::shared_ptr<Model>			passive_L = nullptr;
-	std::shared_ptr<Model>			squat_R = nullptr;
-	std::shared_ptr<Model>			squat_L = nullptr;
-	std::shared_ptr<Model>			walk_R = nullptr;
-	std::shared_ptr<Model>			walk_L = nullptr;
-	std::shared_ptr<Model>			back_R = nullptr;
-	std::shared_ptr<Model>			back_L = nullptr;
-	std::shared_ptr<Model>			dash_R = nullptr;
-	std::shared_ptr<Model>			dash_L = nullptr;
-	std::shared_ptr<Model>			backstep_R = nullptr;
-	std::shared_ptr<Model>			backstep_L = nullptr;
-	std::shared_ptr<Model>			jump_R = nullptr;
-	std::shared_ptr<Model>			jump_L = nullptr;
-	std::shared_ptr<Model>			air_jump_R = nullptr;
-	std::shared_ptr<Model>			air_jump_L = nullptr;
-	std::shared_ptr<Model>			intro_R = nullptr;
-	std::shared_ptr<Model>			intro_L = nullptr;
-	std::shared_ptr<Model>			win_R = nullptr;
-	std::shared_ptr<Model>			win_L = nullptr;
-	std::shared_ptr<Model>			damage_R_g_u = nullptr;
-	std::shared_ptr<Model>			damage_L_g_u = nullptr;
-	std::shared_ptr<Model>			jaku_R = nullptr;
-	std::shared_ptr<Model>			jaku_L = nullptr;
-	std::shared_ptr<Model>			thu_R = nullptr;
-	std::shared_ptr<Model>			thu_L = nullptr;
-	std::shared_ptr<Model>			kyo_R = nullptr;
-	std::shared_ptr<Model>			kyo_L = nullptr;
-	std::shared_ptr<Model>			d_jaku_R = nullptr;
-	std::shared_ptr<Model>			d_jaku_L = nullptr;
-	std::shared_ptr<Model>			d_thu_R = nullptr;
-	std::shared_ptr<Model>			d_thu_L = nullptr;
-	std::shared_ptr<Model>			u_kyo_R = nullptr;
-	std::shared_ptr<Model>			u_kyo_L = nullptr;
-	std::shared_ptr<Model>			a_jaku_R = nullptr;
-	std::shared_ptr<Model>			a_jaku_L = nullptr;
-	std::shared_ptr<Model>			a_thu_R = nullptr;
-	std::shared_ptr<Model>			a_thu_L = nullptr;
-	std::shared_ptr<Model>			a_kyo_R = nullptr;
-	std::shared_ptr<Model>			a_kyo_L = nullptr;
-	std::shared_ptr<Model>			a_ukyo_R = nullptr;
-	std::shared_ptr<Model>			a_ukyo_L = nullptr;
-	std::shared_ptr<Model>			steal_R = nullptr;
-	std::shared_ptr<Model>			steal_L = nullptr;
-	std::shared_ptr<Model>			slow_R = nullptr;
-	std::shared_ptr<Model>			slow_L = nullptr;
-	std::shared_ptr<Model>			track_R = nullptr;
-	std::shared_ptr<Model>			track_L = nullptr;
-	std::shared_ptr<Model>			jaku_rh_R = nullptr;
-	std::shared_ptr<Model>			jaku_rh_L = nullptr;
-	std::shared_ptr<Model>			thu_rh_R = nullptr;
-	std::shared_ptr<Model>			thu_rh_L = nullptr;
-	std::shared_ptr<Model>			kyo_rh_R = nullptr;
-	std::shared_ptr<Model>			kyo_rh_L = nullptr;
-	std::shared_ptr<Model>			jaku_lh_R = nullptr;
-	std::shared_ptr<Model>			jaku_lh_L = nullptr;
-	std::shared_ptr<Model>			thu_lh_R = nullptr;
-	std::shared_ptr<Model>			thu_lh_L = nullptr;
-	std::shared_ptr<Model>			kyo_lh_R = nullptr;
-	std::shared_ptr<Model>			kyo_lh_L = nullptr;
-	std::shared_ptr<Model>			special_R = nullptr;
-	std::shared_ptr<Model>			special_L = nullptr;
-	std::shared_ptr<Model>			disire_s_R = nullptr;
-	std::shared_ptr<Model>			disire_s_L = nullptr;
-	std::shared_ptr<Model>			disire_m_R = nullptr;
-	std::shared_ptr<Model>			disire_m_L = nullptr;
-	std::shared_ptr<Model>			extend_R = nullptr;
-	std::shared_ptr<Model>			extend_L = nullptr;
-
-public:
-	std::vector <std::shared_ptr<Model>> model_R;
-	std::vector <std::shared_ptr<Model>> model_L;
-};
-
 
 //---------------------------------------------
 // **ステートクラス**
@@ -218,7 +126,7 @@ enum class ActState : int
 	GUARD,			//ガード(default)
 	SQUAT,			//しゃがみ(default)m
 	RETREAT,		//後退(default)m
-	DUMMY,			//ダミー(数値補間用)
+	//DUMMY,			//ダミー(数値補間用)
 	DASH,			//ダッシュ(default)m
 	BACK,			//バックステップ(default)m
 	JUMP,			//ジャンプ(default)m
@@ -273,6 +181,8 @@ enum class AttackState : int
 	A_SPECIAL_ATTACK,//空中前超必殺
 	A_DESIRE_SPECIAL,//空中後超必殺
 
+	NORMAL_ATTACK_END,//攻撃の最大サイズ(コンボ、プレイヤー選択技を省いた数<モーション用>)
+
 	COMBO_X,		//Xボタンコンボ
 	COMBO_Y,		//Yボタンコンボ
 	COMBO_B,		//Bボタンコンボ
@@ -284,6 +194,105 @@ enum class AttackState : int
 };
 
 //Desire(欲望、望み)とCrystal(結晶)
+
+
+
+
+//---------------------------------------------------
+//		個別モーションデータ格納構造体
+//---------------------------------------------------
+// ・今までは個別の変数を一つの配列でまとめて使用していたが
+//使用するメリットがないため、配列を直接持つようにする
+//---------------------------------------------------
+struct Model_MotionData
+{
+	/*std::shared_ptr<Model>			wait_R = nullptr;
+	std::shared_ptr<Model>			wait_L = nullptr;
+	std::shared_ptr<Model>			guard_R = nullptr;
+	std::shared_ptr<Model>			guard_L = nullptr;
+	std::shared_ptr<Model>			slid_R = nullptr;
+	std::shared_ptr<Model>			slid_L = nullptr;
+	std::shared_ptr<Model>			air_back_R = nullptr;
+	std::shared_ptr<Model>			air_back_L = nullptr;
+	std::shared_ptr<Model>			air_dash_R = nullptr;
+	std::shared_ptr<Model>			air_dash_L = nullptr;
+	std::shared_ptr<Model>			passive_R = nullptr;
+	std::shared_ptr<Model>			passive_L = nullptr;
+	std::shared_ptr<Model>			squat_R = nullptr;
+	std::shared_ptr<Model>			squat_L = nullptr;
+	std::shared_ptr<Model>			walk_R = nullptr;
+	std::shared_ptr<Model>			walk_L = nullptr;
+	std::shared_ptr<Model>			back_R = nullptr;
+	std::shared_ptr<Model>			back_L = nullptr;
+	std::shared_ptr<Model>			dash_R = nullptr;
+	std::shared_ptr<Model>			dash_L = nullptr;
+	std::shared_ptr<Model>			backstep_R = nullptr;
+	std::shared_ptr<Model>			backstep_L = nullptr;
+	std::shared_ptr<Model>			jump_R = nullptr;
+	std::shared_ptr<Model>			jump_L = nullptr;
+	std::shared_ptr<Model>			air_jump_R = nullptr;
+	std::shared_ptr<Model>			air_jump_L = nullptr;
+	std::shared_ptr<Model>			damage_R_g_u = nullptr;
+	std::shared_ptr<Model>			damage_L_g_u = nullptr;
+	std::shared_ptr<Model>			jaku_R = nullptr;
+	std::shared_ptr<Model>			jaku_L = nullptr;
+	std::shared_ptr<Model>			thu_R = nullptr;
+	std::shared_ptr<Model>			thu_L = nullptr;
+	std::shared_ptr<Model>			kyo_R = nullptr;
+	std::shared_ptr<Model>			kyo_L = nullptr;
+	std::shared_ptr<Model>			d_jaku_R = nullptr;
+	std::shared_ptr<Model>			d_jaku_L = nullptr;
+	std::shared_ptr<Model>			d_thu_R = nullptr;
+	std::shared_ptr<Model>			d_thu_L = nullptr;
+	std::shared_ptr<Model>			u_kyo_R = nullptr;
+	std::shared_ptr<Model>			u_kyo_L = nullptr;
+	std::shared_ptr<Model>			a_jaku_R = nullptr;
+	std::shared_ptr<Model>			a_jaku_L = nullptr;
+	std::shared_ptr<Model>			a_thu_R = nullptr;
+	std::shared_ptr<Model>			a_thu_L = nullptr;
+	std::shared_ptr<Model>			a_kyo_R = nullptr;
+	std::shared_ptr<Model>			a_kyo_L = nullptr;
+	std::shared_ptr<Model>			a_ukyo_R = nullptr;
+	std::shared_ptr<Model>			a_ukyo_L = nullptr;
+	std::shared_ptr<Model>			steal_R = nullptr;
+	std::shared_ptr<Model>			steal_L = nullptr;
+	std::shared_ptr<Model>			slow_R = nullptr;
+	std::shared_ptr<Model>			slow_L = nullptr;
+	std::shared_ptr<Model>			track_R = nullptr;
+	std::shared_ptr<Model>			track_L = nullptr;
+	std::shared_ptr<Model>			jaku_rh_R = nullptr;
+	std::shared_ptr<Model>			jaku_rh_L = nullptr;
+	std::shared_ptr<Model>			thu_rh_R = nullptr;
+	std::shared_ptr<Model>			thu_rh_L = nullptr;
+	std::shared_ptr<Model>			kyo_rh_R = nullptr;
+	std::shared_ptr<Model>			kyo_rh_L = nullptr;
+	std::shared_ptr<Model>			jaku_lh_R = nullptr;
+	std::shared_ptr<Model>			jaku_lh_L = nullptr;
+	std::shared_ptr<Model>			thu_lh_R = nullptr;
+	std::shared_ptr<Model>			thu_lh_L = nullptr;
+	std::shared_ptr<Model>			kyo_lh_R = nullptr;
+	std::shared_ptr<Model>			kyo_lh_L = nullptr;
+	std::shared_ptr<Model>			special_R = nullptr;
+	std::shared_ptr<Model>			special_L = nullptr;
+	std::shared_ptr<Model>			disire_s_R = nullptr;
+	std::shared_ptr<Model>			disire_s_L = nullptr;
+	std::shared_ptr<Model>			disire_m_R = nullptr;
+	std::shared_ptr<Model>			disire_m_L = nullptr;
+	std::shared_ptr<Model>			extend_R = nullptr;
+	std::shared_ptr<Model>			extend_L = nullptr;*/
+
+public:
+	std::shared_ptr<Model>			intro_R = nullptr;
+	std::shared_ptr<Model>			intro_L = nullptr;
+	std::shared_ptr<Model>			win_R = nullptr;
+	std::shared_ptr<Model>			win_L = nullptr;
+	std::array <std::shared_ptr<Model>, scastI(AttackState::NORMAL_ATTACK_END)> model_R_Attack = { nullptr };
+	std::array <std::shared_ptr<Model>, scastI(AttackState::NORMAL_ATTACK_END)> model_L_Attack = { nullptr };
+	std::array <std::shared_ptr<Model>, scastI(ActState::ACT_END)> model_R_Act = { nullptr };
+	std::array <std::shared_ptr<Model>, scastI(ActState::ACT_END)> model_L_Act = { nullptr };
+};
+
+
 
 
 //---------------------------------------------

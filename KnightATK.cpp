@@ -63,11 +63,11 @@ void Knight::Kyo(float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 		}
 		if (attack_list[now_at_list].speed_on)
@@ -144,11 +144,11 @@ void Knight::Kyo(float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 		}
 	}
@@ -271,11 +271,11 @@ void Knight::U_Kyo(float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 		}
 	}
@@ -345,11 +345,11 @@ void Knight::A_UKyo(float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 		}
 		if (attack_list[now_at_list].speed_on)
@@ -427,11 +427,11 @@ void Knight::A_UKyo(float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -476,11 +476,11 @@ void Knight::Steal(float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 		}
 		if (attack_list[now_at_list].speed_on)
@@ -595,11 +595,11 @@ void Knight::Steal(float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -635,11 +635,11 @@ void Knight::Slow(float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[scastI(attack_list[scastI(attack_state)].real_attack)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].real_attack)], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[scastI(attack_list[scastI(attack_state)].real_attack)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].real_attack)], scastI(AnimAtk::LATER));
 			}
 			//掴み抜けされたらはじかれるようにする
 			speed.x = (-300.0f * rightOrleft);
@@ -678,11 +678,11 @@ void Knight::Slow(float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[slow], scastI(AnimAtk::FREAM));
+				anim->NodeChange(model_motion.model_R_Attack[slow], scastI(AnimAtk::FREAM));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[slow], scastI(AnimAtk::FREAM));
+				anim->NodeChange(model_motion.model_L_Attack[slow], scastI(AnimAtk::FREAM));
 			}
 		}
 		else
@@ -713,11 +713,11 @@ void Knight::Slow(float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 		}
 		if (attack_list[now_at_list].speed_on)
@@ -801,11 +801,11 @@ void Knight::Slow(float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -859,11 +859,11 @@ void Knight::Thu_Rhurf(float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 		}
 
@@ -919,11 +919,11 @@ void Knight::Thu_Rhurf(float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -966,11 +966,11 @@ void Knight::Kyo_Rhurf(float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 		}
 
@@ -1026,11 +1026,11 @@ void Knight::Kyo_Rhurf(float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -1073,11 +1073,11 @@ void Knight::Jaku_Lhurf(float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 		}
 		if (attack_list[now_at_list].speed_on)
@@ -1161,11 +1161,11 @@ void Knight::Jaku_Lhurf(float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -1208,11 +1208,11 @@ void Knight::A_Jaku_Lhurf(float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 		}
 		if (attack_list[now_at_list].speed_on)
@@ -1300,11 +1300,11 @@ void Knight::A_Jaku_Lhurf(float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -1346,11 +1346,11 @@ void Knight::Thu_Lhurf(float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 		}
 		if (attack_list[now_at_list].speed_on)
@@ -1446,11 +1446,11 @@ void Knight::Thu_Lhurf(float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -1510,11 +1510,11 @@ void Knight::TrackDash(float decision, float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 		}
 		if (attack_list[now_at_list].speed_on)
@@ -1600,11 +1600,11 @@ void Knight::TrackDash(float decision, float elapsed_time)
 		//描画をセット
 		if (rightOrleft > 0)
 		{
-			anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+			anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::LATER));
 		}
 		else
 		{
-			anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+			anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::LATER));
 		}
 		//行動終了フラグをオンに
 		finish = true;
@@ -1687,11 +1687,11 @@ void Knight::TrackDash(float decision, float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -1943,11 +1943,11 @@ void Knight::SpecialAttack(float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 		}
 	}

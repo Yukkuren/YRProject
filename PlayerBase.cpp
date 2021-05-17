@@ -218,13 +218,13 @@ void Player::Update(float decision, float elapsed_time)
 						if (decision > 0)
 						{
 							//右向きの時
-							anim->NodeChange(model_motion.wait_R);
+							anim->NodeChange(model_motion.model_R_Act[scastI(ActState::WAIT)]);
 							anim_ccodinate = ac_act[scastI(act_state)].fream;
 						}
 						else
 						{
 							//左向きの時
-							anim->NodeChange(model_motion.wait_L);
+							anim->NodeChange(model_motion.model_L_Act[scastI(ActState::WAIT)]);
 							anim_ccodinate = ac_act[scastI(act_state)].fream;
 						}
 					}
@@ -589,11 +589,11 @@ void Player::AttackInput()
 				//描画をセット
 				if (rightOrleft > 0)
 				{
-					anim->NodeChange(model_motion.model_R[real], scastI(AnimAtk::FREAM));
+					anim->NodeChange(model_motion.model_R_Attack[real], scastI(AnimAtk::FREAM));
 				}
 				else
 				{
-					anim->NodeChange(model_motion.model_L[real], scastI(AnimAtk::FREAM));
+					anim->NodeChange(model_motion.model_L_Attack[real], scastI(AnimAtk::FREAM));
 				}
 
 				//攻撃ごとに個別の設定を行う
@@ -683,11 +683,11 @@ void Player::Attack(float decision, float elapsed_time)
 					anim_ccodinate = ac_act[scastI(ActState::SQUAT)].fream;
 					if (rightOrleft > 0)
 					{
-						anim->NodeChange(model_motion.squat_R);
+						anim->NodeChange(model_motion.model_R_Act[scastI(ActState::SQUAT)]);
 					}
 					else
 					{
-						anim->NodeChange(model_motion.squat_L);
+						anim->NodeChange(model_motion.model_L_Act[scastI(ActState::SQUAT)]);
 					}
 
 				}
@@ -697,11 +697,11 @@ void Player::Attack(float decision, float elapsed_time)
 					anim_ccodinate = ac_act[scastI(ActState::WAIT)].fream;
 					if (rightOrleft > 0)
 					{
-						anim->NodeChange(model_motion.wait_R);
+						anim->NodeChange(model_motion.model_R_Act[scastI(ActState::WAIT)]);
 					}
 					else
 					{
-						anim->NodeChange(model_motion.wait_L);
+						anim->NodeChange(model_motion.model_L_Act[scastI(ActState::WAIT)]);
 					}
 				}
 				attack_state = AttackState::NONE;
@@ -721,11 +721,11 @@ void Player::Attack(float decision, float elapsed_time)
 			anim_ccodinate = ac_act[scastI(ActState::JUMP)].timer;
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.jump_R, scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Act[scastI(ActState::JUMP)], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.jump_L, scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Act[scastI(ActState::JUMP)], scastI(AnimAtk::TIMER));
 			}
 		}
 	}
@@ -903,7 +903,7 @@ void Player::MoveAnimSet()
 			//描画をセット
 			//右向き
 			//後退
-			anim->NodeChange(model_motion.back_R);
+			anim->NodeChange(model_motion.model_R_Act[scastI(ActState::RETREAT)]);
 			anim_ccodinate = ac_act[scastI(ActState::RETREAT)].fream;
 		}
 		//歩きは削除(ダッシュのみ)
@@ -915,7 +915,7 @@ void Player::MoveAnimSet()
 			anim_ccodinate = ac_act[scastI(ActState::MOVEL)].fream;*/
 			//ダッシュ左向き
 			act_state = ActState::DASH;
-			anim->NodeChange(model_motion.dash_L, scastI(AnimAtk::FREAM));
+			anim->NodeChange(model_motion.model_L_Act[scastI(ActState::DASH)], scastI(AnimAtk::FREAM));
 			anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
 			anim_ccodinate = ac_act[scastI(act_state)].fream;
 		}
@@ -930,7 +930,7 @@ void Player::MoveAnimSet()
 			//描画をセット
 			//左向き
 			//後退
-			anim->NodeChange(model_motion.back_L);
+			anim->NodeChange(model_motion.model_L_Act[scastI(ActState::RETREAT)]);
 			anim_ccodinate = ac_act[scastI(ActState::RETREAT)].fream;
 		}
 		//歩きは削除(ダッシュのみ)
@@ -942,7 +942,7 @@ void Player::MoveAnimSet()
 			anim_ccodinate = ac_act[scastI(ActState::MOVER)].fream;*/
 			//ダッシュ右向き
 			act_state = ActState::DASH;
-			anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::FREAM));
+			anim->NodeChange(model_motion.model_R_Act[scastI(ActState::DASH)], scastI(AnimAtk::FREAM));
 			anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
 			anim_ccodinate = ac_act[scastI(act_state)].fream;
 		}
@@ -962,7 +962,7 @@ void Player::MoveAnimSet()
 				//描画をセット
 				//右向き
 				//後退
-				anim->NodeChange(model_motion.back_R);
+				anim->NodeChange(model_motion.model_R_Act[scastI(ActState::RETREAT)]);
 				anim_ccodinate = ac_act[scastI(ActState::RETREAT)].fream;
 			}
 			//歩きは削除(ダッシュのみ)
@@ -974,7 +974,7 @@ void Player::MoveAnimSet()
 				anim_ccodinate = ac_act[scastI(ActState::MOVEL)].fream;*/
 				//ダッシュ左向き
 				act_state = ActState::DASH;
-				anim->NodeChange(model_motion.dash_L, scastI(AnimAtk::FREAM));
+				anim->NodeChange(model_motion.model_L_Act[scastI(ActState::DASH)], scastI(AnimAtk::FREAM));
 				anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
 				anim_ccodinate = ac_act[scastI(act_state)].fream;
 			}
@@ -989,7 +989,7 @@ void Player::MoveAnimSet()
 				//描画をセット
 				//左向き
 				//後退
-				anim->NodeChange(model_motion.back_L);
+				anim->NodeChange(model_motion.model_L_Act[scastI(ActState::RETREAT)]);
 				anim_ccodinate = ac_act[scastI(ActState::RETREAT)].fream;
 			}
 			//歩きは削除(ダッシュのみ)
@@ -1001,7 +1001,7 @@ void Player::MoveAnimSet()
 				anim_ccodinate = ac_act[scastI(ActState::MOVER)].fream;*/
 				//ダッシュ右向き
 				act_state = ActState::DASH;
-				anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::FREAM));
+				anim->NodeChange(model_motion.model_R_Act[scastI(ActState::DASH)], scastI(AnimAtk::FREAM));
 				anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
 				anim_ccodinate = ac_act[scastI(act_state)].fream;
 			}
@@ -1029,7 +1029,7 @@ void Player::Move(float decision)
 				moveflag = false;
 				GetSound().SESinglePlay(SEKind::BACKSTEP);
 				//描画をセット
-				anim->NodeChange(model_motion.backstep_R, scastI(AnimAtk::FREAM));
+				anim->NodeChange(model_motion.model_R_Act[scastI(ActState::BACK)], scastI(AnimAtk::FREAM));
 				anim->PlayAnimation(scastI(AnimAtk::FREAM), false);
 				anim_ccodinate = ac_act[scastI(ActState::BACK)].fream;
 				speed.x = -chara_state.backstepS;
@@ -1059,7 +1059,7 @@ void Player::Move(float decision)
 				moveflag = false;
 				GetSound().SESinglePlay(SEKind::BACKSTEP);
 				//描画をセット
-				anim->NodeChange(model_motion.backstep_L, scastI(AnimAtk::FREAM));
+				anim->NodeChange(model_motion.model_L_Act[scastI(ActState::BACK)], scastI(AnimAtk::FREAM));
 				anim->PlayAnimation(scastI(AnimAtk::FREAM), false);
 				anim_ccodinate = ac_act[scastI(ActState::BACK)].fream;
 				speed.x = chara_state.backstepS;
@@ -1093,7 +1093,7 @@ void Player::Move(float decision)
 					if (anim->GetEndAnim() == -1)
 					{
 						//アニメーションが終了したら持続アニメーションに切り替える
-						anim->NodeChange(model_motion.dash_L, scastI(AnimAtk::TIMER));
+						anim->NodeChange(model_motion.model_L_Act[scastI(ActState::DASH)], scastI(AnimAtk::TIMER));
 						anim_ccodinate = ac_act[scastI(act_state)].timer;
 					}
 				}
@@ -1125,7 +1125,7 @@ void Player::Move(float decision)
 					if (anim->GetEndAnim() == -1)
 					{
 						//アニメーションが終了したら持続アニメーションに切り替える
-						anim->NodeChange(model_motion.dash_R, scastI(AnimAtk::TIMER));
+						anim->NodeChange(model_motion.model_R_Act[scastI(ActState::DASH)], scastI(AnimAtk::TIMER));
 						anim_ccodinate = ac_act[scastI(act_state)].timer;
 					}
 				}

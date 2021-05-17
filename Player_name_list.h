@@ -18,7 +18,77 @@ public:
 		u8"Neru",
 	};
 
+	//-------------------------------------------------------
+	//**	コメントがついている部分は仮のモデルを入れている部分
 
+	//ファイル読み込みに使用する配列
+	std::array<std::string, scastI(AttackState::NORMAL_ATTACK_END)> attack_file_list =
+	{
+		u8"wait",
+		u8"jaku",
+		u8"d_thu",
+		u8"kyo",
+		u8"d_jaku_R",
+		u8"d_thu",
+		u8"u_kyo",
+		u8"air_jaku",
+		u8"air_thu",
+		u8"air_kyo",
+		u8"air_ukyo",
+		u8"steal",
+		u8"slow",
+		u8"track",
+		u8"Rhurf",
+		u8"Rhurf",		//前中必殺
+		u8"Rhurf",		//前強必殺
+		u8"Lhurf",
+		u8"Lhurf",		//後中必殺
+		u8"Lhurf",		//後強必殺
+		u8"special",
+		u8"special",	//後超必殺
+		u8"special",	//即死技
+		u8"special",	//無敵攻撃
+		u8"thu",
+		u8"kyo",
+		u8"wait",		//空中前弱必殺
+		u8"wait",		//空中前中必殺
+		u8"wait",		//空中前強必殺
+		u8"Lhurf",
+		u8"wait",		//空中後中必殺
+		u8"wait",		//空中後強必殺
+		u8"wait",		//空中前超必殺
+		u8"wait",		//空中後超必殺
+	};
+
+
+
+	//ファイル読み込みに使用する配列
+	std::array<std::string, scastI(ActState::ACT_END)> act_file_list =
+	{
+		u8"wait",
+		u8"wait",
+		u8"guard",
+		u8"squat",
+		u8"back",
+		//u8"ダミー",
+		u8"dash",
+		u8"backstep",
+		u8"jump",
+		u8"air_dash",
+		u8"air_back",
+		u8"damage",		//ステートを奪われた状態
+		u8"passive",	//起き上がり(これは仮ではなく確定)
+		u8"passive",
+		u8"slid",		//ダウン
+		u8"slid",		//空中ダウン
+		u8"damage",
+		u8"slid",
+		u8"damage",		//ダウン攻撃を受けた
+		u8"wait",
+	};
+
+
+	//デバッグ用
 	std::array<std::string, scastI(AttackState::ATTACK_END)> attack_name_list =
 	{
 		u8"攻撃無し()の中身は攻撃内容",
@@ -55,6 +125,7 @@ public:
 		u8"空中後強必殺",
 		u8"空中前超必殺",
 		u8"空中後超必殺",
+		u8"攻撃の最大数",
 		u8"Xボタンコンボ",
 		u8"Yボタンコンボ",
 		u8"Bボタンコンボ",
@@ -69,7 +140,7 @@ public:
 		u8"ガード",
 		u8"しゃがみ",
 		u8"後退",
-		u8"ダミー",
+		//u8"ダミー",
 		u8"ダッシュ",
 		u8"バックステップ",
 		u8"ジャンプ",

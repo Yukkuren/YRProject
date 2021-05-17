@@ -58,11 +58,11 @@ void Player::AttackDefault(float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 		}
 		if (attack_list[now_at_list].speed_on)
@@ -147,11 +147,11 @@ void Player::AttackDefault(float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -199,11 +199,11 @@ void Player::AttackProjectileDefault(float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 		}
 
@@ -264,11 +264,11 @@ void Player::AttackProjectileDefault(float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L[now_at_list], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -481,11 +481,11 @@ bool Player::ComboSet()
 	//描画をセット
 	if (rightOrleft > 0)
 	{
-		anim->NodeChange(model_motion.model_R[real_num], scastI(AnimAtk::FREAM));
+		anim->NodeChange(model_motion.model_R_Attack[real_num], scastI(AnimAtk::FREAM));
 	}
 	else
 	{
-		anim->NodeChange(model_motion.model_L[real_num], scastI(AnimAtk::FREAM));
+		anim->NodeChange(model_motion.model_L_Attack[real_num], scastI(AnimAtk::FREAM));
 	}
 	//攻撃ごとに個別の設定を行う
 	AttackDetailsSet(attack_list[real_num].combo);
@@ -665,11 +665,11 @@ void Player::ComboUpdate()
 	//描画をセット
 	if (rightOrleft > 0)
 	{
-		anim->NodeChange(model_motion.model_R[real_num], scastI(AnimAtk::FREAM));
+		anim->NodeChange(model_motion.model_R_Attack[real_num], scastI(AnimAtk::FREAM));
 	}
 	else
 	{
-		anim->NodeChange(model_motion.model_L[real_num], scastI(AnimAtk::FREAM));
+		anim->NodeChange(model_motion.model_L_Attack[real_num], scastI(AnimAtk::FREAM));
 	}
 	//攻撃ごとに個別の設定を行う
 	AttackDetailsSet(attack_list[real_num].combo);

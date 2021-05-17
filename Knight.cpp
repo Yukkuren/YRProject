@@ -258,8 +258,8 @@ void Knight::Uninit()
 	model_motion.disire_m_L = nullptr;
 	model_motion.extend_L = nullptr;
 
-	model_motion.model_R.clear();
-	model_motion.model_L.clear();
+	model_motion.model_R_Attack.clear();
+	model_motion.model_L_Attack.clear();
 
 	atk.clear();
 	projectile_atk.clear();
