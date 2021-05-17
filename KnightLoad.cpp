@@ -168,6 +168,16 @@ void Knight::LoadData(PLCOLOR color_number)
 		model_motion.win_L = std::make_shared<Model>("./Data/FBX/Knight/AnimationL/knight_win_L.fbx");
 	}
 
+	//空中ジャンプ
+	if (model_motion.air_jump_R == nullptr)
+	{
+		model_motion.air_jump_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_air_jump_R_f.fbx");
+	}
+	if (model_motion.air_jump_L == nullptr)
+	{
+		model_motion.air_jump_L = std::make_shared<Model>("./Data/FBX/Knight/AnimationL/knight_air_jump_L_f.fbx");
+	}
+
 
 	//待機モーション
 	//if (model_motion.model_R_Act[scastI(ActState::WAIT)] == nullptr)

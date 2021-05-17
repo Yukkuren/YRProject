@@ -58,7 +58,7 @@
 // SV_TARGET                1   xyzw        1   TARGET   float   xyzw
 //
 ps_5_0
-dcl_globalFlags refactoringAllowed
+dcl_globalFlags refactoringAllowed | skipOptimization
 dcl_constantbuffer CB0[534], immediateIndexed
 dcl_sampler s0, mode_default
 dcl_resource_texture2d (float,float,float,float) t0
@@ -68,37 +68,144 @@ dcl_input_ps linear v3.xyz
 dcl_input_ps linear v5.xyz
 dcl_output o0.xyzw
 dcl_output o1.xyzw
-dcl_temps 4
-dp4 r0.x, v1.xyzw, v1.xyzw
-rsq r0.x, r0.x
-mad r0.y, v1.y, r0.x, l(1.000000)
-mul r0.xzw, r0.xxxx, v1.xxyz
-mul r1.xy, r0.yyyy, l(0.000000, 0.500000, 0.000000, 0.000000)
-mad r0.y, -r0.y, l(0.500000), l(1.000000)
-mad r1.xyz, r0.yyyy, l(1.000000, 0.000000, 0.000000, 0.000000), r1.xxyx
-dp3 r0.y, -cb0[9].xyzx, -cb0[9].xyzx
-rsq r0.y, r0.y
-mul r2.xyz, r0.yyyy, -cb0[9].xyzx
-dp3 r0.y, r0.xzwx, r2.xyzx
-max r0.y, r0.y, l(0.000000)
-mul r3.xyz, r0.yyyy, cb0[10].xyzx
-mad r1.xyz, cb0[11].xyzx, r1.xyzx, r3.xyzx
-dp3 r0.y, v5.xyzx, v5.xyzx
-rsq r0.y, r0.y
-mad r2.xyz, v5.xyzx, r0.yyyy, -r2.xyzx
-dp3 r0.y, r2.xyzx, r2.xyzx
-rsq r0.y, r0.y
-mul r2.xyz, r0.yyyy, r2.xyzx
-dp3 r0.x, r2.xyzx, r0.xzwx
-max r0.x, r0.x, l(0.000000)
-mul r0.y, r0.x, r0.x
-mul r0.y, r0.y, r0.y
-mul r0.x, r0.y, r0.x
-mad r0.xyz, r0.xxxx, cb0[10].xyzx, r1.xyzx
-mul r0.xyz, r0.xyzx, v3.xyzx
-sample_indexable(texture2d)(float,float,float,float) r1.xyzw, v2.xyxx, t0.xyzw, s0
-mul r1.xyz, r0.xyzx, r1.xyzx
-mov o0.xyzw, r1.xyzw
-mul o1.xyzw, r1.xyzw, cb0[533].wwww
+dcl_temps 8
+//
+// Initial variable locations:
+//   v0.x <- pin.position.x; v0.y <- pin.position.y; v0.z <- pin.position.z; v0.w <- pin.position.w; 
+//   v1.x <- pin.normal.x; v1.y <- pin.normal.y; v1.z <- pin.normal.z; v1.w <- pin.normal.w; 
+//   v2.x <- pin.texcoord.x; v2.y <- pin.texcoord.y; 
+//   v3.x <- pin.color.x; v3.y <- pin.color.y; v3.z <- pin.color.z; v3.w <- pin.color.w; 
+//   v4.x <- pin.wNormal.x; v4.y <- pin.wNormal.y; v4.z <- pin.wNormal.z; 
+//   v5.x <- pin.wEyeDir.x; v5.y <- pin.wEyeDir.y; v5.z <- pin.wEyeDir.z; 
+//   v6.x <- pin.wPos.x; v6.y <- pin.wPos.y; v6.z <- pin.wPos.z; 
+//   o1.x <- <main return value>.Luminance.x; o1.y <- <main return value>.Luminance.y; o1.z <- <main return value>.Luminance.z; o1.w <- <main return value>.Luminance.w; 
+//   o0.x <- <main return value>.Color.x; o0.y <- <main return value>.Color.y; o0.z <- <main return value>.Color.z; o0.w <- <main return value>.Color.w
+//
+#line 83 "D:\ゲーム制作\YRProject\Skinned_PS.hlsl"
+sample_indexable(texture2d)(float,float,float,float) r0.xyzw, v2.xyxx, t0.xyzw, s0  // r0.x <- color.x; r0.y <- color.y; r0.z <- color.z; r0.w <- color.w
+
+#line 84
+dp4 r1.x, v1.xyzw, v1.xyzw
+rsq r1.x, r1.x
+mul r1.xyz, r1.xxxx, v1.yxzy  // r1.x <- N.y; r1.y <- N.x; r1.z <- N.z
+
+#line 87
+dp3 r1.w, v5.xyzx, v5.xyzx
+rsq r1.w, r1.w
+mul r2.xyz, r1.wwww, v5.xyzx  // r2.x <- E.x; r2.y <- E.y; r2.z <- E.z
+
+#line 88
+mov r3.xyz, -cb0[9].xyzx
+dp3 r1.w, r3.xyzx, r3.xyzx
+rsq r1.w, r1.w
+mul r3.xyz, r1.wwww, r3.xyzx  // r3.x <- L.x; r3.y <- L.y; r3.z <- L.z
+
+#line 93
+nop 
+mov r1.x, r1.x
+mov r4.xyz, l(0,0,1.000000,0)
+mov r5.xyz, l(1.000000,0,0,0)
+
+#line 71
+add r1.w, r1.x, l(1.000000)
+mul r1.w, r1.w, l(0.500000)  // r1.w <- skyblend
+
+#line 72
+mov r2.w, -r1.w
+add r2.w, r2.w, l(1.000000)  // r2.w <- groundblend
+
+#line 73
+mul r4.xyz, r1.wwww, r4.xyzx
+mul r5.xyz, r2.wwww, r5.xyzx
+add r4.xyz, r4.xyzx, r5.xyzx  // r4.x <- <HemiSphereLight return value>.x; r4.y <- <HemiSphereLight return value>.y; r4.z <- <HemiSphereLight return value>.z
+
+#line 93
+mul r4.xyz, r4.xyzx, cb0[11].xyzx  // r4.x <- A.x; r4.y <- A.y; r4.z <- A.z
+
+#line 96
+mov r5.xyz, cb0[10].xyzx  // r5.x <- C.x; r5.y <- C.y; r5.z <- C.z
+
+#line 97
+mov r6.xyz, l(1.000000,1.000000,1.000000,0)  // r6.x <- Kd.x; r6.y <- Kd.y; r6.z <- Kd.z
+
+#line 98
+nop 
+mov r1.xyz, r1.xyzx
+mov r3.xyz, r3.xyzx
+mov r5.xyz, r5.xyzx
+mov r6.xyz, r6.xyzx
+
+#line 15
+dp3 r1.w, r1.yxzy, r3.xyzx  // r1.w <- D
+
+#line 16
+itof r2.w, l(0)
+max r1.w, r1.w, r2.w
+
+#line 17
+mul r6.xyz, r5.xyzx, r6.xyzx
+mul r6.xyz, r1.wwww, r6.xyzx  // r6.x <- <Diffuse return value>.x; r6.y <- <Diffuse return value>.y; r6.z <- <Diffuse return value>.z
+
+#line 98
+mov r6.xyz, r6.xyzx  // r6.x <- D.x; r6.y <- D.y; r6.z <- D.z
+
+#line 100
+mov r7.xyz, l(1.000000,1.000000,1.000000,0)  // r7.x <- Ks.x; r7.y <- Ks.y; r7.z <- Ks.z
+
+#line 104
+nop 
+mov r1.xyz, r1.xyzx
+mov r3.xyz, -r3.xyzx
+mov r5.xyz, r5.xyzx
+mov r2.xyz, r2.xyzx
+mov r7.xyz, r7.xyzx
+
+#line 33
+add r2.xyz, r2.xyzx, r3.xyzx
+dp3 r1.w, r2.xyzx, r2.xyzx
+rsq r1.w, r1.w
+mul r2.xyz, r1.wwww, r2.xyzx  // r2.x <- H.x; r2.y <- H.y; r2.z <- H.z
+
+#line 35
+dp3 r1.z, r2.yxzy, r1.xyzx
+mov r1.xyz, r1.zzzz  // r1.x <- S.x; r1.y <- S.y; r1.z <- S.z
+
+#line 36
+itof r2.xyz, l(0, 0, 0, 0)
+max r1.xyz, r1.xyzx, r2.xyzx
+
+#line 37
+mov r2.xyz, l(1.000000,1.000000,1.000000,0)
+mul r2.xyz, r1.xyzx, r2.xyzx
+mul r1.xyz, r1.xyzx, r1.xyzx
+mul r1.xyz, r1.xyzx, r1.xyzx
+mul r1.xyz, r1.xyzx, r2.xyzx  // r1.x <- S.x; r1.y <- S.y; r1.z <- S.z
+
+#line 38
+mul r1.xyz, r7.xyzx, r1.xyzx
+mul r1.xyz, r5.xyzx, r1.xyzx  // r1.x <- S.x; r1.y <- S.y; r1.z <- S.z
+
+#line 39
+mov r1.xyz, r1.xyzx  // r1.x <- <BlinnPhongSpecular return value>.x; r1.y <- <BlinnPhongSpecular return value>.y; r1.z <- <BlinnPhongSpecular return value>.z
+
+#line 104
+mov r1.xyz, r1.xyzx  // r1.x <- S.x; r1.y <- S.y; r1.z <- S.z
+
+#line 106
+add r2.xyz, r4.xyzx, r6.xyzx
+add r1.xyz, r1.xyzx, r2.xyzx
+mul r1.xyz, r1.xyzx, v3.xyzx
+mul r0.xyz, r0.xyzx, r1.xyzx
+
+#line 114
+mov r0.xyz, r0.xyzx  // r0.x <- Out.Color.x; r0.y <- Out.Color.y; r0.z <- Out.Color.z
+mov r0.w, r0.w  // r0.w <- Out.Color.w
+
+#line 117
+mul r1.xyzw, r0.xyzw, cb0[533].wwww  // r1.x <- Out.Luminance.x; r1.y <- Out.Luminance.y; r1.z <- Out.Luminance.z; r1.w <- Out.Luminance.w
+
+#line 119
+mov o0.xyzw, r0.xyzw
+mov o1.xyzw, r1.xyzw
 ret 
-// Approximately 32 instruction slots used
+// Approximately 70 instruction slots used

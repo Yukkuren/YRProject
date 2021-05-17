@@ -230,8 +230,6 @@ struct Model_MotionData
 	std::shared_ptr<Model>			backstep_L = nullptr;
 	std::shared_ptr<Model>			jump_R = nullptr;
 	std::shared_ptr<Model>			jump_L = nullptr;
-	std::shared_ptr<Model>			air_jump_R = nullptr;
-	std::shared_ptr<Model>			air_jump_L = nullptr;
 	std::shared_ptr<Model>			damage_R_g_u = nullptr;
 	std::shared_ptr<Model>			damage_L_g_u = nullptr;
 	std::shared_ptr<Model>			jaku_R = nullptr;
@@ -286,6 +284,8 @@ public:
 	std::shared_ptr<Model>			intro_L = nullptr;
 	std::shared_ptr<Model>			win_R = nullptr;
 	std::shared_ptr<Model>			win_L = nullptr;
+	std::shared_ptr<Model>			air_jump_R = nullptr;
+	std::shared_ptr<Model>			air_jump_L = nullptr;
 	std::array <std::shared_ptr<Model>, scastI(AttackState::NORMAL_ATTACK_END)> model_R_Attack = { nullptr };
 	std::array <std::shared_ptr<Model>, scastI(AttackState::NORMAL_ATTACK_END)> model_L_Attack = { nullptr };
 	std::array <std::shared_ptr<Model>, scastI(ActState::ACT_END)> model_R_Act = { nullptr };

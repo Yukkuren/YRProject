@@ -94,34 +94,6 @@ void Knight::Uninit()
 	main = nullptr;
 	anim.reset();
 	anim = nullptr;
-	model_motion.wait_R.reset();
-	model_motion.wait_R = nullptr;
-	model_motion.special_R.reset();
-	model_motion.special_R = nullptr;
-	model_motion.damage_R_g_u.reset();
-	model_motion.damage_R_g_u = nullptr;
-	model_motion.guard_R.reset();
-	model_motion.guard_R = nullptr;
-	model_motion.slid_R.reset();
-	model_motion.slid_R = nullptr;
-	model_motion.air_back_R.reset();
-	model_motion.air_back_R = nullptr;
-	model_motion.air_dash_R.reset();
-	model_motion.air_dash_R = nullptr;
-	model_motion.passive_R.reset();
-	model_motion.passive_R = nullptr;
-	model_motion.squat_R.reset();
-	model_motion.squat_R = nullptr;
-	model_motion.walk_R.reset();
-	model_motion.walk_R = nullptr;
-	model_motion.back_R.reset();
-	model_motion.back_R = nullptr;
-	model_motion.dash_R.reset();
-	model_motion.dash_R = nullptr;
-	model_motion.backstep_R.reset();
-	model_motion.backstep_R = nullptr;
-	model_motion.jump_R.reset();
-	model_motion.jump_R = nullptr;
 	model_motion.air_jump_R.reset();
 	model_motion.air_jump_R = nullptr;
 	model_motion.intro_R.reset();
@@ -129,34 +101,6 @@ void Knight::Uninit()
 	model_motion.win_R.reset();
 	model_motion.win_R = nullptr;
 
-	model_motion.wait_L.reset();
-	model_motion.wait_L = nullptr;
-	model_motion.special_L.reset();
-	model_motion.special_L = nullptr;
-	model_motion.damage_L_g_u.reset();
-	model_motion.damage_L_g_u = nullptr;
-	model_motion.guard_L.reset();
-	model_motion.guard_L = nullptr;
-	model_motion.slid_L.reset();
-	model_motion.slid_L = nullptr;
-	model_motion.air_back_L.reset();
-	model_motion.air_back_L = nullptr;
-	model_motion.air_dash_L.reset();
-	model_motion.air_dash_L = nullptr;
-	model_motion.passive_L.reset();
-	model_motion.passive_L = nullptr;
-	model_motion.squat_L.reset();
-	model_motion.squat_L = nullptr;
-	model_motion.walk_L.reset();
-	model_motion.walk_L = nullptr;
-	model_motion.back_L.reset();
-	model_motion.back_L = nullptr;
-	model_motion.dash_L.reset();
-	model_motion.dash_L = nullptr;
-	model_motion.backstep_L.reset();
-	model_motion.backstep_L = nullptr;
-	model_motion.jump_L.reset();
-	model_motion.jump_L = nullptr;
 	model_motion.air_jump_L.reset();
 	model_motion.air_jump_L = nullptr;
 	model_motion.intro_L.reset();
@@ -165,101 +109,26 @@ void Knight::Uninit()
 	model_motion.win_L = nullptr;
 
 
-	model_motion.jaku_R.reset();
-	model_motion.thu_R.reset();
-	model_motion.kyo_R.reset();
-	model_motion.d_jaku_R.reset();
-	model_motion.d_thu_R.reset();
-	model_motion.u_kyo_R.reset();
-	model_motion.a_jaku_R.reset();
-	model_motion.a_thu_R.reset();
-	model_motion.a_kyo_R.reset();
-	model_motion.a_ukyo_R.reset();
-	model_motion.steal_R.reset();
-	model_motion.slow_R.reset();
-	model_motion.track_R.reset();
-	model_motion.jaku_rh_R.reset();
-	model_motion.thu_rh_R.reset();
-	model_motion.kyo_rh_R.reset();
-	model_motion.jaku_lh_R.reset();
-	model_motion.thu_lh_R.reset();
-	model_motion.kyo_lh_R.reset();
-	model_motion.disire_s_R.reset();
-	model_motion.disire_m_R.reset();
-	model_motion.extend_R.reset();
-
-	model_motion.jaku_R = nullptr;
-	model_motion.thu_R = nullptr;
-	model_motion.kyo_R = nullptr;
-	model_motion.d_jaku_R = nullptr;
-	model_motion.d_thu_R = nullptr;
-	model_motion.u_kyo_R = nullptr;
-	model_motion.a_jaku_R = nullptr;
-	model_motion.a_thu_R = nullptr;
-	model_motion.a_kyo_R = nullptr;
-	model_motion.a_ukyo_R = nullptr;
-	model_motion.steal_R = nullptr;
-	model_motion.slow_R = nullptr;
-	model_motion.track_R = nullptr;
-	model_motion.jaku_rh_R = nullptr;
-	model_motion.thu_rh_R = nullptr;
-	model_motion.kyo_rh_R = nullptr;
-	model_motion.jaku_lh_R = nullptr;
-	model_motion.thu_lh_R = nullptr;
-	model_motion.kyo_lh_R = nullptr;
-	model_motion.disire_s_R = nullptr;
-	model_motion.disire_m_R = nullptr;
-	model_motion.extend_R = nullptr;
-
-
-	model_motion.jaku_L.reset();
-	model_motion.thu_L.reset();
-	model_motion.kyo_L.reset();
-	model_motion.d_jaku_L.reset();
-	model_motion.d_thu_L.reset();
-	model_motion.u_kyo_L.reset();
-	model_motion.a_jaku_L.reset();
-	model_motion.a_thu_L.reset();
-	model_motion.a_kyo_L.reset();
-	model_motion.a_ukyo_L.reset();
-	model_motion.steal_L.reset();
-	model_motion.slow_L.reset();
-	model_motion.track_L.reset();
-	model_motion.jaku_rh_L.reset();
-	model_motion.thu_rh_L.reset();
-	model_motion.kyo_rh_L.reset();
-	model_motion.jaku_lh_L.reset();
-	model_motion.thu_lh_L.reset();
-	model_motion.kyo_lh_L.reset();
-	model_motion.disire_s_L.reset();
-	model_motion.disire_m_L.reset();
-	model_motion.extend_L.reset();
-
-	model_motion.jaku_L = nullptr;
-	model_motion.thu_L = nullptr;
-	model_motion.kyo_L = nullptr;
-	model_motion.d_jaku_L = nullptr;
-	model_motion.d_thu_L = nullptr;
-	model_motion.u_kyo_L = nullptr;
-	model_motion.a_jaku_L = nullptr;
-	model_motion.a_thu_L = nullptr;
-	model_motion.a_kyo_L = nullptr;
-	model_motion.a_ukyo_L = nullptr;
-	model_motion.steal_L = nullptr;
-	model_motion.slow_L = nullptr;
-	model_motion.track_L = nullptr;
-	model_motion.jaku_rh_L = nullptr;
-	model_motion.thu_rh_L = nullptr;
-	model_motion.kyo_rh_L = nullptr;
-	model_motion.jaku_lh_L = nullptr;
-	model_motion.thu_lh_L = nullptr;
-	model_motion.kyo_lh_L = nullptr;
-	model_motion.disire_s_L = nullptr;
-	model_motion.disire_m_L = nullptr;
-	model_motion.extend_L = nullptr;
-
-	model_motion.model_R_Attack.clear();
-	model_motion.model_L_Attack.clear();
+	for (int i = 0; i < model_motion.model_R_Attack.size(); i++)
+	{
+		model_motion.model_R_Attack[i].reset();
+		model_motion.model_R_Attack[i] = nullptr;
+	}
+	for (int i = 0; i < model_motion.model_L_Attack.size(); i++)
+	{
+		model_motion.model_L_Attack[i].reset();
+		model_motion.model_L_Attack[i] = nullptr;
+	}
+	for (int i = 0; i < model_motion.model_R_Act.size(); i++)
+	{
+		model_motion.model_R_Act[i].reset();
+		model_motion.model_R_Act[i] = nullptr;
+	}
+	for (int i = 0; i < model_motion.model_L_Act.size(); i++)
+	{
+		model_motion.model_L_Act[i].reset();
+		model_motion.model_L_Act[i] = nullptr;
+	}
 
 	atk.clear();
 	projectile_atk.clear();
@@ -732,11 +601,11 @@ void Knight::ReadySet()
 	text_on = false;
 	if (rightOrleft > 0)
 	{
-		anim->NodeChange(model_motion.wait_R);
+		anim->NodeChange(model_motion.model_R_Act[scastI(ActState::WAIT)]);
 	}
 	else
 	{
-		anim->NodeChange(model_motion.wait_L);
+		anim->NodeChange(model_motion.model_L_Act[scastI(ActState::WAIT)]);
 	}
 	anim_ccodinate = ac_act[scastI(ActState::WAIT)].fream;
 	ChangeFace(FaceAnim::NORMAL);

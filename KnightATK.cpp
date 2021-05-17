@@ -210,11 +210,11 @@ void Knight::U_Kyo(float elapsed_time)
 		fream = non_target;
 		if (rightOrleft > 0)
 		{
-			anim->NodeChange(model_motion.u_kyo_R, scastI(AnimAtk::TIMER));
+			anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
 		}
 		else
 		{
-			anim->NodeChange(model_motion.u_kyo_L, scastI(AnimAtk::TIMER));
+			anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
 		}
 		//Ž‘±ŽžŠÔ‚ðÝ’è
 		timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
@@ -1863,11 +1863,11 @@ void Knight::SpecialAttack(float elapsed_time)
 		fream = non_target;
 		if (rightOrleft > 0)
 		{
-			anim->NodeChange(model_motion.special_R, scastI(AnimAtk::TIMER));
+			anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
 		}
 		else
 		{
-			anim->NodeChange(model_motion.special_L, scastI(AnimAtk::TIMER));
+			anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
 		}
 		YRCamera.RequestCamera(Camera::Request::RELEASE, now_player);
 		GetSound().SEStop(SEKind::INTRO_WIND);
