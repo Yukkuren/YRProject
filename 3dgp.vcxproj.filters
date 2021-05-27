@@ -660,6 +660,9 @@
     <Filter Include="Shader\SilexarsShader">
       <UniqueIdentifier>{49f006fe-6b47-458f-93ee-a55ca94f386d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Chara\Neru">
+      <UniqueIdentifier>{4aa87b8a-75c1-4851-8726-ccf5c7c20d1a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Data\Image\UI\icon\icon.ico">

@@ -141,10 +141,10 @@ bool Player::AttackLoad()
 
 	for (int list = 0; list < attack_list.size(); list++)
 	{
-		if (list == scastI(AttackState::NORMAL_ATTACK_END))
+		/*if (list == scastI(AttackState::NORMAL_ATTACK_END))
 		{
 			continue;
-		}
+		}*/
 
 		attack_list[list].attack_name = static_cast<AttackState>(list);
 		ifs >> attack_list[list].later;
@@ -241,10 +241,10 @@ bool Player::AttackLoad()
 	std::ifstream anim_ifs(Anim_level);
 	for (int list = 0; list < ac_attack.size(); list++)
 	{
-		if (list == scastI(AttackState::NORMAL_ATTACK_END))
+		/*if (list == scastI(AttackState::NORMAL_ATTACK_END))
 		{
 			continue;
-		}
+		}*/
 		anim_ifs >> ac_attack[list].fream;
 		anim_ifs >> ac_attack[list].timer;
 		anim_ifs >> ac_attack[list].later;

@@ -1938,7 +1938,7 @@ void Player::Jump()
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_R_Act[scastI(ActState::JUMP)], scastI(AnimAtk::FREAM));
+				anim->NodeChange(model_motion.model_L_Act[scastI(ActState::JUMP)], scastI(AnimAtk::FREAM));
 			}
 			anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
 			anim_ccodinate = ac_act[scastI(act_state)].fream;
