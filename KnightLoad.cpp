@@ -135,9 +135,9 @@ void Knight::LoadData(PLCOLOR color_number)
 			model_motion.model_R_Attack[i] = std::make_shared<Model>(file_name_R.c_str());
 		}
 
-		if (model_motion.model_R_Attack[i] == nullptr)
+		if (model_motion.model_L_Attack[i] == nullptr)
 		{
-			model_motion.model_R_Attack[i] = std::make_shared<Model>(file_name_L.c_str());
+			model_motion.model_L_Attack[i] = std::make_shared<Model>(file_name_L.c_str());
 		}
 	}
 

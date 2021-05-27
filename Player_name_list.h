@@ -28,7 +28,7 @@ public:
 		u8"jaku",
 		u8"d_thu",
 		u8"kyo",
-		u8"d_jaku_R",
+		u8"d_jaku",
 		u8"d_thu",
 		u8"u_kyo",
 		u8"air_jaku",
