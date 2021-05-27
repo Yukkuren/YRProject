@@ -1,215 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <FxCompile Include="AnimShader_gs.hlsl">
-      <Filter>Shader\AnimShader</Filter>
-    </FxCompile>
-    <FxCompile Include="AnimShader_ps.hlsl">
-      <Filter>Shader\AnimShader</Filter>
-    </FxCompile>
-    <FxCompile Include="AnimShader_vs.hlsl">
-      <Filter>Shader\AnimShader</Filter>
-    </FxCompile>
-    <FxCompile Include="board_ps.hlsl">
-      <Filter>Shader\boardShader</Filter>
-    </FxCompile>
-    <FxCompile Include="board_vs.hlsl">
-      <Filter>Shader\boardShader</Filter>
-    </FxCompile>
-    <FxCompile Include="Font_ps.hlsl">
-      <Filter>Shader\FontShader</Filter>
-    </FxCompile>
-    <FxCompile Include="Font_vs.hlsl">
-      <Filter>Shader\FontShader</Filter>
-    </FxCompile>
-    <FxCompile Include="geometric_primitive_ps.hlsl">
-      <Filter>Shader\geometric_primitiveShader</Filter>
-    </FxCompile>
-    <FxCompile Include="geometric_primitive_vs.hlsl">
-      <Filter>Shader\geometric_primitiveShader</Filter>
-    </FxCompile>
-    <FxCompile Include="Mesh_Static_PS.hlsl">
-      <Filter>Shader\Mesh_StaticShader</Filter>
-    </FxCompile>
-    <FxCompile Include="Mesh_Static_VS.hlsl">
-      <Filter>Shader\Mesh_StaticShader</Filter>
-    </FxCompile>
-    <FxCompile Include="ParallelToon_gs.hlsl">
-      <Filter>Shader\ParallelToonShader</Filter>
-    </FxCompile>
-    <FxCompile Include="ParallelToon_ps.hlsl">
-      <Filter>Shader\ParallelToonShader</Filter>
-    </FxCompile>
-    <FxCompile Include="ParallelToon_vs.hlsl">
-      <Filter>Shader\ParallelToonShader</Filter>
-    </FxCompile>
-    <FxCompile Include="Skinned_PS.hlsl">
-      <Filter>Shader\SkinnedMeshShader</Filter>
-    </FxCompile>
-    <FxCompile Include="Skinned_VS.hlsl">
-      <Filter>Shader\SkinnedMeshShader</Filter>
-    </FxCompile>
-    <FxCompile Include="sprite_ps.hlsl">
-      <Filter>Shader\spriteShader</Filter>
-    </FxCompile>
-    <FxCompile Include="sprite_vs.hlsl">
-      <Filter>Shader\spriteShader</Filter>
-    </FxCompile>
-    <FxCompile Include="SpriteEx_ps.hlsl">
-      <Filter>Shader\SpriteExShader</Filter>
-    </FxCompile>
-    <FxCompile Include="SpriteEx_vs.hlsl">
-      <Filter>Shader\SpriteExShader</Filter>
-    </FxCompile>
-    <FxCompile Include="toGbuffer_ps.hlsl">
-      <Filter>Shader\toGbufferShader</Filter>
-    </FxCompile>
-    <FxCompile Include="toGbuffer_vs.hlsl">
-      <Filter>Shader\toGbufferShader</Filter>
-    </FxCompile>
-    <FxCompile Include="ToonShader_gs.hlsl">
-      <Filter>Shader\ToonShader</Filter>
-    </FxCompile>
-    <FxCompile Include="ToonShader_ps.hlsl">
-      <Filter>Shader\ToonShader</Filter>
-    </FxCompile>
-    <FxCompile Include="ToonShader_vs.hlsl">
-      <Filter>Shader\ToonShader</Filter>
-    </FxCompile>
-    <FxCompile Include="flatShader_vs.hlsl">
-      <Filter>Shader\flatShader</Filter>
-    </FxCompile>
-    <FxCompile Include="flatShader_ps.hlsl">
-      <Filter>Shader\flatShader</Filter>
-    </FxCompile>
-    <FxCompile Include="flatShader_gs.hlsl">
-      <Filter>Shader\flatShader</Filter>
-    </FxCompile>
-    <FxCompile Include="GaussShader_ps.hlsl">
-      <Filter>Shader\GauseShader</Filter>
-    </FxCompile>
-    <FxCompile Include="GaussShader_vs.hlsl">
-      <Filter>Shader\GauseShader</Filter>
-    </FxCompile>
-    <FxCompile Include="MultiGaussShader_vs.hlsl">
-      <Filter>Shader\MultiGaussShader</Filter>
-    </FxCompile>
-    <FxCompile Include="MultiGaussShader_ps.hlsl">
-      <Filter>Shader\MultiGaussShader</Filter>
-    </FxCompile>
-    <FxCompile Include="furShader_vs.hlsl">
-      <Filter>Shader\furShader</Filter>
-    </FxCompile>
-    <FxCompile Include="furShader_ps.hlsl">
-      <Filter>Shader\furShader</Filter>
-    </FxCompile>
-    <FxCompile Include="furShader_gs.hlsl">
-      <Filter>Shader\furShader</Filter>
-    </FxCompile>
-    <FxCompile Include="SkyMapShader_vs.hlsl">
-      <Filter>Shader\SkyMapShader</Filter>
-    </FxCompile>
-    <FxCompile Include="SkyMapShader_ps.hlsl">
-      <Filter>Shader\SkyMapShader</Filter>
-    </FxCompile>
-    <FxCompile Include="TitleShader_ps.hlsl">
-      <Filter>Shader\TitleShader</Filter>
-    </FxCompile>
-    <FxCompile Include="TitleShader_vs.hlsl">
-      <Filter>Shader\TitleShader</Filter>
-    </FxCompile>
-    <FxCompile Include="ModeSelectShader_ps.hlsl">
-      <Filter>Shader\ModeSelectShader</Filter>
-    </FxCompile>
-    <FxCompile Include="ModeSelectShader_vs.hlsl">
-      <Filter>Shader\ModeSelectShader</Filter>
-    </FxCompile>
-    <FxCompile Include="CharaSelectShader_vs.hlsl">
-      <Filter>Shader\CharaSelectShader</Filter>
-    </FxCompile>
-    <FxCompile Include="CharaSelectShader_ps.hlsl">
-      <Filter>Shader\CharaSelectShader</Filter>
-    </FxCompile>
-    <FxCompile Include="CyberShader_ps.hlsl">
-      <Filter>Shader\CyberShader</Filter>
-    </FxCompile>
-    <FxCompile Include="CyberShader_vs.hlsl">
-      <Filter>Shader\CyberShader</Filter>
-    </FxCompile>
-    <FxCompile Include="ConcentrationShader_vs.hlsl">
-      <Filter>Shader\ConcentrationShader</Filter>
-    </FxCompile>
-    <FxCompile Include="ConcentrationShader_ps.hlsl">
-      <Filter>Shader\ConcentrationShader</Filter>
-    </FxCompile>
-    <FxCompile Include="Tessellation_vs.hlsl">
-      <Filter>Shader\Tessellation</Filter>
-    </FxCompile>
-    <FxCompile Include="Tessellation_hs.hlsl">
-      <Filter>Shader\Tessellation</Filter>
-    </FxCompile>
-    <FxCompile Include="Tessellation_ds.hlsl">
-      <Filter>Shader\Tessellation</Filter>
-    </FxCompile>
-    <FxCompile Include="Trajectory_vs.hlsl">
-      <Filter>Shader\Trajectory</Filter>
-    </FxCompile>
-    <FxCompile Include="Trajectory_ps.hlsl">
-      <Filter>Shader\Trajectory</Filter>
-    </FxCompile>
-    <FxCompile Include="Tessellation_ps.hlsl">
-      <Filter>Shader\Tessellation</Filter>
-    </FxCompile>
-    <FxCompile Include="LoadShader_ps.hlsl">
-      <Filter>Shader\LoadShader</Filter>
-    </FxCompile>
-    <FxCompile Include="LoadShader_vs.hlsl">
-      <Filter>Shader\LoadShader</Filter>
-    </FxCompile>
-    <FxCompile Include="SilexarsShader_vs.hlsl">
-      <Filter>Shader\SilexarsShader</Filter>
-    </FxCompile>
-    <FxCompile Include="SilexarsShader_ps.hlsl">
-      <Filter>Shader\SilexarsShader</Filter>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="1PGamePad.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="2Pgamepad.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="AnimBoard.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="AttackBox.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Board_primitive.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="camera.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="CoList.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Font.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="framework.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="Geometric_primitive.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="HitBox.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="HitCheak.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
     <ClCompile Include="imgui\imgui.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
@@ -228,140 +19,51 @@
     <ClCompile Include="imgui\imgui_widgets.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="Sampler.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneGame.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneLoad.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneSelect.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneTest.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneTitle.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Skinned_mesh.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="sprite.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="static_mesh.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="World.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="YR_VECTOR3.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="YRModel.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="YRModelAnim.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="YRMotion.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="YRShader.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="Blur.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="framebuffer.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="Knight.cpp">
-      <Filter>Chara\Knight</Filter>
-    </ClCompile>
-    <ClCompile Include="KnightATK.cpp">
-      <Filter>Chara\Knight</Filter>
-    </ClCompile>
-    <ClCompile Include="Stage.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="KnightLoad.cpp">
-      <Filter>Chara\Knight</Filter>
-    </ClCompile>
-    <ClCompile Include="Effect.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="YRSound.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="AIControll.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="InputListProcess.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Trajectory.cpp">
-      <Filter>Souce</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerBase.cpp">
-      <Filter>Chara\PlayerBase</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerBaseIO.cpp">
-      <Filter>Chara\PlayerBase</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerBaseATK.cpp">
-      <Filter>Chara\PlayerBase</Filter>
-    </ClCompile>
+    <ClCompile Include="SourceCode\Blur.cpp" />
+    <ClCompile Include="SourceCode\camera.cpp" />
+    <ClCompile Include="SourceCode\Effect.cpp" />
+    <ClCompile Include="SourceCode\Font.cpp" />
+    <ClCompile Include="SourceCode\framebuffer.cpp" />
+    <ClCompile Include="SourceCode\framework.cpp" />
+    <ClCompile Include="SourceCode\main.cpp" />
+    <ClCompile Include="SourceCode\Sampler.cpp" />
+    <ClCompile Include="SourceCode\sprite.cpp" />
+    <ClCompile Include="SourceCode\static_mesh.cpp" />
+    <ClCompile Include="SourceCode\Texture.cpp" />
+    <ClCompile Include="SourceCode\Trajectory.cpp" />
+    <ClCompile Include="SourceCode\YR_VECTOR3.cpp" />
+    <ClCompile Include="SourceCode\YRShader.cpp" />
+    <ClCompile Include="SourceCode\YRSound.cpp" />
+    <ClCompile Include="SourceCode\Chara\Knight\Knight.cpp" />
+    <ClCompile Include="SourceCode\Chara\Knight\KnightATK.cpp" />
+    <ClCompile Include="SourceCode\Chara\Knight\KnightLoad.cpp" />
+    <ClCompile Include="SourceCode\Chara\PlayerBase\PlayerBase.cpp" />
+    <ClCompile Include="SourceCode\Chara\PlayerBase\PlayerBaseATK.cpp" />
+    <ClCompile Include="SourceCode\Chara\PlayerBase\PlayerBaseIO.cpp" />
+    <ClCompile Include="SourceCode\Game\1PGamePad.cpp" />
+    <ClCompile Include="SourceCode\Game\2Pgamepad.cpp" />
+    <ClCompile Include="SourceCode\Game\AIControll.cpp" />
+    <ClCompile Include="SourceCode\Game\AttackBox.cpp" />
+    <ClCompile Include="SourceCode\Game\CoList.cpp" />
+    <ClCompile Include="SourceCode\Game\HitBox.cpp" />
+    <ClCompile Include="SourceCode\Game\HitCheak.cpp" />
+    <ClCompile Include="SourceCode\Game\InputListProcess.cpp" />
+    <ClCompile Include="SourceCode\Game\Stage.cpp" />
+    <ClCompile Include="SourceCode\Game\World.cpp" />
+    <ClCompile Include="SourceCode\Model\AnimBoard.cpp" />
+    <ClCompile Include="SourceCode\Model\Board_primitive.cpp" />
+    <ClCompile Include="SourceCode\Model\Geometric_primitive.cpp" />
+    <ClCompile Include="SourceCode\Model\Skinned_mesh.cpp" />
+    <ClCompile Include="SourceCode\Model\YRModel.cpp" />
+    <ClCompile Include="SourceCode\Model\YRModelAnim.cpp" />
+    <ClCompile Include="SourceCode\Model\YRMotion.cpp" />
+    <ClCompile Include="SourceCode\Scene\SceneGame.cpp" />
+    <ClCompile Include="SourceCode\Scene\SceneLoad.cpp" />
+    <ClCompile Include="SourceCode\Scene\SceneSelect.cpp" />
+    <ClCompile Include="SourceCode\Scene\SceneTest.cpp" />
+    <ClCompile Include="SourceCode\Scene\SceneTitle.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AnimBoard.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="AttackBox.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Board_primitive.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="brend.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="camera.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="CoList.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="collision.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Font.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="framework.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Geometric_primitive.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="high_resolution_timer.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="HitBox.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="HitCheak.h">
-      <Filter>Game</Filter>
-    </ClInclude>
     <ClInclude Include="imgui\imconfig.h">
       <Filter>ImGui</Filter>
     </ClInclude>
@@ -386,167 +88,50 @@
     <ClInclude Include="imgui\imstb_truetype.h">
       <Filter>ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Key.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="misc.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Sampler.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Skinned_mesh.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="sprite.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="static_mesh.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Tracking.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="World.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="YRModel.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="YRModelAnim.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="YRMouse.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="YRShader.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="YRGamePad.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Blur.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="framebuffer.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Knight.h">
-      <Filter>Chara\Knight</Filter>
-    </ClInclude>
-    <ClInclude Include="YR_VectorMaster.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Effect.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="EXlib\Effekseer.h">
       <Filter>EXlib\Effekseer</Filter>
     </ClInclude>
     <ClInclude Include="EXlib\EffekseerRendererDX11.h">
       <Filter>EXlib\Effekseer</Filter>
     </ClInclude>
-    <ClInclude Include="YRSound.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Trajectory.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Player_name_list.h">
-      <Filter>Chara\PlayerBase</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerBase.h">
-      <Filter>Chara\PlayerBase</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="AnimShader.hlsli">
-      <Filter>Shader\AnimShader</Filter>
-    </None>
-    <None Include="board.hlsli">
-      <Filter>Shader\boardShader</Filter>
-    </None>
-    <None Include="Font.hlsli">
-      <Filter>Shader\FontShader</Filter>
-    </None>
-    <None Include="geometric_primitive.hlsli">
-      <Filter>Shader\geometric_primitiveShader</Filter>
-    </None>
-    <None Include="Mesh_Static.hlsli">
-      <Filter>Shader\Mesh_StaticShader</Filter>
-    </None>
-    <None Include="ParallelToon.hlsli">
-      <Filter>Shader\ParallelToonShader</Filter>
-    </None>
-    <None Include="Skinned_mesh.hlsli">
-      <Filter>Shader\SkinnedMeshShader</Filter>
-    </None>
-    <None Include="sprite.hlsli">
-      <Filter>Shader\spriteShader</Filter>
-    </None>
-    <None Include="SpriteEx.hlsli">
-      <Filter>Shader\SpriteExShader</Filter>
-    </None>
-    <None Include="toGbuffer.hlsli">
-      <Filter>Shader\toGbufferShader</Filter>
-    </None>
-    <None Include="ToonShader.hlsli">
-      <Filter>Shader\ToonShader</Filter>
-    </None>
-    <None Include="flatShader.hlsli">
-      <Filter>Shader\flatShader</Filter>
-    </None>
-    <None Include="GaussShader.hlsli">
-      <Filter>Shader\GauseShader</Filter>
-    </None>
-    <None Include="MultiGaussShader.hlsli">
-      <Filter>Shader\MultiGaussShader</Filter>
-    </None>
-    <None Include="furShader.hlsli">
-      <Filter>Shader\furShader</Filter>
-    </None>
-    <None Include="SkyMapShader.hlsli">
-      <Filter>Shader\SkyMapShader</Filter>
-    </None>
-    <None Include="TitleShader.hlsli">
-      <Filter>Shader\TitleShader</Filter>
-    </None>
-    <None Include="ModeSelectShader.hlsli">
-      <Filter>Shader\ModeSelectShader</Filter>
-    </None>
-    <None Include="CharaSelectShader.hlsli">
-      <Filter>Shader\CharaSelectShader</Filter>
-    </None>
-    <None Include="ShaderToy.hlsli">
-      <Filter>Shader</Filter>
-    </None>
-    <None Include="CyberShader.hlsli">
-      <Filter>Shader\CyberShader</Filter>
-    </None>
-    <None Include="ConcentrationShader.hlsli">
-      <Filter>Shader\ConcentrationShader</Filter>
-    </None>
-    <None Include="Tessellation.hlsli">
-      <Filter>Shader\Tessellation</Filter>
-    </None>
-    <None Include="Trajectory.hlsli">
-      <Filter>Shader\Trajectory</Filter>
-    </None>
-    <None Include="LoadShader.hlsli">
-      <Filter>Shader\LoadShader</Filter>
-    </None>
-    <None Include="SilexarsShader.hlsli">
-      <Filter>Shader\SilexarsShader</Filter>
-    </None>
+    <ClInclude Include="SourceCode\Blur.h" />
+    <ClInclude Include="SourceCode\brend.h" />
+    <ClInclude Include="SourceCode\camera.h" />
+    <ClInclude Include="SourceCode\Effect.h" />
+    <ClInclude Include="SourceCode\Font.h" />
+    <ClInclude Include="SourceCode\framebuffer.h" />
+    <ClInclude Include="SourceCode\framework.h" />
+    <ClInclude Include="SourceCode\high_resolution_timer.h" />
+    <ClInclude Include="SourceCode\Key.h" />
+    <ClInclude Include="SourceCode\misc.h" />
+    <ClInclude Include="SourceCode\Resource.h" />
+    <ClInclude Include="SourceCode\Sampler.h" />
+    <ClInclude Include="SourceCode\sprite.h" />
+    <ClInclude Include="SourceCode\static_mesh.h" />
+    <ClInclude Include="SourceCode\Texture.h" />
+    <ClInclude Include="SourceCode\Trajectory.h" />
+    <ClInclude Include="SourceCode\YR_VectorMaster.h" />
+    <ClInclude Include="SourceCode\YRMouse.h" />
+    <ClInclude Include="SourceCode\YRShader.h" />
+    <ClInclude Include="SourceCode\YRSound.h" />
+    <ClInclude Include="SourceCode\Chara\Knight\Knight.h" />
+    <ClInclude Include="SourceCode\Chara\PlayerBase\Player_name_list.h" />
+    <ClInclude Include="SourceCode\Chara\PlayerBase\PlayerBase.h" />
+    <ClInclude Include="SourceCode\Game\AttackBox.h" />
+    <ClInclude Include="SourceCode\Game\CoList.h" />
+    <ClInclude Include="SourceCode\Game\collision.h" />
+    <ClInclude Include="SourceCode\Game\HitBox.h" />
+    <ClInclude Include="SourceCode\Game\HitCheak.h" />
+    <ClInclude Include="SourceCode\Game\Tracking.h" />
+    <ClInclude Include="SourceCode\Game\World.h" />
+    <ClInclude Include="SourceCode\Game\YRGamePad.h" />
+    <ClInclude Include="SourceCode\Model\AnimBoard.h" />
+    <ClInclude Include="SourceCode\Model\Board_primitive.h" />
+    <ClInclude Include="SourceCode\Model\Geometric_primitive.h" />
+    <ClInclude Include="SourceCode\Model\Skinned_mesh.h" />
+    <ClInclude Include="SourceCode\Model\YRModel.h" />
+    <ClInclude Include="SourceCode\Model\YRModelAnim.h" />
+    <ClInclude Include="SourceCode\Scene\Scene.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shader">
@@ -670,8 +255,93 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Resource.rc">
-      <Filter>Resource</Filter>
-    </ResourceCompile>
+    <ResourceCompile Include="SourceCode\Resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SourceCode\Shader\Anim\AnimShader.hlsli" />
+    <None Include="SourceCode\Shader\board\board.hlsli" />
+    <None Include="SourceCode\Shader\CharaSelect\CharaSelectShader.hlsli" />
+    <None Include="SourceCode\Shader\Concentration\ConcentrationShader.hlsli" />
+    <None Include="SourceCode\Shader\Cyber\CyberShader.hlsli" />
+    <None Include="SourceCode\Shader\flat\flatShader.hlsli" />
+    <None Include="SourceCode\Shader\Font\Font.hlsli" />
+    <None Include="SourceCode\Shader\fur\furShader.hlsli" />
+    <None Include="SourceCode\Shader\Gauss\GaussShader.hlsli" />
+    <None Include="SourceCode\Shader\geometric_primitive\geometric_primitive.hlsli" />
+    <None Include="SourceCode\Shader\Load\LoadShader.hlsli" />
+    <None Include="SourceCode\Shader\Mesh_Static\Mesh_Static.hlsli" />
+    <None Include="SourceCode\Shader\ModeSelect\ModeSelectShader.hlsli" />
+    <None Include="SourceCode\Shader\MultiGauss\MultiGaussShader.hlsli" />
+    <None Include="SourceCode\Shader\ParalleToon\ParallelToon.hlsli" />
+    <None Include="SourceCode\Shader\Silexars\SilexarsShader.hlsli" />
+    <None Include="SourceCode\Shader\Skinned\Skinned_mesh.hlsli" />
+    <None Include="SourceCode\Shader\SkyMap\SkyMapShader.hlsli" />
+    <None Include="SourceCode\Shader\sprite\sprite.hlsli" />
+    <None Include="SourceCode\Shader\SpriteEx\SpriteEx.hlsli" />
+    <None Include="SourceCode\Shader\Tessellation\Tessellation.hlsli" />
+    <None Include="SourceCode\Shader\Title\TitleShader.hlsli" />
+    <None Include="SourceCode\Shader\ToGbuffer\toGbuffer.hlsli" />
+    <None Include="SourceCode\Shader\Toon\ToonShader.hlsli" />
+    <None Include="SourceCode\Shader\Trajectory\Trajectory.hlsli" />
+    <None Include="SourceCode\Shader\ShaderToy.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="SourceCode\Shader\Anim\AnimShader_gs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Anim\AnimShader_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Anim\AnimShader_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\board\board_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\board\board_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\CharaSelect\CharaSelectShader_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\CharaSelect\CharaSelectShader_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Concentration\ConcentrationShader_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Concentration\ConcentrationShader_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Cyber\CyberShader_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Cyber\CyberShader_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\flat\flatShader_gs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\flat\flatShader_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\flat\flatShader_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Font\Font_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Font\Font_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\fur\furShader_gs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\fur\furShader_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\fur\furShader_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Gauss\GaussShader_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Gauss\GaussShader_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\geometric_primitive\geometric_primitive_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\geometric_primitive\geometric_primitive_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Load\LoadShader_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Load\LoadShader_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Mesh_Static\Mesh_Static_PS.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Mesh_Static\Mesh_Static_VS.hlsl" />
+    <FxCompile Include="SourceCode\Shader\ModeSelect\ModeSelectShader_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\ModeSelect\ModeSelectShader_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\MultiGauss\MultiGaussShader_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\MultiGauss\MultiGaussShader_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\ParalleToon\ParallelToon_gs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\ParalleToon\ParallelToon_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\ParalleToon\ParallelToon_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Silexars\SilexarsShader_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Silexars\SilexarsShader_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Skinned\Skinned_PS.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Skinned\Skinned_VS.hlsl" />
+    <FxCompile Include="SourceCode\Shader\SkyMap\SkyMapShader_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\SkyMap\SkyMapShader_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\sprite\sprite_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\sprite\sprite_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\SpriteEx\SpriteEx_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\SpriteEx\SpriteEx_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Tessellation\Tessellation_ds.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Tessellation\Tessellation_hs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Tessellation\Tessellation_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Tessellation\Tessellation_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Title\TitleShader_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Title\TitleShader_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\ToGbuffer\toGbuffer_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\ToGbuffer\toGbuffer_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Toon\ToonShader_gs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Toon\ToonShader_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Toon\ToonShader_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Trajectory\Trajectory_ps.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Trajectory\Trajectory_vs.hlsl" />
   </ItemGroup>
 </Project>

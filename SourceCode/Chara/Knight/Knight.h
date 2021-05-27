@@ -1,13 +1,13 @@
 #ifndef _KNIGHT_H_
 #define _KNIGHT_H_
 
-#include "PlayerBase.h"
-#include "YR_VectorMaster.h"
-#include "AttackBox.h"
-#include "HitBox.h"
+#include "../PlayerBase/PlayerBase.h"
+#include "../../YR_VectorMaster.h"
+#include "../../Game/AttackBox.h"
+#include "../../Game/HitBox.h"
 #include <vector>
-#include "Trajectory.h"
-#include "Geometric_primitive.h"
+#include "../../Trajectory.h"
+#include "../../Model/Geometric_primitive.h"
 
 
 enum class KNIGHTHIT :int

@@ -1,11 +1,10 @@
 #include "Knight.h"
-#include "PlayerBase.h"
-#include "Key.h"
-#include "YRGamePad.h"
-#include "camera.h"
-#include "Effect.h"
-#include "YRSound.h"
-#include "framework.h"
+#include "../../Key.h"
+#include "../../Game/YRGamePad.h"
+#include "../../camera.h"
+#include "../../Effect.h"
+#include "../../YRSound.h"
+#include "../../framework.h"
 
 
 //------------------------------------------------
