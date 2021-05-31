@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Texture.h"
-#include "YRShader.h"
+#include "../Texture.h"
+#include "../YRShader.h"
 #include <memory>
 
 //-----------------------------------------------------------------

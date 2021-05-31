@@ -1,6 +1,6 @@
 #include "Texture.h"
 #include "framework.h"
-#include"DirectXTK-master\Inc\WICTextureLoader.h"
+#include"../DirectXTK-master\Inc\WICTextureLoader.h"
 #include<Shlwapi.h>
 
 

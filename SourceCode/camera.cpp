@@ -1,6 +1,6 @@
 #include "camera.h"
 #include "YRMouse.h"
-#include "collision.h"
+#include "Game/collision.h"
 #include "YR_VectorMaster.h"
 #include "framework.h"
 

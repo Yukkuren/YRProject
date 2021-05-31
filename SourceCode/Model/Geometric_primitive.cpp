@@ -2,7 +2,7 @@
 #include <d3d11.h>
 #include <memory>
 #include"Geometric_primitive.h"
-#include "framework.h"
+#include "../framework.h"
 #include<map>
 
 geometric_primitive::geometric_primitive()

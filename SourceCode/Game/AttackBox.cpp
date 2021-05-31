@@ -1,8 +1,8 @@
 //#include"DxLib.h"
 #include "AttackBox.h"
 //#include"Common.h"
-#include "PlayerBase.h"
-#include "framework.h"
+#include "../Chara/PlayerBase/PlayerBase.h"
+#include "../framework.h"
 
 AttackBox::~AttackBox()
 {

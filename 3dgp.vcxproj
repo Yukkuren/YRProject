@@ -107,7 +107,7 @@
       <ShaderModel>5.0</ShaderModel>
       <AssemblerOutput>AssemblyCode</AssemblerOutput>
       <ObjectFileOutput>$(ProjectDir)Data\Shader\%(Filename).cso</ObjectFileOutput>
-      <AssemblerOutputFile>%(Filename).cod</AssemblerOutputFile>
+      <AssemblerOutputFile>$(ProjectDir)Data\Shader\COD\%(Filename).cod</AssemblerOutputFile>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -151,7 +151,7 @@
       <ShaderModel>5.0</ShaderModel>
       <AssemblerOutput>AssemblyCode</AssemblerOutput>
       <ObjectFileOutput>$(ProjectDir)Data\Shader\%(Filename).cso</ObjectFileOutput>
-      <AssemblerOutputFile>%(Filename).cod</AssemblerOutputFile>
+      <AssemblerOutputFile>$(ProjectDir)Data\Shader\COD\%(Filename).cod</AssemblerOutputFile>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -308,63 +308,234 @@
     <None Include="SourceCode\Shader\Trajectory\Trajectory.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="SourceCode\Shader\Anim\AnimShader_gs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Anim\AnimShader_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Anim\AnimShader_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\board\board_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\board\board_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\CharaSelect\CharaSelectShader_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\CharaSelect\CharaSelectShader_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Concentration\ConcentrationShader_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Concentration\ConcentrationShader_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Cyber\CyberShader_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Cyber\CyberShader_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\flat\flatShader_gs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\flat\flatShader_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\flat\flatShader_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Font\Font_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Font\Font_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\fur\furShader_gs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\fur\furShader_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\fur\furShader_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Gauss\GaussShader_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Gauss\GaussShader_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\geometric_primitive\geometric_primitive_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\geometric_primitive\geometric_primitive_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Load\LoadShader_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Load\LoadShader_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Mesh_Static\Mesh_Static_PS.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Mesh_Static\Mesh_Static_VS.hlsl" />
-    <FxCompile Include="SourceCode\Shader\ModeSelect\ModeSelectShader_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\ModeSelect\ModeSelectShader_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\MultiGauss\MultiGaussShader_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\MultiGauss\MultiGaussShader_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\ParalleToon\ParallelToon_gs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\ParalleToon\ParallelToon_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\ParalleToon\ParallelToon_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Silexars\SilexarsShader_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Silexars\SilexarsShader_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Skinned\Skinned_PS.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Skinned\Skinned_VS.hlsl" />
-    <FxCompile Include="SourceCode\Shader\SkyMap\SkyMapShader_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\SkyMap\SkyMapShader_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\SpriteEx\SpriteEx_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\SpriteEx\SpriteEx_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\sprite\sprite_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\sprite\sprite_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Tessellation\Tessellation_ds.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Tessellation\Tessellation_hs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Tessellation\Tessellation_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Tessellation\Tessellation_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Title\TitleShader_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Title\TitleShader_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\ToGbuffer\toGbuffer_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\ToGbuffer\toGbuffer_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Toon\ToonShader_gs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Toon\ToonShader_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Toon\ToonShader_vs.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Trajectory\Trajectory_ps.hlsl" />
-    <FxCompile Include="SourceCode\Shader\Trajectory\Trajectory_vs.hlsl" />
+    <FxCompile Include="SourceCode\Shader\Anim\AnimShader_gs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Anim\AnimShader_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Anim\AnimShader_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\board\board_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\board\board_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\CharaSelect\CharaSelectShader_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\CharaSelect\CharaSelectShader_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Concentration\ConcentrationShader_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Concentration\ConcentrationShader_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Cyber\CyberShader_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Cyber\CyberShader_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\flat\flatShader_gs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\flat\flatShader_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\flat\flatShader_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Font\Font_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Font\Font_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\fur\furShader_gs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\fur\furShader_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\fur\furShader_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Gauss\GaussShader_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Gauss\GaussShader_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\geometric_primitive\geometric_primitive_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\geometric_primitive\geometric_primitive_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Load\LoadShader_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Load\LoadShader_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Mesh_Static\Mesh_Static_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Mesh_Static\Mesh_Static_VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\ModeSelect\ModeSelectShader_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\ModeSelect\ModeSelectShader_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\MultiGauss\MultiGaussShader_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\MultiGauss\MultiGaussShader_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\ParalleToon\ParallelToon_gs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\ParalleToon\ParallelToon_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\ParalleToon\ParallelToon_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Silexars\SilexarsShader_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Silexars\SilexarsShader_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Skinned\Skinned_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Skinned\Skinned_VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\SkyMap\SkyMapShader_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\SkyMap\SkyMapShader_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\SpriteEx\SpriteEx_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\SpriteEx\SpriteEx_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\sprite\sprite_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\sprite\sprite_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Tessellation\Tessellation_ds.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Domain</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Domain</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Tessellation\Tessellation_hs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Hull</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Hull</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Tessellation\Tessellation_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Tessellation\Tessellation_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Title\TitleShader_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Title\TitleShader_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\ToGbuffer\toGbuffer_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\ToGbuffer\toGbuffer_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Toon\ToonShader_gs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Toon\ToonShader_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Toon\ToonShader_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Trajectory\Trajectory_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="SourceCode\Shader\Trajectory\Trajectory_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,5 +1,5 @@
 #include "Effect.h"
-#include "CoList.h"
+#include "Game/CoList.h"
 #include "framework.h"
 
 void YR_Effect::Init()

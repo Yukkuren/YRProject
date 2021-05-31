@@ -3,7 +3,7 @@
 #include <tchar.h>
 #include<stdio.h>
 #include"misc.h"
-#include"DirectXTK-master\Inc\WICTextureLoader.h"
+#include"../DirectXTK-master\Inc\WICTextureLoader.h"
 #include<map>
 #include<wrl.h>
 #include<Shlwapi.h>

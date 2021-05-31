@@ -3,20 +3,20 @@
 #ifndef PLAYERBASE_H_
 #define PLAYERBASE_H_
 
-#include "Skinned_mesh.h"
+//#include "../../Model/Skinned_mesh.h"
 
-#include "YR_VectorMaster.h"
-#include "HitBox.h"
-#include "AttackBox.h"
-#include "Tracking.h"
+#include "../../YR_VectorMaster.h"
+#include "../../Game/HitBox.h"
+#include "../../Game/AttackBox.h"
+#include "../../Game/Tracking.h"
 #include <memory>
-#include "YRGamePad.h"
-#include "YRModelAnim.h"
-#include "Texture.h"
+#include "../../Game/YRGamePad.h"
+#include "../../Model/YRModelAnim.h"
+#include "../../Texture.h"
 #include <vector>
 #include <string>
-#include "sprite.h"
-#include "Effect.h"
+#include "../../sprite.h"
+//#include "Effect.h"
 
 
 constexpr float POS_Y = 0.0f;							//ç≈í·ÇÃçÇÇ≥

@@ -1,8 +1,8 @@
 #ifndef _ATTACKBOX_H_
 #define _ATTACKBOX_H_
-#include "YR_VectorMaster.h"
-#include "YRShader.h"
-#include "Effect.h"
+#include "../YR_VectorMaster.h"
+#include "../YRShader.h"
+#include "../Effect.h"
 
 //--------------------------------------------------
 // **攻撃パラメーター列挙**

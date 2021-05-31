@@ -1,5 +1,5 @@
 #include "AnimBoard.h"
-#include "framework.h"
+#include "../framework.h"
 
 AnimBoard::AnimBoard(std::shared_ptr<Texture> texture,int split_size, XMFLOAT2 tex_size, XMINT2 tex_split, XMFLOAT2 tex_max_size)
 {

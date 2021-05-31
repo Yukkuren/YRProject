@@ -1,7 +1,7 @@
 ﻿#include "Scene.h"
-#include "framework.h"
-#include "YRSound.h"
-#include "Blur.h"
+#include "../framework.h"
+#include "../YRSound.h"
+#include "../Blur.h"
 
 
 //-------------------------------------------------------------

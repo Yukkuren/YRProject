@@ -4,7 +4,7 @@ SamplerState diffuse_map_sampler_state : register(s0);
 #include"Skinned_mesh.hlsli"
 //SP4
 //--------------------------------------------
-// 拡散反射関数（ランバートシェーディング） 
+// 拡散反射関数（ランバートシェーディング）
 //--------------------------------------------
 // N:法線(正規化済み)
 // L:入射ベクトル(正規化済み)
@@ -107,7 +107,7 @@ PSOutput main(VS_OUT pin) : SV_TARGET
 
 	//フォグ計算
 	//color.rgb = Fog(color.rgb, EyePos.xyz, pin.wPos, fogColor, fogNear, fogFar);
-	
+
 	float3 NN = normalize(pin.wNormal);	//ワールド法線
 	float3 P = pin.wPos;				//ワールド座標
 

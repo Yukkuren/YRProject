@@ -1,7 +1,7 @@
 #pragma once
 
-#include "EXlib/Effekseer.h"
-#include "EXlib/EffekseerRendererDX11.h"
+#include "../EXlib/Effekseer.h"
+#include "../EXlib/EffekseerRendererDX11.h"
 
 #include <vector>
 #include <DirectXMath.h>

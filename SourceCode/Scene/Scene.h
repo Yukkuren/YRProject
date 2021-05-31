@@ -1,24 +1,25 @@
 #pragma once
 
-#include "./imgui/imgui.h"
-#include "./imgui/imgui_impl_win32.h"
-#include "./imgui/imgui_impl_dx11.h"
-#include "Key.h"
+#include "../../imgui/imgui.h"
+#include "../../imgui/imgui_impl_win32.h"
+#include "../../imgui/imgui_impl_dx11.h"
+#include "../Key.h"
 #include <directxmath.h>
 //#include <memory>
 #include< Windows.h>
-#include "YR_VectorMaster.h"
-#include "YRGamePad.h"
+#include "../YR_VectorMaster.h"
+#include "../Game/YRGamePad.h"
 #include <thread>
-#include "PlayerBase.h"
-#include "sprite.h"
-#include "YRShader.h"
-#include "YRModelAnim.h"
-#include "Geometric_primitive.h"
-#include "Board_primitive.h"
-#include "Sampler.h"
-#include "AnimBoard.h"
-#include "collision.h"
+#include "../Chara/PlayerBase/PlayerBase.h"
+#include "../sprite.h"
+#include "../YRShader.h"
+#include "../Model/YRModelAnim.h"
+#include "../Model/Geometric_primitive.h"
+#include "../Model/Board_primitive.h"
+#include "../Sampler.h"
+#include "../Model/AnimBoard.h"
+#include "../Game/collision.h"
+#include "../Model/Skinned_mesh.h"
 
 
 //ほとんどのシーンで使用するためヘッダーに直接書いている

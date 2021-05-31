@@ -1,6 +1,6 @@
 #include "YRModelAnim.h"
-#include "misc.h"
-#include "framework.h"
+#include "../misc.h"
+#include "../framework.h"
 
 ModelAnim::ModelAnim(const std::shared_ptr<Model>& resource)
 {

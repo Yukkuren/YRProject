@@ -1,5 +1,5 @@
 #include "ModeSelectShader.hlsli"
-#include "ShaderToy.hlsli"
+#include "../ShaderToy.hlsli"
 
 
 // Shader by Zanzlanz ;)
@@ -28,7 +28,7 @@ float rand2(vec2 co) {
 }
 
 // For block heights
-float rand(vec2 co) 
+float rand(vec2 co)
 {
     return min(rand2(co) + sin(co.x * .1 - co.y * .5 + tick * .2) * .1 + cos(co.y * .3 + co.x * .5 + tick * .4) * .1,
         .87 + length(vec2(mod2(co.x - cam.x + worldSize * .5, worldSize) - worldSize * .5, mod2(co.y - cam.z + worldSize * .5, worldSize) - worldSize * .5)) * .1);
@@ -43,7 +43,7 @@ vec3 getFG(vec3 co) {
     }
     return vec3(-1, 0, 0);
 }
-vec4 raycast(vec3 start, vec3 castSpeedStart) 
+vec4 raycast(vec3 start, vec3 castSpeedStart)
 {
     vec3 castSpeed = vec3(castSpeedStart.xyz);
     float skyAmount = castSpeed.y * .4;

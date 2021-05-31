@@ -1,16 +1,15 @@
 #include "Scene.h"
-#include "framework.h"
+#include "../framework.h"
 #include <stdlib.h>
 #include <time.h>
-#include "YRMouse.h"
-#include "framework.h"
-#include "HitCheak.h"
-#include "World.h"
-#include "Blur.h"
-#include "YRSound.h"
+#include "../YRMouse.h"
+#include "../Game/HitCheak.h"
+#include "../Game/World.h"
+#include "../Blur.h"
+#include "../YRSound.h"
 
 //キャラクターインクルード
-#include "Knight.h"
+#include "../Chara/Knight/Knight.h"
 
 //------------------------------------------------
 // **シーン概要**

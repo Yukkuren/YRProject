@@ -1,6 +1,6 @@
 #include "PlayerBase.h"
-#include "Effect.h"
-#include "YRSound.h"
+#include "../../Effect.h"
+#include "../../YRSound.h"
 
 //------------------------------------------------
 //					UŒ‚‚Ìˆ—

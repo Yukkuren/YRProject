@@ -237,7 +237,7 @@ enum class ZSortType : int32_t
 };
 
 //-----------------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------------
 enum class RenderMode : int32_t
 {
@@ -321,7 +321,7 @@ inline int32_t ConvertUtf16ToUtf8( int8_t* dst, int32_t dst_size, const int16_t*
 	int8_t* cp = dst;
 
 	if (dst_size == 0) return 0;
-	
+
 	dst_size -= 3;
 
 	for (cnt = 0; cnt < dst_size; )
@@ -425,13 +425,13 @@ inline int32_t ConvertUtf8ToUtf16( int16_t* dst, int32_t dst_size, const int8_t*
 	int8_t c0, c1, c2;
 
 	if (dst_size == 0) return 0;
-	
+
 	dst_size -= 1;
 
 	for (i = 0; i < dst_size; i++)
 	{
 		int16_t wc;
-		
+
 		c0 = *src++;
 		if (c0 == '\0')
 		{
@@ -443,20 +443,20 @@ inline int32_t ConvertUtf8ToUtf16( int16_t* dst, int32_t dst_size, const int8_t*
 		{
 			// 8bit文字
 			wc = c0;
-		} 
+		}
 		else if (code >= 12 && code <= 13)
 		{
 			// 16bit文字
 			c1 = *src++;
 			wc = ((c0 & 0x1F) << 6) | (c1 & 0x3F);
-		} 
+		}
 		else if (code == 14)
 		{
 			// 24bit文字
 			c1 = *src++;
 			c2 = *src++;
 			wc = ((c0 & 0x0F) << 12) | ((c1 & 0x3F) << 6) | (c2 & 0x3F);
-		} 
+		}
 		else
 		{
 			continue;
@@ -503,7 +503,7 @@ template <typename T>
 struct ReferenceDeleter
 {
 	void operator()(T* ptr) const
-	{ 
+	{
 		if (ptr != nullptr)
 		{
 			ptr->Release();
@@ -511,18 +511,18 @@ struct ReferenceDeleter
 	}
 };
 
-template<typename T> 
+template<typename T>
 inline std::unique_ptr<T, ReferenceDeleter<T>> CreateUniqueReference(T* ptr, bool addRef = false)
-{ 
+{
 	if (ptr == nullptr)
-		return std::unique_ptr<T, ReferenceDeleter<T>>(nullptr); 
+		return std::unique_ptr<T, ReferenceDeleter<T>>(nullptr);
 
 	if (addRef)
 	{
 		ptr->AddRef();
 	}
 
-	return std::unique_ptr<T, ReferenceDeleter<T>>(ptr); 
+	return std::unique_ptr<T, ReferenceDeleter<T>>(ptr);
 }
 
 //----------------------------------------------------------------------------------
@@ -870,7 +870,7 @@ template <class T, class U> using CustomAlignedMap = std::map<T, U, std::less<T>
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
-namespace Effekseer { 
+namespace Effekseer {
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -906,7 +906,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
- } 
+ }
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -922,7 +922,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
-namespace Effekseer { 
+namespace Effekseer {
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -1029,7 +1029,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
- } 
+ }
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -1077,7 +1077,7 @@ struct Color
 		@brief	青
 	*/
 	uint8_t		B;
-	
+
 	/**
 		@brief	透明度
 	*/
@@ -1098,7 +1098,7 @@ struct Color
 	*/
 	static Color Mul( Color in1, Color in2 );
 	static Color Mul( Color in1, float in2 );
-	
+
 	/**
 		@brief	線形補間
 	*/
@@ -1124,7 +1124,7 @@ struct Color
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
-namespace Effekseer { 
+namespace Effekseer {
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -1156,7 +1156,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
- } 
+ }
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -1172,7 +1172,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
-namespace Effekseer { 
+namespace Effekseer {
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -1198,7 +1198,7 @@ public:
 		@brief	行列の値
 	*/
 	float	Value[4][3];
-	
+
 	/**
 		@brief	単位行列化を行う。
 	*/
@@ -1229,7 +1229,7 @@ public:
 		@param	angle	[in]	角度(ラジアン)
 	*/
 	void RotationZ( float angle );
-	
+
 	/**
 		@brief	反時計周り方向のXYZ軸回転行列化を行う。
 		@param	rx	[in]	角度(ラジアン)
@@ -1237,7 +1237,7 @@ public:
 		@param	rz	[in]	角度(ラジアン)
 	*/
 	void RotationXYZ( float rx, float ry, float rz );
-	
+
 	/**
 		@brief	反時計周り方向のZXY軸回転行列化を行う。
 		@param	rz	[in]	角度(ラジアン)
@@ -1275,14 +1275,14 @@ public:
 		@param	r	[out]	回転行列
 		@param	t	[out]	位置
 	*/
-	void GetSRT( Vector3D& s, Matrix43& r, Vector3D& t ) const; 
-	
+	void GetSRT( Vector3D& s, Matrix43& r, Vector3D& t ) const;
+
 	/**
 		@brief	行列から拡大ベクトルを取得する。
 		@param	s	[out]	拡大ベクトル
 	*/
 	void GetScale( Vector3D& s ) const;
-	
+
 	/**
 		@brief	行列から回転行列を取得する。
 		@param	s	[out]	回転行列
@@ -1294,7 +1294,7 @@ public:
 		@param	t	[out]	移動ベクトル
 	*/
 	void GetTranslation( Vector3D& t ) const;
-	
+
 	/**
 		@brief	行列の拡大、回転、移動を設定する。
 		@param	s	[in]	拡大行列
@@ -1325,7 +1325,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
- } 
+ }
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -1341,7 +1341,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
-namespace Effekseer { 
+namespace Effekseer {
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -1408,12 +1408,12 @@ public:
 		@brief	射影行列化(左手系)
 	*/
 	Matrix44& PerspectiveFovLH( float ovY, float aspect, float zn, float zf );
-	
+
 	/**
 	 @brief	OpenGL用射影行列化(左手系)
 	 */
 	Matrix44& PerspectiveFovLH_OpenGL( float ovY, float aspect, float zn, float zf );
-	
+
 	/**
 		@brief	正射影行列化(右手系)
 	*/
@@ -1474,7 +1474,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
- } 
+ }
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -1490,7 +1490,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
-namespace Effekseer { 
+namespace Effekseer {
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -1563,7 +1563,7 @@ public:
 };
 
 
- } 
+ }
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -1579,7 +1579,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
-namespace Effekseer { 
+namespace Effekseer {
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -1641,7 +1641,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
- } 
+ }
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -1806,7 +1806,7 @@ public:
 
 	/**
 		@brief
-		\~English this method is called to check whether loaded binary are supported. 
+		\~English this method is called to check whether loaded binary are supported.
 		\~Japanese	バイナリがサポートされているか確認するためにこのメソッドが呼ばれる。
 	*/
 	virtual bool OnCheckIsBinarySupported(const void* data, int32_t size);
@@ -1853,7 +1853,7 @@ public:
 };
 
 /**
-	@brief	
+	@brief
 	\~English	Effect parameters
 	\~Japanese	エフェクトパラメータークラス
 */
@@ -1914,7 +1914,7 @@ public:
 	static ::Effekseer::EffectLoader* CreateEffectLoader(::Effekseer::FileInterface* fileInterface = NULL);
 
 	/**
-	@brief	
+	@brief
 	\~English	Get this effect's name. If this effect is loaded from file, default name is file name without extention.
 	\~Japanese	エフェクトの名前を取得する。もしファイルからエフェクトを読み込んだ場合、名前は拡張子を除いたファイル名である。
 	*/
@@ -1937,7 +1937,7 @@ public:
 			\~Japanese	読み込み時と出力時の拡大率をかけた拡大率を取得する。
 	*/
 	virtual float GetMaginification() const = 0;
-	
+
 	/**
 		@brief	エフェクトデータのバージョン取得
 	*/
@@ -1985,7 +1985,7 @@ public:
 	\~Japanese	法線画像のパスを取得する。
 	*/
 	virtual const EFK_CHAR* GetNormalImagePath(int n) const = 0;
-	
+
 	/**
 	@brief	格納されている歪み画像のポインタを取得する。
 	@param	n	[in]	画像のインデックス
@@ -2003,7 +2003,7 @@ public:
 	\~Japanese	歪み画像のパスを取得する。
 	*/
 	virtual const EFK_CHAR* GetDistortionImagePath(int n) const = 0;
-	
+
 	/**
 		@brief	格納されている音波形のポインタを取得する。
 	*/
@@ -2019,7 +2019,7 @@ public:
 	\~Japanese	音波形のパスを取得する。
 	*/
 	virtual const EFK_CHAR* GetWavePath(int n) const = 0;
-	
+
 	/**
 		@brief	格納されているモデルのポインタを取得する。
 	*/
@@ -2035,7 +2035,7 @@ public:
 	\~Japanese	モデルのパスを取得する。
 	*/
 	virtual const EFK_CHAR* GetModelPath(int n) const = 0;
-	
+
 	/**
 	@brief	\~English	Get a material's pointer
 	\~Japanese	格納されているマテリアルのポインタを取得する。
@@ -2043,7 +2043,7 @@ public:
 	virtual MaterialData* GetMaterial(int n) const = 0;
 
 	/**
-	@brief	\~English	Get the number of stored material pointer 
+	@brief	\~English	Get the number of stored material pointer
 	\~Japanese	格納されているマテリアルのポインタの個数を取得する。
 	*/
 	virtual int32_t GetMaterialCount() const = 0;
@@ -2244,7 +2244,7 @@ struct EffectBasicRenderParameter
 };
 
 /**
-@brief	
+@brief
 	\~English	Model parameter
 	\~Japanese	モデルパラメーター
 @note
@@ -2274,7 +2274,7 @@ public:
 	virtual Effect* GetEffect() const = 0;
 
 	/**
-	@brief	
+	@brief
 	\~English	Get a generation in the node tree. The generation increases by 1 as it moves a child node.
 	\~Japanese	ノードツリーの世代を取得する。世代は子のノードになるにしたがって1増える。
 	*/
@@ -2301,7 +2301,7 @@ public:
 	virtual void SetBasicRenderParameter(EffectBasicRenderParameter param) = 0;
 
 	/**
-	@brief	
+	@brief
 	\~English	Get a model parameter
 	\~Japanese	モデルパラメーターを取得する。
 	*/
@@ -2532,7 +2532,7 @@ public:
 		@brief	テクスチャ読込クラスを設定する。
 	*/
 	virtual void SetTextureLoader( TextureLoader* textureLoader ) = 0;
-	
+
 	/**
 		@brief	サウンド再生機能を取得する。
 	*/
@@ -2542,12 +2542,12 @@ public:
 		@brief	サウンド再生機能を設定する。
 	*/
 	virtual void SetSoundPlayer( SoundPlayer* soundPlayer ) = 0;
-	
+
 	/**
 		@brief	サウンド読込クラスを取得する
 	*/
 	virtual SoundLoader* GetSoundLoader() = 0;
-	
+
 	/**
 		@brief	サウンド読込クラスを設定する。
 	*/
@@ -2623,19 +2623,19 @@ public:
 		最初に確保した個数よりも多く存在する。
 	*/
 	virtual int32_t GetInstanceCount( Handle handle ) = 0;
-	
+
 	/**
 		@brief
 		\~English Get the number of instances which is used in playing effects
 		\~Japanese 全てのエフェクトに使用されているインスタンス数を取得する。
-		@return	
+		@return
 		\~English The number of instances
 		\~Japanese インスタンス数
 		@note
-		\~English 
-		The number of Root is included. 
+		\~English
+		The number of Root is included.
 		This means that the number of used instances added resting resting instances is larger than the number of allocated onces by the number of root.
-		\~Japanese 
+		\~Japanese
 		Rootも個数に含まれる。つまり、Root削除をしていない限り、
 		Managerに残っているインスタンス数+エフェクトに使用されているインスタンス数は、最初に確保した個数よりも存在しているRootの数の分だけ多く存在する。
 	*/
@@ -2694,7 +2694,7 @@ public:
 		@param	angle	[in]	角度(ラジアン)
 	*/
 	virtual void SetRotation( Handle handle, const Vector3D& axis, float angle ) = 0;
-	
+
 	/**
 		@brief	エフェクトのインスタンスの拡大率を指定する。
 		@param	handle	[in]	インスタンスのハンドル
@@ -2884,7 +2884,7 @@ public:
 	virtual void EndUpdate() = 0;
 
 	/**
-		@brief	
+		@brief
 		\~English	Update an effect by a handle.
 		\~Japanese	ハンドル単位の更新を行う。
 		@param	handle
@@ -2896,18 +2896,18 @@ public:
 		@note
 		\~English
 		You need to call BeginUpdate before starting update and EndUpdate after stopping update.
-		\~Japanese	
+		\~Japanese
 		更新する前にBeginUpdate、更新し終わった後にEndUpdateを実行する必要がある。
 	*/
 	virtual void UpdateHandle( Handle handle, float deltaFrame = 1.0f ) = 0;
 
 	/**
-	@brief	
+	@brief
 	\~English	Draw particles.
 	\~Japanese	描画処理を行う。
 	*/
 	virtual void Draw(const Manager::DrawParameter& drawParameter = Manager::DrawParameter()) = 0;
-	
+
 	/**
 	@brief
 	\~English	Draw particles in the back of priority 0.
@@ -2935,7 +2935,7 @@ public:
 	\~Japanese	背面のハンドル単位の描画処理を行う。
 	*/
 	virtual void DrawHandleBack(Handle handle, const Manager::DrawParameter& drawParameter = Manager::DrawParameter()) = 0;
-	
+
 	/**
 	@brief
 	\~English	Draw particles in the front of priority 0.
@@ -2952,7 +2952,7 @@ public:
 		@return	エフェクトのインスタンスのハンドル
 	*/
 	virtual Handle Play( Effect* effect, float x, float y, float z ) = 0;
-	
+
 	/**
 		@brief
 		\~English	Play an effect.
@@ -2980,7 +2980,7 @@ public:
 		@brief	Update処理時間を取得。
 	*/
 	virtual int GetUpdateTime() const = 0;
-	
+
 	/**
 		@brief	Draw処理時間を取得。
 	*/
@@ -3033,7 +3033,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
-namespace Effekseer { 
+namespace Effekseer {
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -3079,7 +3079,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
- } 
+ }
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -3095,7 +3095,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
-namespace Effekseer { 
+namespace Effekseer {
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -3158,7 +3158,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
- } 
+ }
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -3174,7 +3174,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
-namespace Effekseer { 
+namespace Effekseer {
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -3233,7 +3233,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
- } 
+ }
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -3247,7 +3247,7 @@ namespace Effekseer
 {
 
 /**
-	@brief	
+	@brief
 	\~English	Material loader
 	\~Japanese	マテリアル読み込み破棄関数指定クラス
 */
@@ -3255,7 +3255,7 @@ class MaterialLoader
 {
 public:
 	/**
-	@brief	
+	@brief
 	\~English	Constructor
 	\~Japanese	コンストラクタ
 	*/
@@ -3272,7 +3272,7 @@ public:
 		@brief
 		\~English	load a material
 		\~Japanese	マテリアルを読み込む。
-		@param	path	
+		@param	path
 		\~English	a file path
 		\~Japanese	読み込み元パス
 		@return
@@ -3325,7 +3325,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
-namespace Effekseer { 
+namespace Effekseer {
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -3516,11 +3516,11 @@ public:
 		if( p1 + p2 > 1.0f )
 		{
 			p1 = 1.0f - p1;
-			p2 = 1.0f - p2;			
+			p2 = 1.0f - p2;
 		}
 
 		float p0 = 1.0f - p1 - p2;
-		
+
 		Emitter emitter;
 		emitter.Position = (v0.Position * p0 + v1.Position * p1 + v2.Position * p2) * magnification;
 		emitter.Normal = v0.Normal * p0 + v1.Normal * p1 + v2.Normal * p2;
@@ -3545,7 +3545,7 @@ public:
 		int32_t vertexInd = (int32_t) ((GetVertexCount(time) - 1) * (g->GetRand()));
 		vertexInd = Clamp(vertexInd, GetVertexCount(time) - 1, 0);
 		Vertex& v = GetVertexes(time)[vertexInd];
-		
+
 		Emitter emitter;
 		emitter.Position = v.Position * magnification;
 		emitter.Normal = v.Normal;
@@ -3569,7 +3569,7 @@ public:
 
 		int32_t vertexInd = index % GetVertexCount(time);
 		Vertex& v = GetVertexes(time)[vertexInd];
-		
+
 		Emitter emitter;
 		emitter.Position = v.Position * magnification;
 		emitter.Normal = v.Normal;
@@ -3654,7 +3654,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
- } 
+ }
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -3699,7 +3699,7 @@ public:
 	virtual ~SoundPlayer() {}
 
 	virtual SoundHandle Play( SoundTag tag, const InstanceParameter& parameter ) = 0;
-	
+
 	virtual void Stop( SoundHandle handle, SoundTag tag ) = 0;
 
 	virtual void Pause( SoundHandle handle, SoundTag tag, bool pause ) = 0;
@@ -3793,7 +3793,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
- } 
+ }
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -3809,7 +3809,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
-namespace Effekseer { 
+namespace Effekseer {
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -3969,7 +3969,7 @@ class EffectFactory;
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
- } 
+ }
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -4028,7 +4028,7 @@ public:
 		@brief
 		\~English	register an effect as a target to edit.
 		\~Japanese	エフェクトを編集の対象として登録する。
-		@param	key	
+		@param	key
 		\~English	a key to search an effect
 		\~Japanese	検索用キー
 		@param	effect
@@ -4048,7 +4048,7 @@ public:
 	virtual void Unregister(Effect* effect) = 0;
 
 	/**
-		@brief	
+		@brief
 		\~English	update a server and reload effects
 		\~Japanese	サーバーを更新し、エフェクトのリロードを行う。
 		@brief	managers
@@ -4086,7 +4086,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
- } 
+ }
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
@@ -4130,7 +4130,7 @@ public:
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
- } 
+ }
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------

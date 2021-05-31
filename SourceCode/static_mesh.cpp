@@ -1,13 +1,13 @@
 #include<dxgi.h>
 #include <d3d11.h>
 #include <memory>
-#include"Geometric_primitive.h"
+#include"Model/Geometric_primitive.h"
 #include "framework.h"
 #include<map>
 #include"static_mesh.h"
 #include<fstream>
 #include<string>
-#include"DirectXTK-master\Inc\WICTextureLoader.h"
+#include"../DirectXTK-master\Inc\WICTextureLoader.h"
 
 namespace MeshTexShader
 {

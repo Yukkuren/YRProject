@@ -1,12 +1,12 @@
 #include "PlayerBase.h"
-#include "Key.h"
-#include "YRGamePad.h"
-#include "camera.h"
-#include "framework.h"
+#include "../../Key.h"
+#include "../../Game/YRGamePad.h"
+#include "../../camera.h"
+#include "../../framework.h"
 #include <algorithm>
-#include "World.h"
-#include "Effect.h"
-#include "YRSound.h"
+#include "../../Game//World.h"
+#include "../../Effect.h"
+#include "../../YRSound.h"
 
 //-----------------------------------------------------------------
 //			PlayerƒNƒ‰ƒX

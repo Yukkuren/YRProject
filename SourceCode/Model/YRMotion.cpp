@@ -1,5 +1,5 @@
 #include "Skinned_mesh.h"
-#include "framework.h"
+#include "../framework.h"
 
 //モーションデータをセットする
 void MeshMotion::MeshSet(std::unique_ptr<Skinned_mesh>& mesh)

@@ -2,9 +2,9 @@
 #include<dxgi.h>
 #include <d3d11.h>
 #include <memory>
-#include"Geometric_primitive.h"
+#include"Model/Geometric_primitive.h"
 #include"static_mesh.h"
-#include "collision.h"
+#include "Game/collision.h"
 #include "YRSound.h"
 #include "Effect.h"
 

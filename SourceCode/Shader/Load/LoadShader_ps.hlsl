@@ -1,5 +1,5 @@
 #include "LoadShader.hlsli"
-#include "ShaderToy.hlsli"
+#include "../ShaderToy.hlsli"
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {

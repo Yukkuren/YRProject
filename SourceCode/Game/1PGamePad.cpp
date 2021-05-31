@@ -1,4 +1,4 @@
-#include	"Key.h"
+#include "../Key.h"
 #include	"YRGamePad.h"
 //#include	"Common.h"
 #include	"HitCheak.h"

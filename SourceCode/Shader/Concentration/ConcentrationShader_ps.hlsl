@@ -1,5 +1,5 @@
 #include "ConcentrationShader.hlsli"
-#include "ShaderToy.hlsli"
+#include "../ShaderToy.hlsli"
 
 
 #define ANIMATE 10.0

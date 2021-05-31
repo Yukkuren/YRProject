@@ -1,8 +1,8 @@
 #ifndef _HITBOX_H_
 #define _HITBOX_H_
 
-#include "YR_VectorMaster.h"
-#include "YRShader.h"
+#include "../YR_VectorMaster.h"
+#include "../YRShader.h"
 
 
 constexpr float hitback_Adjustment = 300.0f;

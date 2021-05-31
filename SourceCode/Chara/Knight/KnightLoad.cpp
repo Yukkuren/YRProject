@@ -1,12 +1,12 @@
 #include "Knight.h"
-#include "PlayerBase.h"
-#include "Key.h"
-#include "YRGamePad.h"
-#include "camera.h"
-#include "framework.h"
+#include "../PlayerBase/PlayerBase.h"
+#include "../../Key.h"
+#include "../../Game/YRGamePad.h"
+#include "../../camera.h"
+#include "../../framework.h"
 #include <algorithm>
-#include "World.h"
-#include "Player_name_list.h"
+#include "../../Game//World.h"
+#include "../PlayerBase/Player_name_list.h"
 //#include <memory>
 
 //----------------------------------------------------------------

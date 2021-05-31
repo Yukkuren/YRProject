@@ -1,9 +1,9 @@
 #include "Scene.h"
-#include "HitCheak.h"
-#include "framework.h"
-#include "YRSound.h"
+#include "../Game/HitCheak.h"
+#include "../framework.h"
+#include "../YRSound.h"
 #include <math.h>
-#include "Player_name_list.h"
+#include "../Chara/PlayerBase/Player_name_list.h"
 #include <codecvt>
 
 // w_stringå^ïœçXópä÷êî

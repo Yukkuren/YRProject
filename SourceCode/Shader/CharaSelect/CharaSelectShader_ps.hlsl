@@ -1,5 +1,5 @@
 #include "CharaSelectShader.hlsli"
-#include "ShaderToy.hlsli"
+#include "../ShaderToy.hlsli"
 
 // https://www.shadertoy.com/view/4sSSWz
 // starDust - shadertoy intro

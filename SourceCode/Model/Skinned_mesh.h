@@ -2,10 +2,10 @@
 
 #include<Windows.h>
 #include<directxmath.h>
-#include "YRShader.h"
+#include "../YRShader.h"
 #include<array>
 #include<memory>
-#include "Texture.h"
+#include "../Texture.h"
 
 //-----------------------------------------------------------------
 //			Skinned_MeshƒNƒ‰ƒX

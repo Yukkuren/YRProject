@@ -1,7 +1,7 @@
 #pragma once
 
 //#include "framework.h"
-#include "sprite.h"
+#include "../sprite.h"
 #include <memory>
 
 //-----------------------------------------------------------------

@@ -1,7 +1,7 @@
 #ifndef _TRACKING_H_
 #define _TRACKING_H_
 
-#include	"YR_VectorMaster.h"
+#include	"../YR_VectorMaster.h"
 
 constexpr float track_wait_time = 0.8f;
 constexpr float track_adjust_up = 5.0f;

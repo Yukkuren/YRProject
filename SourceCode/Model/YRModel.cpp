@@ -1,7 +1,7 @@
-#include"DirectXTK-master\Inc\WICTextureLoader.h"
+#include"../../DirectXTK-master\Inc\WICTextureLoader.h"
 #include "YRModel.h"
-#include "misc.h"
-#include "framework.h"
+#include "../misc.h"
+#include "../framework.h"
 #include <codecvt>
 #include <array>
 

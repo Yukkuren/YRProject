@@ -1,7 +1,7 @@
 #include "Scene.h"
-#include "framework.h"
-#include "Blur.h"
-#include "YRSound.h"
+#include "../framework.h"
+#include "../Blur.h"
+#include "../YRSound.h"
 #include <math.h>
 #undef max
 

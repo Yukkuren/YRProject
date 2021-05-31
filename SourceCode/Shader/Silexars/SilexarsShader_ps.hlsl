@@ -1,4 +1,4 @@
-#include "ShaderToy.hlsli"
+#include "../ShaderToy.hlsli"
 #include "SilexarsShader.hlsli"
 
 #define t iTime

@@ -1,5 +1,5 @@
 #include "CyberShader.hlsli"
-#include "ShaderToy.hlsli"
+#include "../ShaderToy.hlsli"
 
 
 float sun(vec2 uv, float battery)

@@ -1,7 +1,7 @@
 #ifndef _WORLD_H_
 #define _WORLD_H_
 
-#include	"YR_VectorMaster.h"
+#include	"../YR_VectorMaster.h"
 
 //-----------------------------------------------------------------
 //			LimitƒNƒ‰ƒX

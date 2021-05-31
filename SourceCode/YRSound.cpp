@@ -1,15 +1,15 @@
 #include "YRSound.h"
 #include <stdio.h>
 #include <assert.h>
-#include "CoList.h"
+#include "Game/CoList.h"
 #include <string>
 #include <array>
 #include "framework.h"
 #include "Key.h"
 
-#include"./imgui/imgui.h"
-#include"./imgui/imgui_impl_win32.h"
-#include"./imgui/imgui_impl_dx11.h"
+#include"../imgui/imgui.h"
+#include"../imgui/imgui_impl_win32.h"
+#include"../imgui/imgui_impl_dx11.h"
 
 #ifdef  EXIST_IMGUI
 std::array<std::string, scastI(BGMKind::END)> bgm_name_list =

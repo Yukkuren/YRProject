@@ -1,6 +1,6 @@
 #include "HitBox.h"
-#include "PlayerBase.h"
-#include "framework.h"
+#include "../Chara/PlayerBase/PlayerBase.h"
+#include "../framework.h"
 
 void HitBox::Init()
 {

@@ -2,7 +2,7 @@
 #include <d3d11.h>
 #include <memory>
 #include"Board_primitive.h"
-#include "framework.h"
+#include "../framework.h"
 #include<map>
 
 using namespace DirectX;

@@ -2,12 +2,12 @@
 
 #include<Windows.h>
 #include<directxmath.h>
-#include "YRShader.h"
+#include "../YRShader.h"
 #include<array>
 #include<memory>
-#include "Texture.h"
+#include "../Texture.h"
 #include <fbxsdk.h>
-#include "YR_VectorMaster.h"
+#include "../YR_VectorMaster.h"
 
 
 #include <cereal/cereal.hpp>

@@ -1,7 +1,7 @@
 #include "Scene.h"
-#include "framework.h"
-#include "YRSound.h"
-#include "Player_name_list.h"
+#include "../framework.h"
+#include "../YRSound.h"
+#include "../Chara/PlayerBase/Player_name_list.h"
 #include <codecvt>
 
 // w_stringŒ^•ÏX—pŠÖ”

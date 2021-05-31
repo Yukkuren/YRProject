@@ -3,8 +3,8 @@
 #include <windows.h>
 #include<directxmath.h>
 #include<string>
-#include "YRShader.h"
-#include "Texture.h"
+#include "../YRShader.h"
+#include "../Texture.h"
 
 //-----------------------------------------------------------------
 //			”Âƒ|ƒŠƒNƒ‰ƒX

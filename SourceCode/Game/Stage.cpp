@@ -1,5 +1,5 @@
-#include "Scene.h"
-#include "framework.h"
+#include "../Scene/Scene.h"
+#include "../framework.h"
 
 //-----------------------------------------------------------------
 //			ステージ関係

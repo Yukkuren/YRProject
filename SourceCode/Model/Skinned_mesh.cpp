@@ -3,13 +3,13 @@
 #pragma comment(lib, "shlwapi.lib")
 using namespace fbxsdk;
 #include<functional>
-#include"DirectXTK-master\Inc\WICTextureLoader.h"
+#include"../../DirectXTK-master\Inc\WICTextureLoader.h"
 #include<string>
 #include<map>
 #include<wrl.h>
 #include<Shlwapi.h>
 #include <codecvt>
-#include "framework.h"
+#include "../framework.h"
 #include <locale>
 
 using convert_t = std::codecvt_utf8<wchar_t>;

@@ -5,7 +5,7 @@
 class high_resolution_timer
 {
 public:
-	high_resolution_timer() : delta_time(-1.0), paused_time(0), stopped(false)
+	high_resolution_timer() : delta_time(-1.0), paused_time(0), stopped(false),stop_time(0)
 	{
 		LONGLONG counts_per_sec;
 		QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER*>(&counts_per_sec));
@@ -21,9 +21,9 @@ public:
 	float time_stamp() const  // in seconds
 	{
 		// If we are stopped, do not count the time that has passed since we stopped.
-		// Moreover, if we previously already had a pause, the distance 
+		// Moreover, if we previously already had a pause, the distance
 		// stop_time - base_time includes paused time, which we do not want to count.
-		// To correct this, we can subtract the paused time from mStopTime:  
+		// To correct this, we can subtract the paused time from mStopTime:
 		//
 		//                     |<--paused_time-->|
 		// ----*---------------*-----------------*------------*------------*------> time
@@ -35,10 +35,10 @@ public:
 		}
 
 		// The distance this_time - mBaseTime includes paused time,
-		// which we do not want to count.  To correct this, we can subtract 
-		// the paused time from this_time:  
+		// which we do not want to count.  To correct this, we can subtract
+		// the paused time from this_time:
 		//
-		//  (this_time - paused_time) - base_time 
+		//  (this_time - paused_time) - base_time
 		//
 		//                     |<--paused_time-->|
 		// ----*---------------*-----------------*------------*------> time
@@ -73,7 +73,7 @@ public:
 		//
 		//                     |<-------d------->|
 		// ----*---------------*-----------------*------------> time
-		//  base_time       stop_time        start_time     
+		//  base_time       stop_time        start_time
 		if (stopped)
 		{
 			paused_time += (start_time - stop_time);

@@ -1,12 +1,12 @@
 #include "HitCheak.h"
 #include <stdlib.h>
 #include <time.h>
-#include "YR_VectorMaster.h"
-#include "camera.h"
+#include "../YR_VectorMaster.h"
+#include "../camera.h"
 
-#include "Effect.h"
-#include "YRSound.h"
-#include "framework.h"
+#include "../Effect.h"
+#include "../YRSound.h"
+#include "../framework.h"
 //#include "Music.h"
 
 const float guard_gauge_get = 3.0f;
