@@ -184,6 +184,9 @@
     <ClCompile Include="SourceCode\Chara\Knight\Knight.cpp" />
     <ClCompile Include="SourceCode\Chara\Knight\KnightATK.cpp" />
     <ClCompile Include="SourceCode\Chara\Knight\KnightLoad.cpp" />
+    <ClCompile Include="SourceCode\Chara\Neru\NeruLoad.cpp" />
+    <ClCompile Include="SourceCode\Chara\Neru\NeruATK.cpp" />
+    <ClCompile Include="SourceCode\Chara\Neru\Neru.cpp" />
     <ClCompile Include="SourceCode\Chara\PlayerBase\PlayerBase.cpp" />
     <ClCompile Include="SourceCode\Chara\PlayerBase\PlayerBaseATK.cpp" />
     <ClCompile Include="SourceCode\Chara\PlayerBase\PlayerBaseIO.cpp" />
@@ -238,6 +241,7 @@
     <ClInclude Include="SourceCode\brend.h" />
     <ClInclude Include="SourceCode\camera.h" />
     <ClInclude Include="SourceCode\Chara\Knight\Knight.h" />
+    <ClInclude Include="SourceCode\Chara\Neru\Neru.h" />
     <ClInclude Include="SourceCode\Chara\PlayerBase\PlayerBase.h" />
     <ClInclude Include="SourceCode\Chara\PlayerBase\Player_name_list.h" />
     <ClInclude Include="SourceCode\Effect.h" />

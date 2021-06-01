@@ -62,6 +62,9 @@
     <ClCompile Include="SourceCode\Scene\SceneSelect.cpp" />
     <ClCompile Include="SourceCode\Scene\SceneTest.cpp" />
     <ClCompile Include="SourceCode\Scene\SceneTitle.cpp" />
+    <ClCompile Include="SourceCode\Chara\Neru\Neru.cpp" />
+    <ClCompile Include="SourceCode\Chara\Neru\NeruATK.cpp" />
+    <ClCompile Include="SourceCode\Chara\Neru\NeruLoad.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">
@@ -132,6 +135,7 @@
     <ClInclude Include="SourceCode\Model\YRModel.h" />
     <ClInclude Include="SourceCode\Model\YRModelAnim.h" />
     <ClInclude Include="SourceCode\Scene\Scene.h" />
+    <ClInclude Include="SourceCode\Chara\Neru\Neru.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shader">
