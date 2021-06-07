@@ -487,7 +487,6 @@ bool framework::initialize()
 #endif
 
 
-
 	//cube = new geometric_primitive(device);
 	//obj = new Static_mesh(device, L"./Mr.Incredible/Mr.Incredible.obj");
 	//skin = std::make_unique< Skinned_mesh>(device.Get(), "./FBX/dummy_data.fbx");

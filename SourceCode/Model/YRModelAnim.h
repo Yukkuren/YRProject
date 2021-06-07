@@ -82,8 +82,12 @@ public:
 	void NodeChange(const std::shared_ptr<Model>& resource);
 	void NodeChange(const std::shared_ptr<Model>& resource,int anim_num);
 
+	//bool AnimCheack(const std::shared_ptr<Model>& resource, int anim_num);
+
 	const bool &GetLoopAnim()const  { return m_loop_animation; };	//再生中のアニメーションがループするかを返す
 	const int& GetEndAnim()const { return m_current_animation; };	//再生中のアニメーションが終了したかを返す(-1なら終了)
+
+	const bool& GetIntermediate()const { return model_resource_anim->intermediate; };	//再生中のアニメーションが中間アニメーションかどうかを返す
 
 private:
 	std::shared_ptr<Model>			m_model_resource;

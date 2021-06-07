@@ -138,6 +138,10 @@ void SceneTest::Init()
 		}
 	}
 
+
+	NeruLoad();
+
+
 	if (earth == nullptr)
 	{
 		earth = std::make_shared<Model>("./Data/Assets/earth/earth.fbx");
@@ -207,10 +211,10 @@ void SceneTest::Init()
 	{
 		knight_1p_cut = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut1.png", 640.0f, 192.0f);
 	}
-	if (knight_2p_cut == nullptr)
+	/*if (knight_2p_cut == nullptr)
 	{
 		knight_2p_cut = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_cut2.png", 640.0f, 192.0f);
-	}
+	}*/
 	if (knight_name == nullptr)
 	{
 		knight_name = std::make_unique<Sprite>(L"./Data/Image/Character/Knight/Knight_name.png", 640.0f, 320.0f);
@@ -411,13 +415,13 @@ void SceneTest::Init()
 void SceneTest::Update(float elapsed_time)
 {
 
-	if (pKeyState.cflg == 1)
+	/*if (pKeyState.cflg == 1)
 	{
 		if (!cut_in)
 		{
 			cut_in = true;
 		}
-	}
+	}*/
 
 	if (timer_start)
 	{
@@ -431,12 +435,12 @@ void SceneTest::Update(float elapsed_time)
 		cut_fin = true;
 	}
 
-	if (pKeyState.pflg == 1)
+	/*if (pKeyState.pflg == 1)
 	{
 		pause = !pause;
-	}
+	}*/
 
-	if (pKeyState.oflg == 1)
+	/*if (pKeyState.oflg == 1)
 	{
 		YRCamera.SetEye(eye_cut);
 		YRCamera.SetFocus(focus_cut);
@@ -444,7 +448,7 @@ void SceneTest::Update(float elapsed_time)
 		knight_pos.x = 14.0f;
 		knight_pos.z = 0.0f;
 		motion->NodeChange(special_R);
-	}
+	}*/
 
 	MatchUpdate(elapsed_time);
 }
@@ -543,6 +547,8 @@ static bool blur = true;
 		}
 	}
 #endif
+
+	NeruImGui();
 
 
 	FRAMEWORK.framebuffer.ResetRenderTexture();
@@ -842,8 +848,24 @@ void SceneTest::RenderTexture(
 		//ブレンドステート設定
 
 		sampler_wrap->Set(0);
-		motion->UpdateAnimation(elapsed_time);
-		motion->CalculateLocalTransform();
+		//motion->UpdateAnimation(elapsed_time);
+		//motion->CalculateLocalTransform();
+
+		Neru_base->UpdateAnimation(elapsed_time);
+		Neru_base->CalculateLocalTransform();
+
+
+		Neru_base->CalculateWorldTransform(knight_pos,
+			knight_scale,
+			knight_angle);
+
+		Neru_base->Draw(
+			toonShader.get(),
+			view, projection,
+			light_direction, light_color,
+			D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST,
+			ambient_color
+		);
 
 		//knight_normal_map->Set(1);
 		//knight_height_map->Set(2);
@@ -867,7 +889,7 @@ void SceneTest::RenderTexture(
 			ambient_color
 		);*/
 
-		motion->CalculateWorldTransform(knight_pos,
+		/*motion->CalculateWorldTransform(knight_pos,
 			knight_scale,
 			knight_angle);
 		motion->Draw(
@@ -876,7 +898,7 @@ void SceneTest::RenderTexture(
 			light_direction, light_color,
 			D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST,
 			ambient_color
-		);
+		);*/
 		/*motion->Draw(
 			skinShader.get(),
 			view, projection, light_direction, light_color, ambient_color
@@ -1499,4 +1521,104 @@ void SceneTest::MatchUpdate(float elapsed_time)
 	default:
 		break;
 	}
+}
+
+
+void SceneTest::NeruLoad()
+{
+	if (Neru == nullptr)
+	{
+		Neru = std::make_shared<Model>("./Data/FBX/Neru/Neru_main.fbx");
+	}
+
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_wait_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_backstep_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_back_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_air_back_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_air_dash_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_air_jaku_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_air_jump_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_air_kyo_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_air_thu_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_air_ukyo_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_d_jaku_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_d_thu_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_damage_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_dash_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_down_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_fall_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_guard_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_Intro_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_jaku_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_jumpToFall_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_jump_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_kick2_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_kick1_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_kyo_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_landing_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_Lhurf_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_passive_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_Rhurf_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_slid_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_special_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_squat_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_steal_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_throw_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_thu_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_track_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_u_kyo_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_win_R.fbx"));
+
+	if (Neru_base == nullptr)
+	{
+		Neru_base = std::make_unique<ModelAnim>(Neru);
+		Neru_base->PlayAnimation(0, true);
+		Neru_base->NodeChange(Neru_anims[0]);
+	}
+}
+
+
+
+void SceneTest::NeruImGui()
+{
+#ifdef EXIST_IMGUI
+	//ImGui
+	if (Get_Use_ImGui())
+	{
+		ImGui::Begin("NeruMotion");
+
+		for (int i = 0; i < Neru_anims.size(); i++)
+		{
+			std::string name = Neru_anims[i]->Serial_name;
+
+			int size = 0;
+			int slash = 0;
+			for (int i = name.size() - 1; i > 0; i--)
+			{
+
+				if (name.at(i) == '/' || name.at(i) == '\\')
+				{
+					slash = i;
+					break;
+				}
+				size++;
+			}
+			name = name.substr(slash + 1, size);
+
+			for (int a = 0; a < 5; a++)
+			{
+				if (Neru_anims[i]->AnimCheack(a))
+				{
+					std::string button_name = name + std::to_string(a);
+					if (ImGui::Button(button_name.c_str()))
+					{
+						Neru_base->NodeChange(Neru_anims[i], a);
+					}
+				}
+			}
+		}
+
+		ImGui::End();
+	}
+#endif
 }

@@ -18,7 +18,7 @@
 
 #ifdef EXIST_IMGUI
 
-std::array<std::string, scastI(NERUHIT::END)> hit_name_list =
+std::array<std::string, scastI(NERUHIT::END)> hit_name_list_Neru =
 {
 	u8"頭",
 	u8"ボディ",
@@ -236,6 +236,9 @@ void Neru::Draw(
 	DirectX::XMFLOAT2 eye_offset = { 0.0f,0.0f };
 	DirectX::XMFLOAT2 face_mouth_offset = { 0.0f,0.0f };
 
+
+	DirectX::XMFLOAT3 draw_pos = { pos.x, pos.y + adjust_pos_Y, pos.z };
+
 	//カメラの状態によってモデルの描画方法が違うため、分けている
 	switch (YRCamera.camera_state)
 	{
@@ -244,7 +247,7 @@ void Neru::Draw(
 		//カメラがゲーム画面全体を見ている場合
 		anim->UpdateAnimation(game_speed * anim_ccodinate);
 		anim->CalculateLocalTransform();
-		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
+		anim->CalculateWorldTransform(draw_pos, scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
 		return_inverse = anim->Draw(parallel_shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset, lumi_material, material_color);
 		//影の表示
 		anim->CalculateWorldTransform(DirectX::XMFLOAT3(pos.x, shadow_y, pos.z + shadow_z), DirectX::XMFLOAT3(scale.x, 0.001f, scale.z), DirectX::XMFLOAT3(0.0f, angle.y, 0.0f));
@@ -256,7 +259,7 @@ void Neru::Draw(
 		//カメラがズームしている時
 		anim->UpdateAnimation(game_speed * anim_ccodinate);
 		anim->CalculateLocalTransform();
-		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
+		anim->CalculateWorldTransform(draw_pos, scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
 		return_inverse = anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset, lumi_material, material_color);
 		//影の表示
 		anim->CalculateWorldTransform(DirectX::XMFLOAT3(pos.x, shadow_y, pos.z + shadow_z), DirectX::XMFLOAT3(scale.x, 0.001f, scale.z), DirectX::XMFLOAT3(0.0f, angle.y, 0.0f));
@@ -271,7 +274,7 @@ void Neru::Draw(
 			//カメラがキャラを見ている場合
 			anim->UpdateAnimation(game_speed * anim_ccodinate);
 			anim->CalculateLocalTransform();
-			anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
+			anim->CalculateWorldTransform(draw_pos, scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
 			return_inverse = anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset, lumi_material, material_color);
 			//影の表示
 			anim->CalculateWorldTransform(DirectX::XMFLOAT3(pos.x, shadow_y, pos.z + shadow_z), DirectX::XMFLOAT3(scale.x, 0.001f, scale.z), DirectX::XMFLOAT3(0.0f, angle.y, 0.0f));
@@ -284,7 +287,7 @@ void Neru::Draw(
 		//対戦終了時
 		anim->UpdateAnimation(game_speed * anim_ccodinate);
 		anim->CalculateLocalTransform();
-		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
+		anim->CalculateWorldTransform(draw_pos, scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
 		return_inverse = anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset, lumi_material, material_color);
 		//影の表示
 		anim->CalculateWorldTransform(DirectX::XMFLOAT3(pos.x, shadow_y, pos.z + shadow_z), DirectX::XMFLOAT3(scale.x, 0.001f, scale.z), DirectX::XMFLOAT3(0.0f, angle.y, 0.0f));
@@ -307,6 +310,13 @@ void Neru::Draw(
 		anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset, Model::Material_Attribute::NONE, DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 	}
 
+
+	/*if (Get_Use_ImGui())
+	{
+		ImGui::Begin(u8"Neru");
+		ImGui::SliderFloat("adjust_Y", &adjust_pos_Y, 0.0f, 200.0f);
+		ImGui::End();
+	}*/
 
 	//剣の軌跡描画
 
@@ -785,7 +795,7 @@ void Neru::DrawDEBUGHitParam()
 					for (int list = 0; list < hitparam_list.size(); list++)
 					{
 						//プレイヤーの当たり判定をそれぞれ出す
-						if (ImGui::TreeNode(hit_name_list[list].c_str()))
+						if (ImGui::TreeNode(hit_name_list_Neru[list].c_str()))
 						{
 							ImGui::SliderFloat(u8"プレイヤーとの距離X", &hitparam_list[list].act_parameter[act].distance.x, -50.0f, 50.0f);
 							ImGui::SliderFloat(u8"プレイヤーとの距離Y", &hitparam_list[list].act_parameter[act].distance.y, -50.0f, 50.0f);
@@ -816,7 +826,7 @@ void Neru::DrawDEBUGHitParam()
 				{
 					for (int list = 0; list < hitparam_list.size(); list++)
 					{
-						if (ImGui::TreeNode(hit_name_list[list].c_str()))
+						if (ImGui::TreeNode(hit_name_list_Neru[list].c_str()))
 						{
 							ImGui::SliderFloat(u8"プレイヤーとの距離X", &hitparam_list[list].attack_parameter[atk].distance.x, -50.0f, 50.0f);
 							ImGui::SliderFloat(u8"プレイヤーとの距離Y", &hitparam_list[list].attack_parameter[atk].distance.y, -50.0f, 50.0f);

@@ -1,0 +1,17 @@
+※flt →　fream , timer , later の3つ(発生、持続、後隙)
+
+backstep → ftlに分ける
+
+crouching系 → ftlに分けて一つにまとめる
+
+frontStep, run → runに統合してftとする
+                ・現状runのfreamをステップにしてるためfrontStepをダッシュ開始にする
+                ・止まるモーションは要らないのでlaterは無し
+
+slow → ftlに分ける
+
+grab → ftlに分ける
+
+guard,crouchingGuard → 空中ガードを追加してguardに統合する
+                    ・モーションを作る時間がないときは通常ガードのモーションを名前を変えて入れてください
+                    ・並び順が通常ガード、空中ガード、しゃがみガードなら命名規則はなんでもいいです(guard,air_guard,crouchingGuardなど)

@@ -1022,6 +1022,10 @@ public:
 	std::array<std::unique_ptr<Texture>,10> blur_texture = { nullptr };
 	std::unique_ptr<Texture> fur = nullptr;
 
+	std::shared_ptr<Model> Neru = nullptr;
+	std::unique_ptr<ModelAnim> Neru_base = nullptr;
+	std::vector<std::shared_ptr<Model>> Neru_anims;
+
 	Collision circle;
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer>	constantBuffer = nullptr;
@@ -1059,6 +1063,11 @@ public:
 	void MatchStart();
 
 	void MatchUpdate(float elapsed_time);
+
+
+	void NeruLoad();
+
+	void NeruImGui();
 
 public:
 	struct CB_Multi_Render_Target

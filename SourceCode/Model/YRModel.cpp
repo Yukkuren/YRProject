@@ -18,8 +18,10 @@ std::wstring to_wstringModel(std::string str)
 	return strconverterModel.from_bytes(str);
 }
 
-Model::Model(const char* filename)
+Model::Model(const char* filename, bool intermediate)
 {
+	this->intermediate = intermediate;
+
 	//m_data = std::move(data);
 	m_data = std::make_unique<ModelData>();
 
@@ -239,8 +241,9 @@ Model::Model(const char* filename)
 }
 
 
-Model::Model(const char* filename, const std::shared_ptr<Texture> tex_main, const std::shared_ptr<Texture> tex_face)
+Model::Model(const char* filename, const std::shared_ptr<Texture> tex_main, const std::shared_ptr<Texture> tex_face, bool intermediate)
 {
+	this->intermediate = intermediate;
 	//m_data = std::move(data);
 
 	m_data = std::make_unique<ModelData>();
@@ -1015,5 +1018,11 @@ void Model::LoadSerial()
 
 	ifs.close();
 	ss.clear();
+}
+
+//指定したアニメーションが指定した数いないならtrueを返す
+bool Model::AnimCheack(int anim_num)
+{
+	return m_data->animations.size() > anim_num;
 }
 

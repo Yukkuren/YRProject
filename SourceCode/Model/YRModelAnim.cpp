@@ -697,7 +697,7 @@ void ModelAnim::NodeChange(const std::shared_ptr<Model>& resource)
 	const std::vector<ModelData::Node>& res_nodes = resource->GetNodes();
 
 	//m_nodes.resize(res_nodes.size());
-	int res = 0;
+	//int res = 0;
 	model_resource_anim = resource;
 
 
@@ -716,7 +716,7 @@ void ModelAnim::NodeChange(const std::shared_ptr<Model>& resource)
 		}
 	}
 
-	res = 0;
+	//res = 0;
 
 	m_current_seconds = 0.0f;
 }
@@ -754,3 +754,9 @@ void ModelAnim::NodeChange(const std::shared_ptr<Model>& resource, int anim_num)
 
 	m_current_seconds = 0.0f;
 }
+
+////指定したアニメーションが指定した数いないならtrueを返す
+//bool ModelAnim::AnimCheack(const std::shared_ptr<Model>& resource, int anim_num)
+//{
+//	return resource->m_data->animations.size() > anim_num;
+//}

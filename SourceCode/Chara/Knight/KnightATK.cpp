@@ -1866,7 +1866,7 @@ void Knight::SpecialAttack(float elapsed_time)
 		}
 		else
 		{
-			anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
+			anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
 		}
 		YRCamera.RequestCamera(Camera::Request::RELEASE, now_player);
 		GetSound().SEStop(SEKind::INTRO_WIND);

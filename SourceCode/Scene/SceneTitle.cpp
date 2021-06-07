@@ -290,6 +290,7 @@ void SceneTitle::Update(float elapsed_time)
 
 		if (Get_Use_ImGui())
 		{
+			//テストシーンへ移行するならコメントを外す
 			if (pKeyState.tflg == 1)
 			{
 				GetSound().BGMStop(BGMKind::TITLE);
@@ -502,6 +503,8 @@ void SceneTitle::Update(float elapsed_time)
 					GetSound().BGMStop(BGMKind::TITLE);
 					FRAMEWORK.sceneselect.select_p1 = scastI(PLSELECT::KNIGHT);
 					FRAMEWORK.sceneselect.select_p2 = scastI(PLSELECT::KNIGHT);
+					FRAMEWORK.sceneselect.color_p1 = PLCOLOR::ORIGINAL;
+					FRAMEWORK.sceneselect.color_p2 = PLCOLOR::COLOR_2;
 					//フェードアウトが終わったらロード画面へ
 					//FRAMEWORK.SetScene(SCENE_TABLE::SCENE_LOAD);
 					FRAMEWORK.SetScene(SCENE_TABLE::SCENE_SELECT);

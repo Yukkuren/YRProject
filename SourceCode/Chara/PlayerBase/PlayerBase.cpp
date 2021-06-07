@@ -597,7 +597,7 @@ void Player::AttackInput()
 				}
 
 				//攻撃ごとに個別の設定を行う
-				AttackDetailsSet(attack_list[real].combo);
+				AttackDetailsSet(attack_list[real].attack_name);
 				return;
 			}
 		}
@@ -721,11 +721,11 @@ void Player::Attack(float decision, float elapsed_time)
 			anim_ccodinate = ac_act[scastI(ActState::JUMP)].timer;
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Act[scastI(ActState::JUMP)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.fall_R);
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Act[scastI(ActState::JUMP)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.fall_L);
 			}
 		}
 	}
@@ -1093,7 +1093,7 @@ void Player::Move(float decision)
 					if (anim->GetEndAnim() == -1)
 					{
 						//アニメーションが終了したら持続アニメーションに切り替える
-						anim->NodeChange(model_motion.model_L_Act[scastI(ActState::DASH)], scastI(AnimAtk::TIMER));
+						anim->NodeChange(model_motion.model_L_Act[scastI(ActState::DASH)], scastI(AnimAtk_Dash::TIMER));
 						anim_ccodinate = ac_act[scastI(act_state)].timer;
 					}
 				}
@@ -1125,7 +1125,7 @@ void Player::Move(float decision)
 					if (anim->GetEndAnim() == -1)
 					{
 						//アニメーションが終了したら持続アニメーションに切り替える
-						anim->NodeChange(model_motion.model_R_Act[scastI(ActState::DASH)], scastI(AnimAtk::TIMER));
+						anim->NodeChange(model_motion.model_R_Act[scastI(ActState::DASH)], scastI(AnimAtk_Dash::TIMER));
 						anim_ccodinate = ac_act[scastI(act_state)].timer;
 					}
 				}
@@ -1612,7 +1612,7 @@ void Player::AirDash(float elapsed_time)
 				{
 					//描画をセット
 					act_state = ActState::JUMP;
-					anim->NodeChange(model_motion.model_R_Act[scastI(ActState::JUMP)], scastI(AnimAtk::TIMER));
+					anim->NodeChange(model_motion.fall_R);
 					anim_ccodinate = ac_act[scastI(act_state)].timer;
 				}
 				return;
@@ -1666,7 +1666,7 @@ void Player::AirDash(float elapsed_time)
 				{
 					//描画をセット
 					act_state = ActState::JUMP;
-					anim->NodeChange(model_motion.model_L_Act[scastI(ActState::JUMP)], scastI(AnimAtk::TIMER));
+					anim->NodeChange(model_motion.fall_L);
 					anim_ccodinate = ac_act[scastI(act_state)].timer;
 				}
 				return;
@@ -1732,7 +1732,7 @@ void Player::AirDash(float elapsed_time)
 				if (!attack)
 				{
 					act_state = ActState::JUMP;
-					anim->NodeChange(model_motion.model_R_Act[scastI(ActState::JUMP)], scastI(AnimAtk::TIMER));
+					anim->NodeChange(model_motion.fall_R);
 					anim_ccodinate = ac_act[scastI(act_state)].timer;
 				}
 				return;
@@ -1789,7 +1789,7 @@ void Player::AirDash(float elapsed_time)
 				if (!attack)
 				{
 					act_state = ActState::JUMP;
-					anim->NodeChange(model_motion.model_L_Act[scastI(ActState::JUMP)], scastI(AnimAtk::TIMER));
+					anim->NodeChange(model_motion.fall_L);
 					anim_ccodinate = ac_act[scastI(act_state)].timer;
 				}
 				return;
@@ -1866,11 +1866,11 @@ void Player::Jump()
 			act_state = ActState::JUMP;
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Act[scastI(ActState::JUMP)], scastI(AnimAtk::FREAM));
+				anim->NodeChange(model_motion.model_R_Act[scastI(ActState::JUMP)]);
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Act[scastI(ActState::JUMP)], scastI(AnimAtk::FREAM));
+				anim->NodeChange(model_motion.model_L_Act[scastI(ActState::JUMP)]);
 			}
 			anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
 			jumpflag = true;
@@ -1934,11 +1934,11 @@ void Player::Jump()
 			act_state = ActState::JUMP;
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Act[scastI(ActState::JUMP)], scastI(AnimAtk::FREAM));
+				anim->NodeChange(model_motion.model_R_Act[scastI(ActState::JUMP)]);
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Act[scastI(ActState::JUMP)], scastI(AnimAtk::FREAM));
+				anim->NodeChange(model_motion.model_L_Act[scastI(ActState::JUMP)]);
 			}
 			anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
 			anim_ccodinate = ac_act[scastI(act_state)].fream;
@@ -2063,23 +2063,46 @@ void Player::JumpUpdate(float decision, float elapsed_time)
 	if (jumpcount < 2 && jumpflag)
 	{
 		//現在ジャンプしているようなら入る
-		if (!anim->GetLoopAnim())
+		if (anim->GetIntermediate())
 		{
-			//現在のアニメーションがジャンプの開始アニメーションだった場合
+			//現在のアニメーションがジャンプから落下への移行アニメーションだった場合
 			if (anim->GetEndAnim() == -1)
 			{
 				//アニメーションが終了したら持続アニメーションに切り替える
 				if (rightOrleft > 0)
 				{
-					anim->NodeChange(model_motion.model_R_Act[scastI(ActState::JUMP)], scastI(AnimAtk::TIMER));
+					anim->NodeChange(model_motion.fall_R);
 				}
 				else
 				{
-					anim->NodeChange(model_motion.model_L_Act[scastI(ActState::JUMP)], scastI(AnimAtk::TIMER));
+					anim->NodeChange(model_motion.fall_L);
 				}
 				anim_ccodinate = ac_act[scastI(act_state)].timer;
 			}
 		}
+		else
+		{
+			if (!anim->GetLoopAnim())
+			{
+				//現在のアニメーションがジャンプの開始アニメーションだった場合
+				if (anim->GetEndAnim() == -1)
+				{
+					//アニメーションが終了したら落下への移行アニメーションに切り替える
+					if (rightOrleft > 0)
+					{
+						anim->NodeChange(model_motion.jumpToFall_R);
+					}
+					else
+					{
+						anim->NodeChange(model_motion.jumpToFall_L);
+					}
+					anim->PlayAnimation(0, false);
+					anim_ccodinate = ac_act[scastI(act_state)].timer;
+				}
+			}
+		}
+
+
 		//ジャンプタイマーを減らしていく
 		if (jump_can_timer > 0.0f)
 		{
@@ -2171,13 +2194,13 @@ void Player::JumpUpdate(float decision, float elapsed_time)
 		//描画をセット
 		if (rightOrleft > 0)
 		{
-			anim->NodeChange(model_motion.model_R_Act[scastI(ActState::JUMP)], scastI(AnimAtk::LATER));
+			anim->NodeChange(model_motion.landing_R);
 		}
 		else
 		{
-			anim->NodeChange(model_motion.model_L_Act[scastI(ActState::JUMP)], scastI(AnimAtk::LATER));
+			anim->NodeChange(model_motion.landing_L);
 		}
-		anim->PlayAnimation(scastI(AnimAtk::LATER), false);
+		anim->PlayAnimation(0, false);
 		//攻撃判定を一度だけ更新する
 		AttackUpdate(0.0f);
 
@@ -2911,13 +2934,13 @@ void Player::SlamUpdate(float elapsed_time)
 		ChangeFace(FaceAnim::NORMAL);
 		if (rightOrleft > 0)
 		{
-			anim->NodeChange(model_motion.model_R_Act[scastI(ActState::SLAM)], 1);
+			anim->NodeChange(model_motion.model_R_Act[scastI(ActState::SLAM)]);
 		}
 		else
 		{
-			anim->NodeChange(model_motion.model_L_Act[scastI(ActState::SLAM)], 1);
+			anim->NodeChange(model_motion.model_L_Act[scastI(ActState::SLAM)]);
 		}
-		anim->PlayAnimation(1, true);
+		//anim->PlayAnimation(0, true);
 		//地面のめり込みを治す
 		pos.y = POS_Y;
 
@@ -3144,11 +3167,11 @@ void Player::PassiveUpdate(float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Act[scastI(ActState::JUMP)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.fall_R);
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Act[scastI(ActState::JUMP)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.fall_L);
 			}
 			anim_ccodinate = ac_act[scastI(act_state)].timer;
 		}
@@ -3203,7 +3226,7 @@ void Player::GuardAnimSet()
 			}
 			else
 			{
-				//それ以外はガードアニメションに
+				//それ以外はガードアニメーションに
 				//描画をセット
 				if (rightOrleft > 0)
 				{
@@ -3476,11 +3499,11 @@ void Player::GuardBack(float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Act[scastI(ActState::JUMP)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.fall_R);
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Act[scastI(ActState::JUMP)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.fall_L);
 			}
 			anim_ccodinate = ac_act[scastI(act_state)].timer;
 		}

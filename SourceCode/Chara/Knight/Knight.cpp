@@ -875,46 +875,64 @@ void Knight::AttackDetailsSet(const AttackState& attack_state)
 	case AttackState::NONE:
 		break;
 	case AttackState::JAKU:
-		ChangeFace(FaceAnim::YARUKI);
+		ChangeFace(FaceAnim::YEAH);
 		break;
 	case AttackState::THU:
+		ChangeFace(FaceAnim::YEAH);
 		break;
 	case AttackState::D_KYO:
+		ChangeFace(FaceAnim::YEAH);
 		break;
 	case AttackState::D_JAKU:
+		ChangeFace(FaceAnim::YEAH);
 		break;
 	case AttackState::D_THU:
+		ChangeFace(FaceAnim::YEAH);
 		break;
 	case AttackState::U_KYO:
+		ChangeFace(FaceAnim::YEAH);
 		break;
 	case AttackState::A_JAKU:
+		ChangeFace(FaceAnim::YEAH);
 		break;
 	case AttackState::A_THU:
+		ChangeFace(FaceAnim::YEAH);
 		break;
 	case AttackState::A_KYO:
+		ChangeFace(FaceAnim::YARUKI);
 		break;
 	case AttackState::A_UKYO:
 		//speed.y = 0.0f;
 		//speed_Y.Set(attack_list[scastI(attack_state)].advance_speed);
+		ChangeFace(FaceAnim::YARUKI);
 		break;
 	case AttackState::STEAL:
+		ChangeFace(FaceAnim::YARUKI);
 		break;
 	case AttackState::SLOW:
+		ChangeFace(FaceAnim::YEAH);
 		break;
 	case AttackState::TRACK_DASH:
+		ChangeFace(FaceAnim::YEAH);
 		break;
 	case AttackState::JAKU_RHURF:
+		ChangeFace(FaceAnim::YEAH);
 		break;
 	case AttackState::THU_RHURF:
+		ChangeFace(FaceAnim::YEAH);
 		break;
 	case AttackState::KYO_RHURF:
+		ChangeFace(FaceAnim::YEAH);
 		GetSound().SESinglePlay(SEKind::SPECIAL_ATTACK);
 		break;
 	case AttackState::JAKU_LHURF:
+		ChangeFace(FaceAnim::KOUHUN);
 		break;
 	case AttackState::THU_LHURF:
+		ChangeFace(FaceAnim::KOUHUN);
 		break;
 	case AttackState::KYO_LHURF:
+		ChangeFace(FaceAnim::KOUHUN);
 		break;
 	case AttackState::SPECIAL_ATTACK:
 		YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
@@ -933,8 +951,10 @@ void Knight::AttackDetailsSet(const AttackState& attack_state)
 	case AttackState::EXTENDATK:
 		break;
 	case AttackState::JAKU_THU:
+		ChangeFace(FaceAnim::YEAH);
 		break;
 	case AttackState::JAKU_KYO:
+		ChangeFace(FaceAnim::YEAH);
 		break;
 	case AttackState::ATTACK_END:
 		break;

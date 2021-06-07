@@ -67,6 +67,16 @@ enum class AnimAtk :int
 	TIMER,		//持続
 };
 
+//--------------------------------------
+//	**アニメーション選択(ダッシュ)
+//	・NodeChange時に送り、アニメーションを指定する
+//--------------------------------------
+enum class AnimAtk_Dash :int
+{
+	FREAM = 0,	//発生
+	TIMER,		//持続
+};
+
 
 
 //--------------------------------------
@@ -280,12 +290,20 @@ struct Model_MotionData
 	std::shared_ptr<Model>			extend_L = nullptr;*/
 
 public:
+
+	//特定の行動リストに入っていないアニメーションは個別で持つ
 	std::shared_ptr<Model>			intro_R = nullptr;
 	std::shared_ptr<Model>			intro_L = nullptr;
 	std::shared_ptr<Model>			win_R = nullptr;
 	std::shared_ptr<Model>			win_L = nullptr;
 	std::shared_ptr<Model>			air_jump_R = nullptr;
 	std::shared_ptr<Model>			air_jump_L = nullptr;
+	std::shared_ptr<Model>			jumpToFall_R = nullptr;
+	std::shared_ptr<Model>			jumpToFall_L = nullptr;
+	std::shared_ptr<Model>			fall_R = nullptr;
+	std::shared_ptr<Model>			fall_L = nullptr;
+	std::shared_ptr<Model>			landing_R = nullptr;
+	std::shared_ptr<Model>			landing_L = nullptr;
 	std::array <std::shared_ptr<Model>, scastI(AttackState::NORMAL_ATTACK_END)> model_R_Attack = { nullptr };
 	std::array <std::shared_ptr<Model>, scastI(AttackState::NORMAL_ATTACK_END)> model_L_Attack = { nullptr };
 	std::array <std::shared_ptr<Model>, scastI(ActState::ACT_END)> model_R_Act = { nullptr };

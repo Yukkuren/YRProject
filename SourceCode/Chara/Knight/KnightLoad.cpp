@@ -178,6 +178,36 @@ void Knight::LoadData(PLCOLOR color_number)
 		model_motion.air_jump_L = std::make_shared<Model>("./Data/FBX/Knight/AnimationL/knight_air_jump_L_f.fbx");
 	}
 
+	//ジャンプ落下移行
+	if (model_motion.jumpToFall_R == nullptr)
+	{
+		model_motion.jumpToFall_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_jumpToFall_R.fbx", true);
+	}
+	if (model_motion.jumpToFall_L == nullptr)
+	{
+		model_motion.jumpToFall_L = std::make_shared<Model>("./Data/FBX/Knight/AnimationL/knight_jumpToFall_L.fbx", true);
+	}
+
+	//ジャンプ落下中
+	if (model_motion.fall_R == nullptr)
+	{
+		model_motion.fall_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_fall_R.fbx");
+	}
+	if (model_motion.fall_L == nullptr)
+	{
+		model_motion.fall_L = std::make_shared<Model>("./Data/FBX/Knight/AnimationL/knight_fall_L.fbx");
+	}
+
+	//着地
+	if (model_motion.landing_R == nullptr)
+	{
+		model_motion.landing_R = std::make_shared<Model>("./Data/FBX/Knight/AnimationR/knight_landing_R.fbx");
+	}
+	if (model_motion.landing_L == nullptr)
+	{
+		model_motion.landing_L = std::make_shared<Model>("./Data/FBX/Knight/AnimationL/knight_landing_L.fbx");
+	}
+
 
 	//待機モーション
 	//if (model_motion.model_R_Act[scastI(ActState::WAIT)] == nullptr)

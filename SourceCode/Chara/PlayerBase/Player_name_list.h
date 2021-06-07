@@ -36,7 +36,7 @@ public:
 		u8"air_kyo",
 		u8"air_ukyo",
 		u8"steal",
-		u8"slow",
+		u8"throw",
 		u8"track",
 		u8"Rhurf",
 		u8"Rhurf",		//前中必殺
@@ -79,7 +79,7 @@ public:
 		u8"damage",		//ステートを奪われた状態
 		u8"passive",	//起き上がり(これは仮ではなく確定)
 		u8"passive",
-		u8"slid",		//ダウン
+		u8"down",		//ダウン
 		u8"slid",		//空中ダウン
 		u8"damage",
 		u8"slid",

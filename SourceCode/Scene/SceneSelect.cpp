@@ -3,6 +3,7 @@
 #include "../YRSound.h"
 #include "../Chara/PlayerBase/Player_name_list.h"
 #include <codecvt>
+#include "../easing/easing.h"
 
 // w_stringŒ^•ÏX—pŠÖ”
 using convert_t = std::codecvt_utf8<wchar_t>;

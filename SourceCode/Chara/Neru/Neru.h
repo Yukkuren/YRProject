@@ -10,6 +10,10 @@
 #include "../../Model/Geometric_primitive.h"
 
 
+//------------------------------------------------------------
+// ※このキャラはモーションがまだ完成していないため未完成
+//------------------------------------------------------------
+
 enum class NERUHIT :int
 {
 	HEAD,
@@ -25,6 +29,8 @@ class Neru : public Player
 {
 private:
 	const size_t	max_traject_count = 128;	//剣の軌跡の最大値
+
+	const float		adjust_pos_Y = -4.8f;		//Y座標の表示補正値※このモデルは少し浮いているので補正する為
 
 public:
 

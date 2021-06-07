@@ -1,0 +1,8 @@
+jump → jump,jumpToFall,fall,landingに分ける
+
+slid → down,slidに分ける
+
+guard → guard,squatguard,air_guardに分ける
+
+
+squat → fltに分ける

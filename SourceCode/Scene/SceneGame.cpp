@@ -10,6 +10,7 @@
 
 //キャラクターインクルード
 #include "../Chara/Knight/Knight.h"
+#include "../Chara/Neru/Neru.h"
 
 //------------------------------------------------
 // **シーン概要**
@@ -70,7 +71,7 @@ void SceneGame::SetPlayerCharacter(std::unique_ptr<Player>* player, int select)
 		*player = std::make_unique<Knight>();
 		break;
 	case scastI(PLSELECT::NERU):
-		*player = std::make_unique<Knight>();
+		*player = std::make_unique<Neru>();
 		break;
 	default:
 		assert("select is broken");
