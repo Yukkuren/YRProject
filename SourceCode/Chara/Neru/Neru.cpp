@@ -23,6 +23,7 @@ std::array<std::string, scastI(NERUHIT::END)> hit_name_list_Neru =
 	u8"“ª",
 	u8"ƒ{ƒfƒB",
 	u8"‘«",
+	u8"‚µ‚Á‚Û",
 };
 
 #endif // USE_IMGUI
@@ -34,7 +35,7 @@ void Neru::CharaInit()
 {
 	//‰Šú‰»
 
-	scale = YR_Vector3( 0.1f,0.1f,0.1f );
+	scale = YR_Vector3( 0.08f,0.08f,0.08f );
 	angle = YR_Vector3(0.0f, 0.0f, 0.0f);
 
 	intro_state = INTRO_NERU::SET;

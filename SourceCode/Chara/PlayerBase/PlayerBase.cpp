@@ -843,6 +843,9 @@ void Player::AttackSwitch(float decision, float elapsed_time, AttackState attack
 		//’†‚ÌŸ‚Éo‚é‹­UŒ‚
 		Kyo(elapsed_time);
 		break;
+	case AttackState::A_JAKU_RHURF:
+		A_Jaku_Rhurf(elapsed_time);
+		break;
 	case AttackState::A_JAKU_LHURF:
 		A_Jaku_Lhurf(elapsed_time);
 		break;
@@ -2757,7 +2760,7 @@ void Player::DownHitUpdate(float elapsed_time)
 		}
 		else
 		{
-			anim->NodeChange(model_motion.model_R_Act[scastI(ActState::DOWN)]);
+			anim->NodeChange(model_motion.model_L_Act[scastI(ActState::DOWN)]);
 		}
 		anim_ccodinate = ac_act[scastI(act_state)].timer;
 		//’n–Ê‚Ì‚ß‚è‚İ‚ğ¡‚·

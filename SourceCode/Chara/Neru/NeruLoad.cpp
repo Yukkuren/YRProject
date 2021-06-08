@@ -59,7 +59,7 @@ void Neru::LoadData(PLCOLOR color_number)
 		}
 		break;
 	case PLCOLOR::COLOR_2:
-		color_texture_main = std::make_shared<Texture>(L"./Data/FBX/Neru/Neru_Tex2.png");
+		color_texture_main = std::make_shared<Texture>(L"./Data/FBX/Neru/NeruTex2.png");
 		color_texture_face = nullptr;
 
 		//カットイン画像読み込み

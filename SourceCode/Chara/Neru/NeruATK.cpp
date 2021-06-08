@@ -1172,6 +1172,12 @@ void Neru::Jaku_Lhurf(float elapsed_time)
 	}
 }
 
+//--------------------------------------
+//　空中236コマンド弱
+void Neru::A_Jaku_Rhurf(float elapsed_time)
+{
+	AttackProjectileDefault(elapsed_time);
+}
 
 //--------------------------------------
 //　空中214コマンド弱

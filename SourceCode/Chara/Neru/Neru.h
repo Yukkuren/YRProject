@@ -19,6 +19,7 @@ enum class NERUHIT :int
 	HEAD,
 	BODY,
 	LEG,
+	TAIL,
 	END
 };
 
@@ -89,6 +90,7 @@ public:
 	void Thu_Lhurf(float elapsed_time);
 	void Kyo_Lhurf(float elapsed_time);
 
+	void A_Jaku_Rhurf(float elapsed_time)override;
 	void A_Jaku_Lhurf(float elapsed_time)override;
 	void ExtendATK(float elapsed_time);
 
