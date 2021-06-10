@@ -1509,7 +1509,7 @@ void Neru::TrackDash(float decision, float elapsed_time)
 
 	float dowwnn = sqrtf((a_vec.x * a_vec.x) + (a_vec.y * a_vec.y)) * sqrtf((b_vec.x * b_vec.x) + (b_vec.y * b_vec.y));
 
-	float dot_angle = acosf(upper / dowwnn);
+	dot_angle = acosf(upper / dowwnn);
 
 	//ŒãŒ„‚ªİ’è‚³‚ê‚½Œã‚Í‚±‚ÌŠÖ”‚É‚Í“ü‚ç‚È‚¢
 	if (later > -1 && later < target_max)
@@ -1600,12 +1600,23 @@ void Neru::TrackDash(float decision, float elapsed_time)
 		pos.x += ((plusVec.x * chara_state.track_speed) * elapsed_time);
 		pos.y += ((plusVec.y * chara_state.track_speed) * elapsed_time);
 
+
 		GetSound().SEPlay(SEKind::TRACK);
 
 		//YRGetEffect().SetLocation(EffectKind::TRACK, pos.GetDXFLOAT3());
 
 		for (auto& a : atk)
 		{
+			if (rightOrleft < 0)
+			{
+				YRGetEffect().SetAngle(a.handle, DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), 3.0f + angle.z);
+			}
+			else
+			{
+				YRGetEffect().SetAngle(a.handle, DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f),angle.z);
+			}
+
+
 			if (knock && a.attack_name == scastI(attack_state))
 			{
 				a.parameter.knockback = 0.0f;

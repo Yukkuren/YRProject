@@ -30,6 +30,7 @@ enum class EffectKind : int
 	DAMAGE,				//ダメージエフェクト
 	TRACK,				//ホーミングダッシュ時エフェクト
 	WALL_SHOCK,			//壁激突
+	NERU_TRACK,			//Neru用のホーミングエフェクト
 	END,
 };
 
@@ -82,6 +83,11 @@ public:
 		Effekseer::Handle& handle,
 		const DirectX::XMFLOAT3& pos
 	);
+
+	void SetAngle(
+		Effekseer::Handle& handle,
+		const DirectX::XMFLOAT3& axis,
+		const float& angle);
 
 	//アニメーション再生の停止
 	void StopEffect(EffectKind kind);

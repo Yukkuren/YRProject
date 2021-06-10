@@ -312,15 +312,15 @@ void Neru::Draw(
 	}
 
 
-	//if (Get_Use_ImGui())
-	//{
-	//	ImGui::Begin(u8"Neru");
-	//	ImGui::Text("dot_angle : %f", dot_angle);
-	//	ImGui::Text("up : %f", upper);
-	//	ImGui::Text("down : %f", dowwnn);
-	//	//ImGui::Text("now_at_num : %d", now_at_num);
-	//	ImGui::End();
-	//}
+	if (Get_Use_ImGui())
+	{
+		ImGui::Begin(u8"Neru");
+		ImGui::Text("dot_angle : %f", dot_angle);
+		//ImGui::Text("up : %f", upper);
+		//ImGui::Text("down : %f", dowwnn);
+		//ImGui::Text("now_at_num : %d", now_at_num);
+		ImGui::End();
+	}
 
 	//Œ•‚Ì‹OÕ•`‰æ
 
@@ -374,6 +374,57 @@ void Neru::Draw(
 	TextDraw();
 }
 
+
+//UŒ‚”»’è‚ª‘¶Ý‚·‚éŽž‚Ì‚ÝXV
+void Neru::AttackUpdate(float elapsed_time)
+{
+	if (YRCamera.camera_state == Camera::CAMERA_STATE::MAIN)
+	{
+		if (!atk.empty())
+		{
+			for (auto& a : atk)
+			{
+				if (a.attack_name == scastI(AttackState::TRACK_DASH))
+				{
+					if (rightOrleft > 0)
+					{
+						if (angle.z > 1.0f)
+						{
+							a.Update(pos, elapsed_time, YR_Vector3(-10.0f, 0.0f));
+						}
+						else
+						{
+							a.Update(pos, elapsed_time);
+						}
+					}
+					else
+					{
+						if (angle.z < 0.0f)
+						{
+							a.Update(pos, elapsed_time, YR_Vector3(10.0f, 0.0f));
+						}
+						else
+						{
+							a.Update(pos, elapsed_time);
+						}
+					}
+				}
+				else
+				{
+					a.Update(pos, elapsed_time);
+				}
+			}
+		}
+
+		if (!projectile_atk.empty())
+		{
+			for (int i = 0; i < projectile_atk.size(); i++)
+			{
+				projectile_atk[i].Update(pos, elapsed_time);
+			}
+		}
+	}
+}
 
 
 

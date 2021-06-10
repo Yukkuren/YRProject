@@ -2507,6 +2507,7 @@ void Player::KnockUpdate(float elapsed_time)
 				{
 					anim->NodeChange(model_motion.model_L_Act[scastI(ActState::DOWN)]);
 				}
+				anim->PlayAnimation(0, false);
 				anim_ccodinate = ac_act[scastI(act_state)].timer;
 			}
 		}
@@ -2733,6 +2734,7 @@ void Player::DownHitUpdate(float elapsed_time)
 				{
 					anim->NodeChange(model_motion.model_L_Act[scastI(ActState::DOWN)]);
 				}
+				anim->PlayAnimation(0, false);
 				anim_ccodinate = ac_act[scastI(act_state)].timer;
 			}
 		}
@@ -2762,6 +2764,7 @@ void Player::DownHitUpdate(float elapsed_time)
 		{
 			anim->NodeChange(model_motion.model_L_Act[scastI(ActState::DOWN)]);
 		}
+		anim->PlayAnimation(0, false);
 		anim_ccodinate = ac_act[scastI(act_state)].timer;
 		//’n–Ê‚Ì‚ß‚èž‚Ý‚ðŽ¡‚·
 		pos.y = POS_Y;
@@ -3031,6 +3034,7 @@ void Player::SlamUpdate(float elapsed_time)
 				{
 					anim->NodeChange(model_motion.model_L_Act[scastI(ActState::DOWN)]);
 				}
+				anim->PlayAnimation(0, false);
 				anim_ccodinate = ac_act[scastI(act_state)].timer;
 			}
 			else

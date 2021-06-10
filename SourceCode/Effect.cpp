@@ -41,6 +41,7 @@ void YR_Effect::Init()
 	effects[scastI(EffectKind::DAMAGE)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/damage.efk");
 	effects[scastI(EffectKind::TRACK)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/track.efk");
 	effects[scastI(EffectKind::WALL_SHOCK)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/WallShock.efk");
+	effects[scastI(EffectKind::NERU_TRACK)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/NeruTrack.efk");
 
 	//ハンドルの初期化
 	for (int i = 0; i < handles.size(); i++)
@@ -216,6 +217,15 @@ void YR_Effect::SetLocation(
 	}
 	// エフェクトの移動
 	manager->SetLocation(handle, ::Effekseer::Vector3D(pos.x, pos.y, pos.z));
+}
+
+void YR_Effect::SetAngle(
+	Effekseer::Handle& handle,
+	const DirectX::XMFLOAT3& axis,
+	const float& angle)
+{
+	// エフェクトの回転
+	manager->SetRotation(handle, ::Effekseer::Vector3D(axis.x, axis.y, axis.z), angle);
 }
 
 //アニメーション再生の停止

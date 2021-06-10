@@ -104,7 +104,7 @@ void AttackBox::Init(int attack_name, AttackParameter& param, float rightOrleft,
 }
 
 
-void AttackBox::Update(YR_Vector3 pl_pos, float elapsed_time)
+void AttackBox::Update(YR_Vector3 pl_pos, float elapsed_time, YR_Vector3 effect_pos)
 {
 	if (parameter.type == AttackKind::PROJECTILE)
 	{
@@ -117,7 +117,7 @@ void AttackBox::Update(YR_Vector3 pl_pos, float elapsed_time)
 		pos.x = pl_pos.x + ((parameter.distance.x + speed.x) * rightOrleft);	//X座標更新
 		pos.y = pl_pos.y + ((parameter.distance.y + speed.y));	//Y座標更新
 
-		YRGetEffect().SetLocation(effect_param.effect_kind, handle, DirectX::XMFLOAT3(pos.x + (rightOrleft * parameter.size.x) + effect_param.distance.x, pos.y + effect_param.distance.y, pos.z + effect_param.distance.z));
+		YRGetEffect().SetLocation(effect_param.effect_kind, handle, DirectX::XMFLOAT3(pos.x + (rightOrleft * parameter.size.x) + effect_param.distance.x + effect_pos.x, pos.y + effect_param.distance.y + effect_pos.y, pos.z + effect_param.distance.z));
 
 		/*if (effect_param.effect_kind == EffectKind::TORNADE)
 		{

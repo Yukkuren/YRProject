@@ -39,7 +39,7 @@ public:
 
 	//float dowwnn = 0.0f;
 
-	//float dot_angle = 0.0f;
+	float dot_angle = 0.0f;
 
 	//int now_at_num = 0;
 
@@ -114,6 +114,8 @@ public:
 
 
 	void ReadySet();			//イントロ後、ゲーム開始までの設定を行う
+
+	void AttackUpdate(float elapsed_time)override;
 
 
 	//イントロ用列挙

@@ -116,7 +116,7 @@ public:
 
 	void Init(int attack_name, AttackParameter& param, float rightOrleft, YR_Vector3 pl_pos, EffectParameter effect_param);
 	void Init(int attack_name, AttackParameter& param, float rightOrleft, YR_Vector3 pl_pos, YR_Vector3 plus_speed, EffectParameter effect_param);
-	void Update(YR_Vector3 pl_pos, float elapsed_time);
+	void Update(YR_Vector3 pl_pos, float elapsed_time, YR_Vector3 effect_pos = YR_Vector3(0.0f, 0.0f));
 	void Draw(YRShader* shader,
 		const DirectX::XMMATRIX& view,
 		const DirectX::XMMATRIX& projection,
