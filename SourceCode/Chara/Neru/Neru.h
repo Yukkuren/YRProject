@@ -35,6 +35,14 @@ private:
 
 public:
 
+	//float upper = 0.0f;
+
+	//float dowwnn = 0.0f;
+
+	//float dot_angle = 0.0f;
+
+	//int now_at_num = 0;
+
 	//カラーチェンジ用テクスチャ
 	std::shared_ptr<Texture>	color_texture_main = nullptr;
 	std::shared_ptr<Texture>	color_texture_face = nullptr;

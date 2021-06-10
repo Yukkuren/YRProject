@@ -171,11 +171,11 @@ void Neru::LoadData(PLCOLOR color_number)
 	//空中ジャンプ
 	if (model_motion.air_jump_R == nullptr)
 	{
-		model_motion.air_jump_R = std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_air_jump_R.fbx");
+		model_motion.air_jump_R = std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_air_jump_R.fbx",true);
 	}
 	if (model_motion.air_jump_L == nullptr)
 	{
-		model_motion.air_jump_L = std::make_shared<Model>("./Data/FBX/Neru/AnimationL/Neru_air_jump_L.fbx");
+		model_motion.air_jump_L = std::make_shared<Model>("./Data/FBX/Neru/AnimationL/Neru_air_jump_L.fbx",true);
 	}
 
 	//ジャンプ落下移行

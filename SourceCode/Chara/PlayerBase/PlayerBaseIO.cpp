@@ -769,6 +769,10 @@ void Player::DrawDEBUG(
 		ImGui::Text("timer : "); ImGui::SameLine(); ImGui::Text("%f", timer);
 		ImGui::Text("later : "); ImGui::SameLine(); ImGui::Text("%f", later);
 
+
+		//ImGui::Text("later : "); ImGui::SameLine(); ImGui::Text("%f", later);
+
+
 		DrawDEBUGHitParam();
 
 		chara_state.Draw();

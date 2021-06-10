@@ -1057,6 +1057,9 @@ void Neru::Jaku_Lhurf(float elapsed_time)
 		fream -= elapsed_time;
 	}
 	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
+
+	int now_at_num = attack_list[now_at_list].now_attack_num;
+
 	//発生フレームになったら攻撃判定を生成する
 	if (fream < 0.0f)
 	{
@@ -1079,6 +1082,9 @@ void Neru::Jaku_Lhurf(float elapsed_time)
 				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
 		}
+
+		timer = attack_list[now_at_list].attack_single[now_at_num].parameter[0].timer;
+
 		if (attack_list[now_at_list].speed_on)
 		{
 			//攻撃に速度を付与する場合
@@ -1090,13 +1096,14 @@ void Neru::Jaku_Lhurf(float elapsed_time)
 			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos);
 		}
 
+		now_at_num = attack_list[now_at_list].now_attack_num;
+
 		//atk.back().effect_kind = EffectKind::TORNADE;
 		//YRGetEffect().PlayEffect(EffectKind::TORNADE, atk.back().handle, atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
 		fream = non_target;
 		//持続時間を設定
-		timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
 
-		GetSound().SESinglePlay(SEKind::TORNADO);
+		//GetSound().SESinglePlay(SEKind::TORNADO);
 
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
@@ -1104,9 +1111,9 @@ void Neru::Jaku_Lhurf(float elapsed_time)
 	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
 	if (!atk.empty())
 	{
-		//攻撃判定時前進させて回転させる
+		//攻撃判定時前進させる
 		speed.x = attack_list[now_at_list].advance_speed * rightOrleft;
-		angle.y += elapsed_time * (50.0f * rightOrleft);
+		//angle.y += elapsed_time * (50.0f * rightOrleft);
 
 		for (auto& a : atk)
 		{
@@ -1141,7 +1148,8 @@ void Neru::Jaku_Lhurf(float elapsed_time)
 		//まだ攻撃が残っていれば次の攻撃に移る
 		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
 		{
-			fream = attack_list[now_at_list].attack_single[attack_list[now_at_list].now_attack_num].fream;
+			fream = attack_list[now_at_list].attack_single[now_at_num].fream;
+			timer = non_target;
 		}
 		else
 		{
@@ -1248,7 +1256,7 @@ void Neru::A_Jaku_Lhurf(float elapsed_time)
 	{
 		//攻撃判定時前進させて回転させる
 		speed.x = attack_list[now_at_list].advance_speed * rightOrleft;
-		angle.y += elapsed_time * (50.0f * rightOrleft);
+		//angle.y += elapsed_time * (50.0f * rightOrleft);
 
 		//空中なので少しふわっとさせる
 		pos.y += (gravity * elapsed_time);
@@ -1336,6 +1344,9 @@ void Neru::Thu_Lhurf(float elapsed_time)
 		fream -= elapsed_time;
 	}
 	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
+
+	int now_at_num = attack_list[now_at_list].now_attack_num;
+
 	//発生フレームになったら攻撃判定を生成する
 	if (fream < 0.0f)
 	{
@@ -1377,7 +1388,9 @@ void Neru::Thu_Lhurf(float elapsed_time)
 		//speed.x = attack_list[now_at_list].advance_speed * rightOrleft;
 
 		//持続時間を設定
-		timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
+		timer = attack_list[now_at_list].attack_single[now_at_num].parameter[0].timer;
+
+		now_at_num = attack_list[now_at_list].now_attack_num;
 
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
@@ -1412,13 +1425,13 @@ void Neru::Thu_Lhurf(float elapsed_time)
 		{
 			//当たるかガードされたら後退させながら回転させる
 			speed.x = -attack_list[now_at_list].advance_speed * rightOrleft;
-			angle.y -= elapsed_time * (50.0f * rightOrleft);
+			//angle.y -= elapsed_time * (50.0f * rightOrleft);
 		}
 		else
 		{
 			//攻撃判定時前進させて回転させる
 			speed.x = attack_list[now_at_list].advance_speed * rightOrleft;
-			angle.y += elapsed_time * (50.0f * rightOrleft);
+			//angle.y += elapsed_time * (50.0f * rightOrleft);
 		}
 	}
 
@@ -1433,6 +1446,7 @@ void Neru::Thu_Lhurf(float elapsed_time)
 		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
 		{
 			fream = attack_list[now_at_list].attack_single[attack_list[now_at_list].now_attack_num].fream;
+			timer = non_target;
 		}
 		else
 		{
@@ -1480,6 +1494,23 @@ void Neru::TrackDash(float decision, float elapsed_time)
 	YR_Vector3	plusVec = { 0.0f,0.0f,0.0f };
 	plusVec = tracking.Veccalculate(hit[scastI(NERUHIT::BODY)].center, decision);
 
+	float adjust_angle = 1.0f;
+
+	//相手に向かうための角度を求める(内積)
+	if (pos.y < tracking.rival_Pos.y)
+	{
+		adjust_angle = -1.0f;
+	}
+
+	YR_Vector3	a_vec = YR_Vector3(pos.x, pos.y) - YR_Vector3(tracking.rival_Pos.x, tracking.rival_Pos.y);
+	YR_Vector3	b_vec = YR_Vector3(pos.x, tracking.rival_Pos.y) - YR_Vector3(tracking.rival_Pos.x, tracking.rival_Pos.y);
+
+	float upper = (a_vec.x * b_vec.x) + (a_vec.y * b_vec.y);
+
+	float dowwnn = sqrtf((a_vec.x * a_vec.x) + (a_vec.y * a_vec.y)) * sqrtf((b_vec.x * b_vec.x) + (b_vec.y * b_vec.y));
+
+	float dot_angle = acosf(upper / dowwnn);
+
 	//後隙が設定された後はこの関数には入らない
 	if (later > -1 && later < target_max)
 	{
@@ -1487,6 +1518,7 @@ void Neru::TrackDash(float decision, float elapsed_time)
 	}
 
 	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
+
 
 	jumpflag = false;
 
@@ -1504,6 +1536,20 @@ void Neru::TrackDash(float decision, float elapsed_time)
 
 		//ちょっとずつ浮かせていく
 		pos.y += 5.0f * elapsed_time;
+
+
+		//発生まで少しずつ角度を変えていく
+		DirectX::XMVECTOR now_angle_v = DirectX::XMLoadFloat(&angle.z);
+		DirectX::XMVECTOR should_angle_v = DirectX::XMLoadFloat(&dot_angle);
+
+		DirectX::XMVECTOR lerp_v = DirectX::XMVectorLerp(now_angle_v, should_angle_v, 0.1f);
+
+		float lerp = 0.0f;
+
+		DirectX::XMStoreFloat(&lerp, lerp_v);
+
+		angle.z = lerp * Getapply(-1.0f) * adjust_angle;
+
 	}
 	//発生フレームになったら攻撃判定を生成する
 	if (fream < 0.0f)
@@ -1515,11 +1561,11 @@ void Neru::TrackDash(float decision, float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk_Dash::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk_Dash::TIMER));
 			}
 		}
 		if (attack_list[now_at_list].speed_on)
@@ -1549,7 +1595,7 @@ void Neru::TrackDash(float decision, float elapsed_time)
 	if (!atk.empty())
 	{
 		//常に回転させる
-		angle.z -= (50.0f*rightOrleft) * elapsed_time;
+		angle.z = dot_angle * Getapply(-1.0f) * adjust_angle;
 
 		pos.x += ((plusVec.x * chara_state.track_speed) * elapsed_time);
 		pos.y += ((plusVec.y * chara_state.track_speed) * elapsed_time);
@@ -1602,15 +1648,6 @@ void Neru::TrackDash(float decision, float elapsed_time)
 		//アニメーション速度を指定
 		anim_ccodinate = ac_attack[now_at_list].later;
 		HitBoxTransition(HitBoxState::NOGUARD);
-		//描画をセット
-		if (rightOrleft > 0)
-		{
-			anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::LATER));
-		}
-		else
-		{
-			anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::LATER));
-		}
 		//行動終了フラグをオンに
 		finish = true;
 		//角度を戻す

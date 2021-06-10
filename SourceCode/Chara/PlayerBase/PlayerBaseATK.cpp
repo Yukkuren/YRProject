@@ -43,6 +43,8 @@ void Player::AttackDefault(float elapsed_time)
 		fream -= elapsed_time;
 	}
 	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
+
+	int now_at_num = attack_list[now_at_list].now_attack_num;
 	//発生フレームになったら攻撃判定を生成する
 	if (fream < 0.0f)
 	{
@@ -79,7 +81,9 @@ void Player::AttackDefault(float elapsed_time)
 
 
 		//持続時間を設定
-		timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
+		timer = attack_list[now_at_list].attack_single[now_at_num].parameter[0].timer;
+
+		now_at_num = attack_list[now_at_list].now_attack_num;
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
 
@@ -184,6 +188,8 @@ void Player::AttackProjectileDefault(float elapsed_time)
 		timer = non_target;
 	}
 	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
+
+	int now_at_num = attack_list[now_at_list].now_attack_num;
 	//発生フレームになったら攻撃判定を生成する
 	if (fream < 0.0f)
 	{
@@ -221,6 +227,8 @@ void Player::AttackProjectileDefault(float elapsed_time)
 
 		//持続時間を設定
 		timer = attack_list[now_at_list].timer;
+
+		now_at_num = attack_list[now_at_list].now_attack_num;
 
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}

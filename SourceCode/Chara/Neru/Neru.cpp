@@ -312,12 +312,15 @@ void Neru::Draw(
 	}
 
 
-	/*if (Get_Use_ImGui())
-	{
-		ImGui::Begin(u8"Neru");
-		ImGui::SliderFloat("adjust_Y", &adjust_pos_Y, 0.0f, 200.0f);
-		ImGui::End();
-	}*/
+	//if (Get_Use_ImGui())
+	//{
+	//	ImGui::Begin(u8"Neru");
+	//	ImGui::Text("dot_angle : %f", dot_angle);
+	//	ImGui::Text("up : %f", upper);
+	//	ImGui::Text("down : %f", dowwnn);
+	//	//ImGui::Text("now_at_num : %d", now_at_num);
+	//	ImGui::End();
+	//}
 
 	//Œ•‚Ì‹OÕ•`‰æ
 
