@@ -370,7 +370,7 @@ void Player::Update(float decision, float elapsed_time)
 
 	if (!attack)
 	{
-		if (act_state == ActState::DASH || act_state == ActState::BACK)
+		if (act_state == ActState::DASH || act_state == ActState::BACK || act_state == ActState::SQUAT)
 		{
 			//特定の行動時は指定した値を入れる為なにも処理をしない
 		}
@@ -620,7 +620,7 @@ void Player::Attack(float decision, float elapsed_time)
 			speed.x -= chara_state.brake_speed * elapsed_time;
 			if (speed.x < 0.0f)
 			{
-				speed.x = 0;
+				speed.x = 0.0f;
 			}
 		}
 		if (speed.x < 0.0f)
@@ -680,16 +680,15 @@ void Player::Attack(float decision, float elapsed_time)
 				if (pad->x_input[scastI(PAD::STICK_D)] > 0 || pad->x_input[scastI(PAD::STICK_RDown)] > 0 || pad->x_input[scastI(PAD::STICK_LDown)] > 0)
 				{
 					act_state = ActState::SQUAT;
-					anim_ccodinate = ac_act[scastI(ActState::SQUAT)].fream;
+					anim_ccodinate = ac_act[scastI(ActState::SQUAT)].timer;
 					if (rightOrleft > 0)
 					{
-						anim->NodeChange(model_motion.model_R_Act[scastI(ActState::SQUAT)]);
+						anim->NodeChange(model_motion.model_R_Act[scastI(ActState::SQUAT)],scastI(AnimAtk::TIMER));
 					}
 					else
 					{
-						anim->NodeChange(model_motion.model_L_Act[scastI(ActState::SQUAT)]);
+						anim->NodeChange(model_motion.model_L_Act[scastI(ActState::SQUAT)], scastI(AnimAtk::TIMER));
 					}
-
 				}
 				else
 				{
@@ -1019,6 +1018,49 @@ void Player::MoveAnimSet()
 
 void Player::Move(float decision)
 {
+	//スティックを両方とも倒している場合
+	if (pad->x_input[static_cast<int>(PAD::STICK_L)] > 0 && pad->x_input[static_cast<int>(PAD::STICK_R)] > 0)
+	{
+		speed.x = 0.0f;
+		if (act_state != ActState::WAIT)
+		{
+			act_state = ActState::NONE;
+		}
+		moveflag = false;
+		return;
+	}
+	if (pad->x_input[static_cast<int>(PAD::L_DASH)] > 0 && pad->x_input[static_cast<int>(PAD::R_DASH)] > 0)
+	{
+		speed.x = 0.0f;
+		if (act_state != ActState::WAIT)
+		{
+			act_state = ActState::NONE;
+		}
+		moveflag = false;
+		return;
+	}
+	if (pad->x_input[static_cast<int>(PAD::L_DASH)] > 0 && pad->x_input[static_cast<int>(PAD::STICK_R)] > 0)
+	{
+		speed.x = 0.0f;
+		if (act_state != ActState::WAIT)
+		{
+			act_state = ActState::NONE;
+		}
+		moveflag = false;
+		return;
+	}
+	if (pad->x_input[static_cast<int>(PAD::R_DASH)] > 0 && pad->x_input[static_cast<int>(PAD::STICK_L)] > 0)
+	{
+		speed.x = 0.0f;
+		if (act_state != ActState::WAIT)
+		{
+			act_state = ActState::NONE;
+		}
+		moveflag = false;
+		return;
+	}
+
+
 	if (pad->x_input[static_cast<int>(PAD::L_DASH)] == 1 && pad->x_input[scastI(PAD::STICK_R)] == 0)
 	{
 		if (ground)
@@ -1152,12 +1194,17 @@ void Player::MoveStop()
 	//移動停止時処理
 	//以前は後隙を設定していたが操作の都合上削除
 
+	if (act_state == ActState::SQUAT)
+	{
+		return;
+	}
+
 	//スティックを何も倒していない場合
 	if (pad->x_input[static_cast<int>(PAD::STICK_L)] == 0 && pad->x_input[static_cast<int>(PAD::STICK_R)] == 0)
 	{
 		if (pad->x_input[static_cast<int>(PAD::L_DASH)] == 0 && pad->x_input[static_cast<int>(PAD::R_DASH)] == 0)
 		{
-			speed.x = 0.0f;
+			//speed.x = 0.0f;
 			if (act_state != ActState::WAIT)
 			{
 				act_state = ActState::NONE;
@@ -1913,7 +1960,7 @@ void Player::Jump()
 				}
 				return;
 			}
-			speed.x = 0.0f;
+			//speed.x = 0.0f;
 			return;
 
 		}
@@ -1980,7 +2027,7 @@ void Player::Jump()
 				}
 				return;
 			}
-			speed.x = 0.0f;
+			//speed.x = 0.0f;
 		}
 	}
 	else
@@ -2052,7 +2099,7 @@ void Player::Jump()
 					}
 					return;
 				}
-				speed.x = 0.0f;
+				//speed.x = 0.0f;
 			}
 		}
 	}
@@ -3554,7 +3601,7 @@ void Player::WaitAnimSet()
 			anim->NodeChange(model_motion.model_L_Act[scastI(ActState::WAIT)]);
 			anim_ccodinate = ac_act[scastI(act_state)].fream;
 		}
-		speed.x = 0.0f;
+		//speed.x = 0.0f;
 		speed.y = 0.0f;
 		moveflag = false;
 	}
@@ -3598,7 +3645,7 @@ void Player::Squat()
 	//しゃがみ処理
 
 	//ガード中、ダッシュ中、バックステップ、空中ダッシュ時は処理を行わない
-	if (act_state == ActState::GUARD || act_state == ActState::DASH || act_state == ActState::BACK || act_state == ActState::AIR_B || act_state == ActState::AIR_F)
+	if (act_state == ActState::GUARD ||  act_state == ActState::BACK || act_state == ActState::AIR_B || act_state == ActState::AIR_F)
 	{
 		return;
 	}
@@ -3620,23 +3667,36 @@ void Player::Squat()
 		{
 			anim->NodeChange(model_motion.model_L_Act[scastI(ActState::SQUAT)]);
 		}
+		anim->PlayAnimation(0, false);
 		anim_ccodinate = ac_act[scastI(act_state)].fream;
 	}
 	if (pad->x_input[scastI(PAD::STICK_D)] > 0 || pad->x_input[scastI(PAD::STICK_RDown)] > 0 || pad->x_input[scastI(PAD::STICK_LDown)] > 0)
 	{
-		moveflag = false;
-		act_state = ActState::SQUAT;
-		//描画をセット
-		if (rightOrleft > 0)
+		//アニメーションを変える
+		if (!anim->GetLoopAnim())
 		{
-			anim->NodeChange(model_motion.model_R_Act[scastI(ActState::SQUAT)]);
+			//現在のアニメーションがしゃがみの開始アニメーションだった場合
+			if (anim->GetEndAnim() == -1)
+			{
+				//アニメーションが終了したら持続アニメーションに切り替える
+				if (rightOrleft > 0)
+				{
+					anim->NodeChange(model_motion.model_R_Act[scastI(ActState::SQUAT)], scastI(AnimAtk::TIMER));
+				}
+				else
+				{
+					anim->NodeChange(model_motion.model_L_Act[scastI(ActState::SQUAT)], scastI(AnimAtk::TIMER));
+				}
+				anim_ccodinate = ac_act[scastI(act_state)].timer;
+			}
 		}
-		else
-		{
-			anim->NodeChange(model_motion.model_L_Act[scastI(ActState::SQUAT)]);
-		}
-		anim_ccodinate = ac_act[scastI(act_state)].fream;
 	}
+
+	if (act_state != ActState::SQUAT)
+	{
+		return;
+	}
+
 	if (pad->x_input[scastI(PAD::STICK_D)] == 0 && pad->x_input[scastI(PAD::STICK_RDown)] == 0 && pad->x_input[scastI(PAD::STICK_LDown)] == 0)
 	{
 		//下が入力されていない場合は待機に戻す

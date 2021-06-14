@@ -7,6 +7,8 @@
 #include "../Effect.h"
 #include "../YRSound.h"
 #include "../framework.h"
+
+#include "World.h"
 //#include "Music.h"
 
 const float guard_gauge_get = 3.0f;
@@ -791,7 +793,7 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 }
 
 
-void Hitcheak::HitPlayer(std::vector <HitBox>& pl1, float& pos1, std::vector <HitBox>& pl2, float& pos2, float elapsed_time)
+void Hitcheak::HitPlayer(std::vector <HitBox>& pl1, YR_Vector3& pos1, std::vector <HitBox>& pl2, YR_Vector3& pos2, float elapsed_time, const YR_Vector3 old_pos1, const YR_Vector3 old_pos2)
 {
 	//ëÃÇÃìñÇΩÇËîªíËÇÕ1Ç≈å≈íËÇ∑ÇÈà◊ÅA1ÇæÇØÇ≈îªíËÇ∑ÇÈ
 	int p1_h = 1;
@@ -804,44 +806,43 @@ void Hitcheak::HitPlayer(std::vector <HitBox>& pl1, float& pos1, std::vector <Hi
 			pl1[p1_h].center.y + pl1[p1_h].parameter.size.y>pl2[p2_h].center.y - pl2[p2_h].parameter.size.y)
 		{
 			float moving_correction = (pl1[p1_h].parameter.size.x / 2.0f) + (pl2[p2_h].parameter.size.x / 2.0f);
-			if (pos1 < pos2)
-			{
-				while (1)
-				{
-					float distance = pos2 - pos1;
-					pos1 -= correction_value * elapsed_time;
-					pos2 += correction_value * elapsed_time;
-					if (distance > moving_correction)
-					{
-						break;
-					}
-				}
-			}
-			if (pos1 > pos2)
-			{
-				while (1)
-				{
-					float distance = pos1 - pos2;
-					pos1 += correction_value * elapsed_time;
-					pos2 -= correction_value * elapsed_time;
-					if (distance > moving_correction)
-					{
-						break;
-					}
-				}
-			}
-			if (pos1 == pos2)
-			{
 
-				int ra = 0;
-				ra = rand() % 2;
-				if (ra)
+
+			if (pos1.x < pos2.x)
+			{
+				while (1)
+				{
+					float distance = pos2.x - pos1.x;
+					pos1.x -= correction_value * elapsed_time;
+					pos2.x += correction_value * elapsed_time;
+					if (distance > moving_correction)
+					{
+						break;
+					}
+				}
+			}
+			if (pos1.x > pos2.x)
+			{
+				while (1)
+				{
+					float distance = pos1.x - pos2.x;
+					pos1.x += correction_value * elapsed_time;
+					pos2.x -= correction_value * elapsed_time;
+					if (distance > moving_correction)
+					{
+						break;
+					}
+				}
+			}
+			if (pos1.x == pos2.x)
+			{
+				if (old_pos2.x >= old_pos1.x)
 				{
 					while (1)
 					{
-						float distance = pos2 - pos1;
-						pos1 -= correction_value * elapsed_time;
-						pos2 += correction_value * elapsed_time;
+						float distance = pos2.x - pos1.x;
+						pos1.x -= correction_value * elapsed_time;
+						pos2.x += correction_value * elapsed_time;
 						if (distance > moving_correction)
 						{
 							break;
@@ -852,9 +853,9 @@ void Hitcheak::HitPlayer(std::vector <HitBox>& pl1, float& pos1, std::vector <Hi
 				{
 					while (1)
 					{
-						float distance = pos1 - pos2;
-						pos1 += correction_value * elapsed_time;
-						pos2 -= correction_value * elapsed_time;
+						float distance = pos1.x - pos2.x;
+						pos1.x += correction_value * elapsed_time;
+						pos2.x -= correction_value * elapsed_time;
 						if (distance > moving_correction)
 						{
 							break;

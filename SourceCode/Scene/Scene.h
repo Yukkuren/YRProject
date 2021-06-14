@@ -309,6 +309,9 @@ public:
 
 	Title_CBuffer cbuffer_param;
 
+	YR_Vector3	old_pos_p1 = { 0.0f,0.0f,0.0f };	//1フレーム前のプレイヤー1の座標
+	YR_Vector3	old_pos_p2 = { 0.0f,0.0f,0.0f };	//1フレーム前のプレイヤー2の座標
+
 	enum class MAIN_LOOP :int
 	{
 		INTRO1P = 0,

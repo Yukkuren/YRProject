@@ -15,11 +15,22 @@ const float adjustment_eye = 8.0f;	//カメラのズーム距離補正値
 const float adjustment_y = 4.0f;	//カメラの高さ距離補正値
 //const float adjustment_y = 6.0f;	//カメラのY方向の補正値
 
+enum class P1P2_TOUCH : int
+{
+	NONE = 0,
+	P1,
+	P2,
+};
+
 class Limit
 {
 public:
+	static float adjust_wall;		//片方が壁に張り付いている時にもう片方に掛ける補正値
 	static float Left_max;			//スクロール左端
 	static float Right_max;			//スクロール右端
+
+	static P1P2_TOUCH	p1p2_first_touch;	//先に画面端に行っていたプレイヤーを保存する
+
 	static YR_Vector3 Set(YR_Vector3 p1, YR_Vector3 p2,YR_Vector3 start_eye);
 	static void Stop(float& p1, float& p2);
 	static void First_Camera_set(YR_Vector3 camera);

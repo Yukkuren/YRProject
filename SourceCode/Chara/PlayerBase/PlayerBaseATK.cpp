@@ -16,7 +16,7 @@
 void Player::PosKnockPlus(float vec)
 {
 	//プレイヤーの位置に引数で受け取った値を与える(ノックバック)
-	pos.x -= vec * (rightOrleft + (combo_count_player * 0.1f));
+	pos.x -= ((vec + (combo_count_player * 0.1f)) * rightOrleft);
 }
 
 

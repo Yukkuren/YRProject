@@ -50,14 +50,14 @@ public:
 		u8"special",	//無敵攻撃
 		u8"thu",
 		u8"kyo",
-		u8"wait",		//空中前弱必殺
-		u8"wait",		//空中前中必殺
-		u8"wait",		//空中前強必殺
+		u8"Rhurf",		//空中前弱必殺
+		u8"jaku",		//空中前中必殺
+		u8"jaku",		//空中前強必殺
 		u8"Lhurf",
-		u8"wait",		//空中後中必殺
-		u8"wait",		//空中後強必殺
-		u8"wait",		//空中前超必殺
-		u8"wait",		//空中後超必殺
+		u8"jaku",		//空中後中必殺
+		u8"jaku",		//空中後強必殺
+		u8"jaku",		//空中前超必殺
+		u8"jaku",		//空中後超必殺
 	};
 
 

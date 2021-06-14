@@ -6,6 +6,8 @@
 float Limit::Left_max = -100.0f;
 float Limit::Right_max = 100.0f;
 YR_Vector3 Limit::now_Scene_camera = { 0.0f,0.0f,0.0f };
+float Limit::adjust_wall = 3.0f;
+P1P2_TOUCH	Limit::p1p2_first_touch = P1P2_TOUCH::NONE;
 
 void Limit::First_Camera_set(YR_Vector3 camera)
 {
@@ -157,24 +159,155 @@ YR_Vector3 Limit::Set(YR_Vector3 p1, YR_Vector3 p2, YR_Vector3 start_eye)
 
 void Limit::Stop(float& p1, float& p2)
 {
-	//プレイヤーの移動制限
-	if (p1 > Right_max)
-	{
-		p1 = Right_max;
-	}
 
-	if (p1 < Left_max)
+	if (Left_max == -world_max_x || Right_max == world_max_x)
 	{
-		p1 = Left_max;
-	}
+		//プレイヤーの移動制限(画面端がカメラに写っている場合)
 
-	if (p2 > Right_max)
-	{
-		p2 = Right_max;
-	}
+		//画面端にどちらかのプレイヤーが要れば対応したチェックがtrueになる
+		bool check1 = false;
+		bool check2 = false;
+		bool check3 = false;
+		bool check4 = false;
 
-	if (p2 < Left_max)
+		switch (p1p2_first_touch)
+		{
+		case P1P2_TOUCH::NONE:
+		case P1P2_TOUCH::P1:
+			//どちらも画面端に行っていないorプレイヤー1が先に画面端に行っていた
+			if (p1 >= Right_max)
+			{
+				check1 = true;
+				break;
+			}
+			if (p1 <= Left_max)
+			{
+				check3 = true;
+				break;
+			}
+			if (p2 >= Right_max)
+			{
+				if(!check1)check2 = true;
+				break;
+			}
+			if (p2 <= Left_max)
+			{
+				if(!check3)check4 = true;
+				break;
+			}
+			break;
+		case P1P2_TOUCH::P2:
+			//プレイヤー2が先に画面端に居た
+			if (p2 >= Right_max)
+			{
+				check2 = true;
+				break;
+			}
+			if (p2 <= Left_max)
+			{
+				check4 = true;
+				break;
+			}
+			if (p1 >= Right_max)
+			{
+				if(!check2)check1 = true;
+				break;
+			}
+			if (p1 <= Left_max)
+			{
+				if(!check4)check3 = true;
+				break;
+			}
+			break;
+		default:
+			break;
+		}
+
+
+		//チェックされていたら後から画面端に来たほうは補正を掛けた画面端座標で計算を行うようにする
+
+		if (check1)
+		{
+			p1p2_first_touch = P1P2_TOUCH::P1;
+
+			p1 = Right_max;
+			Right_max = world_max_x - adjust_wall;
+
+			if (p2 > Right_max)
+			{
+				p2 = Right_max;
+			}
+		}
+		if (check2)
+		{
+			p1p2_first_touch = P1P2_TOUCH::P2;
+
+			p2 = Right_max;
+			Right_max = world_max_x - adjust_wall;
+
+			if (p1 > Right_max)
+			{
+				p1 = Right_max;
+			}
+		}
+		if (check3)
+		{
+
+			p1p2_first_touch = P1P2_TOUCH::P1;
+
+			p1 = Left_max;
+			Left_max = -world_max_x + adjust_wall;
+
+			if (p2 < Left_max)
+			{
+				p2 = Left_max;
+			}
+		}
+		if (check4)
+		{
+			p1p2_first_touch = P1P2_TOUCH::P2;
+
+			p2 = Left_max;
+			Left_max = -world_max_x + adjust_wall;
+
+			if (p1 < Left_max)
+			{
+				p1 = Left_max;
+			}
+		}
+
+		if (!check1 && !check2 && !check3 && !check4)
+		{
+			p1p2_first_touch = P1P2_TOUCH::NONE;
+		}
+	}
+	else
 	{
-		p2 = Left_max;
+
+		//プレイヤーの移動制限
+		if (p1 > Right_max)
+		{
+			p1 = Right_max;
+			Right_max = world_max_x - adjust_wall;
+		}
+
+		if (p1 < Left_max)
+		{
+			p1 = Left_max;
+			Left_max = -world_max_x + adjust_wall;
+		}
+
+		if (p2 > Right_max)
+		{
+			p2 = Right_max;
+			Right_max = world_max_x - adjust_wall;
+		}
+
+		if (p2 < Left_max)
+		{
+			p2 = Left_max;
+			Left_max = -world_max_x + adjust_wall;
+		}
+
 	}
 }

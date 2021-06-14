@@ -897,7 +897,7 @@ void SceneGame::Update(float elapsed_time)
 					if (player1p->act_state != ActState::STATENONE && player2p->act_state != ActState::STATENONE)
 					{
 						//プレイヤーのステートが奪われた状態以外は押し出しを行う
-						Hitcheak::HitPlayer(player1p->hit, player1p->pos.x, player2p->hit, player2p->pos.x, game_speed);
+						Hitcheak::HitPlayer(player1p->hit, player1p->pos, player2p->hit, player2p->pos, game_speed, old_pos_p1, old_pos_p2);
 					}
 
 					//攻撃同士の判定
@@ -1079,6 +1079,10 @@ void SceneGame::Update(float elapsed_time)
 							pl1_rightorleft = -1.0f;
 							pl2_rightorleft = 1.0f;
 						}
+
+						//座標を保存する
+						old_pos_p1 = player1p->pos;
+						old_pos_p2 = player2p->pos;
 
 						switch (YRCamera.camera_state)
 						{
@@ -1441,6 +1445,10 @@ void SceneGame::Draw(float elapsed_time)
 		YRCamera.SetEye(eye);
 		YRCamera.SetFocus(focus);
 		YRCamera.SetPerspective(fov* 0.01745f, aspect, nearZ, farZ);
+		ImGui::Text("Right : %f", Limit::Right_max);
+		ImGui::Text("Left : %f", Limit::Left_max);
+		ImGui::Text("world : %f", world_max_x);
+
 		//YRCamera.SetPerspective(fov, aspect, 0.0001f, 1000000.0f);
 		ImGui::End();
 	}
