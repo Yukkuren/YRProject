@@ -21,11 +21,12 @@ void AttackBox::Init(int attack_name, AttackParameter& param, float rightOrleft,
 	speed = YR_Vector3(0.0f, 0.0f, 0.0f);
 	this->plus_speed = YR_Vector3(0.0f, 0.0f, 0.0f);
 	parameter = param;
-	parameter.hitback.x *= rightOrleft;
+	parameter.param.hitback.x *= rightOrleft;
+	parameter.param.guard_back.x *= rightOrleft;
 	//parameter.knockback *= (rightOrleft);
 	hit_result = HitResult::NONE;
 	this->attack_name = attack_name;
-	if (parameter.damege != 0.0f)
+	if (parameter.param.damage != 0.0f)
 	{
 		hit_ok = true;
 	}
@@ -67,10 +68,11 @@ void AttackBox::Init(int attack_name, AttackParameter& param, float rightOrleft,
 	speed = YR_Vector3(0.0f, 0.0f, 0.0f);
 	hit_result = HitResult::NONE;
 	parameter = param;
-	parameter.hitback.x *= rightOrleft;
+	parameter.param.hitback.x *= rightOrleft;
+	parameter.param.guard_back.x *= rightOrleft;
 	this->attack_name = attack_name;
 	//parameter.knockback *= (rightOrleft);
-	if (parameter.damege != 0.0f)
+	if (parameter.param.damage != 0.0f)
 	{
 		hit_ok = true;
 	}
@@ -139,8 +141,8 @@ void AttackBox::Update(YR_Vector3 pl_pos, float elapsed_time, YR_Vector3 effect_
 	if (!hit_ok)
 	{
 		//当たったからダメージなどの数値を消去する
-		parameter.damege = 0.0f;
-		parameter.HB_timer = 0.0f;
+		parameter.param.damage = 0.0f;
+		parameter.param.HB_timer = 0.0f;
 		parameter.timer = -1.0f;
 		YRGetEffect().StopEffect(effect_param.effect_kind, handle);
 	}
@@ -150,10 +152,10 @@ void AttackBox::Update(YR_Vector3 pl_pos, float elapsed_time, YR_Vector3 effect_
 		fin = true;
 		attack = false;
 		parameter.timer = 0.0f;
-		parameter.damege = 0.0f;
+		parameter.param.damage = 0.0f;
 		hit_ok = false;
-		parameter.HB_timer = 0.0f;
-		parameter.hitback = YR_Vector3(0.0f, 0.0f);
+		parameter.param.HB_timer = 0.0f;
+		parameter.param.hitback = YR_Vector3(0.0f, 0.0f);
 
 		YRGetEffect().StopEffect(effect_param.effect_kind, handle);
 	}

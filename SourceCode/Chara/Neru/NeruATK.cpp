@@ -552,7 +552,7 @@ void Neru::Steal(float elapsed_time)
 		//持続を初期化
 		timer = non_target;
 		//投げ時間をセットする
-		steal_escape = attack_list[steal].attack_single[0].parameter[0].stealtimer;
+		steal_escape = attack_list[steal].attack_single[0].parameter[0].param.steal_timer;
 		//攻撃ごとに個別の設定を行う
 		AttackDetailsSet(attack_list[slow].combo);
 		return;

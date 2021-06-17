@@ -3,6 +3,7 @@
 #include "../YR_VectorMaster.h"
 #include "../YRShader.h"
 #include "../Effect.h"
+#include "BoxParameter.h"
 
 //--------------------------------------------------
 // **攻撃パラメーター列挙**
@@ -60,18 +61,15 @@ public:
 	YR_Vector3	distance;	//プレイヤーの中心座標からどれだけ離れているか
 	YR_Vector3	size;		//攻撃判定の大きさ
 	float		timer;		//持続フレーム
-	float		damege;		//この攻撃で与えるダメージ
-	float		HB_timer;	//攻撃を当てた時の相手ののけぞり時間
-	YR_Vector3	hitback;	//攻撃を当てた時の相手の吹っ飛びベクトル
 	AttackKind	type;		//攻撃の属性(上段・中段・下段)
 	float		knockback;	//ノックバック(Xベクトルのみ)
 	bool		gaugeout;	//falseならゲージ獲得攻撃
-	float		stealtimer; //掴みぬけされる時間
 	HitStopTime	HS_timer;	//ヒットストップ時間(3パターン)
 	float		gauge_get;	//ゲージの獲得量
+	BoxParameter param;		//HitBoxに送るパラメータ
 
-	AttackParameter() : distance(0.0f, 0.0f, 0.0f), size(0.0f, 0.0f, 0.0f), timer(0.0f), damege(0.0f), HB_timer(0.0f), hitback(0.0f, 0.0f, 0.0f),
-		type(AttackKind::MIDDLE), knockback(0.0f), gaugeout(false), stealtimer(0.0f), HS_timer(HitStopTime::SHORT), gauge_get(0.0f) {};
+	AttackParameter() : distance(0.0f, 0.0f, 0.0f), size(0.0f, 0.0f, 0.0f), timer(0.0f),
+		type(AttackKind::MIDDLE), knockback(0.0f), gaugeout(false), HS_timer(HitStopTime::SHORT), gauge_get(0.0f) {};
 };
 
 

@@ -34,7 +34,7 @@ void Player::Init(YR_Vector3 InitPos)
 	gravity = 40.0f;
 	down_force = 200.0f;
 	fall_force = 100.0f;
-	knocktimer = 0.0f;
+	knocktimer = non_target;
 	ground = true;
 	jumpflag = false;
 	finish = false;
@@ -174,6 +174,8 @@ void Player::Update(float decision, float elapsed_time)
 		Attack(decision, elapsed_time);
 		break;
 	case ActState::GUARD:
+		Brake(elapsed_time);
+		if (BackStepCheck())break;
 		Guard(decision);
 		GuardBack(elapsed_time);
 		Squat();
@@ -233,26 +235,11 @@ void Player::Update(float decision, float elapsed_time)
 				{
 					rightOrleft = decision;
 				}
-				if (speed.x > 0.0f)
-				{
-					speed.x -= chara_state.brake_speed * elapsed_time;
-					if (speed.x < 0.0f)
-					{
-						speed.x = 0;
-					}
-				}
-				if (speed.x < 0.0f)
-				{
-					speed.x += chara_state.brake_speed * elapsed_time;
-					if (speed.x > 0.0f)
-					{
-						speed.x = 0.0f;
-					}
-				}
+				Brake(elapsed_time);
 			}
 			//しゃがみやガードなどを先に判定
 			Squat();
-			Guard(decision);
+			GuardCheack(decision);
 			//ガードでない時
 			if (act_state != ActState::GUARD)
 			{
@@ -366,7 +353,7 @@ void Player::Update(float decision, float elapsed_time)
 	}
 
 	//アニメーション処理更新
-	GuardAnimSet();
+	//GuardAnimSet();
 
 	if (!attack)
 	{
@@ -382,6 +369,32 @@ void Player::Update(float decision, float elapsed_time)
 	EndAttackErase();			//攻撃判定の消去
 }
 
+
+
+
+
+
+
+void Player::Brake(float elapsed_time)
+{
+	//プレイヤーの速度にブレーキを掛ける
+	if (speed.x > 0.0f)
+	{
+		speed.x -= chara_state.brake_speed * elapsed_time;
+		if (speed.x < 0.0f)
+		{
+			speed.x = 0;
+		}
+	}
+	if (speed.x < 0.0f)
+	{
+		speed.x += chara_state.brake_speed * elapsed_time;
+		if (speed.x > 0.0f)
+		{
+			speed.x = 0.0f;
+		}
+	}
+}
 
 
 
@@ -615,22 +628,7 @@ void Player::Attack(float decision, float elapsed_time)
 	//攻撃中に入る関数
 	if (ground)
 	{
-		if (speed.x > 0.0f)
-		{
-			speed.x -= chara_state.brake_speed * elapsed_time;
-			if (speed.x < 0.0f)
-			{
-				speed.x = 0.0f;
-			}
-		}
-		if (speed.x < 0.0f)
-		{
-			speed.x += chara_state.brake_speed * elapsed_time;
-			if (speed.x > 0.0f)
-			{
-				speed.x = 0.0f;
-			}
-		}
+		Brake(elapsed_time);
 	}
 	//空中時
 	if (pos.y > POS_Y && speed_Y.speed == 0.0f)
@@ -1061,65 +1059,8 @@ void Player::Move(float decision)
 	}
 
 
-	if (pad->x_input[static_cast<int>(PAD::L_DASH)] == 1 && pad->x_input[scastI(PAD::STICK_R)] == 0)
-	{
-		if (ground)
-		{
-
-			if (rightOrleft > 0)
-			{
-				//右向きバックステップ
-				step = true;
-				act_state = ActState::BACK;
-				moveflag = false;
-				GetSound().SESinglePlay(SEKind::BACKSTEP);
-				//描画をセット
-				anim->NodeChange(model_motion.model_R_Act[scastI(ActState::BACK)], scastI(AnimAtk::FREAM));
-				anim->PlayAnimation(scastI(AnimAtk::FREAM), false);
-				anim_ccodinate = ac_act[scastI(ActState::BACK)].fream;
-				speed.x = -chara_state.backstepS;
-			}
-			else
-			{
-				//ダッシュ左向き
-				//ダッシュの遷移は別で行うため消去
-				//act_state = ActState::DASH;
-				//anim->NodeChange(model_motion.dash_L, scastI(AnimAtk::FREAM));
-				//anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
-				//anim_ccodinate = ac_act[scastI(act_state)].fream;
-			}
-		}
-	}
-	if (pad->x_input[static_cast<int>(PAD::R_DASH)] == 1 && pad->x_input[scastI(PAD::STICK_L)] == 0)
-	{
-		if (ground)
-		{
-			//描画をセット
-
-			if (rightOrleft < 0)
-			{
-				//左向きバックステップ
-				step = true;
-				act_state = ActState::BACK;
-				moveflag = false;
-				GetSound().SESinglePlay(SEKind::BACKSTEP);
-				//描画をセット
-				anim->NodeChange(model_motion.model_L_Act[scastI(ActState::BACK)], scastI(AnimAtk::FREAM));
-				anim->PlayAnimation(scastI(AnimAtk::FREAM), false);
-				anim_ccodinate = ac_act[scastI(ActState::BACK)].fream;
-				speed.x = chara_state.backstepS;
-			}
-			else
-			{
-				//ダッシュ右向き
-				//ダッシュの遷移は別で行うため消去
-				//act_state = ActState::DASH;
-				//anim->NodeChange(model_motion.dash_R,scastI(AnimAtk::FREAM));
-				//anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
-				//anim_ccodinate = ac_act[scastI(act_state)].fream;
-			}
-		}
-	}
+	//バックステップ判定
+	BackStepCheck();
 
 
 	//左移動
@@ -1186,6 +1127,87 @@ void Player::Move(float decision)
 
 	MoveStop();
 }
+
+
+
+
+bool Player::BackStepCheck()
+{
+	//バックステップ判定は他の部分でも使用する為関数に分けている
+
+	if (knocktimer < target_max)
+	{
+		//実際にガードを行っている時はバックステップできないようにする
+		return false;
+	}
+
+	if (pad->x_input[static_cast<int>(PAD::L_DASH)] == 1 && pad->x_input[scastI(PAD::STICK_R)] == 0)
+	{
+		if (ground)
+		{
+
+			if (rightOrleft > 0)
+			{
+				//右向きバックステップ
+				step = true;
+				act_state = ActState::BACK;
+				moveflag = false;
+				GetSound().SESinglePlay(SEKind::BACKSTEP);
+				//描画をセット
+				anim->NodeChange(model_motion.model_R_Act[scastI(ActState::BACK)], scastI(AnimAtk::FREAM));
+				anim->PlayAnimation(scastI(AnimAtk::FREAM), false);
+				anim_ccodinate = ac_act[scastI(ActState::BACK)].fream;
+				speed.x = -chara_state.backstepS;
+				return true;
+			}
+			else
+			{
+				//ダッシュ左向き
+				//ダッシュの遷移は別で行うため消去
+				//act_state = ActState::DASH;
+				//anim->NodeChange(model_motion.dash_L, scastI(AnimAtk::FREAM));
+				//anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
+				//anim_ccodinate = ac_act[scastI(act_state)].fream;
+			}
+		}
+	}
+	if (pad->x_input[static_cast<int>(PAD::R_DASH)] == 1 && pad->x_input[scastI(PAD::STICK_L)] == 0)
+	{
+		if (ground)
+		{
+			//描画をセット
+
+			if (rightOrleft < 0)
+			{
+				//左向きバックステップ
+				step = true;
+				act_state = ActState::BACK;
+				moveflag = false;
+				GetSound().SESinglePlay(SEKind::BACKSTEP);
+				//描画をセット
+				anim->NodeChange(model_motion.model_L_Act[scastI(ActState::BACK)], scastI(AnimAtk::FREAM));
+				anim->PlayAnimation(scastI(AnimAtk::FREAM), false);
+				anim_ccodinate = ac_act[scastI(ActState::BACK)].fream;
+				speed.x = chara_state.backstepS;
+				return true;
+			}
+			else
+			{
+				//ダッシュ右向き
+				//ダッシュの遷移は別で行うため消去
+				//act_state = ActState::DASH;
+				//anim->NodeChange(model_motion.dash_R,scastI(AnimAtk::FREAM));
+				//anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
+				//anim_ccodinate = ac_act[scastI(act_state)].fream;
+			}
+		}
+	}
+	return false;
+}
+
+
+
+
 
 
 
@@ -2290,33 +2312,33 @@ void Player::DamageCheck(float decision)
 				}
 				ChangeFace(FaceAnim::Damage);
 				anim_ccodinate = 5.0f;
-				if (hit[i].hitback.y < 0.0f)
+				if (hit[i].param.hitback.y < 0.0f)
 				{
 					//吹っ飛びベクトルがマイナスの場合
 					if (pos.y <= POS_Y)
 					{
 						//下方向の3分の1の速度をXに渡す
-						if (hit[i].hitback.x >= 0.0f)
+						if (hit[i].param.hitback.x >= 0.0f)
 						{
-							hit[i].hitback.x += (-hit[i].hitback.y * 0.3f);
+							hit[i].param.hitback.x += (-hit[i].param.hitback.y * 0.3f);
 						}
 						else
 						{
-							hit[i].hitback.x += (hit[i].hitback.y * 0.3f);
+							hit[i].param.hitback.x += (hit[i].param.hitback.y * 0.3f);
 						}
 						//地面についている場合は下方向の速度を0にする
-						hit[i].hitback.y = 0.0f;
+						hit[i].param.hitback.y = 0.0f;
 						//のけぞり時間を3分の1にする
-						hit[i].timer *= 0.25f;
+						hit[i].param.HB_timer *= 0.25f;
 					}
 				}
 				break;
 			case HitStateKind::STEAL:
 				//掴み攻撃
 				act_state = ActState::STATENONE;
-				steal_escape = hit[i].steal_timer;
+				steal_escape = hit[i].param.steal_timer;
 				hit[i].hit_state = HitStateKind::STEAL;
-				hit[i].steal_timer = 0.0f;
+				hit[i].param.steal_timer = 0.0f;
 				timer = non_target;
 				if (rightOrleft > 0)
 				{
@@ -2367,7 +2389,7 @@ void Player::DamageCheck(float decision)
 			{
 				steal_escape = 0.0f;
 				hit[i].hit_state = HitStateKind::NORMAL;
-				float dg = hit[i].damege - (combo_count * 1.2f);
+				float dg = hit[i].param.damage - (combo_count * 1.2f);
 				if (dg <= 0)
 				{
 					dg = 1;
@@ -2378,8 +2400,8 @@ void Player::DamageCheck(float decision)
 					hp = 0.0f;
 					break;
 				}
-				GaugeUp(hit[i].damege / 5.0f);
-				hit[i].damege = 0.0f;
+				GaugeUp(hit[i].param.damage / 5.0f);
+				hit[i].param.damage = 0.0f;
 				hit[i].hit = false;
 				return;
 			}
@@ -2390,7 +2412,7 @@ void Player::DamageCheck(float decision)
 
 			//ダメージ、吹っ飛びベクトルなどを保存
 			HitBoxTransition(HitBoxState::NOGUARD);
-			float dg = hit[i].damege - (static_cast<float>(combo_count) * 1.2f);
+			float dg = hit[i].param.damage - (static_cast<float>(combo_count) * 1.2f);
 			if (dg <= 0.0f)
 			{
 				dg = 1.0f;
@@ -2402,8 +2424,8 @@ void Player::DamageCheck(float decision)
 				act_state = ActState::DOWN_HIT;
 			}
 			combo_count++;
-			GaugeUp(hit[i].damege / 5.0f);
-			hit[i].damege = 0.0f;
+			GaugeUp(hit[i].param.damage / 5.0f);
+			hit[i].param.damage = 0.0f;
 			hit[i].hit = false;
 
 			//プレイヤーをやられ状態にする
@@ -2417,7 +2439,7 @@ void Player::DamageCheck(float decision)
 			air_dash_count = 1;
 			jumpflag = false;
 			max_jump_flag = false;
-			knocktimer = hit[i].timer;
+			knocktimer = hit[i].param.HB_timer;
 			speed.x = 0.0f;
 			speed.y = 0.0f;
 			step = false;
@@ -2452,32 +2474,32 @@ void Player::KnockUpdate(float elapsed_time)
 	bool pflag = false;		//ノックバックが発動したらtrueにする
 	for (int i = 0; i < hit.size(); i++)
 	{
-		if (hit[i].hitback.x != 0.0f)
+		if (hit[i].param.hitback.x != 0.0f)
 		{
-			pos.x += hit[i].hitback.x * elapsed_time;
+			pos.x += hit[i].param.hitback.x * elapsed_time;
 			if (pos.x > Limit::Right_max)
 			{
 				//一定の速度以上で壁に当たった場合跳ね返るようにする
-				if (hit[i].hitback.x > Reflection_range_min)
+				if (hit[i].param.hitback.x > Reflection_range_min)
 				{
-					hit[i].hitback.x = (-hit[i].hitback.x * Reflection_attenuation_factor);
+					hit[i].param.hitback.x = (-hit[i].param.hitback.x * Reflection_attenuation_factor);
 					YRGetEffect().PlayEffect(EffectKind::WALL_SHOCK, DirectX::XMFLOAT3(pos.x - 5.0f, pos.y, pos.z), DirectX::XMFLOAT3(5.0f, 5.0f, 5.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), DirectX::XMConvertToRadians(90.0f));
 				}
 			}
 			if (pos.x < Limit::Left_max)
 			{
 				//一定の速度以上で壁に当たった場合跳ね返るようにする
-				if (hit[i].hitback.x < -Reflection_range_min)
+				if (hit[i].param.hitback.x < -Reflection_range_min)
 				{
-					hit[i].hitback.x = (-hit[i].hitback.x * Reflection_attenuation_factor);
+					hit[i].param.hitback.x = (-hit[i].param.hitback.x * Reflection_attenuation_factor);
 					YRGetEffect().PlayEffect(EffectKind::WALL_SHOCK, DirectX::XMFLOAT3(pos.x + 5.0f, pos.y, pos.z), DirectX::XMFLOAT3(5.0f, 5.0f, 5.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), DirectX::XMConvertToRadians(-90.0f));
 				}
 			}
 			pflag = true;
 		}
-		if (hit[i].hitback.y != 0.0f)
+		if (hit[i].param.hitback.y != 0.0f)
 		{
-			pos.y += hit[i].hitback.y * elapsed_time;
+			pos.y += hit[i].param.hitback.y * elapsed_time;
 			pflag = true;
 		}
 		if (pflag)
@@ -2493,12 +2515,12 @@ void Player::KnockUpdate(float elapsed_time)
 	{
 		pos.y = POS_Y;
 		//のけぞり中に地面についた場合
-		knocktimer = 0.0f;
+		knocktimer = non_target;
 		combo_count = 0;
 		for (int i = 0; i < hit.size(); i++)
 		{
-			hit[i].timer = 0.0f;
-			hit[i].hitback = YR_Vector3(0.0f, 0.0f);
+			hit[i].param.HB_timer = 0.0f;
+			hit[i].param.hitback = YR_Vector3(0.0f, 0.0f);
 		}
 		if (pad->x_input[scastI(PAD::STICK_D)] > 0 ||
 			pad->x_input[scastI(PAD::STICK_LDown)] > 0 ||
@@ -2561,7 +2583,7 @@ void Player::KnockUpdate(float elapsed_time)
 		return;
 	}
 
-	if (knocktimer < 0.0f)
+	if (knocktimer < 0.0f && knocktimer < target_max)
 	{
 		//のけぞり時間が経過した
 
@@ -2670,11 +2692,11 @@ void Player::KnockUpdate(float elapsed_time)
 			}
 			anim_ccodinate = ac_act[scastI(act_state)].timer;
 		}
-		knocktimer = 0.0f;
+		knocktimer = non_target;
 		for (int i = 0; i < hit.size(); i++)
 		{
-			hit[i].timer = 0.0f;
-			hit[i].hitback = YR_Vector3(0.0f, 0.0f);
+			hit[i].param.HB_timer = 0.0f;
+			hit[i].param.hitback = YR_Vector3(0.0f, 0.0f);
 		}
 	}
 }
@@ -2723,14 +2745,14 @@ void Player::DownHitUpdate(float elapsed_time)
 	//速度を加算していく
 	for (int i = 0; i < hit.size(); i++)
 	{
-		if (hit[i].hitback.x != 0.0f)
+		if (hit[i].param.hitback.x != 0.0f)
 		{
-			pos.x += hit[i].hitback.x * elapsed_time;
+			pos.x += hit[i].param.hitback.x * elapsed_time;
 			pflag = true;
 		}
-		if (hit[i].hitback.y != 0.0f)
+		if (hit[i].param.hitback.y != 0.0f)
 		{
-			pos.y += hit[i].hitback.y * elapsed_time;
+			pos.y += hit[i].param.hitback.y * elapsed_time;
 			pflag = true;
 		}
 		if (pflag)
@@ -2741,7 +2763,7 @@ void Player::DownHitUpdate(float elapsed_time)
 	//角度を戻す
 	angle.z = 0.0f;
 
-	if (knocktimer > 0.0f)
+	if (knocktimer > 0.0f && knocktimer <target_max)
 	{
 		knocktimer -= elapsed_time;
 	}
@@ -2750,8 +2772,8 @@ void Player::DownHitUpdate(float elapsed_time)
 		//当たり判定に入力されている速度を全て初期化する
 		for (int i = 0; i < hit.size(); i++)
 		{
-			hit[i].hitback.x = 0.0f;
-			hit[i].hitback.y = 0.0f;
+			hit[i].param.hitback.x = 0.0f;
+			hit[i].param.hitback.y = 0.0f;
 		}
 		if (!ground)
 		{
@@ -2762,15 +2784,15 @@ void Player::DownHitUpdate(float elapsed_time)
 			if (ground)
 			{
 				combo_count = 0;
-				knocktimer = 0.0f;
+				knocktimer = non_target;
 				//ダウン状態にする
 				act_state = ActState::DOWN;
 				speed.y = 0.0f;
 				speed.x = 0.0f;
 				for (int i = 0; i < hit.size(); i++)
 				{
-					hit[i].timer = 0.0f;
-					hit[i].hitback = YR_Vector3(0.0f, 0.0f);
+					hit[i].param.HB_timer = 0.0f;
+					hit[i].param.hitback = YR_Vector3(0.0f, 0.0f);
 				}
 				//描画をセット
 				if (rightOrleft > 0)
@@ -2791,7 +2813,7 @@ void Player::DownHitUpdate(float elapsed_time)
 	if (pos.y < POS_Y)
 	{
 		combo_count = 0;
-		knocktimer = 0.0f;
+		knocktimer = non_target;
 		//ダウン状態にする
 		act_state = ActState::DOWN;
 		GetSound().SESinglePlay(SEKind::SLAM);
@@ -2799,8 +2821,8 @@ void Player::DownHitUpdate(float elapsed_time)
 		speed.x = 0.0f;
 		for (int i = 0; i < hit.size(); i++)
 		{
-			hit[i].timer = 0.0f;
-			hit[i].hitback = YR_Vector3(0.0f, 0.0f);
+			hit[i].param.HB_timer = 0.0f;
+			hit[i].param.hitback = YR_Vector3(0.0f, 0.0f);
 		}
 		//描画をセット
 		if (rightOrleft > 0)
@@ -2943,16 +2965,16 @@ void Player::SlamUpdate(float elapsed_time)
 	//速度を加算する
 	for (int i = 0; i < hit.size(); i++)
 	{
-		if (hit[i].hitback.x != 0.0f)
+		if (hit[i].param.hitback.x != 0.0f)
 		{
-			pos.x += hit[i].hitback.x * elapsed_time;
-			hit_back_s.x = hit[i].hitback.x;
+			pos.x += hit[i].param.hitback.x * elapsed_time;
+			hit_back_s.x = hit[i].param.hitback.x;
 			pflag = true;
 		}
-		if (hit[i].hitback.y != 0.0f)
+		if (hit[i].param.hitback.y != 0.0f)
 		{
-			pos.y += hit[i].hitback.y * elapsed_time;
-			hit_back_s.y = hit[i].hitback.y;
+			pos.y += hit[i].param.hitback.y * elapsed_time;
+			hit_back_s.y = hit[i].param.hitback.y;
 			pflag = true;
 		}
 		if (pflag)
@@ -2979,8 +3001,8 @@ void Player::SlamUpdate(float elapsed_time)
 		//当たり判定に入力されている速度を全て初期化する
 		for (int i = 0; i < hit.size(); i++)
 		{
-			hit[i].hitback.x = 0.0f;
-			hit[i].hitback.y = 0.0f;
+			hit[i].param.hitback.x = 0.0f;
+			hit[i].param.hitback.y = 0.0f;
 		}
 
 		//アニメーションを変更する
@@ -3032,7 +3054,7 @@ void Player::SlamUpdate(float elapsed_time)
 	}
 
 	//のけぞり時間経過
-	if (knocktimer < 0.0f)
+	if (knocktimer < 0.0f && knocktimer <target_max)
 	{
 		GetSound().SEStop(SEKind::SLIDE);
 		YRGetEffect().StopEffect(EffectKind::SMOKE);
@@ -3040,12 +3062,12 @@ void Player::SlamUpdate(float elapsed_time)
 		if (ground)
 		{
 			pos.y = POS_Y;
-			knocktimer = 0.0f;
+			knocktimer = non_target;
 			combo_count = 0;
 			for (int i = 0; i < hit.size(); i++)
 			{
-				hit[i].timer = 0.0f;
-				hit[i].hitback = YR_Vector3(0.0f, 0.0f);
+				hit[i].param.HB_timer = 0.0f;
+				hit[i].param.hitback = YR_Vector3(0.0f, 0.0f);
 			}
 			if (pad->x_input[scastI(PAD::STICK_D)] > 0 ||
 				pad->x_input[scastI(PAD::STICK_LDown)] > 0 ||
@@ -3126,11 +3148,11 @@ void Player::SlamUpdate(float elapsed_time)
 
 			}
 		}
-		knocktimer = 0.0f;
+		knocktimer = non_target;
 		for (int i = 0; i < hit.size(); i++)
 		{
-			hit[i].timer = 0.0f;
-			hit[i].hitback = YR_Vector3(0.0f, 0.0f);
+			hit[i].param.HB_timer = 0.0f;
+			hit[i].param.hitback = YR_Vector3(0.0f, 0.0f);
 		}
 	}
 }
@@ -3206,6 +3228,7 @@ void Player::PassiveUpdate(float elapsed_time)
 		ChangeFace(FaceAnim::NORMAL);
 		angle.z = 0.0f;
 		passive_timer = 0.0f;
+		knocktimer = non_target;
 		if (ground)
 		{
 			ChangeFace(FaceAnim::NORMAL);
@@ -3260,53 +3283,53 @@ void Player::WakeUp()
 void Player::GuardAnimSet()
 {
 	//ガード時のアニメーション遷移処理
-	if (act_state == ActState::GUARD)
+	if (ground)
 	{
-		if (ground)
+		//スティックの下が入力されている場合は下段ガードに
+		if (pad->x_input[static_cast<int>(PAD::STICK_RDown)] > 0 || pad->x_input[static_cast<int>(PAD::STICK_LDown)] > 0)
 		{
-			//スティックの下が入力されている場合は下段ガードに
-			if (pad->x_input[static_cast<int>(PAD::STICK_RDown)] > 0 || pad->x_input[static_cast<int>(PAD::STICK_LDown)] > 0)
-			{
-				//描画をセット
-				if (rightOrleft > 0)
-				{
-					anim->NodeChange(model_motion.model_R_Act[scastI(ActState::GUARD)], 2);
-				}
-				else
-				{
-					anim->NodeChange(model_motion.model_L_Act[scastI(ActState::GUARD)], 2);
-				}
-				anim_ccodinate = ac_act[scastI(act_state)].timer;
-			}
-			else
-			{
-				//それ以外はガードアニメーションに
-				//描画をセット
-				if (rightOrleft > 0)
-				{
-					anim->NodeChange(model_motion.model_R_Act[scastI(ActState::GUARD)]);
-				}
-				else
-				{
-					anim->NodeChange(model_motion.model_L_Act[scastI(ActState::GUARD)]);
-				}
-				anim_ccodinate = ac_act[scastI(act_state)].timer;
-			}
-		}
-		else
-		{
-			//空中ガードアニメーション
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Act[scastI(ActState::GUARD)], 1);
+				anim->NodeChange(model_motion.model_R_Act[scastI(ActState::GUARD)], scastI(AnimAtk_Guard::SQUAT));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Act[scastI(ActState::GUARD)], 1);
+				anim->NodeChange(model_motion.model_L_Act[scastI(ActState::GUARD)], scastI(AnimAtk_Guard::SQUAT));
 			}
-			anim_ccodinate = ac_act[scastI(act_state)].timer;
+			anim->PlayAnimation(scastI(AnimAtk_Guard::SQUAT), false);
+			anim_ccodinate = ac_act[scastI(act_state)].fream;
 		}
+		else
+		{
+			//それ以外はガードアニメーションに
+			//描画をセット
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.model_R_Act[scastI(ActState::GUARD)], scastI(AnimAtk_Guard::NORMAL));
+			}
+			else
+			{
+				anim->NodeChange(model_motion.model_L_Act[scastI(ActState::GUARD)], scastI(AnimAtk_Guard::NORMAL));
+			}
+			anim->PlayAnimation(scastI(AnimAtk_Guard::NORMAL), false);
+			anim_ccodinate = ac_act[scastI(act_state)].fream;
+		}
+	}
+	else
+	{
+		//空中ガードアニメーション
+		//描画をセット
+		if (rightOrleft > 0)
+		{
+			anim->NodeChange(model_motion.model_R_Act[scastI(ActState::GUARD)], scastI(AnimAtk_Guard::AIR));
+		}
+		else
+		{
+			anim->NodeChange(model_motion.model_L_Act[scastI(ActState::GUARD)], scastI(AnimAtk_Guard::AIR));
+		}
+		anim->PlayAnimation(scastI(AnimAtk_Guard::AIR), false);
+		anim_ccodinate = ac_act[scastI(act_state)].fream;
 	}
 
 }
@@ -3315,17 +3338,20 @@ void Player::GuardAnimSet()
 
 
 
-
-
-void Player::Guard(float decision)
+void Player::GuardCheack(float decision)
 {
-	//ガード処理
+	//ガード判定処理
+	//-----------------------------------------------------------------
+	//・「相手が攻撃を行っている」「相手との距離が指定した距離内である」場合、
+	//移動を行わずガード体制にする
 
 	if (step || attack || act_state == ActState::PASSIVE || act_state == ActState::WAKE)
 	{
 		//攻撃中、またはステップ中、受け身中なら入らない
 		return;
 	}
+
+	bool guard_input_check = false;	//ガード入力をしているかどうかを判断する
 
 	//当たり判定のガード状態を解除する(この後の判定処理でガードしていた場合は付与しなおす)
 	HitBoxTransition(HitBoxState::NOGUARD);
@@ -3346,6 +3372,7 @@ void Player::Guard(float decision)
 			{
 				HitBoxTransition(HitBoxState::DOWN);
 			}
+			guard_input_check = true;
 		}
 		else
 		{
@@ -3359,7 +3386,13 @@ void Player::Guard(float decision)
 				{
 					HitBoxTransition(HitBoxState::MIDDLE);
 				}
+				guard_input_check = true;
 			}
+		}
+		if (pad->x_input[scastI(PAD::STICK_LDown)] == 0 &&
+			pad->x_input[scastI(PAD::STICK_L)] == 0)
+		{
+			AnimChangeSelect(ActState::GUARD);
 		}
 	}
 	if (rightOrleft < 0)
@@ -3375,6 +3408,7 @@ void Player::Guard(float decision)
 			{
 				HitBoxTransition(HitBoxState::DOWN);
 			}
+			guard_input_check = true;
 		}
 		else
 		{
@@ -3388,7 +3422,13 @@ void Player::Guard(float decision)
 				{
 					HitBoxTransition(HitBoxState::MIDDLE);
 				}
+				guard_input_check = true;
 			}
+		}
+		if (pad->x_input[scastI(PAD::STICK_RDown)] == 0 &&
+			pad->x_input[scastI(PAD::STICK_R)] == 0)
+		{
+			AnimChangeSelect(ActState::GUARD);
 		}
 	}
 
@@ -3403,20 +3443,95 @@ void Player::Guard(float decision)
 				|| pad->x_input[scastI(PAD::STICK_L)] > 0 || pad->x_input[scastI(PAD::STICK_LDown)] > 0)
 			{
 				HitBoxTransition(HitBoxState::ALL);
+				guard_input_check = true;
 			}
 		}
 	}
 
+
+	if (rival_state == ActState::ATTACK && guard_input_check && rival_fream < target_max)
+	{
+		//相手が攻撃を行っていた場合
+
+		//※相手のfream情報をもらってきて、target_max以下であれば入るようにする
+		//(攻撃に発生前に入ればいいので、相手の攻撃の持続、後隙の時は入らないようにする)
+
+		float distance = 0.0f;
+
+		if (tracking.rival_Pos.x > pos.x)distance = tracking.rival_Pos.x - pos.x;
+		if (pos.x > tracking.rival_Pos.x)distance = pos.x - tracking.rival_Pos.x;
+
+		if (distance <= guard_range)
+		{
+			//相手との距離が一定の値以内だった場合
+			act_state = ActState::GUARD;
+			GuardAnimSet();
+		}
+	}
+
+
+	HitGuardCheck(decision);
+
+}
+
+
+
+
+
+void Player::Guard(float decision)
+{
+	//ガード処理
+	//-------------------------------------------------------------------------------------
+	//ステートがガードに入っている場合は確認する
+
+	if (step || attack || act_state == ActState::PASSIVE || act_state == ActState::WAKE)
+	{
+		//攻撃中、またはステップ中、受け身中なら入らない
+		return;
+	}
+
+	if (rightOrleft > 0)
+	{
+		//右向きの場合
+		if (pad->x_input[scastI(PAD::STICK_LDown)] == 0&&
+			pad->x_input[scastI(PAD::STICK_L)] == 0)
+		{
+			AnimChangeSelect(ActState::GUARD);
+		}
+	}
+	if (rightOrleft < 0)
+	{
+		//左向きの場合
+		if (pad->x_input[scastI(PAD::STICK_RDown)] == 0&&
+			pad->x_input[scastI(PAD::STICK_R)] == 0)
+		{
+			AnimChangeSelect(ActState::GUARD);
+		}
+	}
+
+	if (rival_state != ActState::ATTACK)
+	{
+		AnimChangeSelect(ActState::GUARD);
+	}
+
+	HitGuardCheck(decision);
+}
+
+
+
+
+void Player::HitGuardCheck(float decision)
+{
 	for (int i = 0; i < hit.size(); i++)
 	{
 		if (hit[i].guard_ok)
 		{
 			//ガードが出来ているかどうかを当たり判定を見て判定する
-			GaugeUp(hit[i].damege / 4.0f);
+			GaugeUp(hit[i].param.damage / 4.0f);
 			speed_X.Set(0.0f);
 			speed_Y.Set(0.0f);
 			speed.x = 0.0f;
-			hp -= hit[i].damege;
+			hp -= hit[i].param.guard_shaving;
 			if (hp < 0)
 			{
 				hp = 1;
@@ -3429,25 +3544,32 @@ void Player::Guard(float decision)
 			if (rightOrleft > 0)
 			{
 				//右向き時
-				if (hit[i].hitback.x > 0.0f)
+				if (hit[i].param.guard_back.x > 0.0f)
 				{
-					hit[i].hitback.x = -hit[i].hitback.x;
+					hit[i].param.guard_back.x = -hit[i].param.guard_back.x;
 				}
 			}
 			else
 			{
 				//左向き
-				if (hit[i].hitback.x < 0.0f)
+				if (hit[i].param.guard_back.x < 0.0f)
 				{
-					hit[i].hitback.x = -hit[i].hitback.x;
+					hit[i].param.guard_back.x = -hit[i].param.guard_back.x;
 				}
 			}
-			hit[i].damege = 0;
+			hit[i].param.damage = 0.0f;
+			hit[i].param.guard_shaving = 0.0f;
 			hit[i].guard_ok = false;
 			moveflag = false;
-			knocktimer = hit[i].timer;
+			knocktimer = hit[i].param.guard_timer;
 			pad->high_trigger = false;
 			hightrigger = false;
+
+			if (act_state != ActState::GUARD)
+			{
+				GuardAnimSet();
+			}
+
 			act_state = ActState::GUARD;
 
 			GetSound().SESinglePlay(SEKind::GUARD);
@@ -3473,27 +3595,22 @@ void Player::GuardBack(float elapsed_time)
 {
 	//ガードバック処理
 
-	if (act_state != ActState::GUARD)
-	{
-		return;
-	}
-
 	bool hit_on = false;	//ガードバックが発動したらtrueにする
 
 
 	for (int i = 0; i < hit.size(); i++)
 	{
-		if (hit[i].hitback.y != 0.0f)
+		if (hit[i].param.guard_back.y != 0.0f)
 		{
 			if (!ground)
 			{
-				pos.y += (hit[i].hitback.y * elapsed_time);
+				pos.y += (hit[i].param.guard_back.y * elapsed_time);
 				hit_on = true;
 			}
 		}
-		if (hit[i].hitback.x != 0.0f)
+		if (hit[i].param.guard_back.x != 0.0f)
 		{
-			pos.x += (hit[i].hitback.x * elapsed_time);
+			pos.x += (hit[i].param.guard_back.x * elapsed_time);
 			hit_on = true;
 		}
 
@@ -3502,15 +3619,15 @@ void Player::GuardBack(float elapsed_time)
 			break;
 		}
 	}
-	if (knocktimer > 0.0f)
+	if (knocktimer > 0.0f && knocktimer <target_max)
 	{
 		knocktimer -= elapsed_time;
-		if (knocktimer == 0)
+		if (knocktimer == 0.0f)
 		{
 			knocktimer -= elapsed_time;
 		}
 	}
-	if (knocktimer < 0.0f)
+	if (knocktimer < 0.0f && knocktimer < target_max)
 	{
 		if (ground)
 		{
@@ -3518,15 +3635,7 @@ void Player::GuardBack(float elapsed_time)
 			{
 				act_state = ActState::NONE;
 			}
-			if (pad->x_input[scastI(PAD::STICK_D)] > 0)
-			{
-				act_state = ActState::SQUAT;
-			}
-			if (pad->x_input[scastI(PAD::STICK_LDown)] > 0)
-			{
-				act_state = ActState::SQUAT;
-			}
-			if (pad->x_input[scastI(PAD::STICK_RDown)] > 0)
+			if (pad->x_input[scastI(PAD::STICK_D)] > 0|| pad->x_input[scastI(PAD::STICK_LDown)] > 0|| pad->x_input[scastI(PAD::STICK_RDown)] > 0)
 			{
 				act_state = ActState::SQUAT;
 			}
@@ -3535,13 +3644,13 @@ void Player::GuardBack(float elapsed_time)
 				//描画をセット
 				if (rightOrleft > 0)
 				{
-					anim->NodeChange(model_motion.model_R_Act[scastI(ActState::SQUAT)]);
+					anim->NodeChange(model_motion.model_R_Act[scastI(ActState::SQUAT)],scastI(AnimAtk::TIMER));
 				}
 				else
 				{
-					anim->NodeChange(model_motion.model_L_Act[scastI(ActState::SQUAT)]);
+					anim->NodeChange(model_motion.model_L_Act[scastI(ActState::SQUAT)], scastI(AnimAtk::TIMER));
 				}
-				anim_ccodinate = ac_act[scastI(act_state)].fream;
+				anim_ccodinate = ac_act[scastI(act_state)].timer;
 			}
 		}
 		else
@@ -3562,11 +3671,10 @@ void Player::GuardBack(float elapsed_time)
 			anim_ccodinate = ac_act[scastI(act_state)].timer;
 		}
 
-		knocktimer = 0;
+		knocktimer = non_target;
 		for (int hitnum = 0; hitnum < hit.size(); hitnum++)
 		{
-			hit[hitnum].timer = 0.0f;
-			hit[hitnum].hitback = YR_Vector3(0.0f, 0.0f);
+			hit[hitnum].param.Reset();
 		}
 	}
 	else
@@ -3633,6 +3741,38 @@ void Player::NoneChange()
 		act_state = ActState::NONE;
 	}
 }
+
+
+
+
+
+void Player::AnimChangeSelect(ActState act)
+{
+	//指定したステートだった場合、現在のスティックの入力によってその後のアニメーションとステートを変更する
+	if (act_state == act)
+	{
+		if (pad->x_input[scastI(PAD::STICK_D)] > 0 || pad->x_input[scastI(PAD::STICK_LDown)] > 0 || pad->x_input[scastI(PAD::STICK_RDown)] > 0)
+		{
+			act_state = ActState::SQUAT;
+
+			//描画をセット
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.model_R_Act[scastI(ActState::SQUAT)], scastI(AnimAtk::TIMER));
+			}
+			else
+			{
+				anim->NodeChange(model_motion.model_L_Act[scastI(ActState::SQUAT)], scastI(AnimAtk::TIMER));
+			}
+			anim_ccodinate = ac_act[scastI(act_state)].timer;
+		}
+		else
+		{
+			act_state = ActState::NONE;
+		}
+	}
+}
+
 
 
 
@@ -3722,11 +3862,11 @@ void Player::StateNone(float elapsed_time)
 			steal_escape = 0.0f;
 			speed.x = 0.0f;
 			speed.y = 0.0f;
-			knocktimer = 0.0f;
+			knocktimer = non_target;
 			for (int i = 0; i < hit.size(); i++)
 			{
-				hit[i].timer = 0.0f;
-				hit[i].hitback = YR_Vector3(0.0f, 0.0f);
+				hit[i].param.HB_timer = 0.0f;
+				hit[i].param.hitback = YR_Vector3(0.0f, 0.0f);
 			}
 			combo_count = 0;
 			act_state = ActState::PASSIVE;

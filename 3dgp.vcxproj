@@ -256,6 +256,7 @@
     <ClInclude Include="SourceCode\framebuffer.h" />
     <ClInclude Include="SourceCode\framework.h" />
     <ClInclude Include="SourceCode\Game\AttackBox.h" />
+    <ClInclude Include="SourceCode\Game\BoxParameter.h" />
     <ClInclude Include="SourceCode\Game\CoList.h" />
     <ClInclude Include="SourceCode\Game\collision.h" />
     <ClInclude Include="SourceCode\Game\HitBox.h" />

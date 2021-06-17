@@ -6,14 +6,14 @@ void HitBox::Init()
 {
 	center = { 0.0f,0.0f };
 	hit = false;
-	damege = 0.0f;
+	param.damage = 0.0f;
 	//hitother = false;
-	timer = 0.0f;
-	hitback = { 0.0f, 0.0f };
+	param.HB_timer = 0.0f;
+	param.hitback = { 0.0f, 0.0f };
 	guard_ok = false;
 	//steal = false;
 	hit_state = HitStateKind::NORMAL;
-	steal_timer = 0.0f;
+	param.steal_timer = 0.0f;
 }
 
 void HitBox::Update(YR_Vector3 pl_pos, HitParameter& param, float rightOrleft, float elapsed_time)
@@ -23,39 +23,39 @@ void HitBox::Update(YR_Vector3 pl_pos, HitParameter& param, float rightOrleft, f
 	center.y = pl_pos.y + parameter.distance.y;
 	//size = range;
 	//if (DEBUG_MODE)Draw();
-	if (timer > 0.0f)
+	if (this->param.HB_timer > 0.0f)
 	{
-		timer -= elapsed_time;
-		if (hitback.x > 0.0f)
+		this->param.HB_timer -= elapsed_time;
+		if (this->param.hitback.x > 0.0f)
 		{
-			hitback.x -= (elapsed_time * hitback_Adjustment);
-			if (hitback.x < 0.0f)
+			this->param.hitback.x -= (elapsed_time * hitback_Adjustment);
+			if (this->param.hitback.x < 0.0f)
 			{
-				hitback.x = 0.0f;
+				this->param.hitback.x = 0.0f;
 			}
 		}
-		if (hitback.x < 0.0f)
+		if (this->param.hitback.x < 0.0f)
 		{
-			hitback.x += (elapsed_time * hitback_Adjustment);
-			if (hitback.x > 0.0f)
+			this->param.hitback.x += (elapsed_time * hitback_Adjustment);
+			if (this->param.hitback.x > 0.0f)
 			{
-				hitback.x = 0.0f;
+				this->param.hitback.x = 0.0f;
 			}
 		}
-		if (hitback.y > 0.0f)
+		if (this->param.hitback.y > 0.0f)
 		{
-			hitback.y -= (elapsed_time * hitback_Adjustment);
-			if (hitback.y < 0.0f)
+			this->param.hitback.y -= (elapsed_time * hitback_Adjustment);
+			if (this->param.hitback.y < 0.0f)
 			{
-				hitback.y = 0.0f;
+				this->param.hitback.y = 0.0f;
 			}
 		}
-		if (timer < 0.0f)
+		if (this->param.HB_timer < 0.0f)
 		{
-			timer = 0.0f;
+			this->param.HB_timer = 0.0f;
 		}
 	}
-	if (damege > 0)
+	if (this->param.damage > 0.0f)
 	{
 
 	}
@@ -73,39 +73,39 @@ void HitBox::Update(YR_Vector3 pl_pos, YR_Vector3& distance, YR_Vector3& size, f
 	center.y = pl_pos.y + parameter.distance.y;
 	//size = range;
 	//if (DEBUG_MODE)Draw();
-	if (timer > 0.0f)
+	if (this->param.HB_timer > 0.0f)
 	{
-		timer -= elapsed_time;
-		if (hitback.x > 0.0f)
+		this->param.HB_timer -= elapsed_time;
+		if (this->param.hitback.x > 0.0f)
 		{
-			hitback.x -= (elapsed_time * hitback_Adjustment);
-			if (hitback.x < 0.0f)
+			this->param.hitback.x -= (elapsed_time * hitback_Adjustment);
+			if (this->param.hitback.x < 0.0f)
 			{
-				hitback.x = 0.0f;
+				this->param.hitback.x = 0.0f;
 			}
 		}
-		if (hitback.x < 0.0f)
+		if (this->param.hitback.x < 0.0f)
 		{
-			hitback.x += (elapsed_time * hitback_Adjustment);
-			if (hitback.x > 0.0f)
+			this->param.hitback.x += (elapsed_time * hitback_Adjustment);
+			if (this->param.hitback.x > 0.0f)
 			{
-				hitback.x = 0.0f;
+				this->param.hitback.x = 0.0f;
 			}
 		}
-		if (hitback.y > 0.0f)
+		if (this->param.hitback.y > 0.0f)
 		{
-			hitback.y -= (elapsed_time * hitback_Adjustment);
-			if (hitback.y < 0.0f)
+			this->param.hitback.y -= (elapsed_time * hitback_Adjustment);
+			if (this->param.hitback.y < 0.0f)
 			{
-				hitback.y = 0.0f;
+				this->param.hitback.y = 0.0f;
 			}
 		}
-		if (timer < 0.0f)
+		if (this->param.HB_timer < 0.0f)
 		{
-			timer = 0.0f;
+			this->param.HB_timer = 0.0f;
 		}
 	}
-	if (damege > 0)
+	if (this->param.damage > 0.0f)
 	{
 
 	}
@@ -177,7 +177,7 @@ void HitBox::Draw(
 	}
 	else
 	{
-		if (timer == 0.0f)
+		if (this->param.HB_timer == 0.0f)
 		{
 			//�ʏ펞
 			FRAMEWORK.scenegame.geo->render(

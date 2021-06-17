@@ -172,6 +172,7 @@ public:
 		DEAPTH,			//体力がなくなった
 		DOWN,			//ダウン中
 		SPECIAL,		//超必を打とうとする
+		FOREVER_GUARD,	//一生ガードする
 		END,
 	};
 

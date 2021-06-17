@@ -209,19 +209,23 @@ bool Player::AttackLoad()
 						ifs >> attack_list[list].attack_single[sin].parameter[para].size.x;
 						ifs >> attack_list[list].attack_single[sin].parameter[para].size.y;
 						ifs >> attack_list[list].attack_single[sin].parameter[para].timer;
-						ifs >> attack_list[list].attack_single[sin].parameter[para].damege;
-						ifs >> attack_list[list].attack_single[sin].parameter[para].HB_timer;
-						ifs >> attack_list[list].attack_single[sin].parameter[para].hitback.x;
-						ifs >> attack_list[list].attack_single[sin].parameter[para].hitback.y;
+						ifs >> attack_list[list].attack_single[sin].parameter[para].param.damage;
+						ifs >> attack_list[list].attack_single[sin].parameter[para].param.HB_timer;
+						ifs >> attack_list[list].attack_single[sin].parameter[para].param.hitback.x;
+						ifs >> attack_list[list].attack_single[sin].parameter[para].param.hitback.y;
 						int type = 0;
 						ifs >> type;
 						attack_list[list].attack_single[sin].parameter[para].type = static_cast<AttackKind>(type);
 						ifs >> attack_list[list].attack_single[sin].parameter[para].knockback;
 						ifs >> attack_list[list].attack_single[sin].parameter[para].gaugeout;
-						ifs >> attack_list[list].attack_single[sin].parameter[para].stealtimer;
+						ifs >> attack_list[list].attack_single[sin].parameter[para].param.steal_timer;
 						int hs;
 						ifs >> hs;
 						attack_list[list].attack_single[sin].parameter[para].HS_timer = static_cast<HitStopTime>(hs);
+						ifs >> attack_list[list].attack_single[sin].parameter[para].param.guard_back.x;
+						ifs >> attack_list[list].attack_single[sin].parameter[para].param.guard_back.y;
+						ifs >> attack_list[list].attack_single[sin].parameter[para].param.guard_shaving;
+						ifs >> attack_list[list].attack_single[sin].parameter[para].param.guard_timer;
 						ifs >> attack_list[list].attack_single[sin].parameter[para].gauge_get;
 					}
 				}
@@ -465,15 +469,19 @@ bool Player::AttackWrite()
 						outputfile << attack_list[list].attack_single[sin].parameter[para].size.x << std::endl;
 						outputfile << attack_list[list].attack_single[sin].parameter[para].size.y << std::endl;
 						outputfile << attack_list[list].attack_single[sin].parameter[para].timer << std::endl;
-						outputfile << attack_list[list].attack_single[sin].parameter[para].damege << std::endl;
-						outputfile << attack_list[list].attack_single[sin].parameter[para].HB_timer << std::endl;
-						outputfile << attack_list[list].attack_single[sin].parameter[para].hitback.x << std::endl;
-						outputfile << attack_list[list].attack_single[sin].parameter[para].hitback.y << std::endl;
+						outputfile << attack_list[list].attack_single[sin].parameter[para].param.damage << std::endl;
+						outputfile << attack_list[list].attack_single[sin].parameter[para].param.HB_timer << std::endl;
+						outputfile << attack_list[list].attack_single[sin].parameter[para].param.hitback.x << std::endl;
+						outputfile << attack_list[list].attack_single[sin].parameter[para].param.hitback.y << std::endl;
 						outputfile << scastI(attack_list[list].attack_single[sin].parameter[para].type) << std::endl;
 						outputfile << attack_list[list].attack_single[sin].parameter[para].knockback << std::endl;
 						outputfile << attack_list[list].attack_single[sin].parameter[para].gaugeout << std::endl;
-						outputfile << attack_list[list].attack_single[sin].parameter[para].stealtimer << std::endl;
+						outputfile << attack_list[list].attack_single[sin].parameter[para].param.steal_timer << std::endl;
 						outputfile << scastI(attack_list[list].attack_single[sin].parameter[para].HS_timer) << std::endl;
+						outputfile << attack_list[list].attack_single[sin].parameter[para].param.guard_back.x << std::endl;
+						outputfile << attack_list[list].attack_single[sin].parameter[para].param.guard_back.y << std::endl;
+						outputfile << attack_list[list].attack_single[sin].parameter[para].param.guard_shaving << std::endl;
+						outputfile << attack_list[list].attack_single[sin].parameter[para].param.guard_timer << std::endl;
 						if (!attack_list[list].attack_single[sin].parameter[para].gaugeout)
 						{
 							outputfile << attack_list[list].attack_single[sin].parameter[para].gauge_get << std::endl;
@@ -633,14 +641,14 @@ bool Player::AttackClean()
 				attack_list[list].attack_single[sin].parameter[para].size.x = 1.0f;
 				attack_list[list].attack_single[sin].parameter[para].size.y = 1.0f;
 				attack_list[list].attack_single[sin].parameter[para].timer = 0.1f;
-				attack_list[list].attack_single[sin].parameter[para].damege = 1.0f;
-				attack_list[list].attack_single[sin].parameter[para].HB_timer = 0.1f;
-				attack_list[list].attack_single[sin].parameter[para].hitback.x = 0.1f;
-				attack_list[list].attack_single[sin].parameter[para].hitback.y = 0.1f;
+				attack_list[list].attack_single[sin].parameter[para].param.damage = 1.0f;
+				attack_list[list].attack_single[sin].parameter[para].param.HB_timer = 0.1f;
+				attack_list[list].attack_single[sin].parameter[para].param.hitback.x = 0.1f;
+				attack_list[list].attack_single[sin].parameter[para].param.hitback.y = 0.1f;
 				attack_list[list].attack_single[sin].parameter[para].type = AttackKind::MIDDLE;
 				attack_list[list].attack_single[sin].parameter[para].knockback = 0.1f;
 				attack_list[list].attack_single[sin].parameter[para].gaugeout = false;
-				attack_list[list].attack_single[sin].parameter[para].stealtimer = 0.1f;
+				attack_list[list].attack_single[sin].parameter[para].param.steal_timer = 0.1f;
 				attack_list[list].attack_single[sin].parameter[para].HS_timer = HitStopTime::NORMAL;
 				attack_list[list].attack_single[sin].parameter[para].gauge_get = 0.1f;
 			}
@@ -768,6 +776,7 @@ void Player::DrawDEBUG(
 		ImGui::Text("fream : "); ImGui::SameLine(); ImGui::Text("%f", fream);
 		ImGui::Text("timer : "); ImGui::SameLine(); ImGui::Text("%f", timer);
 		ImGui::Text("later : "); ImGui::SameLine(); ImGui::Text("%f", later);
+		ImGui::Text("knocktimer : "); ImGui::SameLine(); ImGui::Text("%f", knocktimer);
 
 
 		//ImGui::Text("later : "); ImGui::SameLine(); ImGui::Text("%f", later);
@@ -1082,26 +1091,31 @@ void Player::DrawDEBUG(
 										now_para += std::to_string(para);
 										if (ImGui::TreeNode(now_para.c_str()))
 										{
-											ImGui::InputFloat(u8"プレイヤーとの距離X", &attack_list[list].attack_single[sin].parameter[para].distance.x, 0.01f, 0.1f);
-											ImGui::InputFloat(u8"プレイヤーとの距離Y", &attack_list[list].attack_single[sin].parameter[para].distance.y, 0.01f, 0.1f);
-											ImGui::InputFloat(u8"サイズX", &attack_list[list].attack_single[sin].parameter[para].size.x, 0.01f, 0.1f);
-											ImGui::InputFloat(u8"サイズY", &attack_list[list].attack_single[sin].parameter[para].size.y, 0.01f, 0.1f);
-											ImGui::InputFloat(u8"持続フレーム", &attack_list[list].attack_single[sin].parameter[para].timer, 0.01f, 0.1f);
-											ImGui::InputFloat(u8"ダメージ", &attack_list[list].attack_single[sin].parameter[para].damege, 0.01f, 0.1f);
-											ImGui::InputFloat(u8"のけぞり時間", &attack_list[list].attack_single[sin].parameter[para].HB_timer, 0.01f, 0.1f);
-											ImGui::InputFloat(u8"吹っ飛びX", &attack_list[list].attack_single[sin].parameter[para].hitback.x, 0.01f, 0.1f);
-											ImGui::InputFloat(u8"吹っ飛びY", &attack_list[list].attack_single[sin].parameter[para].hitback.y, 0.01f, 0.1f);
+											ImGui::SliderFloat(u8"プレイヤーとの距離X", &attack_list[list].attack_single[sin].parameter[para].distance.x, -10.0f, 10.0f);
+											ImGui::SliderFloat(u8"プレイヤーとの距離Y", &attack_list[list].attack_single[sin].parameter[para].distance.y, -10.0f, 10.0f);
+											ImGui::SliderFloat(u8"サイズX", &attack_list[list].attack_single[sin].parameter[para].size.x, 0.0f, 20.0f);
+											ImGui::SliderFloat(u8"サイズY", &attack_list[list].attack_single[sin].parameter[para].size.y, 0.0f, 20.0f);
+											ImGui::SliderFloat(u8"持続フレーム", &attack_list[list].attack_single[sin].parameter[para].timer, 0.0f, 2.0f);
+											ImGui::SliderFloat(u8"ダメージ", &attack_list[list].attack_single[sin].parameter[para].param.damage, 0.0f, 300.0f);
+											ImGui::SliderFloat(u8"のけぞり時間", &attack_list[list].attack_single[sin].parameter[para].param.HB_timer, 0.0f, 10.0f);
+											ImGui::SliderFloat(u8"吹っ飛びX", &attack_list[list].attack_single[sin].parameter[para].param.hitback.x, -300.0f, 300.0f);
+											ImGui::SliderFloat(u8"吹っ飛びY", &attack_list[list].attack_single[sin].parameter[para].param.hitback.y, -300.0f, 300.0f);
 											int type = scastI(attack_list[list].attack_single[sin].parameter[para].type);
 											ImGui::SliderInt(u8"攻撃タイプ", &type, 0, scastI(AttackKind::END) - 1);
 											attack_list[list].attack_single[sin].parameter[para].type = static_cast<AttackKind>(type);
 											ImGui::Text(GetName().attack_kind_name_list[type].c_str());
-											ImGui::InputFloat(u8"ノックバック(Xのみ)", &attack_list[list].attack_single[sin].parameter[para].knockback, 0.01f, 0.1f);
+											ImGui::SliderFloat(u8"ノックバック(Xのみ)", &attack_list[list].attack_single[sin].parameter[para].knockback, -100.0f, 100.0f);
 											ImGui::Checkbox(u8"ゲージを獲得しない", &attack_list[list].attack_single[sin].parameter[para].gaugeout);
-											ImGui::InputFloat(u8"つかみ抜けされる時間", &attack_list[list].attack_single[sin].parameter[para].stealtimer, 0.01f, 0.1f);
+											ImGui::SliderFloat(u8"つかみ抜けされる時間", &attack_list[list].attack_single[sin].parameter[para].param.steal_timer, 0.0f, 2.0f);
 											int hit_stop_time = scastI(attack_list[list].attack_single[sin].parameter[para].HS_timer);
 											ImGui::SliderInt(u8"ヒットストップ時間", &hit_stop_time, 0, scastI(HitStopTime::END) - 1);
 											ImGui::Text(u8"0:短い。1:普通。2:長い。3:ズームストップ");
 											attack_list[list].attack_single[sin].parameter[para].HS_timer = static_cast<HitStopTime>(hit_stop_time);
+											ImGui::SliderFloat(u8"ガードバックX", &attack_list[list].attack_single[sin].parameter[para].param.guard_back.x, -100.0f, 100.0f);
+											ImGui::SliderFloat(u8"ガードバックY", &attack_list[list].attack_single[sin].parameter[para].param.guard_back.y, -100.0f, 100.0f);
+											ImGui::SliderFloat(u8"ガード削り", &attack_list[list].attack_single[sin].parameter[para].param.guard_shaving, 0.0f, 100.0f);
+											ImGui::SliderFloat(u8"ガード硬直", &attack_list[list].attack_single[sin].parameter[para].param.guard_timer, 0.0f, 10.0f);
+
 											if (!attack_list[list].attack_single[sin].parameter[para].gaugeout)
 											{
 												ImGui::InputFloat(u8"ゲージ獲得量", &attack_list[list].attack_single[sin].parameter[para].gauge_get, 0.01f, 0.1f);

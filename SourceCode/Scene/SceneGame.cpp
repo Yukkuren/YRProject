@@ -2389,6 +2389,9 @@ void SceneGame::TrackSet()
 	//コンボカウントも送る
 	player1p->combo_count_player = player2p->combo_count;
 	player2p->combo_count_player = player1p->combo_count;
+	//フレーム情報を送る
+	player1p->rival_fream = player2p->fream;
+	player2p->rival_fream = player1p->fream;
 }
 
 

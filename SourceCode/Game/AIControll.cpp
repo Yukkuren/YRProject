@@ -8,9 +8,10 @@
 
 void SceneGame::AIControll(float elapsed_time)
 {
+
 	float dis = player2p->pos.Distance(player1p->pos);
 
-	if (player2p->knocktimer > 0.0f)
+	if (player2p->knocktimer > 0.0f&& player2p->knocktimer<target_max)
 	{
 		//プレイヤーがダメージを受けた
 		AI2P.state = AI_Controller::AI_State::KNOCK;
@@ -63,6 +64,9 @@ void SceneGame::AIControll(float elapsed_time)
 			//空中なら何もしない
 			return;
 		}
+
+		AI2P.state = AI_Controller::AI_State::FOREVER_GUARD;
+		return;
 
 		if (dis < AI2P.max_dis)
 		{
@@ -266,7 +270,7 @@ void SceneGame::AIControll(float elapsed_time)
 		}
 		break;
 	case AI_Controller::AI_State::KNOCK:
-		if (player2p->knocktimer == 0.0f)
+		if (player2p->knocktimer == non_target)
 		{
 			player2p->pad->x_input[scastI(PAD::X)] = 1;
 			AI2P.state = AI_Controller::AI_State::INIT;
@@ -293,6 +297,22 @@ void SceneGame::AIControll(float elapsed_time)
 		if (AI2P.timer > 0.5f)
 		{
 			AI2P.state = AI_Controller::AI_State::INIT;
+		}
+		break;
+	case AI_Controller::AI_State::FOREVER_GUARD:
+		if (player2p->rightOrleft > 0)
+		{
+			//右向き
+			player2p->pad->x_input[scastI(PAD::STICK_R)] = 0;
+			player2p->pad->x_input[scastI(PAD::STICK_L)] = 1;
+			//player2p->pad->x_input[scastI(PAD::L_DASH)] = 1;
+		}
+		else
+		{
+			//左向き
+			player2p->pad->x_input[scastI(PAD::STICK_L)] = 0;
+			player2p->pad->x_input[scastI(PAD::STICK_R)] = 1;
+			//player2p->pad->x_input[scastI(PAD::R_DASH)] = 1;
 		}
 		break;
 	default:

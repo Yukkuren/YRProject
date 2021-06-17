@@ -78,6 +78,18 @@ enum class AnimAtk_Dash :int
 };
 
 
+//--------------------------------------
+//	**アニメーション選択(ガード)
+//	・NodeChange時に送り、アニメーションを指定する
+//--------------------------------------
+enum class AnimAtk_Guard :int
+{
+	NORMAL = 0,	//通常
+	AIR,		//空中
+	SQUAT,		//しゃがみ
+};
+
+
 
 //--------------------------------------
 //	**攻撃時のプレイヤーの地面判定列挙
@@ -499,6 +511,7 @@ class Player
 {
 protected:
 	const float jump_max_time = 0.05f;	//ジャンプしたらjump_can_timerに入れる値
+	const float guard_range = 15.0f;		//ガード状態に入る距離
 public:
 	//モデル用変数
 	std::shared_ptr<Model>			main = nullptr;	//モデルメインデータ(メッシュのみ。アニメーション無し)
@@ -520,6 +533,7 @@ public:
 	bool				attack = false;							//TRUEなら攻撃中
 	ActState			act_state = ActState::NONE;				//今の行動。また行動不可ならどういう状態か
 	ActState			rival_state = ActState::NONE;			//相手の今の行動。SceneGameで代入する
+	float				rival_fream = non_target;				//相手の今のフレーム(発生)情報。SceneGameで代入し、ガード時等に使用する
 	AttackState			attack_state = AttackState::NONE;		//今何の攻撃をしているか
 	AttackState			last_attack = AttackState::NONE;		//最後になんの攻撃をしたか
 	AirDashState		air_dash_state = AirDashState::NONE;	//空中ダッシュステート
@@ -653,8 +667,10 @@ public:
 	virtual void JumpUpdate(float decision, float elapsed_time);
 	virtual void DamageCheck(float decision);
 	virtual void GuardAnimSet();
+	virtual void GuardCheack(float decision);
 	virtual void Guard(float decision);
 	virtual void GuardBack(float elapsed_time);
+	virtual void HitGuardCheck(float decision);
 	virtual void Squat();
 	virtual void FallUpdate(float elapsed_time);
 	virtual void DownUpdate();
@@ -667,6 +683,10 @@ public:
 	virtual void SlamUpdate(float elapsed_time);
 	virtual void WaitAnimSet();
 	virtual void NoneChange();
+	virtual void Brake(float elapsed_time);
+	virtual bool BackStepCheck();
+
+	virtual void AnimChangeSelect(ActState act);
 
 	virtual void HitBoxTransition(HitBoxState state);
 	virtual void AttackDetailsSet(const AttackState & attack_state);

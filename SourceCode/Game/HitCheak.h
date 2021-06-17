@@ -7,10 +7,11 @@
 constexpr float guard_damege_adj = 3.0f;	//ガードされた時のダメージ補正値
 constexpr float guard_back_adj_x = 2.5f;	//ガードされた時の押出補正値X
 constexpr float guard_back_adj_y = 1.5f;	//ガードされた時の押出補正値Y
-constexpr float guard_stop_adj = 2.5f;	//ガードされた時のガード硬直補正値
+constexpr float guard_stop_adj = 2.5f;		//ガードされた時のガード硬直補正値
 constexpr float correction_value = 20.0f;	//プレイヤー同士の押出し補正値
 constexpr float slam_up_line = 32.5f;		//叩きつけ状態になる高さ
 constexpr float slam_zoom_line = 20.0f;		//叩きつけ攻撃を受けてカメラズームになる高さ
+constexpr float offset_near_damage = 10.0f;	//攻撃が相殺されるダメージの範囲
 
 enum class HitResultState : int
 {

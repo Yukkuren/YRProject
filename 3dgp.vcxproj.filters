@@ -171,6 +171,7 @@
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="SourceCode\easing\easing.h" />
+    <ClInclude Include="SourceCode\Game\BoxParameter.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shader">
