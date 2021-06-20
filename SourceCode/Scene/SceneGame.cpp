@@ -1827,7 +1827,7 @@ void SceneGame::HPBar_Draw(
 		HPbar_mask->DrawRotaGraph(spriteShader.get(), 1400.0f, 150.0f, 0.0f, 1.0f, true, SpriteMask::WRITE);
 
 		//1P‚ÌHP
-		HPDamagebar_img->DrawRectGraph(spriteShader.get(), 100.0f + PL.Damage_ratio1P, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f, false, SpriteMask::INDRAW);
+		HPDamagebar_img->DrawRectGraph(spriteShader.get(), 100.0f + PL.Damage_ratio1P, 100.0f, 800.0f - PL.ratio1P, 0.0f, (100.0f + PL.correction_value)-(100.0f + PL.Damage_ratio1P), 100.0f, false, SpriteMask::INDRAW);
 		//HP_img->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f,SpriteMask::INDRAW);
 		HPbar_base->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f, false, SpriteMask::INDRAW, hp1p_color);
 		HPbar_fedo->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f, false, SpriteMask::INDRAW, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));

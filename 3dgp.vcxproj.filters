@@ -83,6 +83,7 @@
     <ClCompile Include="SourceCode\Game\CoList.cpp">
       <Filter>Game</Filter>
     </ClCompile>
+    <ClCompile Include="imgui\imgui_tables.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">
