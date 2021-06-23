@@ -274,6 +274,7 @@ public:
 		OPERATION,	//操作
 		SUSPENSION,	//動かない
 		AI,			//AI
+		INVINCIVLE,	//常に無敵で動かない
 		END,		//終了コマンド
 	}; Player2PControl pl2_con = Player2PControl::OPERATION;
 

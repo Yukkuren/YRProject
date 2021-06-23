@@ -25,6 +25,7 @@ std::array<std::string, scastI(SceneGame::Player2PControl::END)> p2_con_name_lis
 	u8"操作",
 	u8"動かない",
 	u8"AI",
+	u8"無敵操作不可",
 };
 
 std::array<std::string, scastI(AI_Controller::AI_State::END)> p2_AI_state_list =
@@ -1346,7 +1347,7 @@ void SceneGame::Draw(float elapsed_time)
 		ImGui::Text("time : %f", timer);
 		int pl2p_con = scastI(pl2_con);
 		ImGui::Text(u8"2Pの挙動 :"); ImGui::SameLine();
-		ImGui::SliderInt(p2_con_name_list[pl2p_con].c_str(), &pl2p_con, 0, scastI(Player2PControl::AI));
+		ImGui::SliderInt(p2_con_name_list[pl2p_con].c_str(), &pl2p_con, 0, scastI(Player2PControl::END) - 1);
 		pl2_con = static_cast<Player2PControl>(pl2p_con);
 		ImGui::Checkbox("Camera_Debug", &camera_move_debug);
 		if (ImGui::Button(u8"カメラをプレイヤー1に"))
@@ -3091,6 +3092,14 @@ void SceneGame::Control2PState(float elapsed_time)
 	case SceneGame::Player2PControl::AI:
 		//AI
 		AIControll(elapsed_time);
+		break;
+	case SceneGame::Player2PControl::INVINCIVLE:
+		//操作不能
+		player1p->hp = 1000.0f;
+		player2p->hp = 1000.0f;
+		player1p->power = 5;
+		player2p->power = 5;
+		player2p->HitBoxTransition(HitBoxState::INVINCIBLE);
 		break;
 	default:
 		break;

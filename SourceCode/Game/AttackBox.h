@@ -53,26 +53,6 @@ enum class AttackKind : int
 	END,
 };
 
-
-
-struct AttackParameter
-{
-public:
-	YR_Vector3	distance;	//プレイヤーの中心座標からどれだけ離れているか
-	YR_Vector3	size;		//攻撃判定の大きさ
-	float		timer;		//持続フレーム
-	AttackKind	type;		//攻撃の属性(上段・中段・下段)
-	float		knockback;	//ノックバック(Xベクトルのみ)
-	bool		gaugeout;	//falseならゲージ獲得攻撃
-	HitStopTime	HS_timer;	//ヒットストップ時間(3パターン)
-	float		gauge_get;	//ゲージの獲得量
-	BoxParameter param;		//HitBoxに送るパラメータ
-
-	AttackParameter() : distance(0.0f, 0.0f, 0.0f), size(0.0f, 0.0f, 0.0f), timer(0.0f),
-		type(AttackKind::MIDDLE), knockback(0.0f), gaugeout(false), HS_timer(HitStopTime::SHORT), gauge_get(0.0f) {};
-};
-
-
 struct EffectParameter
 {
 	EffectKind			effect_kind;	//エフェクトの種類
@@ -85,6 +65,27 @@ struct EffectParameter
 	EffectParameter() : effect_kind(EffectKind::NONE), distance(0.0f, 0.0f, 0.0f), scale(1.0f, 1.0f, 1.0f), axis(0.0f, 0.0f, 0.0f),
 	angle(0.0f),rightORleft(false){}
 };
+
+
+struct AttackParameter
+{
+public:
+	YR_Vector3			distance;		//プレイヤーの中心座標からどれだけ離れているか
+	YR_Vector3			size;			//攻撃判定の大きさ
+	float				timer;			//持続フレーム
+	AttackKind			type;			//攻撃の属性(上段・中段・下段)
+	float				knockback;		//ノックバック(Xベクトルのみ)
+	bool				gaugeout;		//falseならゲージ獲得攻撃
+	HitStopTime			HS_timer;		//ヒットストップ時間(3パターン)
+	float				gauge_get;		//ゲージの獲得量
+	BoxParameter		param;			//HitBoxに送るパラメータ
+	EffectParameter		effect_param;	//表示するエフェクト
+
+	AttackParameter() : distance(0.0f, 0.0f, 0.0f), size(0.0f, 0.0f, 0.0f), timer(0.0f),
+		type(AttackKind::MIDDLE), knockback(0.0f), gaugeout(false), HS_timer(HitStopTime::SHORT), gauge_get(0.0f), effect_param() {};
+};
+
+
 
 
 class AttackBox
