@@ -1826,7 +1826,6 @@ void Neru::SpecialAttack(float elapsed_time)
 			{
 				camera_state_neru = CAMERA_STATE_NERU::THIRD;
 			}
-			ChangeFace(FaceAnim::YARUKI);
 			YRCamera.SetFov(50.0f * 0.01745f);
 		}
 		else if (fream > 0.2f)
@@ -1898,6 +1897,10 @@ void Neru::SpecialAttack(float elapsed_time)
 	}
 
 	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
+
+	int now_at_num = attack_list[now_at_list].now_attack_num;
+
+	//発生フレームになったら攻撃判定を生成する
 	if (fream < 0.0f)
 	{
 		//攻撃発生の結果を保存する
@@ -1909,18 +1912,20 @@ void Neru::SpecialAttack(float elapsed_time)
 		attack_list[now_at_list].SetAttack(&atk, rightOrleft,pos);
 
 		//エフェクト生成
-		YRGetEffect().PlayEffect(EffectKind::SPECIAL_DRILL, atk.back().handle, atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -90.0f * rightOrleft);
+		//YRGetEffect().PlayEffect(EffectKind::SPECIAL_DRILL, atk.back().handle, atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -90.0f * rightOrleft);
 
 		atk.back().effect_param.effect_kind = EffectKind::SPECIAL_DRILL;
 
-		fream = non_target;
-		if (rightOrleft > 0)
+		if (attack_list[now_at_list].now_attack_num == 0)
 		{
-			anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
-		}
-		else
-		{
-			anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
+			}
+			else
+			{
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
+			}
 		}
 		YRCamera.RequestCamera(Camera::Request::RELEASE, now_player);
 		GetSound().SEStop(SEKind::INTRO_WIND);
@@ -1931,11 +1936,16 @@ void Neru::SpecialAttack(float elapsed_time)
 		//SE再生
 		GetSound().SESinglePlay(SEKind::SPECIAL_ATTACK3);
 
+		//発生フレーム初期化
+		fream = non_target;
+
 		//攻撃発生中は無敵
-		HitBoxTransition(HitBoxState::INVINCIBLE);
+		//HitBoxTransition(HitBoxState::INVINCIBLE);
 
 		//持続時間を設定
-		timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
+		timer = attack_list[now_at_list].attack_single[now_at_num].parameter[0].timer;
+
+		now_at_num = attack_list[now_at_list].now_attack_num;
 	}
 
 	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
@@ -1946,12 +1956,14 @@ void Neru::SpecialAttack(float elapsed_time)
 			if (knock)
 			{
 				a.parameter.knockback = 0.0f;
+				a.knock_start = false;
 			}
 			if (a.knock_start)
 			{
 				PosKnockPlus(a.parameter.knockback);
 				a.parameter.knockback = 0.0f;
 				knock = true;
+				a.knock_start = false;
 			}
 		}
 	}
@@ -1960,16 +1972,16 @@ void Neru::SpecialAttack(float elapsed_time)
 	{
 		//持続フレームを減らしていく
 		timer -= elapsed_time;
-		if (hit_result != HitResult::GUARD)
-		{
-			//攻撃中は前に移動させる
-			pos.x += elapsed_time * Getapply(150.0f);
-		}
-		else
-		{
-			//無敵を消す
-			HitBoxTransition(HitBoxState::NOGUARD);
-		}
+		//if (hit_result != HitResult::GUARD)
+		//{
+		//	//攻撃中は前に移動させる
+		//	pos.x += elapsed_time * Getapply(150.0f);
+		//}
+		//else
+		//{
+		//	//無敵を消す
+		//	HitBoxTransition(HitBoxState::NOGUARD);
+		//}
 	}
 
 	//持続時間が全て終了したことを確認する
@@ -1980,6 +1992,8 @@ void Neru::SpecialAttack(float elapsed_time)
 		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
 		{
 			fream = attack_list[now_at_list].attack_single[attack_list[now_at_list].now_attack_num].fream;
+			//持続フレームを初期化
+			timer = non_target;
 		}
 		else
 		{
@@ -1993,6 +2007,8 @@ void Neru::SpecialAttack(float elapsed_time)
 			anim_ccodinate = ac_attack[now_at_list].later;
 			//無敵を消す
 			HitBoxTransition(HitBoxState::NOGUARD);
+			//持続フレームを初期化
+			timer = non_target;
 			//描画をセット
 			if (rightOrleft > 0)
 			{
@@ -2002,6 +2018,8 @@ void Neru::SpecialAttack(float elapsed_time)
 			{
 				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::LATER));
 			}
+			//行動終了フラグをオンに
+			finish = true;
 		}
 	}
 }

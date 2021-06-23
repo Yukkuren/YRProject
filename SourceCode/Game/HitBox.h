@@ -67,6 +67,8 @@ public:
 	void Update(YR_Vector3 pl_pos, HitParameter& param, float rightOrleft, float elapsed_time);
 	void Update(YR_Vector3 pl_pos, YR_Vector3& distance, YR_Vector3& size, float rightOrleft, float elapsed_time);
 
+	void Reset();
+
 
 	HitBox() : center(0.0f, 0.0f, 0.0f), hit(false), guard_ok(false), hit_state(HitStateKind::NORMAL) {};
 };

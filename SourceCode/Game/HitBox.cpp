@@ -16,6 +16,16 @@ void HitBox::Init()
 	param.steal_timer = 0.0f;
 }
 
+void HitBox::Reset()
+{
+	//パラメータをリセットする
+	param.Reset();
+	hit = false;
+	param.HB_timer = 0.0f;
+	guard_ok = false;
+	hit_state = HitStateKind::NORMAL;
+}
+
 void HitBox::Update(YR_Vector3 pl_pos, HitParameter& param, float rightOrleft, float elapsed_time)
 {
 	parameter = param;
@@ -133,7 +143,7 @@ void HitBox::Draw(
 			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 			view,
 			projection,
-			DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.5f)
+			DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.3f)
 		);
 	}
 	else if (state == HitBoxState::PROJECTILE_ARMOR)
@@ -146,7 +156,7 @@ void HitBox::Draw(
 			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 			view,
 			projection,
-			DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 0.5f)
+			DirectX::XMFLOAT4(0.5f, 0.3f, 0.8f, 0.3f)
 		);
 	}
 	else if (state == HitBoxState::UP_INVINCIBLE)
@@ -159,7 +169,7 @@ void HitBox::Draw(
 			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 			view,
 			projection,
-			DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 0.5f)
+			DirectX::XMFLOAT4(0.8f, 0.5f, 0.0f, 0.3f)
 		);
 	}
 	else if (state == HitBoxState::SLIDE)
@@ -172,7 +182,7 @@ void HitBox::Draw(
 			DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 			view,
 			projection,
-			DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 0.5f)
+			DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 0.3f)
 		);
 	}
 	else
@@ -187,7 +197,7 @@ void HitBox::Draw(
 				DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 				view,
 				projection,
-				DirectX::XMFLOAT4(0.0f, 0.0f, 0.8f, 0.5f)
+				DirectX::XMFLOAT4(0.0f, 0.0f, 0.8f, 0.3f)
 			);
 		}
 		else
@@ -202,7 +212,7 @@ void HitBox::Draw(
 					DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 					view,
 					projection,
-					DirectX::XMFLOAT4(0.8f, 0.0f, 0.8f, 0.5f)
+					DirectX::XMFLOAT4(0.8f, 0.0f, 0.8f, 0.3f)
 				);
 			}
 			else
@@ -215,7 +225,7 @@ void HitBox::Draw(
 					DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 					view,
 					projection,
-					DirectX::XMFLOAT4(0.0f, 0.8f, 0.0f, 0.5f)
+					DirectX::XMFLOAT4(0.0f, 0.8f, 0.0f, 0.3f)
 				);
 			}
 		}

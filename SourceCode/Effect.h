@@ -31,6 +31,7 @@ enum class EffectKind : int
 	TRACK,				//ホーミングダッシュ時エフェクト
 	WALL_SHOCK,			//壁激突
 	NERU_TRACK,			//Neru用のホーミングエフェクト
+	LASER,				//レーザー(赤)
 	END,
 };
 

@@ -766,111 +766,6 @@ void Player::DrawDEBUG(
 		std::string now_play = std::to_string(now_player);
 		now_play += std::string("P : ") + GetName().chara_name_list[scastI(this->chara_name)];
 		ImGui::Begin(now_play.c_str());
-		ImGui::Text(u8"行動ステート");
-		ImGui::Text(GetName().act_name_list[scastI(act_state)].c_str());
-		ImGui::Text(u8"攻撃ステート");
-		ImGui::Text(GetName().attack_name_list[scastI(attack_state)].c_str());
-
-		ImGui::SliderFloat(u8"ジャンプの着地スキ", &jump_later, 0.0f, 2.0f);
-		ImGui::SliderFloat(u8"ダッシュの着地スキ", &dash_later, 0.0f, 2.0f);
-		ImGui::Text("fream : "); ImGui::SameLine(); ImGui::Text("%f", fream);
-		ImGui::Text("timer : "); ImGui::SameLine(); ImGui::Text("%f", timer);
-		ImGui::Text("later : "); ImGui::SameLine(); ImGui::Text("%f", later);
-		ImGui::Text("knocktimer : "); ImGui::SameLine(); ImGui::Text("%f", knocktimer);
-
-
-		//ImGui::Text("later : "); ImGui::SameLine(); ImGui::Text("%f", later);
-
-
-		DrawDEBUGHitParam();
-
-		chara_state.Draw();
-
-		//ImGui::InputFloat("eye_offset.x", &eye_offset.x, 0.01f, 0.01f);
-		//ImGui::InputFloat("eye_offset.y", &eye_offset.y, 0.01f, 0.01f);
-		//ImGui::InputFloat("mouse_offset.x", &mouth_offset.x, 0.01f, 0.01f);
-		//ImGui::InputFloat("mouse_offset.y", &mouth_offset.y, 0.01f, 0.01f);
-		ImGui::Text("player.x:%f", pos.x);
-		ImGui::Text("player.y:%f", pos.y);
-		ImGui::Text("command_timer:%f", pad->com_list.command_timer);
-		ImGui::Text("track:%d", trackgauge);
-		ImGui::Text("hitState : "); ImGui::SameLine();
-		ImGui::Text(GetName().hitstate_name_list[scastI(hit[0].state)].c_str());
-		if (ImGui::TreeNode("ModelParameter"))
-		{
-			ImGui::SliderFloat("scale_x", &scale.x, -10.0f, 10.0f);
-			ImGui::SliderFloat("scale_y", &scale.y, -10.0f, 10.0f);
-			ImGui::SliderFloat("scale_z", &scale.z, -10.0f, 10.0f);
-			ImGui::SliderFloat("angle_x", &angle.x, -10.0f, 10.0f);
-			ImGui::SliderFloat("angle_y", &angle.y, -10.0f, 10.0f);
-			ImGui::SliderFloat("angle_z", &angle.z, -10.0f, 10.0f);
-			ImGui::TreePop();
-		}
-		if (ImGui::TreeNode("StepParameter"))
-		{
-			ImGui::Text("speed.x:%f", speed.x);
-			//ImGui::SliderFloat("speed", &backstepS, 0.0f, 500.0f);
-			//ImGui::SliderFloat("down", &backstepD, 0.0f, 500.0f);
-			//ImGui::SliderFloat("air_speed", &stepspeed, 0.0f, 500.0f);
-			//ImGui::SliderFloat("air_down", &stepD, 0.0f, 500.0f);
-			//ImGui::SliderFloat("passive_speed_X", &passive_speed.x, 0.0f, 500.0f);
-			//ImGui::SliderFloat("passive_speed_Y", &passive_speed.y, 0.0f, 500.0f);
-			//ImGui::SliderFloat("passive_break", &passive_brake, 0.0f, 500.0f);
-			ImGui::TreePop();
-		}
-		if (ImGui::TreeNode("JumpParameter"))
-		{
-			static float s = 0.0f;
-
-
-			if (jumpflag)
-			{
-				if (!max_jump_flag)
-				{
-					s = 0.0f;
-				}
-				s = min(speed.y, s);
-			}
-
-			ImGui::Checkbox("jump_flug", &jumpflag);
-			ImGui::Checkbox("max_jump_flug", &max_jump_flag);
-			ImGui::Text("speed.y:%f", speed.y);
-			ImGui::Text("speed_X:%f", speed_X.speed);
-			ImGui::Text("speed_Y:%f", speed_Y.speed);
-			ImGui::Text("down_force:%f", down_force);
-			ImGui::Text("s:%f", s);
-			//ImGui::SliderFloat("jump_max", &jump_max, 0.0f, 500.0f);
-			ImGui::SliderFloat("down_force", &down_force, 0.0f, 1000.0f);
-			//ImGui::SliderFloat("high_jump_max", &high_jump_max, 0.0f, 1000.0f);
-			//ImGui::SliderFloat("jump_speed", &jump_speed, 0.0f, 5000.0f);
-			//ImGui::SliderFloat("high_jump_speed", &high_jump_speed, 0.0f, 5000.0f);
-			ImGui::TreePop();
-		}
-		if (ImGui::TreeNode("Light"))
-		{
-			ImGui::SliderFloat("light_direction.x", &this->light_direction.x, -1.0f, 1.0f);
-			ImGui::SliderFloat("light_direction.y", &this->light_direction.y, -1.0f, 1.0f);
-			ImGui::SliderFloat("light_direction.z", &this->light_direction.z, -1.0f, 1.0f);
-			ImGui::SliderFloat("light_direction.w", &this->light_direction.w, -1.0f, 1.0f);
-			ImGui::TreePop();
-		}
-
-		/*if (ImGui::BeginTabBar("testBar"))
-		{
-			for (int i = 0; i < 100; i++)
-			{
-				if (ImGui::BeginTabItem(std::to_string(i).data()))
-				{
-					{
-						ImGui::Text(std::to_string(i).data());
-						ImGui::EndTabItem();
-					}
-				}
-			}
-			ImGui::EndTabBar();
-		}*/
-
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
 
 		//ここから攻撃判定調整
@@ -963,188 +858,354 @@ void Player::DrawDEBUG(
 			init_timer -= elapsed_time;
 		}
 
-
-		if (ImGui::BeginTabBar(u8"攻撃判定"))
+		if (ImGui::BeginTabBar(u8"設定用ImGui",ImGuiTabBarFlags_::ImGuiTabBarFlags_FittingPolicyScroll))
 		{
+			if (ImGui::BeginTabItem(u8"キャラステータス"))
+			{
+
+				ImGui::Text(u8"行動ステート");
+				ImGui::Text(GetName().act_name_list[scastI(act_state)].c_str());
+				ImGui::Text(u8"攻撃ステート");
+				ImGui::Text(GetName().attack_name_list[scastI(attack_state)].c_str());
+
+				ImGui::SliderFloat(u8"ジャンプの着地スキ", &jump_later, 0.0f, 2.0f);
+				ImGui::SliderFloat(u8"ダッシュの着地スキ", &dash_later, 0.0f, 2.0f);
+				ImGui::Text("fream : "); ImGui::SameLine(); ImGui::Text("%f", fream);
+				ImGui::Text("timer : "); ImGui::SameLine(); ImGui::Text("%f", timer);
+				ImGui::Text("later : "); ImGui::SameLine(); ImGui::Text("%f", later);
+				ImGui::Text("knocktimer : "); ImGui::SameLine(); ImGui::Text("%f", knocktimer);
+
+
+				//ImGui::Text("later : "); ImGui::SameLine(); ImGui::Text("%f", later);
+
+
+				DrawDEBUGHitParam();
+
+				chara_state.Draw();
+
+				//ImGui::InputFloat("eye_offset.x", &eye_offset.x, 0.01f, 0.01f);
+				//ImGui::InputFloat("eye_offset.y", &eye_offset.y, 0.01f, 0.01f);
+				//ImGui::InputFloat("mouse_offset.x", &mouth_offset.x, 0.01f, 0.01f);
+				//ImGui::InputFloat("mouse_offset.y", &mouth_offset.y, 0.01f, 0.01f);
+				ImGui::Text("player.x:%f", pos.x);
+				ImGui::Text("player.y:%f", pos.y);
+				ImGui::Text("command_timer:%f", pad->com_list.command_timer);
+				ImGui::Text("track:%d", trackgauge);
+				ImGui::Text("hitState : "); ImGui::SameLine();
+				ImGui::Text(GetName().hitstate_name_list[scastI(hit[0].state)].c_str());
+				if (ImGui::TreeNode("ModelParameter"))
+				{
+					ImGui::SliderFloat("scale_x", &scale.x, -10.0f, 10.0f);
+					ImGui::SliderFloat("scale_y", &scale.y, -10.0f, 10.0f);
+					ImGui::SliderFloat("scale_z", &scale.z, -10.0f, 10.0f);
+					ImGui::SliderFloat("angle_x", &angle.x, -10.0f, 10.0f);
+					ImGui::SliderFloat("angle_y", &angle.y, -10.0f, 10.0f);
+					ImGui::SliderFloat("angle_z", &angle.z, -10.0f, 10.0f);
+					ImGui::TreePop();
+				}
+				if (ImGui::TreeNode("StepParameter"))
+				{
+					ImGui::Text("speed.x:%f", speed.x);
+					//ImGui::SliderFloat("speed", &backstepS, 0.0f, 500.0f);
+					//ImGui::SliderFloat("down", &backstepD, 0.0f, 500.0f);
+					//ImGui::SliderFloat("air_speed", &stepspeed, 0.0f, 500.0f);
+					//ImGui::SliderFloat("air_down", &stepD, 0.0f, 500.0f);
+					//ImGui::SliderFloat("passive_speed_X", &passive_speed.x, 0.0f, 500.0f);
+					//ImGui::SliderFloat("passive_speed_Y", &passive_speed.y, 0.0f, 500.0f);
+					//ImGui::SliderFloat("passive_break", &passive_brake, 0.0f, 500.0f);
+					ImGui::TreePop();
+				}
+				if (ImGui::TreeNode("JumpParameter"))
+				{
+					static float s = 0.0f;
+
+
+					if (jumpflag)
+					{
+						if (!max_jump_flag)
+						{
+							s = 0.0f;
+						}
+						s = min(speed.y, s);
+					}
+
+					ImGui::Checkbox("jump_flug", &jumpflag);
+					ImGui::Checkbox("max_jump_flug", &max_jump_flag);
+					ImGui::Text("speed.y:%f", speed.y);
+					ImGui::Text("speed_X:%f", speed_X.speed);
+					ImGui::Text("speed_Y:%f", speed_Y.speed);
+					ImGui::Text("down_force:%f", down_force);
+					ImGui::Text("s:%f", s);
+					//ImGui::SliderFloat("jump_max", &jump_max, 0.0f, 500.0f);
+					ImGui::SliderFloat("down_force", &down_force, 0.0f, 1000.0f);
+					//ImGui::SliderFloat("high_jump_max", &high_jump_max, 0.0f, 1000.0f);
+					//ImGui::SliderFloat("jump_speed", &jump_speed, 0.0f, 5000.0f);
+					//ImGui::SliderFloat("high_jump_speed", &high_jump_speed, 0.0f, 5000.0f);
+					ImGui::TreePop();
+				}
+				if (ImGui::TreeNode("Light"))
+				{
+					ImGui::SliderFloat("light_direction.x", &this->light_direction.x, -1.0f, 1.0f);
+					ImGui::SliderFloat("light_direction.y", &this->light_direction.y, -1.0f, 1.0f);
+					ImGui::SliderFloat("light_direction.z", &this->light_direction.z, -1.0f, 1.0f);
+					ImGui::SliderFloat("light_direction.w", &this->light_direction.w, -1.0f, 1.0f);
+					ImGui::TreePop();
+				}
+
+				/*if (ImGui::BeginTabBar("testBar"))
+				{
+					for (int i = 0; i < 100; i++)
+					{
+						if (ImGui::BeginTabItem(std::to_string(i).data()))
+						{
+							{
+								ImGui::Text(std::to_string(i).data());
+								ImGui::EndTabItem();
+							}
+						}
+					}
+					ImGui::EndTabBar();
+				}*/
+
+				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+				if (ImGui::TreeNode(u8"当たり判定"))
+				{
+					if (!atk.empty())
+					{
+						for (int i = 0; i < atk.size(); i++)
+						{
+							ImGui::InputFloat(".x", &atk[i].pos.x, 0.01f, 0.01f);
+							ImGui::InputFloat(".x", &atk[i].pos.y, 0.01f, 0.01f);
+						}
+					}
+					ImGui::TreePop();
+				}
+				ImGui::EndTabItem();
+			}
+
+
+
 			//攻撃判定を全て出す
+			int at_num_tab = -1;
 			for (int list = 0; list < attack_list.size(); list++)
 			{
-				if (ImGui::BeginTabItem(GetName().attack_name_list[list].c_str()))
+				std::string tab_num = std::string("attack_");
+
+				if (list % 5 == 0)
 				{
-					int real = scastI(attack_list[list].real_attack);
-					int pad = scastI(attack_list[list].linkage_button);
-					ImGui::SliderInt(u8"ボタン", &pad, 0, scastI(PAD::PAD_END));
-					attack_list[list].linkage_button = static_cast<PAD>(pad);
-					ImGui::Text(GetName().pad_name_list[pad].c_str());
-					int com = scastI(attack_list[list].linkage_command);
-					ImGui::SliderInt(u8"コマンド", &com, 0, scastI(Command::LHURF));
-					attack_list[list].linkage_command = static_cast<Command>(com);
-					ImGui::Text(GetName().command_name_list[com].c_str());
-					int ground = scastI(attack_list[list].ground_on);
-					ImGui::SliderInt(u8"攻撃はどこで出せるか", &ground, 0, scastI(Ground_C::END) - 1);
-					attack_list[list].ground_on = static_cast<Ground_C>(ground);
-					ImGui::Text(GetName().ground_name_list[ground].c_str());
-					int next = scastI(attack_list[list].combo);
-					ImGui::SliderInt(u8"次の攻撃", &next, 0, scastI(AttackState::ATTACK_END) - 1);
-					attack_list[list].combo = static_cast<AttackState>(next);
-					ImGui::Text(GetName().attack_name_list[scastI(attack_list[list].combo)].c_str());
-					ImGui::Checkbox(u8"しゃがみ攻撃", &attack_list[list].squat_on);
-					ImGui::Checkbox(u8"剣の軌跡を表示する", &attack_list[list].traject_on);
+					//5個づつ分けてタブ化する
+					at_num_tab++;
+				}
 
-					int effect_k = scastI(attack_list[list].effect_param.effect_kind);
-					ImGui::SliderInt(u8"エフェクトの種類", &effect_k, 0, scastI(EffectKind::END) - 1);
-					ImGui::Text(GetName().effect_kind_name_list[scastI(attack_list[list].effect_param.effect_kind)].c_str());
-					attack_list[list].effect_param.effect_kind = static_cast<EffectKind>(effect_k);
+				tab_num += std::to_string(at_num_tab);
 
-					if (attack_list[list].effect_param.effect_kind != EffectKind::NONE)
+				if (ImGui::BeginTabItem(tab_num.data()))
+				{
+					if (ImGui::BeginTabBar(u8"判定ごと", ImGuiTabBarFlags_::ImGuiTabBarFlags_FittingPolicyScroll))
 					{
-						if (ImGui::TreeNode(u8"エフェクト詳細設定"))
+						if (ImGui::BeginTabItem(GetName().attack_name_list[list].c_str()))
 						{
-							ImGui::SliderFloat(u8"座標X", &attack_list[list].effect_param.distance.x, -50.0f, 50.0f);
-							ImGui::SliderFloat(u8"座標Y", &attack_list[list].effect_param.distance.y, -50.0f, 50.0f);
-							ImGui::SliderFloat(u8"座標Z", &attack_list[list].effect_param.distance.z, -50.0f, 50.0f);
-							float scale_all = attack_list[list].effect_param.scale.x;
-							ImGui::SliderFloat(u8"大きさ全体", &scale_all, 0.0f, 50.0f);
-							ImGui::SliderFloat(u8"大きさX", &attack_list[list].effect_param.scale.x, 0.0f, 50.0f);
-							ImGui::SliderFloat(u8"大きさY", &attack_list[list].effect_param.scale.y, 0.0f, 50.0f);
-							ImGui::SliderFloat(u8"大きさZ", &attack_list[list].effect_param.scale.z, 0.0f, 50.0f);
-							if (attack_list[list].effect_param.scale.x == attack_list[list].effect_param.scale.y == attack_list[list].effect_param.scale.z)
+							if (ImGui::BeginTabBar(u8"攻撃内容", ImGuiTabBarFlags_::ImGuiTabBarFlags_FittingPolicyScroll))
 							{
-								attack_list[list].effect_param.scale.x = scale_all;
-								attack_list[list].effect_param.scale.y = scale_all;
-								attack_list[list].effect_param.scale.z = scale_all;
-							}
-							ImGui::SliderFloat(u8"方向X", &attack_list[list].effect_param.axis.x, 0.0, 1.0f);
-							ImGui::SliderFloat(u8"方向Y", &attack_list[list].effect_param.axis.y, 0.0, 1.0f);
-							ImGui::SliderFloat(u8"方向Z", &attack_list[list].effect_param.axis.z, 0.0, 1.0f);
-							ImGui::SliderFloat(u8"角度", &attack_list[list].effect_param.angle, -360.0f, 360.0f);
-							ImGui::Checkbox(u8"角度をプレイヤー依存にするか", &attack_list[list].effect_param.rightORleft);
-
-							ImGui::TreePop();
-						}
-					}
-
-					if (attack_list[list].linkage_stick != PAD::BUTTOM_END)
-					{
-						GetName().linkage_stick_on[list] = true;
-					}
-
-					ImGui::Checkbox(u8"スティックの入力を必要とする", &GetName().linkage_stick_on[list]);
-					if (GetName().linkage_stick_on[list])
-					{
-						int stick = scastI(attack_list[list].linkage_stick);
-						ImGui::SliderInt(u8"スティック", &stick, scastI(PAD::STICK_R), scastI(PAD::STICK_D));
-						ImGui::Text(GetName().pad_name_list[stick].c_str());
-						attack_list[list].linkage_stick = static_cast<PAD>(stick);
-					}
-					else
-					{
-						attack_list[list].linkage_stick = PAD::BUTTOM_END;
-					}
-					ImGui::SliderInt(u8"攻撃内容", &real, 0, scastI(AttackState::ATTACK_END) - 1);
-					attack_list[list].real_attack = static_cast<AttackState>(real);
-					if (attack_list[list].attack_name != attack_list[list].real_attack)
-					{
-						ImGui::Text(GetName().attack_name_list[scastI(attack_list[list].real_attack)].c_str());
-					}
-					else
-					{
-						int result = scastI(attack_list[list].conditions_hit);
-						ImGui::InputFloat(u8"後スキ", &attack_list[list].later, 0.01f, 0.1f);
-						ImGui::InputInt(u8"攻撃回数", &attack_list[list].attack_max, 1, 10);
-						ImGui::InputFloat(u8"モーション速度:発生", &ac_attack[list].fream, 0.01f, 0.1f);
-						ImGui::InputFloat(u8"モーション速度:持続", &ac_attack[list].timer, 0.01f, 0.1f);
-						ImGui::InputFloat(u8"モーション速度:後スキ", &ac_attack[list].later, 0.01f, 0.1f);
-						ImGui::InputFloat(u8"前進する距離", &attack_list[list].advance_speed, 0.01f, 0.1f);
-						ImGui::SliderInt(u8"攻撃遷移条件", &result, 0, scastI(HitResult::END) - 1);
-						attack_list[list].conditions_hit = static_cast<HitResult>(result);
-						ImGui::Text(GetName().result_name_list[scastI(attack_list[list].conditions_hit)].c_str());
-						ImGui::Checkbox(u8"当たり判定にスピードを付与する", &attack_list[list].speed_on);
-						if (attack_list[list].speed_on)
-						{
-							ImGui::InputFloat(u8"加算スピードX", &attack_list[list].speed.x, 0.01f, 0.1f);
-							ImGui::InputFloat(u8"加算スピードY", &attack_list[list].speed.y, 0.01f, 0.1f);
-							ImGui::InputFloat(u8"プレイヤーの持続フレーム", &attack_list[list].timer, 0.01f, 0.1f);
-						}
-						else
-						{
-							attack_list[list].speed = YR_Vector3(0.0f, 0.0f);
-							attack_list[list].timer = 0.0f;
-						}
-						ImGui::InputInt(u8"必要なゲージ量", &attack_list[list].need_power, 1.0f, 10.0f);
-						if (attack_list[list].need_power >= 1)
-						{
-							int aid_attack = scastI(attack_list[list].aid_attack_name);
-							ImGui::SliderInt(u8"ゲージが足りない場合の攻撃", &aid_attack, scastI(AttackState::NONE), scastI(AttackState::ATTACK_END) - 1);
-							ImGui::Text(GetName().attack_name_list[aid_attack].c_str());
-							attack_list[list].aid_attack_name = static_cast<AttackState>(aid_attack);
-						}
-						else
-						{
-							attack_list[list].aid_attack_name = AttackState::NONE;
-						}
-
-
-						attack_list[list].attack_single.resize(attack_list[list].attack_max);
-						//攻撃回数ごとのパラメータ表示
-						ImGui::Text(u8"攻撃回数ごとのパラメータ");
-						if (!attack_list[list].attack_single.empty())
-						{
-							for (int sin = 0; sin < attack_list[list].attack_single.size(); sin++)
-							{
-								std::string now_sin = std::string("ATK_Single:") + std::to_string(sin);
-								if (ImGui::TreeNode(now_sin.c_str()))
+								bool real_attack_not_now = false;
+								if (ImGui::BeginTabItem(u8"基本情報"))
 								{
-									ImGui::InputFloat(u8"発生フレーム", &attack_list[list].attack_single[sin].fream, 0.01f, 0.1f);
-									ImGui::InputInt(u8"当たり判定の数", &attack_list[list].attack_single[sin].quantity, 1, 10);
-									attack_list[list].attack_single[sin].parameter.resize(attack_list[list].attack_single[sin].quantity);
-									if (!attack_list[list].attack_single[sin].parameter.empty())
-									{
-										for (int para = 0; para < attack_list[list].attack_single[sin].parameter.size(); para++)
-										{
-											//攻撃判定内部パラメーター表示
-											std::string now_para = u8"判定";
-											now_para += std::to_string(para);
-											if (ImGui::TreeNode(now_para.c_str()))
-											{
-												ImGui::SliderFloat(u8"プレイヤーとの距離X", &attack_list[list].attack_single[sin].parameter[para].distance.x, -10.0f, 10.0f);
-												ImGui::SliderFloat(u8"プレイヤーとの距離Y", &attack_list[list].attack_single[sin].parameter[para].distance.y, -10.0f, 10.0f);
-												ImGui::SliderFloat(u8"サイズX", &attack_list[list].attack_single[sin].parameter[para].size.x, 0.0f, 20.0f);
-												ImGui::SliderFloat(u8"サイズY", &attack_list[list].attack_single[sin].parameter[para].size.y, 0.0f, 20.0f);
-												ImGui::SliderFloat(u8"持続フレーム", &attack_list[list].attack_single[sin].parameter[para].timer, 0.0f, 2.0f);
-												ImGui::SliderFloat(u8"ダメージ", &attack_list[list].attack_single[sin].parameter[para].param.damage, 0.0f, 300.0f);
-												ImGui::SliderFloat(u8"のけぞり時間", &attack_list[list].attack_single[sin].parameter[para].param.HB_timer, 0.0f, 10.0f);
-												ImGui::SliderFloat(u8"吹っ飛びX", &attack_list[list].attack_single[sin].parameter[para].param.hitback.x, -300.0f, 300.0f);
-												ImGui::SliderFloat(u8"吹っ飛びY", &attack_list[list].attack_single[sin].parameter[para].param.hitback.y, -300.0f, 300.0f);
-												int type = scastI(attack_list[list].attack_single[sin].parameter[para].type);
-												ImGui::SliderInt(u8"攻撃タイプ", &type, 0, scastI(AttackKind::END) - 1);
-												attack_list[list].attack_single[sin].parameter[para].type = static_cast<AttackKind>(type);
-												ImGui::Text(GetName().attack_kind_name_list[type].c_str());
-												ImGui::SliderFloat(u8"ノックバック(Xのみ)", &attack_list[list].attack_single[sin].parameter[para].knockback, -100.0f, 100.0f);
-												ImGui::Checkbox(u8"ゲージを獲得しない", &attack_list[list].attack_single[sin].parameter[para].gaugeout);
-												ImGui::SliderFloat(u8"つかみ抜けされる時間", &attack_list[list].attack_single[sin].parameter[para].param.steal_timer, 0.0f, 2.0f);
-												int hit_stop_time = scastI(attack_list[list].attack_single[sin].parameter[para].HS_timer);
-												ImGui::SliderInt(u8"ヒットストップ時間", &hit_stop_time, 0, scastI(HitStopTime::END) - 1);
-												ImGui::Text(u8"0:短い。1:普通。2:長い。3:ズームストップ");
-												attack_list[list].attack_single[sin].parameter[para].HS_timer = static_cast<HitStopTime>(hit_stop_time);
-												ImGui::SliderFloat(u8"ガードバックX", &attack_list[list].attack_single[sin].parameter[para].param.guard_back.x, -100.0f, 100.0f);
-												ImGui::SliderFloat(u8"ガードバックY", &attack_list[list].attack_single[sin].parameter[para].param.guard_back.y, -100.0f, 100.0f);
-												ImGui::SliderFloat(u8"ガード削り", &attack_list[list].attack_single[sin].parameter[para].param.guard_shaving, 0.0f, 100.0f);
-												ImGui::SliderFloat(u8"ガード硬直", &attack_list[list].attack_single[sin].parameter[para].param.guard_timer, 0.0f, 10.0f);
+									int real = scastI(attack_list[list].real_attack);
+									int pad = scastI(attack_list[list].linkage_button);
+									ImGui::SliderInt(u8"ボタン", &pad, 0, scastI(PAD::PAD_END));
+									attack_list[list].linkage_button = static_cast<PAD>(pad);
+									ImGui::Text(GetName().pad_name_list[pad].c_str());
+									int com = scastI(attack_list[list].linkage_command);
+									ImGui::SliderInt(u8"コマンド", &com, 0, scastI(Command::LHURF));
+									attack_list[list].linkage_command = static_cast<Command>(com);
+									ImGui::Text(GetName().command_name_list[com].c_str());
+									int ground = scastI(attack_list[list].ground_on);
+									ImGui::SliderInt(u8"攻撃はどこで出せるか", &ground, 0, scastI(Ground_C::END) - 1);
+									attack_list[list].ground_on = static_cast<Ground_C>(ground);
+									ImGui::Text(GetName().ground_name_list[ground].c_str());
+									int next = scastI(attack_list[list].combo);
+									ImGui::SliderInt(u8"次の攻撃", &next, 0, scastI(AttackState::ATTACK_END) - 1);
+									attack_list[list].combo = static_cast<AttackState>(next);
+									ImGui::Text(GetName().attack_name_list[scastI(attack_list[list].combo)].c_str());
+									ImGui::Checkbox(u8"しゃがみ攻撃", &attack_list[list].squat_on);
+									ImGui::Checkbox(u8"剣の軌跡を表示する", &attack_list[list].traject_on);
 
-												if (!attack_list[list].attack_single[sin].parameter[para].gaugeout)
-												{
-													ImGui::InputFloat(u8"ゲージ獲得量", &attack_list[list].attack_single[sin].parameter[para].gauge_get, 0.01f, 0.1f);
-												}
-												ImGui::TreePop();
+									int effect_k = scastI(attack_list[list].effect_param.effect_kind);
+									ImGui::SliderInt(u8"エフェクトの種類", &effect_k, 0, scastI(EffectKind::END) - 1);
+									ImGui::Text(GetName().effect_kind_name_list[scastI(attack_list[list].effect_param.effect_kind)].c_str());
+									attack_list[list].effect_param.effect_kind = static_cast<EffectKind>(effect_k);
+
+									if (attack_list[list].effect_param.effect_kind != EffectKind::NONE)
+									{
+										if (ImGui::TreeNode(u8"エフェクト詳細設定"))
+										{
+											ImGui::SliderFloat(u8"座標X", &attack_list[list].effect_param.distance.x, -50.0f, 50.0f);
+											ImGui::SliderFloat(u8"座標Y", &attack_list[list].effect_param.distance.y, -50.0f, 50.0f);
+											ImGui::SliderFloat(u8"座標Z", &attack_list[list].effect_param.distance.z, -50.0f, 50.0f);
+											float scale_all = attack_list[list].effect_param.scale.x;
+											ImGui::SliderFloat(u8"大きさ全体", &scale_all, 0.0f, 50.0f);
+											ImGui::SliderFloat(u8"大きさX", &attack_list[list].effect_param.scale.x, 0.0f, 50.0f);
+											ImGui::SliderFloat(u8"大きさY", &attack_list[list].effect_param.scale.y, 0.0f, 50.0f);
+											ImGui::SliderFloat(u8"大きさZ", &attack_list[list].effect_param.scale.z, 0.0f, 50.0f);
+											if (attack_list[list].effect_param.scale.x == attack_list[list].effect_param.scale.y == attack_list[list].effect_param.scale.z)
+											{
+												attack_list[list].effect_param.scale.x = scale_all;
+												attack_list[list].effect_param.scale.y = scale_all;
+												attack_list[list].effect_param.scale.z = scale_all;
 											}
+											ImGui::SliderFloat(u8"方向X", &attack_list[list].effect_param.axis.x, 0.0, 1.0f);
+											ImGui::SliderFloat(u8"方向Y", &attack_list[list].effect_param.axis.y, 0.0, 1.0f);
+											ImGui::SliderFloat(u8"方向Z", &attack_list[list].effect_param.axis.z, 0.0, 1.0f);
+											ImGui::SliderFloat(u8"角度", &attack_list[list].effect_param.angle, -360.0f, 360.0f);
+											ImGui::Checkbox(u8"角度をプレイヤー依存にするか", &attack_list[list].effect_param.rightORleft);
+
+											ImGui::TreePop();
 										}
 									}
 
-									ImGui::TreePop();
+									if (attack_list[list].linkage_stick != PAD::BUTTOM_END)
+									{
+										GetName().linkage_stick_on[list] = true;
+									}
+
+									ImGui::Checkbox(u8"スティックの入力を必要とする", &GetName().linkage_stick_on[list]);
+									if (GetName().linkage_stick_on[list])
+									{
+										int stick = scastI(attack_list[list].linkage_stick);
+										ImGui::SliderInt(u8"スティック", &stick, scastI(PAD::STICK_R), scastI(PAD::STICK_D));
+										ImGui::Text(GetName().pad_name_list[stick].c_str());
+										attack_list[list].linkage_stick = static_cast<PAD>(stick);
+									}
+									else
+									{
+										attack_list[list].linkage_stick = PAD::BUTTOM_END;
+									}
+									ImGui::SliderInt(u8"攻撃内容", &real, 0, scastI(AttackState::ATTACK_END) - 1);
+									attack_list[list].real_attack = static_cast<AttackState>(real);
+
+
+									if (attack_list[list].attack_name != attack_list[list].real_attack)
+									{
+										ImGui::Text(GetName().attack_name_list[scastI(attack_list[list].real_attack)].c_str());
+										real_attack_not_now = true;
+									}
+									else
+									{
+										int result = scastI(attack_list[list].conditions_hit);
+										ImGui::InputFloat(u8"後スキ", &attack_list[list].later, 0.01f, 0.1f);
+										ImGui::InputInt(u8"攻撃回数", &attack_list[list].attack_max, 1, 10);
+										ImGui::InputFloat(u8"モーション速度:発生", &ac_attack[list].fream, 0.01f, 0.1f);
+										ImGui::InputFloat(u8"モーション速度:持続", &ac_attack[list].timer, 0.01f, 0.1f);
+										ImGui::InputFloat(u8"モーション速度:後スキ", &ac_attack[list].later, 0.01f, 0.1f);
+										ImGui::InputFloat(u8"前進する距離", &attack_list[list].advance_speed, 0.01f, 0.1f);
+										ImGui::SliderInt(u8"攻撃遷移条件", &result, 0, scastI(HitResult::END) - 1);
+										attack_list[list].conditions_hit = static_cast<HitResult>(result);
+										ImGui::Text(GetName().result_name_list[scastI(attack_list[list].conditions_hit)].c_str());
+										ImGui::Checkbox(u8"当たり判定にスピードを付与する", &attack_list[list].speed_on);
+										if (attack_list[list].speed_on)
+										{
+											ImGui::InputFloat(u8"加算スピードX", &attack_list[list].speed.x, 0.01f, 0.1f);
+											ImGui::InputFloat(u8"加算スピードY", &attack_list[list].speed.y, 0.01f, 0.1f);
+											ImGui::InputFloat(u8"プレイヤーの持続フレーム", &attack_list[list].timer, 0.01f, 0.1f);
+										}
+										else
+										{
+											attack_list[list].speed = YR_Vector3(0.0f, 0.0f);
+											attack_list[list].timer = 0.0f;
+										}
+										ImGui::InputInt(u8"必要なゲージ量", &attack_list[list].need_power, 1.0f, 10.0f);
+										if (attack_list[list].need_power >= 1)
+										{
+											int aid_attack = scastI(attack_list[list].aid_attack_name);
+											ImGui::SliderInt(u8"ゲージが足りない場合の攻撃", &aid_attack, scastI(AttackState::NONE), scastI(AttackState::ATTACK_END) - 1);
+											ImGui::Text(GetName().attack_name_list[aid_attack].c_str());
+											attack_list[list].aid_attack_name = static_cast<AttackState>(aid_attack);
+										}
+										else
+										{
+											attack_list[list].aid_attack_name = AttackState::NONE;
+										}
+
+
+										attack_list[list].attack_single.resize(attack_list[list].attack_max);
+
+										real_attack_not_now = false;
+									}
+									ImGui::EndTabItem();
 								}
+
+								if(!real_attack_not_now)
+								{
+									//攻撃回数ごとのパラメータ表示
+									if (!attack_list[list].attack_single.empty())
+									{
+										for (int sin = 0; sin < attack_list[list].attack_single.size(); sin++)
+										{
+											std::string now_sin = std::string("ATK_Single:") + std::to_string(sin);
+											if (ImGui::BeginTabItem(now_sin.c_str()))
+											{
+												ImGui::Text(u8"攻撃回数ごとのパラメータ");
+												ImGui::InputFloat(u8"発生フレーム", &attack_list[list].attack_single[sin].fream, 0.01f, 0.1f);
+												ImGui::InputInt(u8"当たり判定の数", &attack_list[list].attack_single[sin].quantity, 1, 10);
+												attack_list[list].attack_single[sin].parameter.resize(attack_list[list].attack_single[sin].quantity);
+												if (!attack_list[list].attack_single[sin].parameter.empty())
+												{
+													if (ImGui::BeginTabBar(u8"判定", ImGuiTabBarFlags_::ImGuiTabBarFlags_FittingPolicyScroll))
+													{
+														for (int para = 0; para < attack_list[list].attack_single[sin].parameter.size(); para++)
+														{
+															//攻撃判定内部パラメーター表示
+															std::string now_para = u8"判定";
+															now_para += std::to_string(para);
+															if (ImGui::BeginTabItem(now_para.c_str()))
+															{
+																ImGui::SliderFloat(u8"プレイヤーとの距離X", &attack_list[list].attack_single[sin].parameter[para].distance.x, -10.0f, 10.0f);
+																ImGui::SliderFloat(u8"プレイヤーとの距離Y", &attack_list[list].attack_single[sin].parameter[para].distance.y, -10.0f, 10.0f);
+																ImGui::SliderFloat(u8"サイズX", &attack_list[list].attack_single[sin].parameter[para].size.x, 0.0f, 20.0f);
+																ImGui::SliderFloat(u8"サイズY", &attack_list[list].attack_single[sin].parameter[para].size.y, 0.0f, 20.0f);
+																ImGui::SliderFloat(u8"持続フレーム", &attack_list[list].attack_single[sin].parameter[para].timer, 0.0f, 2.0f);
+																ImGui::SliderFloat(u8"ダメージ", &attack_list[list].attack_single[sin].parameter[para].param.damage, 0.0f, 300.0f);
+																ImGui::SliderFloat(u8"のけぞり時間", &attack_list[list].attack_single[sin].parameter[para].param.HB_timer, 0.0f, 10.0f);
+																ImGui::SliderFloat(u8"吹っ飛びX", &attack_list[list].attack_single[sin].parameter[para].param.hitback.x, -300.0f, 300.0f);
+																ImGui::SliderFloat(u8"吹っ飛びY", &attack_list[list].attack_single[sin].parameter[para].param.hitback.y, -300.0f, 300.0f);
+																int type = scastI(attack_list[list].attack_single[sin].parameter[para].type);
+																ImGui::SliderInt(u8"攻撃タイプ", &type, 0, scastI(AttackKind::END) - 1);
+																attack_list[list].attack_single[sin].parameter[para].type = static_cast<AttackKind>(type);
+																ImGui::Text(GetName().attack_kind_name_list[type].c_str());
+																ImGui::SliderFloat(u8"ノックバック(Xのみ)", &attack_list[list].attack_single[sin].parameter[para].knockback, -100.0f, 100.0f);
+																ImGui::Checkbox(u8"ゲージを獲得しない", &attack_list[list].attack_single[sin].parameter[para].gaugeout);
+																ImGui::SliderFloat(u8"つかみ抜けされる時間", &attack_list[list].attack_single[sin].parameter[para].param.steal_timer, 0.0f, 2.0f);
+																int hit_stop_time = scastI(attack_list[list].attack_single[sin].parameter[para].HS_timer);
+																ImGui::SliderInt(u8"ヒットストップ時間", &hit_stop_time, 0, scastI(HitStopTime::END) - 1);
+																ImGui::Text(u8"0:短い。1:普通。2:長い。3:ズームストップ");
+																attack_list[list].attack_single[sin].parameter[para].HS_timer = static_cast<HitStopTime>(hit_stop_time);
+																ImGui::SliderFloat(u8"ガードバックX", &attack_list[list].attack_single[sin].parameter[para].param.guard_back.x, -100.0f, 100.0f);
+																ImGui::SliderFloat(u8"ガードバックY", &attack_list[list].attack_single[sin].parameter[para].param.guard_back.y, -100.0f, 100.0f);
+																ImGui::SliderFloat(u8"ガード削り", &attack_list[list].attack_single[sin].parameter[para].param.guard_shaving, 0.0f, 100.0f);
+																ImGui::SliderFloat(u8"ガード硬直", &attack_list[list].attack_single[sin].parameter[para].param.guard_timer, 0.0f, 10.0f);
+
+																if (!attack_list[list].attack_single[sin].parameter[para].gaugeout)
+																{
+																	ImGui::InputFloat(u8"ゲージ獲得量", &attack_list[list].attack_single[sin].parameter[para].gauge_get, 0.01f, 0.1f);
+																}
+																ImGui::EndTabItem();
+															}
+														}
+														ImGui::EndTabBar();
+													}
+												}
+
+												ImGui::EndTabItem();
+											}
+										}
+									}
+								}
+								ImGui::EndTabBar();
 							}
+							ImGui::EndTabItem();
 						}
+						ImGui::EndTabBar();
 					}
 					ImGui::EndTabItem();
 				}
@@ -1152,18 +1213,6 @@ void Player::DrawDEBUG(
 			ImGui::EndTabBar();
 		}
 
-		if (ImGui::TreeNode(u8"当たり判定"))
-		{
-			if (!atk.empty())
-			{
-				for (int i = 0; i < atk.size(); i++)
-				{
-					ImGui::InputFloat(".x", &atk[i].pos.x, 0.01f, 0.01f);
-					ImGui::InputFloat(".x", &atk[i].pos.y, 0.01f, 0.01f);
-				}
-			}
-			ImGui::TreePop();
-		}
 		ImGui::End();
 
 

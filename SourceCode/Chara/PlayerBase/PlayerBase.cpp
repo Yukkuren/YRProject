@@ -2134,42 +2134,47 @@ void Player::JumpUpdate(float decision, float elapsed_time)
 	//ジャンプの更新処理
 	if (jumpcount < 2 && jumpflag)
 	{
-		//現在ジャンプしているようなら入る
-		if (anim->GetIntermediate())
+		//アニメーション遷移
+		if (act_state != ActState::GUARD)
 		{
-			//現在のアニメーションがジャンプから落下への移行アニメーションだった場合
-			if (anim->GetEndAnim() == -1)
+
+			//現在ジャンプしているようなら入る
+			if (anim->GetIntermediate())
 			{
-				//アニメーションが終了したら持続アニメーションに切り替える
-				if (rightOrleft > 0)
-				{
-					anim->NodeChange(model_motion.fall_R);
-				}
-				else
-				{
-					anim->NodeChange(model_motion.fall_L);
-				}
-				anim_ccodinate = ac_act[scastI(act_state)].timer;
-			}
-		}
-		else
-		{
-			if (!anim->GetLoopAnim())
-			{
-				//現在のアニメーションがジャンプの開始アニメーションだった場合
+				//現在のアニメーションがジャンプから落下への移行アニメーションだった場合
 				if (anim->GetEndAnim() == -1)
 				{
-					//アニメーションが終了したら落下への移行アニメーションに切り替える
+					//アニメーションが終了したら持続アニメーションに切り替える
 					if (rightOrleft > 0)
 					{
-						anim->NodeChange(model_motion.jumpToFall_R);
+						anim->NodeChange(model_motion.fall_R);
 					}
 					else
 					{
-						anim->NodeChange(model_motion.jumpToFall_L);
+						anim->NodeChange(model_motion.fall_L);
 					}
-					anim->PlayAnimation(0, false);
 					anim_ccodinate = ac_act[scastI(act_state)].timer;
+				}
+			}
+			else
+			{
+				if (!anim->GetLoopAnim())
+				{
+					//現在のアニメーションがジャンプの開始アニメーションだった場合
+					if (anim->GetEndAnim() == -1)
+					{
+						//アニメーションが終了したら落下への移行アニメーションに切り替える
+						if (rightOrleft > 0)
+						{
+							anim->NodeChange(model_motion.jumpToFall_R);
+						}
+						else
+						{
+							anim->NodeChange(model_motion.jumpToFall_L);
+						}
+						anim->PlayAnimation(0, false);
+						anim_ccodinate = ac_act[scastI(act_state)].timer;
+					}
 				}
 			}
 		}
@@ -2237,6 +2242,14 @@ void Player::JumpUpdate(float decision, float elapsed_time)
 	{
 		//地面についた場合
 
+		//ガードしている時
+		if (act_state == ActState::GUARD)
+		{
+			knocktimer = non_target;
+			HitBoxTransition(HitBoxState::NOGUARD);
+			HitBoxReset();
+		}
+
 		//ジャンプのカウントを戻す
 		jumpcount = 2;
 		air_dash_count = 1;
@@ -2293,6 +2306,11 @@ void Player::DamageCheck(float decision)
 			GetSound().SEStop(SEKind::SLIDE);
 			YRGetEffect().StopEffect(EffectKind::SMOKE);
 			rightOrleft = decision;
+
+			//ガード用の値は消去しておく
+			hit[i].param.guard_back = YR_Vector3(0.0f, 0.0f, 0.0f);
+			hit[i].param.guard_shaving = 0.0f;
+			hit[i].param.guard_timer = 0.0f;
 			//条件ごとに設定
 			switch (hit[i].hit_state)
 			{
@@ -3449,23 +3467,27 @@ void Player::GuardCheack(float decision)
 	}
 
 
-	if (rival_state == ActState::ATTACK && guard_input_check && rival_fream < target_max)
+	if (ground)
 	{
-		//相手が攻撃を行っていた場合
-
-		//※相手のfream情報をもらってきて、target_max以下であれば入るようにする
-		//(攻撃に発生前に入ればいいので、相手の攻撃の持続、後隙の時は入らないようにする)
-
-		float distance = 0.0f;
-
-		if (tracking.rival_Pos.x > pos.x)distance = tracking.rival_Pos.x - pos.x;
-		if (pos.x > tracking.rival_Pos.x)distance = pos.x - tracking.rival_Pos.x;
-
-		if (distance <= guard_range)
+		//地上にいる時のみ行う
+		if (rival_state == ActState::ATTACK && guard_input_check && rival_fream < target_max)
 		{
-			//相手との距離が一定の値以内だった場合
-			act_state = ActState::GUARD;
-			GuardAnimSet();
+			//相手が攻撃を行っていた場合
+
+			//※相手のfream情報をもらってきて、target_max以下であれば入るようにする
+			//(攻撃に発生前に入ればいいので、相手の攻撃の持続、後隙の時は入らないようにする)
+
+			float distance = 0.0f;
+
+			if (tracking.rival_Pos.x > pos.x)distance = tracking.rival_Pos.x - pos.x;
+			if (pos.x > tracking.rival_Pos.x)distance = pos.x - tracking.rival_Pos.x;
+
+			if (distance <= guard_range)
+			{
+				//相手との距離が一定の値以内だった場合
+				act_state = ActState::GUARD;
+				GuardAnimSet();
+			}
 		}
 	}
 
@@ -3677,9 +3699,13 @@ void Player::GuardBack(float elapsed_time)
 			hit[hitnum].param.Reset();
 		}
 	}
-	else
+	else if (knocktimer < target_max)
 	{
 		act_state = ActState::GUARD;
+	}
+	else
+	{
+		//何もしない
 	}
 }
 
@@ -4044,6 +4070,15 @@ void Player::HitResultUpdate()
 }
 
 
+
+void Player::HitBoxReset()
+{
+	//HitBoxクラスのReset関数を回す
+	for (int h = 0; h < hit.size(); h++)
+	{
+		hit[h].Reset();
+	}
+}
 
 
 

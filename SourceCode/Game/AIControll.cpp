@@ -65,8 +65,8 @@ void SceneGame::AIControll(float elapsed_time)
 			return;
 		}
 
-		AI2P.state = AI_Controller::AI_State::FOREVER_GUARD;
-		return;
+		/*AI2P.state = AI_Controller::AI_State::FOREVER_GUARD;
+		return;*/
 
 		if (dis < AI2P.max_dis)
 		{

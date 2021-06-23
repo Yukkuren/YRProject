@@ -30,6 +30,6 @@ struct BoxParameter
 		steal_timer = 0.0f;
 		guard_shaving = 0.0f;
 		guard_back = YR_Vector3(0.0f, 0.0f, 0.0f);
-		guard_timer = 0.1f;
+		guard_timer = 0.0f;
 	}
 };
