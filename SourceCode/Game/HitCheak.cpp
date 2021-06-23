@@ -41,7 +41,7 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 						switch (attack[atknum].parameter.type)
 						{
 						case AttackKind::UP:
-							//上段攻撃
+							//中段攻撃
 							if (hit[hitnum].state == HitBoxState::MIDDLE)
 							{
 								flag = HitResultState::GUARD_OK;
@@ -68,7 +68,7 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							}
 							break;
 						case AttackKind::MIDDLE:
-							//中段攻撃
+							//通常攻撃
 							if (hit[hitnum].state == HitBoxState::MIDDLE)
 							{
 								flag = HitResultState::GUARD_OK;
@@ -298,6 +298,29 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 								flag = HitResultState::DOWN_HIT;
 							}
 							break;
+						case AttackKind::SLID_HIT_MIDDLE:
+							//スライド中に当たる通常攻撃
+							if (hit[hitnum].state == HitBoxState::MIDDLE)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else if (hit[hitnum].state == HitBoxState::DOWN)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else if (hit[hitnum].state == HitBoxState::ALL)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
+							else
+							{
+								flag = HitResultState::HIT;
+							}
+							break;
 						default:
 							break;
 						}
@@ -393,27 +416,28 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							//SE再生
 							GetSound().SESinglePlay(SEKind::HIT);
 
-							switch (attack[atknum].parameter.HS_timer)
-							{
-							case HitStopTime::SHORT:
-								Hitcheak::timer = 0.05f;
-								break;
-							case HitStopTime::NORMAL:
-								Hitcheak::timer = 0.25f;
-								break;
-							case HitStopTime::LONG:
-								Hitcheak::timer = 0.35f;
-								break;
-							case HitStopTime::ZOOM:
-								Hitcheak::timer = 0.45f;
-								YRCamera.RequestCamera(player);
-								//SE再生
-								GetSound().SESinglePlay(SEKind::UP_ATTACK);
-								break;
-							default:
-								Hitcheak::timer = 0.05f;
-								break;
-							}
+							//switch (attack[atknum].parameter.HS_timer)
+							//{
+							//case HitStopTime::SHORT:
+							//	Hitcheak::timer = 0.05f;
+							//	break;
+							//case HitStopTime::NORMAL:
+							//	Hitcheak::timer = 0.25f;
+							//	break;
+							//case HitStopTime::LONG:
+							//	Hitcheak::timer = 0.35f;
+							//	break;
+							//case HitStopTime::ZOOM:
+							//	Hitcheak::timer = 0.45f;
+							//	YRCamera.RequestCamera(player);
+							//	//SE再生
+							//	GetSound().SESinglePlay(SEKind::UP_ATTACK);
+							//	break;
+							//default:
+							//	Hitcheak::timer = 0.05f;
+							//	break;
+							//}
+							HitStopTimerSwitch(attack[atknum].parameter.HS_timer, player);
 
 							if (attack[atknum].parameter.type != AttackKind::PROJECTILE)
 							{
@@ -610,27 +634,28 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							//SE再生
 							GetSound().SESinglePlay(SEKind::HIT);
 
-							switch (attack[atknum].parameter.HS_timer)
-							{
-							case HitStopTime::SHORT:
-								Hitcheak::timer = 0.05f;
-								break;
-							case HitStopTime::NORMAL:
-								Hitcheak::timer = 0.25f;
-								break;
-							case HitStopTime::LONG:
-								Hitcheak::timer = 0.35f;
-								break;
-							case HitStopTime::ZOOM:
-								Hitcheak::timer = 0.45f;
-								YRCamera.RequestCamera(player);
-								//SE再生
-								GetSound().SESinglePlay(SEKind::UP_ATTACK);
-								break;
-							default:
-								Hitcheak::timer = 0.05f;
-								break;
-							}
+							//switch (attack[atknum].parameter.HS_timer)
+							//{
+							//case HitStopTime::SHORT:
+							//	Hitcheak::timer = 0.05f;
+							//	break;
+							//case HitStopTime::NORMAL:
+							//	Hitcheak::timer = 0.25f;
+							//	break;
+							//case HitStopTime::LONG:
+							//	Hitcheak::timer = 0.35f;
+							//	break;
+							//case HitStopTime::ZOOM:
+							//	Hitcheak::timer = 0.45f;
+							//	YRCamera.RequestCamera(player);
+							//	//SE再生
+							//	GetSound().SESinglePlay(SEKind::UP_ATTACK);
+							//	break;
+							//default:
+							//	Hitcheak::timer = 0.05f;
+							//	break;
+							//}
+							HitStopTimerSwitch(attack[atknum].parameter.HS_timer, player);
 
 							if (attack[atknum].parameter.type != AttackKind::PROJECTILE)
 							{
@@ -709,27 +734,28 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							//SE再生
 							GetSound().SESinglePlay(SEKind::HIT);
 
-							switch (attack[atknum].parameter.HS_timer)
-							{
-							case HitStopTime::SHORT:
-								Hitcheak::timer = 0.05f;
-								break;
-							case HitStopTime::NORMAL:
-								Hitcheak::timer = 0.25f;
-								break;
-							case HitStopTime::LONG:
-								Hitcheak::timer = 0.35f;
-								break;
-							case HitStopTime::ZOOM:
-								Hitcheak::timer = 0.45f;
-								YRCamera.RequestCamera(player);
-								//SE再生
-								GetSound().SESinglePlay(SEKind::UP_ATTACK);
-								break;
-							default:
-								Hitcheak::timer = 0.05f;
-								break;
-							}
+							//switch (attack[atknum].parameter.HS_timer)
+							//{
+							//case HitStopTime::SHORT:
+							//	Hitcheak::timer = 0.05f;
+							//	break;
+							//case HitStopTime::NORMAL:
+							//	Hitcheak::timer = 0.25f;
+							//	break;
+							//case HitStopTime::LONG:
+							//	Hitcheak::timer = 0.35f;
+							//	break;
+							//case HitStopTime::ZOOM:
+							//	Hitcheak::timer = 0.45f;
+							//	YRCamera.RequestCamera(player);
+							//	//SE再生
+							//	GetSound().SESinglePlay(SEKind::UP_ATTACK);
+							//	break;
+							//default:
+							//	Hitcheak::timer = 0.05f;
+							//	break;
+							//}
+							HitStopTimerSwitch(attack[atknum].parameter.HS_timer, player);
 
 							if (attack[atknum].parameter.type != AttackKind::PROJECTILE)
 							{
@@ -878,6 +904,18 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 							//1P側のステート確認
 							switch (atk1p.parameter.type)
 							{
+							case AttackKind::SLID_HIT_MIDDLE:
+								//スライド中に当たる通常攻撃
+								if (atk2p.parameter.type == AttackKind::SLID_HIT_MIDDLE)
+								{
+									//同じ攻撃なら相殺
+									result = HitResultAttack::OFFSET;
+								}
+								else
+								{
+									continue;
+								}
+								break;
 							case AttackKind::LOCK:
 								//ロック技
 								continue;
@@ -940,6 +978,18 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 							//2P側のステート確認
 							switch (atk2p.parameter.type)
 							{
+							case AttackKind::SLID_HIT_MIDDLE:
+								//スライド中に当たる通常攻撃
+								if (atk1p.parameter.type == AttackKind::SLID_HIT_MIDDLE)
+								{
+									//同じ攻撃なら相殺
+									result = HitResultAttack::OFFSET;
+								}
+								else
+								{
+									continue;
+								}
+								break;
 							case AttackKind::LOCK:
 								//ロック技
 								continue;
@@ -1207,5 +1257,37 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 				}
 			}
 		}
+	}
+}
+
+
+void Hitcheak::HitStopTimerSwitch(HitStopTime timer,int player)
+{
+	switch (timer)
+	{
+	case HitStopTime::SHORT:
+		Hitcheak::timer = 0.05f;
+		break;
+	case HitStopTime::NORMAL:
+		Hitcheak::timer = 0.25f;
+		break;
+	case HitStopTime::LONG:
+		Hitcheak::timer = 0.35f;
+		break;
+	case HitStopTime::ZOOM:
+		Hitcheak::timer = 0.45f;
+		YRCamera.RequestCamera(player);
+		//SE再生
+		GetSound().SESinglePlay(SEKind::UP_ATTACK);
+		break;
+	case HitStopTime::NONE:
+		Hitcheak::timer = 0.01f;
+		break;
+	case HitStopTime::NEAR_NORMAL:
+		Hitcheak::timer = 0.1f;
+		break;
+	default:
+		Hitcheak::timer = 0.05f;
+		break;
 	}
 }

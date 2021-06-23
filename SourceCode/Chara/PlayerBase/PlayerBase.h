@@ -393,13 +393,14 @@ public:
 	HitResult						conditions_hit;	//キャンセルするための攻撃ヒット条件
 	float							timer;			//飛び道具の場合自身に付与する持続時間
 	bool							traject_on;		//剣の軌跡を表示するならtrue
-	//EffectParameter					effect_param;	//表示するエフェクト
+	EffectParameter					effect_param;	//エフェクトのパラメーター(KindがNoneなら判定ごとのパラメータを使用する)
+	Effekseer::Handle				handle;			//エフェクトのハンドル
 
 public:
 	AttackList() : now_attack_num(0), attack_name(AttackState::NONE), later(0.0f),
 		attack_max(0), linkage_button(PAD::BUTTOM_END), linkage_command(Command::NOCOMMAND), ground_on(Ground_C::GROUND), squat_on(false),
 		need_power(0), linkage_stick(PAD::BUTTOM_END), aid_attack_name(AttackState::NONE), real_attack(attack_name),
-		speed_on(false), speed(0.0f, 0.0f, 0.0f), advance_speed(0.0f), combo(AttackState::NONE), conditions_hit(HitResult::HIT),timer(0.0f),traject_on(true)/*,effect_param()*/ {};
+		speed_on(false), speed(0.0f, 0.0f, 0.0f), advance_speed(0.0f), combo(AttackState::NONE), conditions_hit(HitResult::HIT),timer(0.0f),traject_on(true),effect_param(),handle(0) {};
 	//攻撃当たり判定を生成する
 	void SetAttack(std::vector<AttackBox> *atk, float rightOrleft, YR_Vector3 pl_pos)
 	{

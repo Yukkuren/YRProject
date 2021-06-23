@@ -66,6 +66,27 @@ void Player::AttackDefault(float elapsed_time)
 			{
 				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
+
+			//エフェクト生成
+			if (attack_list[now_at_list].effect_param.effect_kind != EffectKind::NONE)
+			{
+				if (attack_list[now_at_list].effect_param.rightORleft)
+				{
+					//プレイヤーの角度を依存させる場合
+					YRGetEffect().PlayEffect(
+						attack_list[now_at_list].effect_param.effect_kind, attack_list[now_at_list].handle,
+						DirectX::XMFLOAT3(pos.x + Getapply(attack_list[now_at_list].effect_param.distance.x), pos.y + attack_list[now_at_list].effect_param.distance.y, pos.z + attack_list[now_at_list].effect_param.distance.z),
+						attack_list[now_at_list].effect_param.scale.GetDXFLOAT3(), attack_list[now_at_list].effect_param.axis.GetDXFLOAT3(), attack_list[now_at_list].effect_param.angle * rightOrleft);
+				}
+				else
+				{
+					//依存させない場合
+					YRGetEffect().PlayEffect(
+						attack_list[now_at_list].effect_param.effect_kind, attack_list[now_at_list].handle,
+						DirectX::XMFLOAT3(pos.x + Getapply(attack_list[now_at_list].effect_param.distance.x), pos.y + attack_list[now_at_list].effect_param.distance.y, pos.z + attack_list[now_at_list].effect_param.distance.z),
+						attack_list[now_at_list].effect_param.scale.GetDXFLOAT3(), attack_list[now_at_list].effect_param.axis.GetDXFLOAT3(), attack_list[now_at_list].effect_param.angle);
+				}
+			}
 		}
 		if (attack_list[now_at_list].speed_on)
 		{
@@ -78,7 +99,6 @@ void Player::AttackDefault(float elapsed_time)
 			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos);
 		}
 		fream = non_target;
-
 
 		//持続時間を設定
 		timer = attack_list[now_at_list].attack_single[now_at_num].parameter[0].timer;
@@ -121,6 +141,8 @@ void Player::AttackDefault(float elapsed_time)
 	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
 	//	return;
 	//}
+	//エフェクト更新
+	YRGetEffect().SetLocation(attack_list[now_at_list].effect_param.effect_kind, attack_list[now_at_list].handle, DirectX::XMFLOAT3(pos.x + Getapply(attack_list[now_at_list].effect_param.distance.x), pos.y + attack_list[now_at_list].effect_param.distance.y, pos.z + attack_list[now_at_list].effect_param.distance.z));
 
 
 	//持続時間が全て終了したことを確認する
@@ -141,6 +163,10 @@ void Player::AttackDefault(float elapsed_time)
 			//ない場合は後隙に移行する
 			//攻撃番号を初期化
 			attack_list[now_at_list].now_attack_num = 0;
+
+			//エフェクト消去
+			YRGetEffect().StopEffect(attack_list[now_at_list].effect_param.effect_kind, attack_list[now_at_list].handle);
+
 			//後隙を設定
 			later = attack_list[now_at_list].later;
 			//アニメーション速度を指定
@@ -211,6 +237,26 @@ void Player::AttackProjectileDefault(float elapsed_time)
 			{
 				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
 			}
+
+			if (attack_list[now_at_list].effect_param.effect_kind != EffectKind::NONE)
+			{
+				if (attack_list[now_at_list].effect_param.rightORleft)
+				{
+					//プレイヤーの角度を依存させる場合
+					YRGetEffect().PlayEffect(
+						attack_list[now_at_list].effect_param.effect_kind, attack_list[now_at_list].handle,
+						DirectX::XMFLOAT3(pos.x + Getapply(attack_list[now_at_list].effect_param.distance.x), pos.y + attack_list[now_at_list].effect_param.distance.y, pos.z + attack_list[now_at_list].effect_param.distance.z),
+						attack_list[now_at_list].effect_param.scale.GetDXFLOAT3(), attack_list[now_at_list].effect_param.axis.GetDXFLOAT3(), attack_list[now_at_list].effect_param.angle * rightOrleft);
+				}
+				else
+				{
+					//依存させない場合
+					YRGetEffect().PlayEffect(
+						attack_list[now_at_list].effect_param.effect_kind, attack_list[now_at_list].handle,
+						DirectX::XMFLOAT3(pos.x + Getapply(attack_list[now_at_list].effect_param.distance.x), pos.y + attack_list[now_at_list].effect_param.distance.y, pos.z + attack_list[now_at_list].effect_param.distance.z),
+						attack_list[now_at_list].effect_param.scale.GetDXFLOAT3(), attack_list[now_at_list].effect_param.axis.GetDXFLOAT3(), attack_list[now_at_list].effect_param.angle);
+				}
+			}
 		}
 
 		attack_list[now_at_list].SetAttack(&projectile_atk, rightOrleft, pos, attack_list[now_at_list].speed);
@@ -233,6 +279,8 @@ void Player::AttackProjectileDefault(float elapsed_time)
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
 
+	//エフェクト更新
+	YRGetEffect().SetLocation(attack_list[now_at_list].effect_param.effect_kind, attack_list[now_at_list].handle, DirectX::XMFLOAT3(pos.x + Getapply(attack_list[now_at_list].effect_param.distance.x), pos.y + attack_list[now_at_list].effect_param.distance.y, pos.z + attack_list[now_at_list].effect_param.distance.z));
 
 	//if (projectile_atk.empty())
 	//{
@@ -265,6 +313,9 @@ void Player::AttackProjectileDefault(float elapsed_time)
 			later = attack_list[now_at_list].later;
 			//アニメーション速度を指定
 			anim_ccodinate = ac_attack[now_at_list].later;
+
+			//エフェクト消去
+			YRGetEffect().StopEffect(attack_list[now_at_list].effect_param.effect_kind, attack_list[now_at_list].handle);
 
 			HitBoxTransition(HitBoxState::NOGUARD);
 			//持続フレームを初期化

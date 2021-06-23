@@ -38,6 +38,7 @@ public:
 	static void HitCheakAttack(std::vector<AttackBox>& attack1p, std::vector<AttackBox>& attack2p);
 	//static void HitCheak2(AttackBox *attack, int a_max, HitBox *hit, int h_max);
 	static void HitPlayer(std::vector <HitBox>& pl1, YR_Vector3& pos1, std::vector <HitBox>& pl2, YR_Vector3& pos2, float elapsed_time,const YR_Vector3 old_pos1,const YR_Vector3 old_pos2);
+	static void HitStopTimerSwitch(HitStopTime timer, int player);
 	static float timer;
 	static bool hit;
 	static bool stop1p;

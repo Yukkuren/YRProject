@@ -1836,7 +1836,7 @@ void Neru::SpecialAttack(float elapsed_time)
 				}
 				YRCamera.SetFov(50.0f * 0.01745f);
 			}
-			else if (fream > 0.2f)
+			else if (fream > 0.5f)
 			{
 				//カメラのステートが更新ではない場合は初期化にする
 				if (camera_state_neru != CAMERA_STATE_NERU::SIX)
@@ -1901,7 +1901,8 @@ void Neru::SpecialAttack(float elapsed_time)
 				break;
 			case Neru::CAMERA_STATE_NERU::SEVEN:
 				//カメラを徐々にメインに戻す
-				YRCamera.RequestCamera(Camera::Request::WEAKEN, now_player);
+				//YRCamera.RequestCamera(Camera::Request::WEAKEN, now_player);
+				YRCamera.RequestCamera(Camera::Request::RELEASE, now_player);
 				break;
 			}
 		}
@@ -1924,8 +1925,10 @@ void Neru::SpecialAttack(float elapsed_time)
 
 		//atk.back().effect_param.effect_kind = EffectKind::SPECIAL_DRILL;
 
+		//初回のみ入る処理
 		if (attack_list[now_at_list].now_attack_num == 0)
 		{
+			//アニメーション遷移
 			if (rightOrleft > 0)
 			{
 				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
@@ -1933,6 +1936,27 @@ void Neru::SpecialAttack(float elapsed_time)
 			else
 			{
 				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
+			}
+
+			//エフェクト生成
+			if (attack_list[now_at_list].effect_param.effect_kind != EffectKind::NONE)
+			{
+				if (attack_list[now_at_list].effect_param.rightORleft)
+				{
+					//プレイヤーの角度を依存させる場合
+					YRGetEffect().PlayEffect(
+						attack_list[now_at_list].effect_param.effect_kind, attack_list[now_at_list].handle,
+						DirectX::XMFLOAT3(pos.x + Getapply(attack_list[now_at_list].effect_param.distance.x), pos.y + attack_list[now_at_list].effect_param.distance.y, pos.z + attack_list[now_at_list].effect_param.distance.z),
+						attack_list[now_at_list].effect_param.scale.GetDXFLOAT3(), attack_list[now_at_list].effect_param.axis.GetDXFLOAT3(), attack_list[now_at_list].effect_param.angle * rightOrleft);
+				}
+				else
+				{
+					//依存させない場合
+					YRGetEffect().PlayEffect(
+						attack_list[now_at_list].effect_param.effect_kind, attack_list[now_at_list].handle,
+						DirectX::XMFLOAT3(pos.x + Getapply(attack_list[now_at_list].effect_param.distance.x), pos.y + attack_list[now_at_list].effect_param.distance.y, pos.z + attack_list[now_at_list].effect_param.distance.z),
+						attack_list[now_at_list].effect_param.scale.GetDXFLOAT3(), attack_list[now_at_list].effect_param.axis.GetDXFLOAT3(), attack_list[now_at_list].effect_param.angle);
+				}
 			}
 		}
 
@@ -1949,6 +1973,7 @@ void Neru::SpecialAttack(float elapsed_time)
 		//発生フレーム初期化
 		fream = non_target;
 
+
 		//攻撃発生中は無敵
 		//HitBoxTransition(HitBoxState::INVINCIBLE);
 
@@ -1957,6 +1982,9 @@ void Neru::SpecialAttack(float elapsed_time)
 
 		now_at_num = attack_list[now_at_list].now_attack_num;
 	}
+
+	//エフェクト更新
+	YRGetEffect().SetLocation(attack_list[now_at_list].effect_param.effect_kind, attack_list[now_at_list].handle, DirectX::XMFLOAT3(pos.x + Getapply(attack_list[now_at_list].effect_param.distance.x), pos.y + attack_list[now_at_list].effect_param.distance.y, pos.z + attack_list[now_at_list].effect_param.distance.z));
 
 	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
 	if (!atk.empty())

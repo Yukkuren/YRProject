@@ -2397,7 +2397,7 @@ void Player::DamageCheck(float decision)
 				}
 				else
 				{
-					anim->NodeChange(model_motion.model_R_Act[scastI(ActState::DOWN_HIT)]);
+					anim->NodeChange(model_motion.model_L_Act[scastI(ActState::DOWN_HIT)]);
 				}
 				ChangeFace(FaceAnim::Damage);
 				anim_ccodinate = 5.0f;
@@ -2471,6 +2471,11 @@ void Player::DamageCheck(float decision)
 			lumi_material = Model::Material_Attribute::NONE;
 			//キャンセルの条件を初期化
 			atk_result = HitResult::NONE;
+
+			//エフェクト消去
+			int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
+			YRGetEffect().StopEffect(attack_list[now_at_list].effect_param.effect_kind, attack_list[now_at_list].handle);
+
 			attack_state = AttackState::NONE;
 			//角度を元に戻す
 			angle.y = 0.0f;

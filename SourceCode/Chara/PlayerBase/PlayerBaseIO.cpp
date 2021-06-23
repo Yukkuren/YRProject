@@ -178,6 +178,20 @@ bool Player::AttackLoad()
 		ifs >> attack_list[list].timer;
 		ifs >> attack_list[list].traject_on;
 
+		ifs >> effect_k;
+		attack_list[list].effect_param.effect_kind = static_cast<EffectKind>(effect_k);
+		ifs >> attack_list[list].effect_param.distance.x;
+		ifs >> attack_list[list].effect_param.distance.y;
+		ifs >> attack_list[list].effect_param.distance.z;
+		ifs >> attack_list[list].effect_param.scale.x;
+		ifs >> attack_list[list].effect_param.scale.y;
+		ifs >> attack_list[list].effect_param.scale.z;
+		ifs >> attack_list[list].effect_param.axis.x;
+		ifs >> attack_list[list].effect_param.axis.y;
+		ifs >> attack_list[list].effect_param.axis.z;
+		ifs >> attack_list[list].effect_param.angle;
+		ifs >> attack_list[list].effect_param.rightORleft;
+
 		/*ifs >> effect_k;
 		e_param.effect_kind = static_cast<EffectKind>(effect_k);
 		ifs >> e_param.distance.x;
@@ -243,6 +257,8 @@ bool Player::AttackLoad()
 						ifs >> attack_list[list].attack_single[sin].parameter[para].effect_param.axis.z;
 						ifs >> attack_list[list].attack_single[sin].parameter[para].effect_param.angle;
 						ifs >> attack_list[list].attack_single[sin].parameter[para].effect_param.rightORleft;
+
+						//attack_list[list].attack_single[sin].parameter[para].effect_param = e_param;
 
 					}
 				}
@@ -456,7 +472,8 @@ bool Player::AttackWrite()
 		outputfile << attack_list[list].timer << std::endl;
 		outputfile << attack_list[list].traject_on << std::endl;
 
-		/*outputfile << scastI(attack_list[list].effect_param.effect_kind) << std::endl;
+		//攻撃リストのエフェクト調整値
+		outputfile << scastI(attack_list[list].effect_param.effect_kind) << std::endl;
 		outputfile << attack_list[list].effect_param.distance.x << std::endl;
 		outputfile << attack_list[list].effect_param.distance.y << std::endl;
 		outputfile << attack_list[list].effect_param.distance.z << std::endl;
@@ -467,7 +484,7 @@ bool Player::AttackWrite()
 		outputfile << attack_list[list].effect_param.axis.y << std::endl;
 		outputfile << attack_list[list].effect_param.axis.z << std::endl;
 		outputfile << attack_list[list].effect_param.angle << std::endl;
-		outputfile << attack_list[list].effect_param.rightORleft << std::endl;*/
+		outputfile << attack_list[list].effect_param.rightORleft << std::endl;
 
 		//攻撃回数ごとのパラメータ書き出し
 		if (!attack_list[list].attack_single.empty())
@@ -1081,6 +1098,40 @@ void Player::DrawDEBUG(
 									{
 										attack_list[list].linkage_stick = PAD::BUTTOM_END;
 									}
+
+									int effect_k_h = scastI(attack_list[list].effect_param.effect_kind);
+									ImGui::SliderInt(u8"エフェクトの種類", &effect_k_h, 0, scastI(EffectKind::END) - 1);
+									ImGui::Text(GetName().effect_kind_name_list[scastI(attack_list[list].effect_param.effect_kind)].c_str());
+									attack_list[list].effect_param.effect_kind = static_cast<EffectKind>(effect_k_h);
+
+									if (attack_list[list].effect_param.effect_kind != EffectKind::NONE)
+									{
+										if (ImGui::TreeNode(u8"エフェクト詳細設定"))
+										{
+											ImGui::SliderFloat(u8"座標X", &attack_list[list].effect_param.distance.x, -50.0f, 50.0f);
+											ImGui::SliderFloat(u8"座標Y", &attack_list[list].effect_param.distance.y, -50.0f, 50.0f);
+											ImGui::SliderFloat(u8"座標Z", &attack_list[list].effect_param.distance.z, -50.0f, 50.0f);
+											//float scale_all = attack_list[list].attack_single[sin].parameter[para].effect_param.scale.x;
+											//ImGui::SliderFloat(u8"大きさ全体", &scale_all, 0.0f, 50.0f);
+											ImGui::SliderFloat(u8"大きさX", &attack_list[list].effect_param.scale.x, 0.0f, 50.0f);
+											ImGui::SliderFloat(u8"大きさY", &attack_list[list].effect_param.scale.y, 0.0f, 50.0f);
+											ImGui::SliderFloat(u8"大きさZ", &attack_list[list].effect_param.scale.z, 0.0f, 50.0f);
+											/*if (attack_list[list].attack_single[sin].parameter[para].effect_param.scale.x == attack_list[list].attack_single[sin].parameter[para].effect_param.scale.y == attack_list[list].attack_single[sin].parameter[para].effect_param.scale.z)
+											{
+												attack_list[list].attack_single[sin].parameter[para].effect_param.scale.x = scale_all;
+												attack_list[list].attack_single[sin].parameter[para].effect_param.scale.y = scale_all;
+												attack_list[list].attack_single[sin].parameter[para].effect_param.scale.z = scale_all;
+											}*/
+											ImGui::SliderFloat(u8"方向X", &attack_list[list].effect_param.axis.x, 0.0, 1.0f);
+											ImGui::SliderFloat(u8"方向Y", &attack_list[list].effect_param.axis.y, 0.0, 1.0f);
+											ImGui::SliderFloat(u8"方向Z", &attack_list[list].effect_param.axis.z, 0.0, 1.0f);
+											ImGui::SliderFloat(u8"角度", &attack_list[list].effect_param.angle, -360.0f, 360.0f);
+											ImGui::Checkbox(u8"角度をプレイヤー依存にするか", &attack_list[list].effect_param.rightORleft);
+
+											ImGui::TreePop();
+										}
+									}
+
 									ImGui::SliderInt(u8"攻撃内容", &real, 0, scastI(AttackState::ATTACK_END) - 1);
 									attack_list[list].real_attack = static_cast<AttackState>(real);
 
@@ -1235,7 +1286,7 @@ void Player::DrawDEBUG(
 																ImGui::SliderFloat(u8"つかみ抜けされる時間", &attack_list[list].attack_single[sin].parameter[para].param.steal_timer, 0.0f, 2.0f);
 																int hit_stop_time = scastI(attack_list[list].attack_single[sin].parameter[para].HS_timer);
 																ImGui::SliderInt(u8"ヒットストップ時間", &hit_stop_time, 0, scastI(HitStopTime::END) - 1);
-																ImGui::Text(u8"0:短い。1:普通。2:長い。3:ズームストップ");
+																ImGui::Text(u8"0:短い。1:普通。2:長い。3:ズームストップ。4:ほぼ無い。5:少しだけ長い");
 																attack_list[list].attack_single[sin].parameter[para].HS_timer = static_cast<HitStopTime>(hit_stop_time);
 																ImGui::SliderFloat(u8"ガードバックX", &attack_list[list].attack_single[sin].parameter[para].param.guard_back.x, -100.0f, 100.0f);
 																ImGui::SliderFloat(u8"ガードバックY", &attack_list[list].attack_single[sin].parameter[para].param.guard_back.y, -100.0f, 100.0f);

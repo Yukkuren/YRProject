@@ -304,7 +304,7 @@ void Neru::Draw(
 		//カメラがキャラから画面全体を見るように移行している時
 		anim->UpdateAnimation(game_speed* anim_ccodinate);
 		anim->CalculateLocalTransform();
-		anim->CalculateWorldTransform(pos.GetDXFLOAT3(), scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
+		anim->CalculateWorldTransform(draw_pos, scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
 		return_inverse = anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset,lumi_material, material_color);
 		//影の表示
 		anim->CalculateWorldTransform(DirectX::XMFLOAT3(pos.x, shadow_y, pos.z + shadow_z), DirectX::XMFLOAT3(scale.x, 0.001f, scale.z), DirectX::XMFLOAT3(0.0f, angle.y, 0.0f));

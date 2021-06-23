@@ -205,7 +205,7 @@ public:
 	std::array<std::string, scastI(HitBoxState::END)> hitstate_name_list =
 	{
 		u8"ガードしない",
-		u8"中段ガード",
+		u8"通常ガード",
 		u8"下段ガード",
 		u8"無敵",
 		u8"空中ガード",
@@ -230,8 +230,8 @@ public:
 
 	std::array<std::string, scastI(AttackKind::END)> attack_kind_name_list =
 	{
-		u8"上段",
 		u8"中段",
+		u8"通常",
 		u8"下段",
 		u8"つかみ",
 		u8"たたきつけ(高さが一定なら滑り状態にする)",
@@ -241,6 +241,7 @@ public:
 		u8"相殺しない攻撃",
 		u8"上段攻撃と相殺しない攻撃",
 		u8"ダウン攻撃",
+		u8"スライド中に当たる通常攻撃",
 	};
 
 
