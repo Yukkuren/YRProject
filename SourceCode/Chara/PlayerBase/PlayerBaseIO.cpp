@@ -149,7 +149,7 @@ bool Player::AttackLoad()
 		attack_list[list].attack_name = static_cast<AttackState>(list);
 		ifs >> attack_list[list].later;
 		ifs >> attack_list[list].attack_max;
-		int pad, com, stick, aid, real, next, result, ground,effect_k;
+		int pad, com, stick, aid, real, next, result, ground, effect_k, anim_k, func_n;
 		EffectParameter e_param;
 		ifs >> pad;
 		ifs >> com;
@@ -177,6 +177,11 @@ bool Player::AttackLoad()
 		attack_list[list].conditions_hit = static_cast<HitResult>(result);
 		ifs >> attack_list[list].timer;
 		ifs >> attack_list[list].traject_on;
+		ifs >> anim_k;
+		ifs >> func_n;
+		attack_list[list].anim_kind = static_cast<AttackState>(anim_k);
+		attack_list[list].function_num = static_cast<AT_Function_List>(func_n);
+
 
 		ifs >> effect_k;
 		attack_list[list].effect_param.effect_kind = static_cast<EffectKind>(effect_k);
@@ -472,6 +477,9 @@ bool Player::AttackWrite()
 		outputfile << scastI(attack_list[list].conditions_hit) << std::endl;
 		outputfile << attack_list[list].timer << std::endl;
 		outputfile << attack_list[list].traject_on << std::endl;
+
+		outputfile << scastI(attack_list[list].anim_kind) << std::endl;
+		outputfile << scastI(attack_list[list].function_num) << std::endl;
 
 		//攻撃リストのエフェクト調整値
 		outputfile << scastI(attack_list[list].effect_param.effect_kind) << std::endl;
@@ -1091,6 +1099,16 @@ void Player::DrawDEBUG(
 									ImGui::Text(GetName().attack_name_list[scastI(attack_list[list].combo)].c_str());
 									ImGui::Checkbox(u8"しゃがみ攻撃", &attack_list[list].squat_on);
 									ImGui::Checkbox(u8"剣の軌跡を表示する", &attack_list[list].traject_on);
+
+									int anim_k = scastI(attack_list[list].anim_kind);
+									ImGui::SliderInt(u8"使用アニメーション", &anim_k, 0, scastI(AttackState::NORMAL_ATTACK_END) - 1);
+									attack_list[list].anim_kind = static_cast<AttackState>(anim_k);
+									ImGui::Text(GetName().attack_name_list[anim_k].c_str());
+
+									int function_n = scastI(attack_list[list].function_num);
+									ImGui::SliderInt(u8"使用する関数", &function_n, 0, scastI(AT_Function_List::AT_END) - 1);
+									attack_list[list].function_num = static_cast<AT_Function_List>(function_n);
+									ImGui::Text(GetName().function_name_list[function_n].c_str());
 
 									if (attack_list[list].linkage_stick != PAD::BUTTOM_END)
 									{

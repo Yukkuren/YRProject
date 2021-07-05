@@ -130,14 +130,56 @@ void Neru::LoadData(PLCOLOR color_number)
 		std::string file_name_R = file_level_R + GetName().attack_file_list[i] + file_end_R;
 		std::string file_name_L = file_level_L + GetName().attack_file_list[i] + file_end_L;
 
-		if (model_motion.model_R_Attack[i] == nullptr)
+		//Rファイルがあるか確認する
 		{
-			model_motion.model_R_Attack[i] = std::make_shared<Model>(file_name_R.c_str());
+			std::ifstream ifs_R(file_name_R.c_str());
+
+			if (ifs_R.is_open())
+			{
+				//ファイルがあった
+				ifs_R.close();
+				if (model_motion.model_R_Attack[i] == nullptr)
+				{
+					model_motion.model_R_Attack[i] = std::make_shared<Model>(file_name_R.c_str());
+				}
+			}
+			else
+			{
+				//ファイルがなかった
+				//代わりに弱のアニメーションを読み込む
+				ifs_R.close();
+				std::string file_name_R_j = file_level_R + GetName().attack_file_list[scastI(AttackState::JAKU)] + file_end_R;
+				if (model_motion.model_R_Attack[i] == nullptr)
+				{
+					model_motion.model_R_Attack[i] = std::make_shared<Model>(file_name_R_j.c_str());
+				}
+			}
 		}
 
-		if (model_motion.model_L_Attack[i] == nullptr)
+		//Lファイルがあるか確認する
 		{
-			model_motion.model_L_Attack[i] = std::make_shared<Model>(file_name_L.c_str());
+			std::ifstream ifs_L(file_name_R.c_str());
+
+			if (ifs_L.is_open())
+			{
+				//ファイルがあった
+				ifs_L.close();
+				if (model_motion.model_L_Attack[i] == nullptr)
+				{
+					model_motion.model_L_Attack[i] = std::make_shared<Model>(file_name_L.c_str());
+				}
+			}
+			else
+			{
+				//ファイルがなかった
+				//代わりに弱のアニメーションを読み込む
+				ifs_L.close();
+				std::string file_name_L_j = file_level_L + GetName().attack_file_list[scastI(AttackState::JAKU)] + file_end_L;
+				if (model_motion.model_L_Attack[i] == nullptr)
+				{
+					model_motion.model_L_Attack[i] = std::make_shared<Model>(file_name_L_j.c_str());
+				}
+			}
 		}
 	}
 

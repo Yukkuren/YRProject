@@ -60,31 +60,31 @@ public:
 	//----------------------------------//
 	//			çUåÇä÷êî					//
 	//----------------------------------//
-	void Jaku(float elapsed_time);
-	void Thu(float elapsed_time);
-	void Kyo(float elapsed_time);
-	void U_Kyo(float elapsed_time);
-	void D_Jaku(float elapsed_time);
-	void D_Thu(float elapsed_time);
-	void A_Jaku(float elapsed_time);
-	void A_Thu(float elapsed_time);
-	void A_Kyo(float elapsed_time);
-	void A_UKyo(float elapsed_time);
-	void Jaku_Rhurf(float elapsed_time);
-	void Thu_Rhurf(float elapsed_time);
-	void Kyo_Rhurf(float elapsed_time);
+	//void Jaku(float elapsed_time);
+	//void Thu(float elapsed_time);
+	//void Kyo(float elapsed_time);
+	//void U_Kyo(float elapsed_time);
+	//void D_Jaku(float elapsed_time);
+	//void D_Thu(float elapsed_time);
+	//void A_Jaku(float elapsed_time);
+	//void A_Thu(float elapsed_time);
+	//void A_Kyo(float elapsed_time);
+	//void A_UKyo(float elapsed_time);
+	//void Jaku_Rhurf(float elapsed_time);
+	//void Thu_Rhurf(float elapsed_time);
+	//void Kyo_Rhurf(float elapsed_time);
 
-	void TrackDash(float decision, float elapsed_time);
-	void Steal(float elapsed_time);
-	void Slow(float elapsed_time);
+	//void TrackDash(float decision, float elapsed_time);
+	//void Steal(float elapsed_time);
+	//void Slow(float elapsed_time);
 	void SpecialAttack(float elapsed_time);
 
-	void Jaku_Lhurf(float elapsed_time);
-	void Thu_Lhurf(float elapsed_time);
-	void Kyo_Lhurf(float elapsed_time);
+	//void Jaku_Lhurf(float elapsed_time);
+	//void Thu_Lhurf(float elapsed_time);
+	//void Kyo_Lhurf(float elapsed_time);
 
-	void A_Jaku_Lhurf(float elapsed_time)override;
-	void ExtendATK(float elapsed_time);
+	//void A_Jaku_Lhurf(float elapsed_time)override;
+	//void ExtendATK(float elapsed_time);
 
 
 

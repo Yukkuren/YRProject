@@ -2287,12 +2287,14 @@ void SceneGame::PauseUpdate()
 		//タイトルに戻る
 		UnInit();
 		FRAMEWORK.SetScene(SCENE_TABLE::SCENE_TITLE);
+		return;
 	}
 	if (player2p->pad->x_input[scastI(PAD::RB)] == 1 || player1p->pad->x_input[scastI(PAD::LB)] > 0)
 	{
 		//タイトルに戻る
 		UnInit();
 		FRAMEWORK.SetScene(SCENE_TABLE::SCENE_TITLE);
+		return;
 	}
 #ifdef EXIST_IMGUI
 	if (pKeyState.pflg == 1)

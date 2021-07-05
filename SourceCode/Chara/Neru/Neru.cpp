@@ -799,6 +799,7 @@ void Neru::AttackDetailsSet(const AttackState& attack_state)
 	case AttackState::DESIRE_METEOR:
 		break;
 	case AttackState::EXTENDATK:
+		speed_X.Set(0.0f);
 		break;
 	case AttackState::JAKU_THU:
 		break;

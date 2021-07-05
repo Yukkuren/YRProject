@@ -24,7 +24,7 @@ public:
 	//ファイル読み込みに使用する配列
 	std::array<std::string, scastI(AttackState::NORMAL_ATTACK_END)> attack_file_list =
 	{
-		u8"wait",
+		u8"none",
 		u8"jaku",
 		u8"d_thu",
 		u8"kyo",
@@ -39,25 +39,25 @@ public:
 		u8"throw",
 		u8"track",
 		u8"Rhurf",
-		u8"Rhurf",		//前中必殺
-		u8"Rhurf",		//前強必殺
+		u8"RThurf",
+		u8"RKhurf",
 		u8"Lhurf",
-		u8"Lhurf",		//後中必殺
-		u8"Lhurf",		//後強必殺
+		u8"LThurf",
+		u8"LKhurf",
 		u8"special",
-		u8"special",	//後超必殺
-		u8"special",	//即死技
-		u8"reversal",	//無敵攻撃
+		u8"dspecial",
+		u8"meteo",
+		u8"reversal",
 		u8"thu",
 		u8"kyo",
-		u8"Rhurf",		//空中前弱必殺
-		u8"jaku",		//空中前中必殺
-		u8"jaku",		//空中前強必殺
-		u8"Lhurf",
-		u8"jaku",		//空中後中必殺
-		u8"jaku",		//空中後強必殺
-		u8"jaku",		//空中前超必殺
-		u8"jaku",		//空中後超必殺
+		u8"air_Rhurf",
+		u8"air_RThurf",
+		u8"air_RKhurf",
+		u8"air_Lhurf",
+		u8"air_LThurf",
+		u8"air_LKhurf",
+		u8"air_special",
+		u8"air_dspecial",
 	};
 
 
@@ -265,6 +265,30 @@ public:
 		u8"突進オーラ",
 		u8"レーザーチャージ(赤)",
 		u8"レーザー本体(赤)",
+	};
+
+	//攻撃関数ポインタ名
+	std::array<std::string, scastI(AT_Function_List::AT_END)> function_name_list =
+	{
+		u8"通常デフォルト",
+		u8"飛び道具デフォルト",
+		u8"Xコンボ",
+		u8"Yコンボ",
+		u8"Bコンボ",
+		u8"何もしない",
+		u8"AttackSwitchに入る",
+		u8"ジャンプして攻撃",
+		u8"ジャンプして無敵攻撃",
+		u8"空中で跳ねて攻撃",
+		u8"掴み攻撃",
+		u8"投げ攻撃",
+		u8"横移動しながら攻撃",
+		u8"横移動しながら回転攻撃",
+		u8"横移動しながら空中回転攻撃",
+		u8"横移動しながら回転攻撃して戻る",
+		u8"ホーミングダッシュ攻撃",
+		u8"回転ホーミングダッシュ攻撃",
+		u8"前超必殺攻撃",
 	};
 
 

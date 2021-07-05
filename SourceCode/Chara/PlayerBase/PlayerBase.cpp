@@ -96,6 +96,29 @@ void Player::Init(YR_Vector3 InitPos)
 	traject_on = false;
 
 	CharaInit();
+
+	//関数ポインタ登録
+	if (!attack_func.empty())attack_func.clear();
+	attack_func.resize(scastI(AT_Function_List::AT_END));
+	attack_func[scastI(AT_Function_List::AttackDefault)] = &Player::AttackDefault;
+	attack_func[scastI(AT_Function_List::AttackProjectileDefault)] = &Player::AttackProjectileDefault;
+	attack_func[scastI(AT_Function_List::COMBO_X)] = &Player::ComboX;
+	attack_func[scastI(AT_Function_List::COMBO_Y)] = &Player::ComboY;
+	attack_func[scastI(AT_Function_List::COMBO_B)] = &Player::ComboB;
+	attack_func[scastI(AT_Function_List::ATTACK_NONE)] = &Player::AttackNone;
+	attack_func[scastI(AT_Function_List::AttackSwitch)] = &Player::AttackSwicthIn;
+	attack_func[scastI(AT_Function_List::AttackJump)] = &Player::AttackJump;
+	attack_func[scastI(AT_Function_List::AttackJumpEx)] = &Player::AttackJumpEx;
+	attack_func[scastI(AT_Function_List::AttackAirUp)] = &Player::AttackAirUp;
+	attack_func[scastI(AT_Function_List::Steal)] = &Player::AttackSteal;
+	attack_func[scastI(AT_Function_List::Slow)] = &Player::AttackSlow;
+	attack_func[scastI(AT_Function_List::AttackSlid)] = &Player::AttackSlid;
+	attack_func[scastI(AT_Function_List::AttackSlidRoll)] = &Player::AttackSlidRoll;
+	attack_func[scastI(AT_Function_List::AttackAirSlidRoll)] = &Player::AttackAirSlidRoll;
+	attack_func[scastI(AT_Function_List::AttackSlidRollTurn)] = &Player::AttackSlidRollTurn;
+	attack_func[scastI(AT_Function_List::AttackTrack)] = &Player::AttackTrack;
+	attack_func[scastI(AT_Function_List::AttackTrackRoll)] = &Player::AttackTrackRoll;
+	attack_func[scastI(AT_Function_List::AttackSpecial)] = &Player::AttackSpecial;
 }
 
 
@@ -291,7 +314,7 @@ void Player::Update(float decision, float elapsed_time)
 	pos.x += ((speed_X.Update(elapsed_time) * elapsed_time) * rightOrleft);
 	pos.x += (speed.x * elapsed_time);
 
-	speed.y += (speed_Y.Update(elapsed_time) * elapsed_time);
+	speed.y += speed_Y.Update(elapsed_time);
 	pos.y += (speed.y * elapsed_time);
 
 	//当たり判定の更新
@@ -357,7 +380,7 @@ void Player::Update(float decision, float elapsed_time)
 
 	if (!attack)
 	{
-		if (act_state == ActState::DASH || act_state == ActState::BACK || act_state == ActState::SQUAT)
+		if (act_state == ActState::DASH || act_state == ActState::BACK || act_state == ActState::SQUAT || act_state == ActState::JUMP)
 		{
 			//特定の行動時は指定した値を入れる為なにも処理をしない
 		}
@@ -602,11 +625,11 @@ void Player::AttackInput()
 				//描画をセット
 				if (rightOrleft > 0)
 				{
-					anim->NodeChange(model_motion.model_R_Attack[real], scastI(AnimAtk::FREAM));
+					anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[real].anim_kind)], scastI(AnimAtk::FREAM));
 				}
 				else
 				{
-					anim->NodeChange(model_motion.model_L_Attack[real], scastI(AnimAtk::FREAM));
+					anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[real].anim_kind)], scastI(AnimAtk::FREAM));
 				}
 
 				//攻撃ごとに個別の設定を行う
@@ -750,120 +773,124 @@ void Player::AttackSwitch(float decision, float elapsed_time, AttackState attack
 		now_attack_state = attack_state;
 	}
 
-	switch (now_attack_state)
-	{
-	case AttackState::NONE:
-		break;
-	case AttackState::SLOW:
-		//投げ
-		Slow(elapsed_time);
-		break;
-	case AttackState::STEAL:
-		//相手のステートを奪う。掴み
-		Steal(elapsed_time);
-		break;
-	case AttackState::JAKU:
-		//弱攻撃
-		Jaku(elapsed_time);
-		break;
-	case AttackState::THU:
-		//中攻撃(下中)
-		D_Thu(elapsed_time);
-		break;
-	case AttackState::D_KYO:
-		//中の次に出る強攻撃
-		Kyo(elapsed_time);
-		break;
-	case AttackState::D_JAKU:
-		//下段弱攻撃
-		D_Jaku(elapsed_time);
-		break;
-	case AttackState::D_THU:
-		//下段中攻撃
-		D_Thu(elapsed_time);
-		break;
-	case AttackState::U_KYO:
-		//上段強攻撃
-		U_Kyo(elapsed_time);
-		break;
-	case AttackState::A_JAKU:
-		//空中弱攻撃
-		A_Jaku(elapsed_time);
-		break;
-	case AttackState::A_THU:
-		//空中中攻撃
-		A_Thu(elapsed_time);
-		break;
-	case AttackState::A_KYO:
-		//空中強攻撃
-		A_Kyo(elapsed_time);
-		break;
-	case AttackState::A_UKYO:
-		//空中上強攻撃
-		A_UKyo(elapsed_time);
-		break;
-	case AttackState::JAKU_RHURF:
-		//飛び道具(弱)
-		Jaku_Rhurf(elapsed_time);
-		break;
-	case AttackState::THU_RHURF:
-		//飛び道具(中)
-		Thu_Rhurf(elapsed_time);
-		break;
-	case AttackState::KYO_RHURF:
-		Kyo_Rhurf(elapsed_time);
-		break;
-	case AttackState::TRACK_DASH:
-		//ホーミングダッシュ
-		TrackDash(decision, elapsed_time);
-		break;
-	case AttackState::KYO_LHURF:
-		Kyo_Lhurf(elapsed_time);
-		break;
-	case AttackState::EXTENDATK:
-		ExtendATK(elapsed_time);
-		break;
-	case AttackState::JAKU_LHURF:
-		Jaku_Lhurf(elapsed_time);
-		break;
-	case AttackState::THU_LHURF:
-		Thu_Lhurf(elapsed_time);
-		break;
-	case AttackState::SPECIAL_ATTACK:
-		SpecialAttack(elapsed_time);
-		break;
-	case AttackState::JAKU_THU:
-		//弱の次に出る中攻撃
-		Thu(elapsed_time);
-		break;
-	case AttackState::JAKU_KYO:
-		//中の次に出る強攻撃
-		Kyo(elapsed_time);
-		break;
-	case AttackState::A_JAKU_RHURF:
-		A_Jaku_Rhurf(elapsed_time);
-		break;
-	case AttackState::A_JAKU_LHURF:
-		A_Jaku_Lhurf(elapsed_time);
-		break;
-	case AttackState::COMBO_X:
-		ComboX(decision, elapsed_time);
-		break;
-	case AttackState::COMBO_Y:
-		ComboY(decision, elapsed_time);
-		break;
-	case AttackState::COMBO_B:
-		ComboB(decision, elapsed_time);
-		break;
-	case AttackState::VERSATILE_ATTACK:
-		AttackSwitch(decision, elapsed_time, attack_list[scastI(now_attack_state)].real_attack);
-		break;
-	case AttackState::A_VERSATILE_ATTACK:
-		AttackSwitch(decision, elapsed_time, attack_list[scastI(now_attack_state)].real_attack);
-		break;
-	default:
-		break;
-	}
+	//関数ポインタで処理を行う
+	(this->*attack_func[scastI(attack_list[scastI(now_attack_state)].function_num)])(decision, elapsed_time);
+
+
+	//switch (now_attack_state)
+	//{
+	//case AttackState::NONE:
+	//	break;
+	//case AttackState::SLOW:
+	//	//投げ
+	//	Slow(elapsed_time);
+	//	break;
+	//case AttackState::STEAL:
+	//	//相手のステートを奪う。掴み
+	//	Steal(elapsed_time);
+	//	break;
+	//case AttackState::JAKU:
+	//	//弱攻撃
+	//	Jaku(elapsed_time);
+	//	break;
+	//case AttackState::THU:
+	//	//中攻撃(下中)
+	//	D_Thu(elapsed_time);
+	//	break;
+	//case AttackState::D_KYO:
+	//	//中の次に出る強攻撃
+	//	Kyo(elapsed_time);
+	//	break;
+	//case AttackState::D_JAKU:
+	//	//下段弱攻撃
+	//	D_Jaku(elapsed_time);
+	//	break;
+	//case AttackState::D_THU:
+	//	//下段中攻撃
+	//	D_Thu(elapsed_time);
+	//	break;
+	//case AttackState::U_KYO:
+	//	//上段強攻撃
+	//	U_Kyo(elapsed_time);
+	//	break;
+	//case AttackState::A_JAKU:
+	//	//空中弱攻撃
+	//	A_Jaku(elapsed_time);
+	//	break;
+	//case AttackState::A_THU:
+	//	//空中中攻撃
+	//	A_Thu(elapsed_time);
+	//	break;
+	//case AttackState::A_KYO:
+	//	//空中強攻撃
+	//	A_Kyo(elapsed_time);
+	//	break;
+	//case AttackState::A_UKYO:
+	//	//空中上強攻撃
+	//	A_UKyo(elapsed_time);
+	//	break;
+	//case AttackState::JAKU_RHURF:
+	//	//飛び道具(弱)
+	//	Jaku_Rhurf(elapsed_time);
+	//	break;
+	//case AttackState::THU_RHURF:
+	//	//飛び道具(中)
+	//	Thu_Rhurf(elapsed_time);
+	//	break;
+	//case AttackState::KYO_RHURF:
+	//	Kyo_Rhurf(elapsed_time);
+	//	break;
+	//case AttackState::TRACK_DASH:
+	//	//ホーミングダッシュ
+	//	TrackDash(decision, elapsed_time);
+	//	break;
+	//case AttackState::KYO_LHURF:
+	//	Kyo_Lhurf(elapsed_time);
+	//	break;
+	//case AttackState::EXTENDATK:
+	//	ExtendATK(elapsed_time);
+	//	break;
+	//case AttackState::JAKU_LHURF:
+	//	Jaku_Lhurf(elapsed_time);
+	//	break;
+	//case AttackState::THU_LHURF:
+	//	Thu_Lhurf(elapsed_time);
+	//	break;
+	//case AttackState::SPECIAL_ATTACK:
+	//	SpecialAttack(elapsed_time);
+	//	break;
+	//case AttackState::JAKU_THU:
+	//	//弱の次に出る中攻撃
+	//	Thu(elapsed_time);
+	//	break;
+	//case AttackState::JAKU_KYO:
+	//	//中の次に出る強攻撃
+	//	Kyo(elapsed_time);
+	//	break;
+	//case AttackState::A_JAKU_RHURF:
+	//	A_Jaku_Rhurf(elapsed_time);
+	//	break;
+	//case AttackState::A_JAKU_LHURF:
+	//	A_Jaku_Lhurf(elapsed_time);
+	//	break;
+	//case AttackState::COMBO_X:
+	//	ComboX(decision, elapsed_time);
+	//	break;
+	//case AttackState::COMBO_Y:
+	//	ComboY(decision, elapsed_time);
+	//	break;
+	//case AttackState::COMBO_B:
+	//	ComboB(decision, elapsed_time);
+	//	break;
+	//case AttackState::VERSATILE_ATTACK:
+	//	AttackSwitch(decision, elapsed_time, attack_list[scastI(now_attack_state)].real_attack);
+	//	break;
+	//case AttackState::A_VERSATILE_ATTACK:
+	//	AttackSwitch(decision, elapsed_time, attack_list[scastI(now_attack_state)].real_attack);
+	//	break;
+	//default:
+	//	break;
+	//}
 }
 
 
@@ -2274,13 +2301,24 @@ void Player::JumpUpdate(float decision, float elapsed_time)
 		pos.y = POS_Y;
 		jumpflag = false;
 		//ジャンプの着地隙を発生する
+		if (attack_state == AttackState::EXTENDATK)
+		{
+			//無敵攻撃のみ後隙を別で設定する
+			later = attack_list[scastI(AttackState::EXTENDATK)].later;
+			anim_ccodinate = ac_attack[scastI(AttackState::EXTENDATK)].later;
+			atk_result = attack_list[scastI(AttackState::EXTENDATK)].conditions_hit;
+			HitBoxTransition(HitBoxState::NOGUARD);
+		}
+		else
+		{
+			later = jump_later;
+			//攻撃でキャンセルできるように
+			atk_result = HitResult::NOT_OCCURRENCE;
+			hit_result = HitResult::NOT_OCCURRENCE;
+		}
 		act_state = ActState::ATTACK;
 		attack_state = AttackState::NONE;
 		attack = true;
-		later = jump_later;
-		//攻撃でキャンセルできるように
-		hit_result = HitResult::NOT_OCCURRENCE;
-		atk_result = HitResult::NOT_OCCURRENCE;
 		rightOrleft = decision;
 		angle.y = 0.0f;
 		//角度を元に戻す

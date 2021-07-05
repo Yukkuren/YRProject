@@ -220,6 +220,43 @@ enum class AttackState : int
 
 
 
+
+//---------------------------------------------
+// **攻撃関数リスト列挙**
+//・関数リストに追加する関数のリスト
+//・ツール側で指定する際、初期化の際に使用する
+//----------------------------------------------
+enum class AT_Function_List : int
+{
+	AttackDefault = 0,			//通常デフォルト
+	AttackProjectileDefault,	//飛び道具デフォルト
+	COMBO_X,					//Xコンボ
+	COMBO_Y,					//Yコンボ
+	COMBO_B,					//Bコンボ
+	ATTACK_NONE,				//何もしない
+	AttackSwitch,				//AttackSwitchに入る
+	AttackJump,					//ジャンプして攻撃
+	AttackJumpEx,				//ジャンプして無敵攻撃
+	AttackAirUp,				//空中で跳ねて攻撃
+	Steal,						//掴み攻撃
+	Slow,						//投げ攻撃
+	AttackSlid,					//横移動しながら攻撃
+	AttackSlidRoll,				//横移動しながら回転攻撃
+	AttackAirSlidRoll,			//横移動しながら空中回転攻撃
+	AttackSlidRollTurn,			//横移動しながら回転攻撃して戻る
+	AttackTrack,				//ホーミングダッシュ攻撃
+	AttackTrackRoll,			//回転ホーミングダッシュ攻撃
+	AttackSpecial,				//前超必殺攻撃
+	AT_END						//最終サイズ
+};
+
+
+
+
+
+
+
+
 //---------------------------------------------------
 //		個別モーションデータ格納構造体
 //---------------------------------------------------
@@ -395,12 +432,15 @@ public:
 	bool							traject_on;		//剣の軌跡を表示するならtrue
 	EffectParameter					effect_param;	//エフェクトのパラメーター(KindがNoneなら判定ごとのパラメータを使用する)
 	Effekseer::Handle				handle;			//エフェクトのハンドル
+	AttackState						anim_kind;		//再生するアニメーション番号
+	AT_Function_List				function_num;	//関数ポインタの参照アドレス
 
 public:
 	AttackList() : now_attack_num(0), attack_name(AttackState::NONE), later(0.0f),
 		attack_max(0), linkage_button(PAD::BUTTOM_END), linkage_command(Command::NOCOMMAND), ground_on(Ground_C::GROUND), squat_on(false),
 		need_power(0), linkage_stick(PAD::BUTTOM_END), aid_attack_name(AttackState::NONE), real_attack(attack_name),
-		speed_on(false), speed(0.0f, 0.0f, 0.0f), advance_speed(0.0f), combo(AttackState::NONE), conditions_hit(HitResult::HIT),timer(0.0f),traject_on(true),effect_param(),handle(0) {};
+		speed_on(false), speed(0.0f, 0.0f, 0.0f), advance_speed(0.0f), combo(AttackState::NONE), conditions_hit(HitResult::HIT), timer(0.0f),
+		traject_on(true), effect_param(), handle(0), anim_kind(AttackState::NONE), function_num(AT_Function_List::AttackDefault) {};
 	//攻撃当たり判定を生成する
 	void SetAttack(std::vector<AttackBox> *atk, float rightOrleft, YR_Vector3 pl_pos)
 	{
@@ -716,10 +756,7 @@ public:
 	virtual void HitBoxReset();
 
 
-	//----------------------------------//
-	//			攻撃関数					//
-	//----------------------------------//
-	virtual void Jaku(float elapsed_time) = 0;
+	/*virtual void Jaku(float elapsed_time) = 0;
 	virtual void Thu(float elapsed_time) = 0;
 	virtual void Kyo(float elapsed_time) = 0;
 	virtual void U_Kyo(float elapsed_time) = 0;
@@ -739,37 +776,57 @@ public:
 
 	virtual void TrackDash(float decision, float elapsed_time) = 0;
 	virtual void Steal(float elapsed_time) = 0;
-	virtual void Slow(float elapsed_time) = 0;
+	virtual void Slow(float elapsed_time) = 0;*/
 	virtual void SpecialAttack(float elapsed_time) = 0;
-	virtual void ExtendATK(float elapsed_time) = 0;
+	//virtual void ExtendATK(float elapsed_time) = 0;
 
+
+	//----------------------------------//
+	//			攻撃関数					//
+	//----------------------------------//
 	virtual bool StealRangeCheck();
 	virtual void PosKnockPlus(float vec);
 
 	virtual bool ComboSet();					//コンボ開始時、どの攻撃をしているかを確認してその後のコンボをセットする
 	virtual void ComboUpdate();					//コンボ更新。ステートを設定する
 
-	virtual void ComboX(float decision, float elapsed_time);	//Xボタンコンボ関数
-	virtual void ComboY(float decision, float elapsed_time);	//Yボタンコンボ関数
-	virtual void ComboB(float decision, float elapsed_time);	//Bボタンコンボ関数
-
-
-	virtual void AttackDefault(float elapsed_time);//特殊な記述のある攻撃以外はこの関数を使用する
-	virtual void AttackProjectileDefault(float elapsed_time);//特殊な記述のある飛び道具攻撃以外はこの関数を使用する
+	virtual void AttackDefault(float decision, float elapsed_time);					//特殊な記述のある攻撃以外はこの関数を使用する
+	virtual void AttackProjectileDefault(float decision, float elapsed_time);		//特殊な記述のある飛び道具攻撃以外はこの関数を使用する
+	virtual void ComboX(float decision, float elapsed_time);						//Xボタンコンボ関数
+	virtual void ComboY(float decision, float elapsed_time);						//Yボタンコンボ関数
+	virtual void ComboB(float decision, float elapsed_time);						//Bボタンコンボ関数
+	virtual void AttackNone(float decision, float elapsed_time);					//何もしない
+	virtual void AttackSwicthIn(float decision, float elapsed_time);				//AttackSwicth関数に入る
+	virtual void AttackJump(float decision, float elapsed_time);					//ジャンプして攻撃
+	virtual void AttackJumpEx(float decision, float elapsed_time);					//ジャンプして無敵攻撃
+	virtual void AttackAirUp(float decision, float elapsed_time);					//空中で跳ねて攻撃
+	virtual void AttackSteal(float decision, float elapsed_time);					//掴み攻撃
+	virtual void AttackSlow(float decision, float elapsed_time);					//投げ攻撃
+	virtual void AttackSlid(float decision, float elapsed_time);					//横移動しながら攻撃
+	virtual void AttackSlidRoll(float decision, float elapsed_time);				//横移動しながら回転攻撃
+	virtual void AttackAirSlidRoll(float decision, float elapsed_time);				//横移動しながら空中回転攻撃
+	virtual void AttackSlidRollTurn(float decision, float elapsed_time);			//横移動しながら回転攻撃して戻る
+	virtual void AttackTrack(float decision, float elapsed_time);					//ホーミングダッシュ攻撃
+	virtual void AttackTrackRoll(float decision, float elapsed_time);				//回転ホーミングダッシュ攻撃
+	virtual void AttackSpecial(float decision, float elapsed_time);					//前超必殺攻撃
 
 
 
 	//空中版コマンドはキャラによっては実装しないため、
 	//意図的に純粋仮想関数にしていない
-	virtual void A_Jaku_Rhurf(float elapsed_time);
+	/*virtual void A_Jaku_Rhurf(float elapsed_time);
 	virtual void A_Thu_Rhurf(float elapsed_time);
 	virtual void A_Kyo_Rhurf(float elapsed_time);
 	virtual void A_Jaku_Lhurf(float elapsed_time);
 	virtual void A_Thu_Lhurf(float elapsed_time);
-	virtual void A_Kyo_Lhurf(float elapsed_time);
+	virtual void A_Kyo_Lhurf(float elapsed_time);*/
 
 
-	//virtual void
+	//関数ポインタ
+	//void (Player::* AT_Function[2])(float) = { &Player::AttackDefault,&Player::AttackProjectileDefault };
+
+	typedef void (Player::* AT_Function)(float, float);
+	std::vector<AT_Function> attack_func;
 
 public:
 
