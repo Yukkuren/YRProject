@@ -44,6 +44,7 @@ void YR_Effect::Init()
 	effects[scastI(EffectKind::NERU_TRACK)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/NeruTrack.efk");
 	effects[scastI(EffectKind::LASER_CHARGE)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/laser_charge.efk");
 	effects[scastI(EffectKind::LASER)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/laser.efk");
+	effects[scastI(EffectKind::LASER_SHOCK)] = Effekseer::Effect::Create(manager, (const EFK_CHAR*)L"./Data/Effect/laser_shockwave.efk");
 
 	//ƒnƒ“ƒhƒ‹‚Ì‰Šú‰»
 	for (int i = 0; i < handles.size(); i++)

@@ -2246,8 +2246,21 @@ void Player::JumpUpdate(float decision, float elapsed_time)
 		if (act_state == ActState::GUARD)
 		{
 			knocktimer = non_target;
-			HitBoxTransition(HitBoxState::NOGUARD);
+			//HitBoxTransition(HitBoxState::NOGUARD);
 			HitBoxReset();
+		}
+		else
+		{
+			//描画をセット
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.landing_R);
+			}
+			else
+			{
+				anim->NodeChange(model_motion.landing_L);
+			}
+			anim->PlayAnimation(0, false);
 		}
 
 		//ジャンプのカウントを戻す
@@ -2276,19 +2289,8 @@ void Player::JumpUpdate(float decision, float elapsed_time)
 		timer = non_target;
 		//着地音を鳴らす
 		GetSound().SESinglePlay(SEKind::LANDING);
-		//描画をセット
-		if (rightOrleft > 0)
-		{
-			anim->NodeChange(model_motion.landing_R);
-		}
-		else
-		{
-			anim->NodeChange(model_motion.landing_L);
-		}
-		anim->PlayAnimation(0, false);
 		//攻撃判定を一度だけ更新する
 		AttackUpdate(0.0f);
-
 		//攻撃判定をすべて消去する
 		AllAttackClear();
 	}
@@ -2407,7 +2409,7 @@ void Player::DamageCheck(float decision)
 			{
 				steal_escape = 0.0f;
 				hit[i].hit_state = HitStateKind::NORMAL;
-				float dg = hit[i].param.damage - (combo_count * 1.2f);
+				float dg = hit[i].param.damage - (combo_count * hit[i].param.combo_correction);
 				if (dg <= 0)
 				{
 					dg = 1;
@@ -2430,7 +2432,8 @@ void Player::DamageCheck(float decision)
 
 			//ダメージ、吹っ飛びベクトルなどを保存
 			HitBoxTransition(HitBoxState::NOGUARD);
-			float dg = hit[i].param.damage - (static_cast<float>(combo_count) * 1.2f);
+			//コンボ補正値からダメージ量を算出する
+			float dg = hit[i].param.damage - (static_cast<float>(combo_count) * hit[i].param.combo_correction);
 			if (dg <= 0.0f)
 			{
 				dg = 1.0f;

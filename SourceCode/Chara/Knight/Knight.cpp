@@ -991,62 +991,100 @@ std::wstring Knight::RandTextSelect()
 //デバッグ時当たり判定調整ツール描画
 void Knight::DrawDEBUGHitParam()
 {
-	if (ImGui::TreeNode(u8"プレイヤー当たり判定調整"))
+	if (ImGui::BeginTabItem(u8"当たり判定調整"))
 	{
-		if (ImGui::TreeNode(u8"行動当たり判定"))
+		if (ImGui::BeginTabBar(u8"当たり判定調整Bar", ImGuiTabBarFlags_::ImGuiTabBarFlags_FittingPolicyScroll))
 		{
-			for (int act = 0; act < scastI(ActState::ACT_END); act++)
+			if (ImGui::BeginTabItem(u8"行動当たり判定"))
 			{
-				if (ImGui::TreeNode(GetName().act_name_list[act].c_str()))
+				if (ImGui::BeginTabBar(u8"行動Bar", ImGuiTabBarFlags_::ImGuiTabBarFlags_FittingPolicyScroll))
 				{
-					for (int list = 0; list < hitparam_list.size(); list++)
+					for (int act = 0; act < scastI(ActState::ACT_END); act++)
 					{
-						//プレイヤーの当たり判定をそれぞれ出す
-						if (ImGui::TreeNode(hit_name_list[list].c_str()))
+						if (ImGui::BeginTabItem(GetName().act_name_list[act].c_str()))
 						{
-							ImGui::SliderFloat(u8"プレイヤーとの距離X", &hitparam_list[list].act_parameter[act].distance.x, -50.0f, 50.0f);
-							ImGui::SliderFloat(u8"プレイヤーとの距離Y", &hitparam_list[list].act_parameter[act].distance.y, -50.0f, 50.0f);
-							ImGui::SliderFloat(u8"大きさX", &hitparam_list[list].act_parameter[act].size.x, 0.0f, 50.0f);
-							ImGui::SliderFloat(u8"大きさY", &hitparam_list[list].act_parameter[act].size.y, 0.0f, 50.0f);
-							//int state = scastI(hitparam_list[list].act_parameter[act].state);
-							//ImGui::SliderInt(u8"状態", &state, 0, scastI(HitBoxState::END)-1);
-							//hitparam_list[list].act_parameter[act].state = static_cast<HitBoxState>(state);
-							//ImGui::Text(hitstate_name_list[state].c_str());
-							ImGui::InputFloat(u8"モーション速度 : 発生", &ac_act[act].fream, 0.01f, 0.1f);
-							ImGui::InputFloat(u8"モーション速度 : 持続", &ac_act[act].timer, 0.01f, 0.1f);
-							ImGui::InputFloat(u8"モーション速度 : 後スキ", &ac_act[act].later, 0.01f, 0.1f);
-							ImGui::Text(u8"ものによってはfreamしか使用しないものもあるので注意");
-							ImGui::TreePop();
+							if (ImGui::BeginTabBar(u8"行動内容Bar", ImGuiTabBarFlags_::ImGuiTabBarFlags_FittingPolicyScroll))
+							{
+								for (int list = 0; list < hitparam_list.size(); list++)
+								{
+									//プレイヤーの当たり判定をそれぞれ出す
+									if (ImGui::BeginTabItem(hit_name_list[list].c_str()))
+									{
+										ImGui::SliderFloat(u8"プレイヤーとの距離X", &hitparam_list[list].act_parameter[act].distance.x, -50.0f, 50.0f);
+										ImGui::SliderFloat(u8"プレイヤーとの距離Y", &hitparam_list[list].act_parameter[act].distance.y, -50.0f, 50.0f);
+										ImGui::SliderFloat(u8"大きさX", &hitparam_list[list].act_parameter[act].size.x, 0.0f, 50.0f);
+										ImGui::SliderFloat(u8"大きさY", &hitparam_list[list].act_parameter[act].size.y, 0.0f, 50.0f);
+										//int state = scastI(hitparam_list[list].act_parameter[act].state);
+										//ImGui::SliderInt(u8"状態", &state, 0, scastI(HitBoxState::END)-1);
+										//hitparam_list[list].act_parameter[act].state = static_cast<HitBoxState>(state);
+										//ImGui::Text(hitstate_name_list[state].c_str());
+										ImGui::InputFloat(u8"モーション速度 : 発生", &ac_act[act].fream, 0.01f, 0.1f);
+										ImGui::InputFloat(u8"モーション速度 : 持続", &ac_act[act].timer, 0.01f, 0.1f);
+										ImGui::InputFloat(u8"モーション速度 : 後スキ", &ac_act[act].later, 0.01f, 0.1f);
+										ImGui::Text(u8"ものによってはfreamしか使用しないものもあるので注意");
+										ImGui::EndTabItem();
+									}
+								}
+								ImGui::EndTabBar();
+							}
+							ImGui::EndTabItem();
 						}
 					}
-					ImGui::TreePop();
+					ImGui::EndTabBar();
 				}
+				ImGui::EndTabItem();
 			}
-			ImGui::TreePop();
-		}
 
-		if (ImGui::TreeNode(u8"攻撃当たり判定"))
-		{
-			for (int atk = 0; atk < scastI(AttackState::ATTACK_END); atk++)
+			if (ImGui::BeginTabItem(u8"攻撃当たり判定"))
 			{
-				if (ImGui::TreeNode(GetName().attack_name_list[atk].c_str()))
+				if (ImGui::BeginTabBar(u8"攻撃Bar", ImGuiTabBarFlags_::ImGuiTabBarFlags_FittingPolicyScroll))
 				{
-					for (int list = 0; list < hitparam_list.size(); list++)
+					int at_num_tab = -1;
+					for (int atk = 0; atk < scastI(AttackState::ATTACK_END); atk++)
 					{
-						if (ImGui::TreeNode(hit_name_list[list].c_str()))
+						std::string tab_num = std::string("attack_");
+
+						if (atk % 5 == 0)
 						{
-							ImGui::SliderFloat(u8"プレイヤーとの距離X", &hitparam_list[list].attack_parameter[atk].distance.x, -50.0f, 50.0f);
-							ImGui::SliderFloat(u8"プレイヤーとの距離Y", &hitparam_list[list].attack_parameter[atk].distance.y, -50.0f, 50.0f);
-							ImGui::SliderFloat(u8"大きさX", &hitparam_list[list].attack_parameter[atk].size.x, 0.0f, 50.0f);
-							ImGui::SliderFloat(u8"大きさY", &hitparam_list[list].attack_parameter[atk].size.y, 0.0f, 50.0f);
-							ImGui::TreePop();
+							//5個づつ分けてタブ化する
+							at_num_tab++;
+						}
+						tab_num += std::to_string(at_num_tab);
+
+						if (ImGui::BeginTabItem(tab_num.data()))
+						{
+							if (ImGui::BeginTabBar(u8"攻撃毎Bar", ImGuiTabBarFlags_::ImGuiTabBarFlags_FittingPolicyScroll))
+							{
+								if (ImGui::BeginTabItem(GetName().attack_name_list[atk].c_str()))
+								{
+									if (ImGui::BeginTabBar(u8"攻撃内容Bar", ImGuiTabBarFlags_::ImGuiTabBarFlags_FittingPolicyScroll))
+									{
+										for (int list = 0; list < hitparam_list.size(); list++)
+										{
+											if (ImGui::BeginTabItem(hit_name_list[list].c_str()))
+											{
+												ImGui::SliderFloat(u8"プレイヤーとの距離X", &hitparam_list[list].attack_parameter[atk].distance.x, -50.0f, 50.0f);
+												ImGui::SliderFloat(u8"プレイヤーとの距離Y", &hitparam_list[list].attack_parameter[atk].distance.y, -50.0f, 50.0f);
+												ImGui::SliderFloat(u8"大きさX", &hitparam_list[list].attack_parameter[atk].size.x, 0.0f, 50.0f);
+												ImGui::SliderFloat(u8"大きさY", &hitparam_list[list].attack_parameter[atk].size.y, 0.0f, 50.0f);
+												ImGui::EndTabItem();
+											}
+										}
+										ImGui::EndTabBar();
+									}
+									ImGui::EndTabItem();
+								}
+								ImGui::EndTabBar();
+							}
+							ImGui::EndTabItem();
 						}
 					}
-					ImGui::TreePop();
+					ImGui::EndTabBar();
 				}
+				ImGui::EndTabItem();
 			}
-			ImGui::TreePop();
+			ImGui::EndTabBar();
 		}
-		ImGui::TreePop();
+		ImGui::EndTabItem();
 	}
 }

@@ -356,7 +356,11 @@ void SceneGame::LoadData()
 	}
 	if (font_img == nullptr)
 	{
-		font_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/font.png", 640.0f, 64.0f, 10, 1, 64.0f, 64.0f);
+		font_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/font.png", 2048.0f, 256.0f, 10, 1, 204.8f, 256.0f);
+	}
+	if (combo_img == nullptr)
+	{
+		combo_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/combo.png", 1280.0f, 360.0f);
 	}
 	if (desastal_case == nullptr)
 	{
@@ -1111,9 +1115,6 @@ void SceneGame::Update(float elapsed_time)
 							Limit::Stop(player1p->pos.x, player2p->pos.x);
 						}
 
-						//コンボに応じて画像セット
-						ComboImageSet();
-
 						DangerSound();
 
 						DesastalFlash(game_speed);
@@ -1364,6 +1365,12 @@ void SceneGame::Draw(float elapsed_time)
 		float dis = player1p->pos.Distance(player2p->pos);
 		ImGui::Text("%f", dis);
 
+		//スプライトデバッグ
+		ImGui::SliderFloat(u8"デバッグスプライト位置X", &sprite_debug_pos.x, -1000.0f, 2000.0f);
+		ImGui::SliderFloat(u8"デバッグスプライト位置Y", &sprite_debug_pos.y, -1000.0f, 2000.0f);
+		ImGui::SliderFloat(u8"デバッグスプライト大きさ", &sprite_debug_scale, 0.0f, 10.0f);
+
+
 		/*ImGui::SliderFloat("Danger_p1_x", &Danger_pos_p1.x, 0.0f, 1920.0f);
 		ImGui::SliderFloat("Danger_p1_y", &Danger_pos_p1.y, 0.0f, 1920.0f);
 		ImGui::SliderFloat("Danger_p2_x", &Danger_pos_p2.x, 0.0f, 1920.0f);
@@ -1507,94 +1514,12 @@ void SceneGame::Draw(float elapsed_time)
 		//内部処理ではフェードをしているだけで画面に変化はない為一括
 
 
+		//コンボに応じて画像セット
+		ComboImageSet();
 
 		//コンボ表示
+		ComboDraw();
 
-		if (player1p->combo_count > 1)
-		{
-			font_img->DrawRotaDivGraph
-			(
-				spriteShader.get(),
-				300.0f,
-				400.0f,
-				0.0f,
-				3.0f,
-				p1combo[2],
-				SpriteMask::NONE,
-				DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
-			);
-			if (player1p->combo_count > 9)
-			{
-				font_img->DrawRotaDivGraph
-				(
-					spriteShader.get(),
-					200.0f,
-					400.0f,
-					0.0f,
-					3.0f,
-					p1combo[1],
-					SpriteMask::NONE,
-					DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
-				);
-			}
-			if (player1p->combo_count > 99)
-			{
-				font_img->DrawRotaDivGraph
-				(
-					spriteShader.get(),
-					100.0f,
-					400.0f,
-					0.0f,
-					3.0f,
-					p1combo[0],
-					SpriteMask::NONE,
-					DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
-				);
-			}
-		}
-
-		if (player2p->combo_count > 1)
-		{
-			font_img->DrawRotaDivGraph
-			(
-				spriteShader.get(),
-				1600.0f,
-				400.0f,
-				0.0f,
-				3.0f,
-				p2combo[2],
-				SpriteMask::NONE,
-				DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
-			);
-			if (player2p->combo_count > 9)
-			{
-				font_img->DrawRotaDivGraph
-				(
-					spriteShader.get(),
-					1500.0f,
-					400.0f,
-					0.0f,
-					3.0f,
-					p2combo[1],
-					SpriteMask::NONE,
-					DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
-				);
-			}
-			if (player2p->combo_count > 99)
-			{
-				font_img->DrawRotaDivGraph
-				(
-					spriteShader.get(),
-					1400.0f,
-					400.0f,
-					0.0f,
-					3.0f,
-					p2combo[0],
-					SpriteMask::NONE,
-					DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)
-				);
-			}
-		}
 		//FRAMEWORK.context->OMSetDepthStencilState(m_depth_stencil_state2.Get(), 1);
 		//プレイヤー描画
 		player1p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, lightColor, ambient_color, game_speed*p1_elapsed_time);
@@ -1687,7 +1612,7 @@ void SceneGame::IconDraw(
 	{
 		float dis =  player2p->pos.y -player1p->pos.y;
 
-		if (dis > 30.0f)
+		if (dis > Icon_distance)
 		{
 			p1_icon_board->Render(
 				animShader.get(),
@@ -1719,7 +1644,7 @@ void SceneGame::IconDraw(
 	{
 		float dis = player1p->pos.y - player2p->pos.y;
 
-		if (dis > 30.0f)
+		if (dis > Icon_distance)
 		{
 			p2_icon_board->Render(
 				animShader.get(),
@@ -2357,7 +2282,13 @@ void SceneGame::PauseUpdate()
 		Init();
 		pause = false;
 	}
-	if (player1p->pad->x_input[scastI(PAD::RB)] == 1 || player2p->pad->x_input[scastI(PAD::RB)] == 1)
+	if (player1p->pad->x_input[scastI(PAD::RB)] == 1 && player1p->pad->x_input[scastI(PAD::LB)] > 0)
+	{
+		//タイトルに戻る
+		UnInit();
+		FRAMEWORK.SetScene(SCENE_TABLE::SCENE_TITLE);
+	}
+	if (player2p->pad->x_input[scastI(PAD::RB)] == 1 || player1p->pad->x_input[scastI(PAD::LB)] > 0)
 	{
 		//タイトルに戻る
 		UnInit();
@@ -3324,4 +3255,191 @@ void SceneGame::DesastalFlash(float elapsed_time)
 
 	pl1_before_power = player1p->power;
 	pl2_before_power = player2p->power;
+}
+
+
+
+void SceneGame::ComboDraw()
+{
+	//combo_img->DrawRotaGraph
+	//(
+	//	spriteShader.get(),
+	//	1720.0f,
+	//	420.0f,
+	//	0.0f,
+	//	0.3f
+	//);
+	//font_img->DrawRotaDivGraph
+	//(
+	//	spriteShader.get(),
+	//	1700.0f,
+	//	320.0f,
+	//	0.0f,
+	//	0.8,
+	//	p1combo[2]
+	//);
+	//font_img->DrawRotaDivGraph
+	//(
+	//	spriteShader.get(),
+	//	1700.0f -100.0f,
+	//	320.0f,
+	//	0.0f,
+	//	0.8f,
+	//	p1combo[1]
+	//);
+	//font_img->DrawRotaDivGraph
+	//(
+	//	spriteShader.get(),
+	//	1700.0f - 200.0f,
+	//	320.0f,
+	//	0.0f,
+	//	0.8f,
+	//	p1combo[0]
+	//);
+
+
+
+
+
+
+
+	//combo_img->DrawRotaGraph
+	//(
+	//	spriteShader.get(),
+	//	340.0f,
+	//	420.0f,
+	//	0.0f,
+	//	0.3f
+	//);
+
+	//font_img->DrawRotaDivGraph
+	//(
+	//	spriteShader.get(),
+	//	320.0f,
+	//	320.0f,
+	//	0.0f,
+	//	0.8f,
+	//	p2combo[2]
+	//);
+	//font_img->DrawRotaDivGraph
+	//(
+	//	spriteShader.get(),
+	//	320.0f - 100.0f,
+	//	320.0f,
+	//	0.0f,
+	//	0.8f,
+	//	p2combo[1]
+	//);
+	//font_img->DrawRotaDivGraph
+	//(
+	//	spriteShader.get(),
+	//	320.0f - 200.0f,
+	//	320.0f,
+	//	0.0f,
+	//	0.8f,
+	//	p2combo[0]
+	//);
+
+
+
+
+
+
+
+
+
+
+
+
+	if (player1p->combo_count > 1)
+	{
+
+		font_img->DrawRotaDivGraph
+		(
+			spriteShader.get(),
+			1700.0f,
+			320.0f,
+			0.0f,
+			0.8,
+			p1combo[2]
+		);
+		if (player1p->combo_count > 9)
+		{
+			font_img->DrawRotaDivGraph
+			(
+				spriteShader.get(),
+				1700.0f - 100.0f,
+				320.0f,
+				0.0f,
+				0.8f,
+				p1combo[1]
+			);
+		}
+		if (player1p->combo_count > 99)
+		{
+			font_img->DrawRotaDivGraph
+			(
+				spriteShader.get(),
+				1700.0f - 200.0f,
+				320.0f,
+				0.0f,
+				0.8f,
+				p1combo[0]
+			);
+		}
+		combo_img->DrawRotaGraph
+		(
+			spriteShader.get(),
+			1720.0f,
+			420.0f,
+			0.0f,
+			0.3f
+		);
+	}
+
+	if (player2p->combo_count > 1)
+	{
+
+		font_img->DrawRotaDivGraph
+		(
+			spriteShader.get(),
+			320.0f,
+			320.0f,
+			0.0f,
+			0.8f,
+			p2combo[2]
+		);
+		if (player2p->combo_count > 9)
+		{
+			font_img->DrawRotaDivGraph
+			(
+				spriteShader.get(),
+				320.0f - 100.0f,
+				320.0f,
+				0.0f,
+				0.8f,
+				p2combo[1]
+			);
+		}
+		if (player2p->combo_count > 99)
+		{
+			font_img->DrawRotaDivGraph
+			(
+				spriteShader.get(),
+				320.0f - 200.0f,
+				320.0f,
+				0.0f,
+				0.8f,
+				p2combo[0]
+			);
+		}
+		combo_img->DrawRotaGraph
+		(
+			spriteShader.get(),
+			340.0f,
+			420.0f,
+			0.0f,
+			0.3f
+		);
+	}
 }

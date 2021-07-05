@@ -262,11 +262,15 @@ class SceneGame : public SceneBase
 private:
 	POINT mouse_pos;						//マウスの座標を保存する変数
 	bool camera_move_debug = false;			//カメラをデバッグ機能として動かす場合はtrue
+	const float Icon_distance = 20.0f;		//アイコンを表示する高さ
 
 	//深度ステート
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>	m_depth_stencil_state;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState>	m_depth_stencil_state2;
 public:
+
+	YR_Vector2	sprite_debug_pos = { 0.0f,0.0f };
+	float	sprite_debug_scale = 0.0f;
 
 	//2Pの行動制御列挙
 	enum class Player2PControl : int
@@ -360,6 +364,7 @@ public:
 	std::unique_ptr<Sprite> HPDamagebar_img = nullptr;
 	std::unique_ptr<Sprite> KO_img = nullptr;
 	std::unique_ptr<Sprite> font_img = nullptr;
+	std::unique_ptr<Sprite> combo_img = nullptr;
 	std::unique_ptr<Sprite> desastal_case = nullptr;
 	std::unique_ptr<Sprite> desastal_flash = nullptr;
 	std::unique_ptr<Sprite> desastal_img = nullptr;
@@ -529,6 +534,8 @@ public:
 	void DangerSound();
 
 	void DesastalFlash(float elapsed_time);
+
+	void ComboDraw();
 
 	/*struct CB_Multi_Render_Target
 	{

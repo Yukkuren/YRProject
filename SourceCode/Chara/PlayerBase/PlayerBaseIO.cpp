@@ -242,6 +242,7 @@ bool Player::AttackLoad()
 						ifs >> attack_list[list].attack_single[sin].parameter[para].param.guard_back.y;
 						ifs >> attack_list[list].attack_single[sin].parameter[para].param.guard_shaving;
 						ifs >> attack_list[list].attack_single[sin].parameter[para].param.guard_timer;
+						ifs >> attack_list[list].attack_single[sin].parameter[para].param.combo_correction;
 						ifs >> attack_list[list].attack_single[sin].parameter[para].gauge_get;
 
 						ifs >> effect_k;
@@ -516,6 +517,8 @@ bool Player::AttackWrite()
 						outputfile << attack_list[list].attack_single[sin].parameter[para].param.guard_back.y << std::endl;
 						outputfile << attack_list[list].attack_single[sin].parameter[para].param.guard_shaving << std::endl;
 						outputfile << attack_list[list].attack_single[sin].parameter[para].param.guard_timer << std::endl;
+
+						outputfile << attack_list[list].attack_single[sin].parameter[para].param.combo_correction << std::endl;
 						if (!attack_list[list].attack_single[sin].parameter[para].gaugeout)
 						{
 							outputfile << attack_list[list].attack_single[sin].parameter[para].gauge_get << std::endl;
@@ -912,124 +915,132 @@ void Player::DrawDEBUG(
 		{
 			if (ImGui::BeginTabItem(u8"キャラステータス"))
 			{
-
-				ImGui::Text(u8"行動ステート");
-				ImGui::Text(GetName().act_name_list[scastI(act_state)].c_str());
-				ImGui::Text(u8"攻撃ステート");
-				ImGui::Text(GetName().attack_name_list[scastI(attack_state)].c_str());
-
-				ImGui::SliderFloat(u8"ジャンプの着地スキ", &jump_later, 0.0f, 2.0f);
-				ImGui::SliderFloat(u8"ダッシュの着地スキ", &dash_later, 0.0f, 2.0f);
-				ImGui::Text("fream : "); ImGui::SameLine(); ImGui::Text("%f", fream);
-				ImGui::Text("timer : "); ImGui::SameLine(); ImGui::Text("%f", timer);
-				ImGui::Text("later : "); ImGui::SameLine(); ImGui::Text("%f", later);
-				ImGui::Text("knocktimer : "); ImGui::SameLine(); ImGui::Text("%f", knocktimer);
-
-
-				//ImGui::Text("later : "); ImGui::SameLine(); ImGui::Text("%f", later);
-
-
-				DrawDEBUGHitParam();
-
-				chara_state.Draw();
-
-				//ImGui::InputFloat("eye_offset.x", &eye_offset.x, 0.01f, 0.01f);
-				//ImGui::InputFloat("eye_offset.y", &eye_offset.y, 0.01f, 0.01f);
-				//ImGui::InputFloat("mouse_offset.x", &mouth_offset.x, 0.01f, 0.01f);
-				//ImGui::InputFloat("mouse_offset.y", &mouth_offset.y, 0.01f, 0.01f);
-				ImGui::Text("player.x:%f", pos.x);
-				ImGui::Text("player.y:%f", pos.y);
-				ImGui::Text("command_timer:%f", pad->com_list.command_timer);
-				ImGui::Text("track:%d", trackgauge);
-				ImGui::Text("hitState : "); ImGui::SameLine();
-				ImGui::Text(GetName().hitstate_name_list[scastI(hit[0].state)].c_str());
-				if (ImGui::TreeNode("ModelParameter"))
+				if (ImGui::BeginTabBar(u8"キャラステータスTabBar", ImGuiTabBarFlags_::ImGuiTabBarFlags_FittingPolicyScroll))
 				{
-					ImGui::SliderFloat("scale_x", &scale.x, -10.0f, 10.0f);
-					ImGui::SliderFloat("scale_y", &scale.y, -10.0f, 10.0f);
-					ImGui::SliderFloat("scale_z", &scale.z, -10.0f, 10.0f);
-					ImGui::SliderFloat("angle_x", &angle.x, -10.0f, 10.0f);
-					ImGui::SliderFloat("angle_y", &angle.y, -10.0f, 10.0f);
-					ImGui::SliderFloat("angle_z", &angle.z, -10.0f, 10.0f);
-					ImGui::TreePop();
-				}
-				if (ImGui::TreeNode("StepParameter"))
-				{
-					ImGui::Text("speed.x:%f", speed.x);
-					//ImGui::SliderFloat("speed", &backstepS, 0.0f, 500.0f);
-					//ImGui::SliderFloat("down", &backstepD, 0.0f, 500.0f);
-					//ImGui::SliderFloat("air_speed", &stepspeed, 0.0f, 500.0f);
-					//ImGui::SliderFloat("air_down", &stepD, 0.0f, 500.0f);
-					//ImGui::SliderFloat("passive_speed_X", &passive_speed.x, 0.0f, 500.0f);
-					//ImGui::SliderFloat("passive_speed_Y", &passive_speed.y, 0.0f, 500.0f);
-					//ImGui::SliderFloat("passive_break", &passive_brake, 0.0f, 500.0f);
-					ImGui::TreePop();
-				}
-				if (ImGui::TreeNode("JumpParameter"))
-				{
-					static float s = 0.0f;
-
-
-					if (jumpflag)
+					if (ImGui::BeginTabItem(u8"ステータス基本情報"))
 					{
-						if (!max_jump_flag)
+						ImGui::Text(u8"行動ステート");
+						ImGui::Text(GetName().act_name_list[scastI(act_state)].c_str());
+						ImGui::Text(u8"攻撃ステート");
+						ImGui::Text(GetName().attack_name_list[scastI(attack_state)].c_str());
+
+						ImGui::SliderFloat(u8"ジャンプの着地スキ", &jump_later, 0.0f, 2.0f);
+						ImGui::SliderFloat(u8"ダッシュの着地スキ", &dash_later, 0.0f, 2.0f);
+						ImGui::Text("fream : "); ImGui::SameLine(); ImGui::Text("%f", fream);
+						ImGui::Text("timer : "); ImGui::SameLine(); ImGui::Text("%f", timer);
+						ImGui::Text("later : "); ImGui::SameLine(); ImGui::Text("%f", later);
+						ImGui::Text("knocktimer : "); ImGui::SameLine(); ImGui::Text("%f", knocktimer);
+
+
+						//ImGui::Text("later : "); ImGui::SameLine(); ImGui::Text("%f", later);
+
+
+
+						chara_state.Draw();
+
+						//ImGui::InputFloat("eye_offset.x", &eye_offset.x, 0.01f, 0.01f);
+						//ImGui::InputFloat("eye_offset.y", &eye_offset.y, 0.01f, 0.01f);
+						//ImGui::InputFloat("mouse_offset.x", &mouth_offset.x, 0.01f, 0.01f);
+						//ImGui::InputFloat("mouse_offset.y", &mouth_offset.y, 0.01f, 0.01f);
+						ImGui::Text("player.x:%f", pos.x);
+						ImGui::Text("player.y:%f", pos.y);
+						ImGui::Text("command_timer:%f", pad->com_list.command_timer);
+						ImGui::Text("track:%d", trackgauge);
+						ImGui::Text("hitState : "); ImGui::SameLine();
+						ImGui::Text(GetName().hitstate_name_list[scastI(hit[0].state)].c_str());
+						if (ImGui::TreeNode("ModelParameter"))
 						{
-							s = 0.0f;
+							ImGui::SliderFloat("scale_x", &scale.x, -10.0f, 10.0f);
+							ImGui::SliderFloat("scale_y", &scale.y, -10.0f, 10.0f);
+							ImGui::SliderFloat("scale_z", &scale.z, -10.0f, 10.0f);
+							ImGui::SliderFloat("angle_x", &angle.x, -10.0f, 10.0f);
+							ImGui::SliderFloat("angle_y", &angle.y, -10.0f, 10.0f);
+							ImGui::SliderFloat("angle_z", &angle.z, -10.0f, 10.0f);
+							ImGui::TreePop();
 						}
-						s = min(speed.y, s);
-					}
-
-					ImGui::Checkbox("jump_flug", &jumpflag);
-					ImGui::Checkbox("max_jump_flug", &max_jump_flag);
-					ImGui::Text("speed.y:%f", speed.y);
-					ImGui::Text("speed_X:%f", speed_X.speed);
-					ImGui::Text("speed_Y:%f", speed_Y.speed);
-					ImGui::Text("down_force:%f", down_force);
-					ImGui::Text("s:%f", s);
-					//ImGui::SliderFloat("jump_max", &jump_max, 0.0f, 500.0f);
-					ImGui::SliderFloat("down_force", &down_force, 0.0f, 1000.0f);
-					//ImGui::SliderFloat("high_jump_max", &high_jump_max, 0.0f, 1000.0f);
-					//ImGui::SliderFloat("jump_speed", &jump_speed, 0.0f, 5000.0f);
-					//ImGui::SliderFloat("high_jump_speed", &high_jump_speed, 0.0f, 5000.0f);
-					ImGui::TreePop();
-				}
-				if (ImGui::TreeNode("Light"))
-				{
-					ImGui::SliderFloat("light_direction.x", &this->light_direction.x, -1.0f, 1.0f);
-					ImGui::SliderFloat("light_direction.y", &this->light_direction.y, -1.0f, 1.0f);
-					ImGui::SliderFloat("light_direction.z", &this->light_direction.z, -1.0f, 1.0f);
-					ImGui::SliderFloat("light_direction.w", &this->light_direction.w, -1.0f, 1.0f);
-					ImGui::TreePop();
-				}
-
-				/*if (ImGui::BeginTabBar("testBar"))
-				{
-					for (int i = 0; i < 100; i++)
-					{
-						if (ImGui::BeginTabItem(std::to_string(i).data()))
+						if (ImGui::TreeNode("StepParameter"))
 						{
+							ImGui::Text("speed.x:%f", speed.x);
+							//ImGui::SliderFloat("speed", &backstepS, 0.0f, 500.0f);
+							//ImGui::SliderFloat("down", &backstepD, 0.0f, 500.0f);
+							//ImGui::SliderFloat("air_speed", &stepspeed, 0.0f, 500.0f);
+							//ImGui::SliderFloat("air_down", &stepD, 0.0f, 500.0f);
+							//ImGui::SliderFloat("passive_speed_X", &passive_speed.x, 0.0f, 500.0f);
+							//ImGui::SliderFloat("passive_speed_Y", &passive_speed.y, 0.0f, 500.0f);
+							//ImGui::SliderFloat("passive_break", &passive_brake, 0.0f, 500.0f);
+							ImGui::TreePop();
+						}
+						if (ImGui::TreeNode("JumpParameter"))
+						{
+							static float s = 0.0f;
+
+
+							if (jumpflag)
 							{
-								ImGui::Text(std::to_string(i).data());
-								ImGui::EndTabItem();
+								if (!max_jump_flag)
+								{
+									s = 0.0f;
+								}
+								s = min(speed.y, s);
 							}
+
+							ImGui::Checkbox("jump_flug", &jumpflag);
+							ImGui::Checkbox("max_jump_flug", &max_jump_flag);
+							ImGui::Text("speed.y:%f", speed.y);
+							ImGui::Text("speed_X:%f", speed_X.speed);
+							ImGui::Text("speed_Y:%f", speed_Y.speed);
+							ImGui::Text("down_force:%f", down_force);
+							ImGui::Text("s:%f", s);
+							//ImGui::SliderFloat("jump_max", &jump_max, 0.0f, 500.0f);
+							ImGui::SliderFloat("down_force", &down_force, 0.0f, 1000.0f);
+							//ImGui::SliderFloat("high_jump_max", &high_jump_max, 0.0f, 1000.0f);
+							//ImGui::SliderFloat("jump_speed", &jump_speed, 0.0f, 5000.0f);
+							//ImGui::SliderFloat("high_jump_speed", &high_jump_speed, 0.0f, 5000.0f);
+							ImGui::TreePop();
 						}
-					}
-					ImGui::EndTabBar();
-				}*/
-
-				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-
-				if (ImGui::TreeNode(u8"当たり判定"))
-				{
-					if (!atk.empty())
-					{
-						for (int i = 0; i < atk.size(); i++)
+						if (ImGui::TreeNode("Light"))
 						{
-							ImGui::InputFloat(".x", &atk[i].pos.x, 0.01f, 0.01f);
-							ImGui::InputFloat(".x", &atk[i].pos.y, 0.01f, 0.01f);
+							ImGui::SliderFloat("light_direction.x", &this->light_direction.x, -1.0f, 1.0f);
+							ImGui::SliderFloat("light_direction.y", &this->light_direction.y, -1.0f, 1.0f);
+							ImGui::SliderFloat("light_direction.z", &this->light_direction.z, -1.0f, 1.0f);
+							ImGui::SliderFloat("light_direction.w", &this->light_direction.w, -1.0f, 1.0f);
+							ImGui::TreePop();
 						}
+
+						/*if (ImGui::BeginTabBar("testBar"))
+						{
+							for (int i = 0; i < 100; i++)
+							{
+								if (ImGui::BeginTabItem(std::to_string(i).data()))
+								{
+									{
+										ImGui::Text(std::to_string(i).data());
+										ImGui::EndTabItem();
+									}
+								}
+							}
+							ImGui::EndTabBar();
+						}*/
+
+						ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+						if (ImGui::TreeNode(u8"当たり判定"))
+						{
+							if (!atk.empty())
+							{
+								for (int i = 0; i < atk.size(); i++)
+								{
+									ImGui::InputFloat(".x", &atk[i].pos.x, 0.01f, 0.01f);
+									ImGui::InputFloat(".x", &atk[i].pos.y, 0.01f, 0.01f);
+								}
+							}
+							ImGui::TreePop();
+						}
+						ImGui::EndTabItem();
 					}
-					ImGui::TreePop();
+					//当たり判定調整関数
+					DrawDEBUGHitParam();
+					ImGui::EndTabBar();
 				}
 				ImGui::EndTabItem();
 			}
@@ -1292,6 +1303,7 @@ void Player::DrawDEBUG(
 																ImGui::SliderFloat(u8"ガードバックY", &attack_list[list].attack_single[sin].parameter[para].param.guard_back.y, -100.0f, 100.0f);
 																ImGui::SliderFloat(u8"ガード削り", &attack_list[list].attack_single[sin].parameter[para].param.guard_shaving, 0.0f, 100.0f);
 																ImGui::SliderFloat(u8"ガード硬直", &attack_list[list].attack_single[sin].parameter[para].param.guard_timer, 0.0f, 10.0f);
+																ImGui::SliderFloat(u8"コンボ補正値", &attack_list[list].attack_single[sin].parameter[para].param.combo_correction, 0.0f, 10.0f);
 
 																if (!attack_list[list].attack_single[sin].parameter[para].gaugeout)
 																{

@@ -1773,7 +1773,172 @@ void Neru::TrackDash(float decision, float elapsed_time)
 
 void Neru::ExtendATK(float elapsed_time)
 {
-	AttackDefault(elapsed_time);
+	//後隙が設定された後はこの関数には入らない
+	if (later > -1 && later < target_max)
+	{
+		return;
+	}
+
+	//発生フレームになるまで回す
+	if (fream < target_max)
+	{
+		//speed_Y.Set(0.0f);
+		//攻撃発生の結果を保存する
+		hit_result = HitResult::NOT_OCCURRENCE;
+		fream -= elapsed_time;
+
+		//攻撃発生まで無敵
+		HitBoxTransition(HitBoxState::INVINCIBLE);
+
+	}
+	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
+
+	int now_at_num = attack_list[now_at_list].now_attack_num;
+	//発生フレームになったら攻撃判定を生成する
+	if (fream < 0.0f)
+	{
+		//攻撃が発生したら無敵解除
+		HitBoxTransition(HitBoxState::NOGUARD);
+
+		//攻撃発生の結果を保存する
+		hit_result = HitResult::NONE;
+		//前進しないようにする
+		speed_X.Set(0.0f);
+
+		//int attack_num = attack_list[real].now_attack_num;
+		anim_ccodinate = ac_attack[now_at_list].timer;
+		if (attack_list[now_at_list].now_attack_num == 0)
+		{
+			//初回の攻撃のみアニメーションを変える
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
+			}
+			else
+			{
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
+			}
+
+			//エフェクト生成
+			if (attack_list[now_at_list].effect_param.effect_kind != EffectKind::NONE)
+			{
+				if (attack_list[now_at_list].effect_param.rightORleft)
+				{
+					//プレイヤーの角度を依存させる場合
+					YRGetEffect().PlayEffect(
+						attack_list[now_at_list].effect_param.effect_kind, attack_list[now_at_list].handle,
+						DirectX::XMFLOAT3(pos.x + Getapply(attack_list[now_at_list].effect_param.distance.x), pos.y + attack_list[now_at_list].effect_param.distance.y, pos.z + attack_list[now_at_list].effect_param.distance.z),
+						attack_list[now_at_list].effect_param.scale.GetDXFLOAT3(), attack_list[now_at_list].effect_param.axis.GetDXFLOAT3(), attack_list[now_at_list].effect_param.angle * rightOrleft);
+				}
+				else
+				{
+					//依存させない場合
+					YRGetEffect().PlayEffect(
+						attack_list[now_at_list].effect_param.effect_kind, attack_list[now_at_list].handle,
+						DirectX::XMFLOAT3(pos.x + Getapply(attack_list[now_at_list].effect_param.distance.x), pos.y + attack_list[now_at_list].effect_param.distance.y, pos.z + attack_list[now_at_list].effect_param.distance.z),
+						attack_list[now_at_list].effect_param.scale.GetDXFLOAT3(), attack_list[now_at_list].effect_param.axis.GetDXFLOAT3(), attack_list[now_at_list].effect_param.angle);
+				}
+			}
+		}
+		if (attack_list[now_at_list].speed_on)
+		{
+			//攻撃に速度を付与する場合
+			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos, attack_list[now_at_list].speed);
+		}
+		else
+		{
+			//付与しない場合
+			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos);
+		}
+		fream = non_target;
+
+		//持続時間を設定
+		timer = attack_list[now_at_list].attack_single[now_at_num].parameter[0].timer;
+
+		now_at_num = attack_list[now_at_list].now_attack_num;
+		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+	}
+
+
+
+	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
+	if (!atk.empty())
+	{
+		for (auto& a : atk)
+		{
+			if (knock)
+			{
+				a.parameter.knockback = 0.0f;
+				a.knock_start = false;
+			}
+			if (a.knock_start)
+			{
+				PosKnockPlus(a.parameter.knockback);
+				a.parameter.knockback = 0.0f;
+				knock = true;
+				a.knock_start = false;
+				//上方向への力を設定する
+			}
+		}
+	}
+
+	if (timer > 0.0f && timer < target_max)
+	{
+		//持続フレームを減らしていく
+		timer -= elapsed_time;
+	}
+
+	//if (atk.empty())
+	//{
+	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
+	//	return;
+	//}
+	//エフェクト更新
+	YRGetEffect().SetLocation(attack_list[now_at_list].effect_param.effect_kind, attack_list[now_at_list].handle, DirectX::XMFLOAT3(pos.x + Getapply(attack_list[now_at_list].effect_param.distance.x), pos.y + attack_list[now_at_list].effect_param.distance.y, pos.z + attack_list[now_at_list].effect_param.distance.z));
+
+
+	//持続時間が全て終了したことを確認する
+	if (timer < 0.0f)
+	{
+		////攻撃が全て終了したことを確認する
+		//if (AttackEndCheck())
+		//{
+			//まだ攻撃が残っていれば次の攻撃に移る
+		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
+		{
+			fream = attack_list[now_at_list].attack_single[attack_list[now_at_list].now_attack_num].fream;
+			//持続フレームを初期化
+			timer = non_target;
+		}
+		else
+		{
+			//ない場合は後隙に移行する
+			//攻撃番号を初期化
+			attack_list[now_at_list].now_attack_num = 0;
+
+			//エフェクト消去
+			YRGetEffect().StopEffect(attack_list[now_at_list].effect_param.effect_kind, attack_list[now_at_list].handle);
+
+			//後隙を設定
+			later = attack_list[now_at_list].later;
+			//アニメーション速度を指定
+			anim_ccodinate = ac_attack[now_at_list].later;
+			HitBoxTransition(HitBoxState::NOGUARD);
+			//持続フレームを初期化
+			timer = non_target;
+			//描画をセット
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::LATER));
+			}
+			else
+			{
+				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::LATER));
+			}
+			//行動終了フラグをオンに
+			finish = true;
+		}
+	}
 }
 
 
@@ -1958,6 +2123,10 @@ void Neru::SpecialAttack(float elapsed_time)
 						attack_list[now_at_list].effect_param.scale.GetDXFLOAT3(), attack_list[now_at_list].effect_param.axis.GetDXFLOAT3(), attack_list[now_at_list].effect_param.angle);
 				}
 			}
+			//衝撃波エフェクト生成
+			YRGetEffect().PlayEffect(EffectKind::LASER_SHOCK,
+				DirectX::XMFLOAT3(pos.x + Getapply(attack_list[now_at_list].effect_param.distance.x), pos.y + attack_list[now_at_list].effect_param.distance.y, pos.z + attack_list[now_at_list].effect_param.distance.z),
+				attack_list[now_at_list].effect_param.scale.GetDXFLOAT3(), attack_list[now_at_list].effect_param.axis.GetDXFLOAT3(), attack_list[now_at_list].effect_param.angle* rightOrleft);
 		}
 
 		attack_list[now_at_list].SetAttack(&atk, rightOrleft,pos);
@@ -1965,7 +2134,7 @@ void Neru::SpecialAttack(float elapsed_time)
 		GetSound().SEStop(SEKind::INTRO_WIND);
 		GetSound().SEStop(SEKind::SPECIAL_ATTACK2);
 
-		YRGetEffect().StopEffect(EffectKind::WIND);
+		//YRGetEffect().StopEffect(EffectKind::WIND);
 
 		//SE再生
 		GetSound().SESinglePlay(SEKind::SPECIAL_ATTACK3);
@@ -2032,9 +2201,22 @@ void Neru::SpecialAttack(float elapsed_time)
 			fream = attack_list[now_at_list].attack_single[attack_list[now_at_list].now_attack_num].fream;
 			//持続フレームを初期化
 			timer = non_target;
+
+			if (attack_list[now_at_list].now_attack_num == attack_list[now_at_list].attack_max- 1)
+			{
+				//最終段の攻撃なら
+				//衝撃波エフェクト生成
+				YRGetEffect().PlayEffect(EffectKind::LASER_SHOCK,
+					DirectX::XMFLOAT3(pos.x + Getapply(attack_list[now_at_list].effect_param.distance.x), pos.y + attack_list[now_at_list].effect_param.distance.y, pos.z + attack_list[now_at_list].effect_param.distance.z),
+					attack_list[now_at_list].effect_param.scale.GetDXFLOAT3(), attack_list[now_at_list].effect_param.axis.GetDXFLOAT3(), attack_list[now_at_list].effect_param.angle* rightOrleft);
+			}
 		}
 		else
 		{
+
+			//レーザーエフェクトを止める
+			YRGetEffect().StopEffect(attack_list[now_at_list].effect_param.effect_kind, attack_list[now_at_list].handle);
+
 			lumi_material = Model::Material_Attribute::NONE;
 			//ない場合は後隙に移行する
 			//攻撃番号を初期化

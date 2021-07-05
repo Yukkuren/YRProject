@@ -750,8 +750,8 @@ public:
 	virtual void ComboUpdate();					//コンボ更新。ステートを設定する
 
 	virtual void ComboX(float decision, float elapsed_time);	//Xボタンコンボ関数
-	virtual void ComboY(float decision, float elapsed_time);	//Xボタンコンボ関数
-	virtual void ComboB(float decision, float elapsed_time);	//Xボタンコンボ関数
+	virtual void ComboY(float decision, float elapsed_time);	//Yボタンコンボ関数
+	virtual void ComboB(float decision, float elapsed_time);	//Bボタンコンボ関数
 
 
 	virtual void AttackDefault(float elapsed_time);//特殊な記述のある攻撃以外はこの関数を使用する
@@ -768,6 +768,8 @@ public:
 	virtual void A_Thu_Lhurf(float elapsed_time);
 	virtual void A_Kyo_Lhurf(float elapsed_time);
 
+
+	//virtual void
 
 public:
 

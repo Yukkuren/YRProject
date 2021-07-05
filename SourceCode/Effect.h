@@ -33,6 +33,7 @@ enum class EffectKind : int
 	NERU_TRACK,			//Neru用のホーミングエフェクト
 	LASER_CHARGE,		//レーザーチャージ(赤)
 	LASER,				//レーザー本体(赤)
+	LASER_SHOCK,		//レーザー衝撃波
 	END,
 };
 

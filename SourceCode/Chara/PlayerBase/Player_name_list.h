@@ -47,7 +47,7 @@ public:
 		u8"special",
 		u8"special",	//Œã’´•KE
 		u8"special",	//‘¦€‹Z
-		u8"special",	//–³“GUŒ‚
+		u8"reversal",	//–³“GUŒ‚
 		u8"thu",
 		u8"kyo",
 		u8"Rhurf",		//‹ó’†‘Oã•KE
@@ -91,7 +91,7 @@ public:
 	//ƒfƒoƒbƒO—p
 	std::array<std::string, scastI(AttackState::ATTACK_END)> attack_name_list =
 	{
-		u8"UŒ‚–³‚µ()‚Ì’†g‚ÍUŒ‚“à—e",
+		u8"’…’n‚È‚Ç",
 		u8"ã",
 		u8"’†(‰º’†UŒ‚)",
 		u8"‰º‹­(’†‚ÌŸ‚Éo‚é‹­UŒ‚)",
