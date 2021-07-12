@@ -18,6 +18,7 @@ enum class HitBoxState : int
 	UP_INVINCIBLE,		//上段攻撃に対して無敵
 	PROJECTILE_ARMOR,	//飛び道具に対してアーマー
 	SLIDE,				//滑っている状態
+	BURST_INVINCIBLE,	//バースト無敵
 	END,
 };
 

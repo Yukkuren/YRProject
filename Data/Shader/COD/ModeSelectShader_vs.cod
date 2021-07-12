@@ -21,13 +21,30 @@
 // TEXCOORD                 0   xy          1     NONE   float   xy  
 //
 vs_5_0
-dcl_globalFlags refactoringAllowed
+dcl_globalFlags refactoringAllowed | skipOptimization
 dcl_input v0.xyz
 dcl_input v2.xy
 dcl_output_siv o0.xyzw, position
 dcl_output o1.xy
-mov o0.xyz, v0.xyzx
-mov o0.w, l(1.000000)
-mov o1.xy, v2.xyxx
+dcl_temps 2
+//
+// Initial variable locations:
+//   v0.x <- input.Position.x; v0.y <- input.Position.y; v0.z <- input.Position.z; 
+//   v1.x <- input.Normal.x; v1.y <- input.Normal.y; v1.z <- input.Normal.z; 
+//   v2.x <- input.Tex.x; v2.y <- input.Tex.y; 
+//   v3.x <- input.Color.x; v3.y <- input.Color.y; v3.z <- input.Color.z; v3.w <- input.Color.w; 
+//   o1.x <- <main return value>.fragCoord.x; o1.y <- <main return value>.fragCoord.y; 
+//   o0.x <- <main return value>.position.x; o0.y <- <main return value>.position.y; o0.z <- <main return value>.position.z; o0.w <- <main return value>.position.w
+//
+#line 11 "D:\ゲーム制作\YRProject\SourceCode\Shader\ModeSelect\ModeSelectShader_vs.hlsl"
+mov r0.xy, v2.xyxx  // r0.x <- output.fragCoord.x; r0.y <- output.fragCoord.y
+
+#line 12
+mov r1.xyz, v0.xyzx  // r1.x <- output.position.x; r1.y <- output.position.y; r1.z <- output.position.z
+mov r1.w, l(1.000000)  // r1.w <- output.position.w
+
+#line 14
+mov o0.xyzw, r1.xyzw
+mov o1.xy, r0.xyxx
 ret 
-// Approximately 4 instruction slots used
+// Approximately 6 instruction slots used

@@ -49,10 +49,12 @@ enum class AttackKind : int
 	LOCK,			//ロック技
 	PROJECTILE,		//飛び道具
 	TRACK,			//ホーミングダッシュ
-	NO_TO_OFFSET,	//相殺しない攻撃
+	NO_TO_OFFSET,	//相殺しない攻撃(同じ攻撃なら相殺)
 	NO_TO_OFFSET_UP,//上段攻撃と相殺しない
 	DOWN_ATTACK,	//ダウン攻撃
 	SLID_HIT_MIDDLE,//スライド中に当たる通常攻撃
+	DOWN_NO_TO_OFF,	//相殺しないダウン攻撃
+	NO_TO_OFF_ALL,	//全てと相殺しない攻撃
 	END,
 };
 

@@ -6,7 +6,7 @@
 #include <algorithm>
 #include "../../Game//World.h"
 #include "../../Effect.h"
-#include "../../YRSound.h"
+//#include "../../YRSound.h"
 #include "../PlayerBase/Player_name_list.h"
 
 //-----------------------------------------------------------------
@@ -691,7 +691,7 @@ void Knight::FaceAnimation(float elapsed_time)
 {
 	switch (face_anim)
 	{
-	case Knight::FaceAnim::NORMAL:
+	case FaceAnim::NORMAL:
 		eye_offset = face_eye_offset[scastI(FaceEye_Num::NORMAL_EYE)];
 		//mouth_offset = face_mouth_offset[scastI(FaceMouth_Num::NORMAL_MOUSE)];
 		face_mouth_num = FaceMouth_Num::NORMAL_MOUSE;
@@ -702,7 +702,7 @@ void Knight::FaceAnimation(float elapsed_time)
 			face_wink_interval_timer = 0.0f;
 		}
 		break;
-	case Knight::FaceAnim::NORMAL_LIP_SYNC:
+	case FaceAnim::NORMAL_LIP_SYNC:
 		FaceLipSync(elapsed_time);
 		face_wink_interval_timer += elapsed_time;
 		if (face_wink_interval_timer > wink_interval)
@@ -713,26 +713,26 @@ void Knight::FaceAnimation(float elapsed_time)
 			}
 		}
 		break;
-	case Knight::FaceAnim::WINK:
+	case FaceAnim::WINK:
 		FaceWink(elapsed_time);
 		break;
-	case Knight::FaceAnim::Damage:
+	case FaceAnim::Damage:
 		eye_offset = face_eye_offset[scastI(FaceEye_Num::KAOMOJI)];
 		face_mouth_num = FaceMouth_Num::POKAN;
 		break;
-	case Knight::FaceAnim::YARUKI:
+	case FaceAnim::YARUKI:
 		eye_offset = face_eye_offset[scastI(FaceEye_Num::TURI)];
 		face_mouth_num = FaceMouth_Num::NORMAL_MOUSE;
 		break;
-	case Knight::FaceAnim::KOUHUN:
+	case FaceAnim::KOUHUN:
 		eye_offset = face_eye_offset[scastI(FaceEye_Num::KIRAME)];
 		face_mouth_num = FaceMouth_Num::OOGUTI;
 		break;
-	case Knight::FaceAnim::TOZI:
+	case FaceAnim::TOZI:
 		eye_offset = face_eye_offset[scastI(FaceEye_Num::CLOSE)];
 		face_mouth_num = FaceMouth_Num::TOZI;
 		break;
-	case Knight::FaceAnim::YEAH:
+	case FaceAnim::YEAH:
 		eye_offset = face_eye_offset[scastI(FaceEye_Num::TURI)];
 		face_mouth_num = FaceMouth_Num::OOGUTI;
 		break;
@@ -935,13 +935,14 @@ void Knight::AttackDetailsSet(const AttackState& attack_state)
 		ChangeFace(FaceAnim::KOUHUN);
 		break;
 	case AttackState::SPECIAL_ATTACK:
-		YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
+		//YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
+		special_event.Init(now_player);
 		camera_state_knight = CAMERA_STATE_KNIGHT::FIRST;
-		ChangeFace(FaceAnim::KOUHUN);
+		//ChangeFace(FaceAnim::KOUHUN);
 		lumi_material= Model::Material_Attribute::SWORD;
-		GetSound().SESinglePlay(SEKind::SPECIAL_ATTACK);
-		YRGetEffect().PlayEffect(EffectKind::WIND, DirectX::XMFLOAT3(pos.x, pos.y - 5.0f, pos.z), DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
-		YRGetEffect().PlayEffect(EffectKind::WIND, DirectX::XMFLOAT3(pos.x, pos.y - 5.0f, pos.z), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+		//GetSound().SESinglePlay(SEKind::SPECIAL_ATTACK);
+		//YRGetEffect().PlayEffect(EffectKind::WIND, DirectX::XMFLOAT3(pos.x, pos.y - 5.0f, pos.z), DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
+		//YRGetEffect().PlayEffect(EffectKind::WIND, DirectX::XMFLOAT3(pos.x, pos.y - 5.0f, pos.z), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
 		cut_in_timer = 0.0f;
 		break;
 	case AttackState::DESIRE_SPECIAL:
@@ -949,12 +950,18 @@ void Knight::AttackDetailsSet(const AttackState& attack_state)
 	case AttackState::DESIRE_METEOR:
 		break;
 	case AttackState::EXTENDATK:
+		speed_X.Set(0.0f);
+		ChangeFace(FaceAnim::YEAH);
 		break;
 	case AttackState::JAKU_THU:
 		ChangeFace(FaceAnim::YEAH);
 		break;
 	case AttackState::JAKU_KYO:
 		ChangeFace(FaceAnim::YEAH);
+		break;
+	case AttackState::BURST:
+	case AttackState::COMBOBURST:
+		ChangeFace(FaceAnim::TOZI);
 		break;
 	case AttackState::ATTACK_END:
 		break;

@@ -158,7 +158,7 @@ void Neru::LoadData(PLCOLOR color_number)
 
 		//Lファイルがあるか確認する
 		{
-			std::ifstream ifs_L(file_name_R.c_str());
+			std::ifstream ifs_L(file_name_L.c_str());
 
 			if (ifs_L.is_open())
 			{

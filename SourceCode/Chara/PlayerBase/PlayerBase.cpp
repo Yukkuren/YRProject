@@ -97,6 +97,8 @@ void Player::Init(YR_Vector3 InitPos)
 
 	CharaInit();
 
+	special_event.Init();
+
 	//関数ポインタ登録
 	if (!attack_func.empty())attack_func.clear();
 	attack_func.resize(scastI(AT_Function_List::AT_END));
@@ -118,7 +120,8 @@ void Player::Init(YR_Vector3 InitPos)
 	attack_func[scastI(AT_Function_List::AttackSlidRollTurn)] = &Player::AttackSlidRollTurn;
 	attack_func[scastI(AT_Function_List::AttackTrack)] = &Player::AttackTrack;
 	attack_func[scastI(AT_Function_List::AttackTrackRoll)] = &Player::AttackTrackRoll;
-	attack_func[scastI(AT_Function_List::AttackSpecial)] = &Player::AttackSpecial;
+	attack_func[scastI(AT_Function_List::AttackSpecial_INV)] = &Player::AttackSpecial_INV;
+	attack_func[scastI(AT_Function_List::AttackBurst)] = &Player::AttackBurst;
 }
 
 
@@ -187,6 +190,7 @@ void Player::Update(float decision, float elapsed_time)
 	case ActState::KNOCK:
 		//攻撃を受けてのけぞる
 		KnockUpdate(elapsed_time);
+		AttackInput();
 		break;
 	case ActState::SLAM:
 		//叩きつけられ状態
@@ -449,22 +453,27 @@ void Player::AttackInput()
 			if (now_com == command)
 			{
 				//指定したコマンドが同じで空中、地上の条件も同じだった場合
-				if (ground)
+
+				if (GroundCheck(attack_list[list].ground_on))
 				{
-					//現在地上にいる場合は攻撃が空中専用じゃない場合は行う
-					if (attack_list[list].ground_on < Ground_C::GROUND)
-					{
-						continue;
-					}
+					continue;
 				}
-				else
-				{
-					//現在空中にいる場合は攻撃が地上専用じゃない場合は行う
-					if (attack_list[list].ground_on == Ground_C::GROUND)
-					{
-						continue;
-					}
-				}
+				//if (ground)
+				//{
+				//	//現在地上にいる場合は攻撃が空中専用じゃない場合は行う
+				//	if (attack_list[list].ground_on < Ground_C::GROUND)
+				//	{
+				//		continue;
+				//	}
+				//}
+				//else
+				//{
+				//	//現在空中にいる場合は攻撃が地上専用じゃない場合は行う
+				//	if (attack_list[list].ground_on == Ground_C::GROUND)
+				//	{
+				//		continue;
+				//	}
+				//}
 
 				if (attack_list[list].squat_on)
 				{
@@ -563,6 +572,12 @@ void Player::AttackInput()
 					//next = scastI(attack_list[list].next_attack);
 				}
 
+				//何もしない関数なら設定を行わない
+				if (attack_list[real].function_num == AT_Function_List::ATTACK_NONE)
+				{
+					attack_state = AttackState::NONE;
+					continue;
+				}
 
 				//攻撃を決定する
 				//pad->com_list.Reset();
@@ -639,6 +654,68 @@ void Player::AttackInput()
 		}
 	}
 }
+
+
+
+
+
+
+
+bool Player::GroundCheck(Ground_C ground_c)
+{
+	//攻撃が出せるかどうか(位置、状態)を判定して返す
+	//※trueを返す場合はcontinueされるので発動できない攻撃という事になる
+
+	//のけぞり中
+	if (knocktimer > 0.0f && knocktimer < target_max)
+	{
+		//のけぞり中なら発動可能
+		if (ground_c == Ground_C::KNOCK)
+		{
+			return false;
+		}
+		//それ以外なら全て発動不可
+		return true;
+	}
+
+	//のけぞり中か否か
+	if (ground_c == Ground_C::KNOCK)
+	{
+		//のけぞり中
+		if (knocktimer > 0.0f && knocktimer < target_max)
+		{
+			//のけぞり中なら発動可能
+			return false;
+		}
+		//それ以外なら全て発動不可
+		return true;
+	}
+
+
+	//地上か空中か
+	if (ground)
+	{
+		//現在地上にいる場合は攻撃が空中専用じゃない場合は行う
+		if (ground_c < Ground_C::GROUND)
+		{
+			return true;
+		}
+		return false;
+	}
+	else
+	{
+		//現在空中にいる場合は攻撃が地上専用じゃない場合は行う
+		if (ground_c == Ground_C::GROUND)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	return true;
+}
+
+
 
 
 
@@ -2324,6 +2401,7 @@ void Player::JumpUpdate(float decision, float elapsed_time)
 		//角度を元に戻す
 		angle.y = 0.0f;
 		angle.z = 0.0f;
+		fream = non_target;
 		timer = non_target;
 		//着地音を鳴らす
 		GetSound().SESinglePlay(SEKind::LANDING);
@@ -2579,33 +2657,27 @@ void Player::KnockUpdate(float elapsed_time)
 	{
 		pos.y = POS_Y;
 		//のけぞり中に地面についた場合
-		knocktimer = non_target;
-		combo_count = 0;
-		for (int i = 0; i < hit.size(); i++)
-		{
-			hit[i].param.HB_timer = 0.0f;
-			hit[i].param.hitback = YR_Vector3(0.0f, 0.0f);
-		}
-		if (pad->x_input[scastI(PAD::STICK_D)] > 0 ||
-			pad->x_input[scastI(PAD::STICK_LDown)] > 0 ||
-			pad->x_input[scastI(PAD::STICK_RDown)] > 0)
-		{
-			//スティックの下入力がある場合は落下状態にする
-			act_state = ActState::DOWN;
-			speed.y = 0.0f;
-			GetSound().SESinglePlay(SEKind::SLAM);
-			//描画をセット
-			if (rightOrleft > 0)
-			{
-				anim->NodeChange(model_motion.model_R_Act[scastI(ActState::SLAM)]);
-			}
-			else
-			{
-				anim->NodeChange(model_motion.model_L_Act[scastI(ActState::SLAM)]);
-			}
-			anim_ccodinate = ac_act[scastI(act_state)].timer;
-		}
-		else
+		KnockReset();
+		//if (pad->x_input[scastI(PAD::STICK_D)] > 0 ||
+		//	pad->x_input[scastI(PAD::STICK_LDown)] > 0 ||
+		//	pad->x_input[scastI(PAD::STICK_RDown)] > 0)
+		//{
+		//	//スティックの下入力がある場合は落下状態にする
+		//	act_state = ActState::DOWN;
+		//	speed.y = 0.0f;
+		//	GetSound().SESinglePlay(SEKind::SLAM);
+		//	//描画をセット
+		//	if (rightOrleft > 0)
+		//	{
+		//		anim->NodeChange(model_motion.model_R_Act[scastI(ActState::SLAM)]);
+		//	}
+		//	else
+		//	{
+		//		anim->NodeChange(model_motion.model_L_Act[scastI(ActState::SLAM)]);
+		//	}
+		//	anim_ccodinate = ac_act[scastI(act_state)].timer;
+		//}
+		//else
 		{
 			speed.x = 0.0f;
 			speed.y = 0.0f;
@@ -2643,6 +2715,7 @@ void Player::KnockUpdate(float elapsed_time)
 				anim->PlayAnimation(0, false);
 				anim_ccodinate = ac_act[scastI(act_state)].timer;
 			}
+			//KnockReset();
 		}
 		return;
 	}
@@ -2652,7 +2725,7 @@ void Player::KnockUpdate(float elapsed_time)
 		//のけぞり時間が経過した
 
 		//コンボカウントを0にする
-		combo_count = 0;
+		//combo_count = 0;
 		if (ground)
 		{
 			if (act_state != ActState::WAIT)
@@ -2756,14 +2829,31 @@ void Player::KnockUpdate(float elapsed_time)
 			}
 			anim_ccodinate = ac_act[scastI(act_state)].timer;
 		}
-		knocktimer = non_target;
-		for (int i = 0; i < hit.size(); i++)
-		{
-			hit[i].param.HB_timer = 0.0f;
-			hit[i].param.hitback = YR_Vector3(0.0f, 0.0f);
-		}
+		KnockReset();
 	}
 }
+
+
+
+
+
+
+
+
+void Player::KnockReset()
+{
+	//のけぞり状態から元に戻る
+	knocktimer = non_target;
+	combo_count = 0;
+	for (int i = 0; i < hit.size(); i++)
+	{
+		hit[i].param.HB_timer = 0.0f;
+		hit[i].param.hitback = YR_Vector3(0.0f, 0.0f);
+	}
+}
+
+
+
 
 
 

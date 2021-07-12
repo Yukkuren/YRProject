@@ -141,7 +141,7 @@ bool Player::AttackLoad()
 
 	for (int list = 0; list < attack_list.size(); list++)
 	{
-		/*if (list == scastI(AttackState::NORMAL_ATTACK_END))
+		/*if (list == scastI(AttackState::BURST)|| list == scastI(AttackState::COMBOBURST))
 		{
 			continue;
 		}*/
@@ -284,7 +284,7 @@ bool Player::AttackLoad()
 	std::ifstream anim_ifs(Anim_level);
 	for (int list = 0; list < ac_attack.size(); list++)
 	{
-		/*if (list == scastI(AttackState::NORMAL_ATTACK_END))
+		/*if (list == scastI(AttackState::BURST) || list == scastI(AttackState::COMBOBURST))
 		{
 			continue;
 		}*/
@@ -419,6 +419,10 @@ bool Player::AttackLoad()
 		}
 		for (int atk = 0; atk < hitparam_list[list].attack_parameter.size(); atk++)
 		{
+			/*if (atk == scastI(AttackState::BURST) || atk == scastI(AttackState::COMBOBURST))
+			{
+				continue;
+			}*/
 			//攻撃中当たり判定読み込み
 			hit_ifs >> hitparam_list[list].attack_parameter[atk].distance.x;
 			hit_ifs >> hitparam_list[list].attack_parameter[atk].distance.y;
@@ -1015,6 +1019,16 @@ void Player::DrawDEBUG(
 							ImGui::TreePop();
 						}
 
+						ImGui::Text(u8"向いている方向："); ImGui::SameLine();
+						if (rightOrleft > 0)
+						{
+							ImGui::Text(u8"右");
+						}
+						else
+						{
+							ImGui::Text(u8"左");
+						}
+
 						/*if (ImGui::BeginTabBar("testBar"))
 						{
 							for (int i = 0; i < 100; i++)
@@ -1082,11 +1096,11 @@ void Player::DrawDEBUG(
 								{
 									int real = scastI(attack_list[list].real_attack);
 									int pad = scastI(attack_list[list].linkage_button);
-									ImGui::SliderInt(u8"ボタン", &pad, 0, scastI(PAD::PAD_END));
+									ImGui::SliderInt(u8"ボタン", &pad, 0, scastI(PAD::PAD_END)-1);
 									attack_list[list].linkage_button = static_cast<PAD>(pad);
 									ImGui::Text(GetName().pad_name_list[pad].c_str());
 									int com = scastI(attack_list[list].linkage_command);
-									ImGui::SliderInt(u8"コマンド", &com, 0, scastI(Command::LHURF));
+									ImGui::SliderInt(u8"コマンド", &com, 0, scastI(Command::END)-1);
 									attack_list[list].linkage_command = static_cast<Command>(com);
 									ImGui::Text(GetName().command_name_list[com].c_str());
 									int ground = scastI(attack_list[list].ground_on);
@@ -1490,7 +1504,11 @@ void Player::DrawDEBUG(
 
 		ImGui::EndChild();
 		ImGui::End();
+
+		std::string sp_st = std::to_string(now_player) + std::string(u8" P : ") + GetName().chara_name_list[scastI(this->chara_name)] + std::string(u8" : 超必殺イベント");
+		special_event.DrawTimeLine(sp_st,chara_name);
 	}
+
 
 #endif // USE_IMGUI
 }

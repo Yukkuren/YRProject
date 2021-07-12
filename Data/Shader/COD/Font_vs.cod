@@ -21,15 +21,35 @@
 // COLOR                    0   xyzw        2     NONE   float   xyzw
 //
 vs_5_0
-dcl_globalFlags refactoringAllowed
+dcl_globalFlags refactoringAllowed | skipOptimization
 dcl_input v0.xyzw
 dcl_input v1.xyzw
 dcl_input v2.xy
 dcl_output_siv o0.xyzw, position
 dcl_output o1.xy
 dcl_output o2.xyzw
-mov o0.xyzw, v0.xyzw
-mov o1.xy, v2.xyxx
-mov o2.xyzw, v1.xyzw
+dcl_temps 3
+//
+// Initial variable locations:
+//   v0.x <- position.x; v0.y <- position.y; v0.z <- position.z; v0.w <- position.w; 
+//   v1.x <- color.x; v1.y <- color.y; v1.z <- color.z; v1.w <- color.w; 
+//   v2.x <- texcoord.x; v2.y <- texcoord.y; 
+//   o2.x <- <main return value>.color.x; o2.y <- <main return value>.color.y; o2.z <- <main return value>.color.z; o2.w <- <main return value>.color.w; 
+//   o1.x <- <main return value>.texcoord.x; o1.y <- <main return value>.texcoord.y; 
+//   o0.x <- <main return value>.position.x; o0.y <- <main return value>.position.y; o0.z <- <main return value>.position.z; o0.w <- <main return value>.position.w
+//
+#line 11 "D:\ゲーム制作\YRProject\SourceCode\Shader\Font\Font_vs.hlsl"
+mov r0.xyzw, v0.xyzw  // r0.x <- vout.position.x; r0.y <- vout.position.y; r0.z <- vout.position.z; r0.w <- vout.position.w
+
+#line 12
+mov r1.xyzw, v1.xyzw  // r1.x <- vout.color.x; r1.y <- vout.color.y; r1.z <- vout.color.z; r1.w <- vout.color.w
+
+#line 13
+mov r2.xy, v2.xyxx  // r2.x <- vout.texcoord.x; r2.y <- vout.texcoord.y
+
+#line 15
+mov o0.xyzw, r0.xyzw
+mov o2.xyzw, r1.xyzw
+mov o1.xy, r2.xyxx
 ret 
-// Approximately 4 instruction slots used
+// Approximately 7 instruction slots used

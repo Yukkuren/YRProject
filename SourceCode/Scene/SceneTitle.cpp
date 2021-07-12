@@ -61,6 +61,8 @@ void SceneTitle::Init()
 	vs_mode = VS_MODE::CPU;
 	state = STATE::HOME;
 
+	testevent.clear();
+
 	//タイトルのBGMを再生する
 	GetSound().BGMPlay(BGMKind::TITLE);
 }
@@ -923,6 +925,28 @@ void SceneTitle::Draw(float elapsed_time)
 		ImGui::Text("time : %f",timer);
 		ImGui::Text("load_state : %d", load_state);
 	}
+
+	/*ImGui::Begin("timeline");
+	static int size = 0;
+	if (ImGui::Button("setEvent"))
+	{
+		size++;
+		testevent.resize(size);
+		testevent.back() = 0.0f;
+	}
+	if (ImGui::BeginTimeline("testTimeline", 10))
+	{
+		if (!testevent.empty())
+		{
+			for (int i = 0; i < testevent.size(); i++)
+			{
+				std::string ttext = std::to_string(i);
+				ImGui::TimelineEvent(ttext.c_str(), &testevent[i]);
+			}
+		}
+		ImGui::EndTimeline();
+	}
+	ImGui::End();*/
 #endif
 	if (load_fin)
 	{

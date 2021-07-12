@@ -84,6 +84,7 @@
       <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="imgui\imgui_tables.cpp" />
+    <ClCompile Include="SourceCode\Chara\PlayerBase\PlayerCameraDirecting.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">

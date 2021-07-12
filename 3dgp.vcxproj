@@ -197,6 +197,7 @@
     <ClCompile Include="SourceCode\Chara\PlayerBase\PlayerBase.cpp" />
     <ClCompile Include="SourceCode\Chara\PlayerBase\PlayerBaseATK.cpp" />
     <ClCompile Include="SourceCode\Chara\PlayerBase\PlayerBaseIO.cpp" />
+    <ClCompile Include="SourceCode\Chara\PlayerBase\PlayerCameraDirecting.cpp" />
     <ClCompile Include="SourceCode\Effect.cpp" />
     <ClCompile Include="SourceCode\Font.cpp" />
     <ClCompile Include="SourceCode\framebuffer.cpp" />

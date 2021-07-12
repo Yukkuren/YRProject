@@ -52,8 +52,8 @@ enum class PAD :int
 	RIGHT,
 	START,
 	SELECT,
-	L_ON,
-	R_ON,
+	L_ON, //L3
+	R_ON, //R3
 	LB,
 	RB,
 	A,

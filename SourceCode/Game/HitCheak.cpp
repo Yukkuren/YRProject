@@ -54,6 +54,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
+							else if (hit[hitnum].state == HitBoxState::BURST_INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
 							else if (hit[hitnum].state == HitBoxState::UP_INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
@@ -85,6 +89,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
+							else if (hit[hitnum].state == HitBoxState::BURST_INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
 							else if (hit[hitnum].state == HitBoxState::SLIDE)
 							{
 								flag = HitResultState::AVOIDANCE;
@@ -101,6 +109,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 								flag = HitResultState::GUARD_OK;
 							}
 							else if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
+							else if (hit[hitnum].state == HitBoxState::BURST_INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
@@ -127,6 +139,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
+							else if (hit[hitnum].state == HitBoxState::BURST_INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
 							else
 							{
 								flag = HitResultState::STATE_NONE;
@@ -143,6 +159,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 								flag = HitResultState::GUARD_OK;
 							}
 							else if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
+							else if (hit[hitnum].state == HitBoxState::BURST_INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
@@ -166,6 +186,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 								flag = HitResultState::GUARD_OK;
 							}
 							else if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
+							else if (hit[hitnum].state == HitBoxState::BURST_INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
@@ -208,6 +232,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
+							else if (hit[hitnum].state == HitBoxState::BURST_INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
 							else if (hit[hitnum].state == HitBoxState::UP_INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
@@ -228,6 +256,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 								flag = HitResultState::GUARD_OK;
 							}
 							else if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
+							else if (hit[hitnum].state == HitBoxState::BURST_INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
@@ -255,6 +287,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 								flag = HitResultState::GUARD_OK;
 							}
 							else if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
+							else if (hit[hitnum].state == HitBoxState::BURST_INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
@@ -293,6 +329,10 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
+							else if (hit[hitnum].state == HitBoxState::BURST_INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
 							else
 							{
 								flag = HitResultState::DOWN_HIT;
@@ -313,6 +353,64 @@ float Hitcheak::HitCheak(std::vector<AttackBox> &attack, std::vector<HitBox>& hi
 								flag = HitResultState::GUARD_OK;
 							}
 							else if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
+							else if (hit[hitnum].state == HitBoxState::BURST_INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
+							else
+							{
+								flag = HitResultState::HIT;
+							}
+							break;
+						case AttackKind::DOWN_NO_TO_OFF:
+							//ëäéEÇµÇ»Ç¢É_ÉEÉìçUåÇ
+							if (hit[hitnum].state == HitBoxState::MIDDLE)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else if (hit[hitnum].state == HitBoxState::DOWN)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else if (hit[hitnum].state == HitBoxState::ALL)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
+							else if (hit[hitnum].state == HitBoxState::BURST_INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
+							else
+							{
+								flag = HitResultState::DOWN_HIT;
+							}
+							break;
+						case AttackKind::NO_TO_OFF_ALL:
+							//ëSÇƒÇ∆ëäéEÇµÇ»Ç¢çUåÇ
+							if (hit[hitnum].state == HitBoxState::MIDDLE)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else if (hit[hitnum].state == HitBoxState::DOWN)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else if (hit[hitnum].state == HitBoxState::ALL)
+							{
+								flag = HitResultState::GUARD_OK;
+							}
+							else if (hit[hitnum].state == HitBoxState::INVINCIBLE)
+							{
+								flag = HitResultState::AVOIDANCE;
+							}
+							else if (hit[hitnum].state == HitBoxState::BURST_INVINCIBLE)
 							{
 								flag = HitResultState::AVOIDANCE;
 							}
@@ -916,6 +1014,12 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 									continue;
 								}
 								break;
+							case AttackKind::NO_TO_OFF_ALL:
+							case AttackKind::DOWN_NO_TO_OFF:
+								//ëSÇƒÇ∆ëäéEÇµÇ»Ç¢çUåÇ
+								//ëäéEÇµÇ»Ç¢É_ÉEÉìçUåÇ
+								continue;
+								break;
 							case AttackKind::LOCK:
 								//ÉçÉbÉNãZ
 								continue;
@@ -989,6 +1093,12 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 								{
 									continue;
 								}
+								break;
+							case AttackKind::NO_TO_OFF_ALL:
+							case AttackKind::DOWN_NO_TO_OFF:
+								//ëSÇƒÇ∆ëäéEÇµÇ»Ç¢çUåÇ
+								//ëäéEÇµÇ»Ç¢É_ÉEÉìçUåÇ
+								continue;
 								break;
 							case AttackKind::LOCK:
 								//ÉçÉbÉNãZ

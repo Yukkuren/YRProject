@@ -70,6 +70,7 @@ void YRSound::Init()
 	BGMLoad("./Data/Sound/BGM/knight_win.wav", BGMKind::KNIGHT_WIN, 0.0f, 0.5f);
 
 	//SE読み込み
+	SELoad("./Data/Sound/SE/enter.wav", SEKind::SE_NONE);
 	SELoad("./Data/Sound/SE/enter.wav", SEKind::SELECT_ENTER);
 	SELoad("./Data/Sound/SE/cancel.wav", SEKind::SELECT_CANCEL);
 	SELoad("./Data/Sound/SE/hit_sword.wav", SEKind::HIT_SWORD);
@@ -262,7 +263,7 @@ void YRSound::BGMPlay(const BGMKind& kind)
 //音声SEデータの再生(wave)
 void YRSound::SEPlay(const SEKind& kind)
 {
-	if (pSE.size() <= scastI(kind))
+	if (pSE.size() <= scastI(kind) || kind == SEKind::SE_NONE)
 	{
 		return;
 	}
@@ -272,7 +273,7 @@ void YRSound::SEPlay(const SEKind& kind)
 //音声SEデータの単発再生(wave)[再生中なら最初から再生しなおす]
 void YRSound::SESinglePlay(const SEKind& kind)
 {
-	if (pSE.size() <= scastI(kind))
+	if (pSE.size() <= scastI(kind) || kind == SEKind::SE_NONE)
 	{
 		return;
 	}
@@ -333,7 +334,7 @@ void YRSound::BGMSetVolume(const BGMKind& kind)
 //音声SEデータの音量設定(wave)
 void YRSound::SESetVolume(const SEKind& kind)
 {
-	if (pSE.size() <= scastI(kind))
+	if (pSE.size() <= scastI(kind) || kind == SEKind::SE_NONE)
 	{
 		return;
 	}
@@ -357,7 +358,7 @@ void YRSound::BGMStop(const BGMKind& kind)
 //音声SEデータの停止(wave)
 void YRSound::SEStop(const SEKind& kind)
 {
-	if (pSE.size() <= scastI(kind))
+	if (pSE.size() <= scastI(kind) || kind == SEKind::SE_NONE)
 	{
 		return;
 	}
@@ -381,7 +382,7 @@ void YRSound::BGMPause(const BGMKind& kind)
 //音声SEデータの一時停止(wave)
 void YRSound::SEPause(const SEKind& kind)
 {
-	if (pSE.size() <= scastI(kind))
+	if (pSE.size() <= scastI(kind) || kind == SEKind::SE_NONE)
 	{
 		return;
 	}

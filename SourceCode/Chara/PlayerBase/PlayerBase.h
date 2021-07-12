@@ -16,6 +16,8 @@
 #include <vector>
 #include <string>
 #include "../../sprite.h"
+#include "../../YRSound.h"
+#include "../../camera.h"
 //#include "Effect.h"
 
 
@@ -30,6 +32,10 @@ constexpr float Reflection_range_min = 100.0f;			//‚±‚Ì”’lˆÈã‚Ì‚Á”ò‚Ñ‚È‚ç•Ç‚
 constexpr float Reflection_attenuation_factor = 0.8f;	//•Ç”½Ë‚ÌŒ¸Š—¦
 constexpr float cut_in_max_time = 0.5f;					//ƒJƒbƒgƒCƒ“•\¦ŠÔ
 constexpr float passive_max_time = 0.2f;				//ó‚¯g’†–³“GŠÔ
+
+
+//‘O•ûéŒ¾
+class Player;
 
 //--------------------------------------
 //	**ƒLƒƒƒ‰–¼İ’è
@@ -99,6 +105,23 @@ enum class Ground_C :int
 	AIR = 0,	//‹ó’†
 	GROUND,		//’nã
 	EITHER,		//‚Ç‚¿‚ç‚Å‚à
+	KNOCK,		//‚Ì‚¯‚¼‚è’†‚Ì‚İ
+	END,
+};
+
+//--------------------------------------
+//	**Œ»İ‚ÌŠç‚Ìó‘Ô
+//--------------------------------------
+enum class FaceAnim : int
+{
+	NORMAL = 0,
+	NORMAL_LIP_SYNC,
+	WINK,
+	Damage,
+	YARUKI,
+	KOUHUN,
+	TOZI,
+	YEAH,
 	END,
 };
 
@@ -133,6 +156,133 @@ public:
 		return speed;
 	};
 };
+
+
+
+
+
+
+
+//---------------------------------------------
+// **ƒJƒƒ‰ƒCƒxƒ“ƒgƒNƒ‰ƒX**
+//Eƒ^ƒCƒ€ƒ‰ƒCƒ“‚Ì‚æ‚¤‚É‚»‚ÌuŠÔ‚ÌƒJƒƒ‰‚ÌˆÊ’uA‘Ò‹@ŠÔ‚ğ•Û‘¶‚·‚é
+//----------------------------------------------
+class CameraEvent
+{
+public:
+	//ƒJƒƒ‰ƒXƒe[ƒ^ƒX
+	DirectX::XMFLOAT3	camera_eye;		//‹“_
+	DirectX::XMFLOAT3	camera_focus;	//’‹“_
+	DirectX::XMFLOAT3	camera_up;		//ãƒxƒNƒgƒ‹
+	float				fov;			//‰æŠp
+
+	//ƒ^ƒCƒ€ƒ‰ƒCƒ“
+	float				event_point;	//ƒJƒƒ‰‚ÌƒCƒxƒ“ƒg‚ğ”­¶‚³‚¹‚éƒtƒŒ[ƒ€
+	bool				wait_camera;	//ƒJƒƒ‰‚ğ“®‚©‚³‚È‚¢ê‡‚Ítrue
+
+	//ƒGƒtƒFƒNƒgŠÖŒW
+	EffectParameter		effect_param;	//ƒGƒtƒFƒNƒg‚Ìƒpƒ‰ƒ[ƒ^[
+	Effekseer::Handle	handle;			//ƒGƒtƒFƒNƒg‚Ìƒnƒ“ƒhƒ‹
+
+	//•\î
+	FaceAnim			face_kind;		//Šç‚Ìí—Ş
+
+	//ƒTƒEƒ“ƒhŠÖŒW
+	SEKind				se_kind;		//–Â‚ç‚·SE‚Ìí—Ş
+
+	//ƒJƒƒ‰‚ÌƒXƒe[ƒg
+	Camera::Request		camera_req;		//ƒJƒƒ‰‚ÌƒŠƒNƒGƒXƒg
+	bool				camera_move;	//ƒJƒƒ‰‚ğƒXƒe[ƒ^ƒX‚ğ—˜—p‚µ‚Ä“®‚©‚·‚©‚Ç‚¤‚©
+
+	bool				executed;		//Šù‚ÉÀsÏ‚İ‚ÌƒCƒxƒ“ƒg‚Ìê‡true‚É‚·‚é
+
+
+	CameraEvent() :
+		camera_eye(0.0f, 0.0f, 0.0f), camera_focus(1.0f, 1.0f, 1.0f), camera_up(0.0f, 0.0f, 0.0f),
+		fov(0.0f), event_point(1.0f), wait_camera(false), handle(0), face_kind(FaceAnim::NORMAL), se_kind(SEKind::SE_NONE),
+		camera_req(Camera::Request::HOLD), camera_move(true), executed(false){};
+
+	CameraEvent(
+		DirectX::XMFLOAT3 eye, DirectX::XMFLOAT3 focus, DirectX::XMFLOAT3 up,
+		float fov, float max_time) :
+		camera_eye(eye), camera_focus(focus), camera_up(up),
+		fov(fov), event_point(max_time), wait_camera(false), handle(0), face_kind(FaceAnim::NORMAL), se_kind(SEKind::SE_NONE),
+		camera_req(Camera::Request::HOLD), camera_move(true), executed(false){};
+};
+
+
+
+
+
+//---------------------------------------------
+// **ƒJƒƒ‰‰‰oƒNƒ‰ƒX**
+//Eƒ^ƒCƒ€ƒ‰ƒCƒ“‚Ì•`‰æA“Ç‚İ‚İA‘‚«o‚µ‚ğs‚¤ƒNƒ‰ƒX
+//----------------------------------------------
+class CameraDirecting
+{
+public:
+
+	std::vector<CameraEvent>	camera_event;	//ƒJƒƒ‰ƒCƒxƒ“ƒg
+	float						save_timer;		//•`‰æ‚Ég—p‚·‚éƒ^ƒCƒ}[
+	float						load_timer;		//•`‰æ‚Ég—p‚·‚éƒ^ƒCƒ}[
+	float						max_fream;		//‰‰o‚ÌÅ‘åƒtƒŒ[ƒ€
+	float						timer;			//ƒ^ƒCƒ}[
+	bool						test;			//ƒeƒXƒgƒtƒ‰ƒOBtrue‚È‚çƒ^ƒCƒ}[‚É‰ÁZ‚µ‚È‚¢
+
+private:
+
+	int							now_event;		//Œ»İ‚ÌƒCƒxƒ“ƒg
+	int							now_player;		//‚Ç‚ÌƒvƒŒƒCƒ„[‚ª‚±‚ÌƒNƒ‰ƒX‚ğ‚Á‚Ä‚¢‚é‚©
+	float						decision;		//ƒvƒŒƒCƒ„[‚ª‚Ç‚ÌŒü‚«‚ğŒü‚¢‚Ä‚¢‚é‚©
+
+public:
+
+	CameraDirecting() : timer(0.0f), now_event(0), save_timer(0.0f),
+		load_timer(0.0f), now_player(0), max_fream(1.0f), decision(1.0f), test(false)
+	{
+		camera_event.clear();
+	}
+
+	//ƒCƒxƒ“ƒgXV(ÅŒã‚ÌƒCƒxƒ“ƒg‚ªI‚í‚Á‚½‚çtrue‚ğ•Ô‚·)
+	bool CameraEventUpdate(YR_Vector3 pos, float decision, float elapsed_time, Player* player);
+
+	//Œ»İ‚ÌƒCƒxƒ“ƒg”Ô†‚ğŠ„‚èo‚·
+	void NowEventCheck();
+
+	//ƒ^ƒCƒ}[‚ª‰ß‚¬‚½ƒCƒxƒ“ƒg‚ğÀsÏ‚İ‚É‚·‚é
+	void ExecuteEvent();
+
+	//‰æŠp‚É’²®’l‚ğ‰Á‚¦‚Ä•Ô‚·
+	float FovCalculation(float fov);
+
+	//ƒvƒŒƒCƒ„[‚ª‚Ç‚ÌŒü‚«‚ğŒü‚¢‚Ä‚¢‚é‚©‚ğ•Ô‚·
+	float Getapply(float n);
+
+	//ƒJƒƒ‰‚ğƒCƒxƒ“ƒgƒXƒe[ƒ^ƒX‚©‚ç“®‚©‚·
+	void CameraStateUpdate(YR_Vector3 pos);
+
+	//ƒGƒtƒFƒNƒg‚ğ¶¬‚·‚é
+	void SetEffect(YR_Vector3 pos);
+
+	//‰Šú‰»
+	void Init(int now_player);
+
+	//ƒCƒxƒ“ƒg“à—eƒ[ƒh
+	void Load(PLSELECT chara_name);
+
+	//ƒCƒxƒ“ƒg“à—e‘‚«o‚µ
+	void Write(PLSELECT chara_name);
+
+	//ƒ^ƒCƒ€ƒ‰ƒCƒ“‚ğ•\¦‚·‚é
+	void DrawTimeLine(std::string timeline_name, PLSELECT chara_name);
+};
+
+
+
+
+
+
+
 
 
 //---------------------------------------------
@@ -203,6 +353,9 @@ enum class AttackState : int
 	A_SPECIAL_ATTACK,//‹ó’†‘O’´•KE
 	A_DESIRE_SPECIAL,//‹ó’†Œã’´•KE
 
+	BURST,			//ƒo[ƒXƒg(ƒRƒ“ƒ{”²‚¯)
+	COMBOBURST,		//ƒo[ƒXƒg(ƒRƒ“ƒ{—p)
+
 	NORMAL_ATTACK_END,//UŒ‚‚ÌÅ‘åƒTƒCƒY(ƒRƒ“ƒ{AƒvƒŒƒCƒ„[‘I‘ğ‹Z‚ğÈ‚¢‚½”<ƒ‚[ƒVƒ‡ƒ“—p>)
 
 	COMBO_X,		//Xƒ{ƒ^ƒ“ƒRƒ“ƒ{
@@ -246,7 +399,8 @@ enum class AT_Function_List : int
 	AttackSlidRollTurn,			//‰¡ˆÚ“®‚µ‚È‚ª‚ç‰ñ“]UŒ‚‚µ‚Ä–ß‚é
 	AttackTrack,				//ƒz[ƒ~ƒ“ƒOƒ_ƒbƒVƒ…UŒ‚
 	AttackTrackRoll,			//‰ñ“]ƒz[ƒ~ƒ“ƒOƒ_ƒbƒVƒ…UŒ‚
-	AttackSpecial,				//‘O’´•KEUŒ‚
+	AttackSpecial_INV,			//‘O’´•KEUŒ‚(UŒ‚’†–³“G‚Å‘Oi)
+	AttackBurst,				//ƒo[ƒXƒgUŒ‚
 	AT_END						//ÅIƒTƒCƒY
 };
 
@@ -657,6 +811,8 @@ public:
 	std::wstring lip_text;								//•\¦‚·‚éƒeƒLƒXƒg
 	bool		text_on = false;						//true‚È‚çƒeƒLƒXƒg‚ğ•\¦‚·‚é
 
+	CameraDirecting special_event;
+
 public:
 	//Šî–{ˆ—ŠÖ”
 	virtual void Init(YR_Vector3 InitPos);
@@ -726,6 +882,9 @@ public:
 	virtual void NoneChange();
 	virtual void Brake(float elapsed_time);
 	virtual bool BackStepCheck();
+	virtual bool GroundCheck(Ground_C ground_c);
+	virtual void KnockReset();
+
 
 	virtual void AnimChangeSelect(ActState act);
 
@@ -808,7 +967,8 @@ public:
 	virtual void AttackSlidRollTurn(float decision, float elapsed_time);			//‰¡ˆÚ“®‚µ‚È‚ª‚ç‰ñ“]UŒ‚‚µ‚Ä–ß‚é
 	virtual void AttackTrack(float decision, float elapsed_time);					//ƒz[ƒ~ƒ“ƒOƒ_ƒbƒVƒ…UŒ‚
 	virtual void AttackTrackRoll(float decision, float elapsed_time);				//‰ñ“]ƒz[ƒ~ƒ“ƒOƒ_ƒbƒVƒ…UŒ‚
-	virtual void AttackSpecial(float decision, float elapsed_time);					//‘O’´•KEUŒ‚
+	virtual void AttackSpecial_INV(float decision, float elapsed_time);				//‘O’´•KEUŒ‚(UŒ‚’†–³“G‚Å‘Oi)
+	virtual void AttackBurst(float decision, float elapsed_time);					//ƒo[ƒXƒgUŒ‚
 
 
 
@@ -832,19 +992,6 @@ public:
 
 	//ƒeƒNƒXƒ`ƒƒƒAƒjƒ[ƒVƒ‡ƒ“—p
 
-
-	//Œ»İ‚ÌŠç‚Ìó‘Ô
-	enum class FaceAnim : int
-	{
-		NORMAL = 0,
-		NORMAL_LIP_SYNC,
-		WINK,
-		Damage,
-		YARUKI,
-		KOUHUN,
-		TOZI,
-		YEAH,
-	};
 
 	virtual void ChangeFace(FaceAnim anim);						//•\î‚ğ•Ï‚¦‚éŠÖ”(enum‚Å’è‹`)
 

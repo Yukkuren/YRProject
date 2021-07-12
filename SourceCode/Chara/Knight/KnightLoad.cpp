@@ -130,6 +130,11 @@ void Knight::LoadData(PLCOLOR color_number)
 		std::string file_name_R = file_level_R + GetName().attack_file_list[i] + file_end_R;
 		std::string file_name_L = file_level_L + GetName().attack_file_list[i] + file_end_L;
 
+		/*if (i == scastI(AttackState::COMBOBURST))
+		{
+			int hoge = 0;
+		}*/
+
 		//Rファイルがあるか確認する
 		{
 			std::ifstream ifs_R(file_name_R.c_str());
@@ -158,7 +163,7 @@ void Knight::LoadData(PLCOLOR color_number)
 
 		//Lファイルがあるか確認する
 		{
-			std::ifstream ifs_L(file_name_R.c_str());
+			std::ifstream ifs_L(file_name_L.c_str());
 
 			if (ifs_L.is_open())
 			{

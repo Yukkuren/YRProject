@@ -556,6 +556,7 @@ public:
 	std::thread* t = NULL;
 	int					load_state = 0;
 	bool				load_fin = false;
+	std::vector<float> testevent;
 
 	GamePad1			g1;
 	GamePad2			g2;

@@ -453,6 +453,15 @@ void GamePad1::Update(float elapsed_time)
 			x_input[static_cast<int>(PAD::LB)] = 0;
 		}
 
+		if (pKeyState.zflg > 0)
+		{
+			x_input[static_cast<int>(PAD::L_ON)]++;
+		}
+		else
+		{
+			x_input[static_cast<int>(PAD::L_ON)] = 0;
+		}
+
 
 
 		if (pKeyState.wflg > 0)

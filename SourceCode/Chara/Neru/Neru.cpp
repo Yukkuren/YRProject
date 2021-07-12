@@ -6,7 +6,7 @@
 #include <algorithm>
 #include "../../Game//World.h"
 #include "../../Effect.h"
-#include "../../YRSound.h"
+//#include "../../YRSound.h"
 #include "../PlayerBase/Player_name_list.h"
 
 //-----------------------------------------------------------------

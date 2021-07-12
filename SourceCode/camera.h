@@ -64,6 +64,7 @@ public:
 		RELEASE,	//カメラを離す(ステートをMAINに即座に戻す)
 		WEAKEN,		//カメラを持つ手を弱める(ステートは戻さず、位置を少しずつMAINに戻す)
 		ZOOM,		//カメラをズームさせる
+		Request_END,
 	};
 private:
 	Request		camera_Request = Request::NONE;

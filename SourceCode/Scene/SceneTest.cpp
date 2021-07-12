@@ -1569,6 +1569,7 @@ void SceneTest::NeruLoad()
 	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_u_kyo_R.fbx"));
 	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_win_R.fbx"));
 	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_reversal_R.fbx"));
+	Neru_anims.push_back(std::make_shared<Model>("./Data/FBX/Neru/AnimationR/Neru_burst_R.fbx"));
 
 	if (Neru_base == nullptr)
 	{

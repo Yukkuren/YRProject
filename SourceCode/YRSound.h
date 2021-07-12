@@ -40,7 +40,8 @@ enum class BGMKind : int
 //SEの種類
 enum class SEKind : int
 {
-	SELECT_ENTER = 0,	//選択決定音
+	SE_NONE = 0,		//SE無し
+	SELECT_ENTER,		//選択決定音
 	SELECT_CANCEL,		//選択解除
 	HIT_SWORD,			//剣が当たった時
 	INTRO_WIND,			//イントロの風
