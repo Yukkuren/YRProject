@@ -61,11 +61,11 @@ void Player::AttackDefault(float decision, float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 
 			//エフェクト生成
@@ -178,11 +178,11 @@ void Player::AttackDefault(float decision, float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -232,11 +232,11 @@ void Player::AttackProjectileDefault(float decision, float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 
 			if (attack_list[now_at_list].effect_param.effect_kind != EffectKind::NONE)
@@ -324,11 +324,11 @@ void Player::AttackProjectileDefault(float decision, float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -869,11 +869,11 @@ void Player::AttackJump(float decision, float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 
 			//エフェクト生成
@@ -988,11 +988,11 @@ void Player::AttackJump(float decision, float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -1058,11 +1058,11 @@ void Player::AttackAirUp(float decision, float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 
 			//エフェクト生成
@@ -1175,11 +1175,11 @@ void Player::AttackAirUp(float decision, float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -1232,11 +1232,11 @@ void Player::AttackSteal(float decision, float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 
 			//エフェクト生成
@@ -1388,11 +1388,11 @@ void Player::AttackSteal(float decision, float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -1437,11 +1437,11 @@ void Player::AttackSlow(float decision, float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			//掴み抜けされたらはじかれるようにする
 			speed.x = (-300.0f * rightOrleft);
@@ -1480,11 +1480,11 @@ void Player::AttackSlow(float decision, float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::FREAM));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::FREAM));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::FREAM));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::FREAM));
 			}
 		}
 		else
@@ -1518,11 +1518,11 @@ void Player::AttackSlow(float decision, float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 
 			//エフェクト生成
@@ -1635,11 +1635,11 @@ void Player::AttackSlow(float decision, float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -1692,11 +1692,11 @@ void Player::AttackSlid(float decision, float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 
 			//エフェクト生成
@@ -1820,11 +1820,11 @@ void Player::AttackSlid(float decision, float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -1880,11 +1880,11 @@ void Player::AttackSlidRoll(float decision, float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 
 			//エフェクト生成
@@ -2008,11 +2008,11 @@ void Player::AttackSlidRoll(float decision, float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -2066,11 +2066,11 @@ void Player::AttackAirSlidRoll(float decision, float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 
 			//エフェクト生成
@@ -2197,11 +2197,11 @@ void Player::AttackAirSlidRoll(float decision, float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -2255,11 +2255,11 @@ void Player::AttackSlidRollTurn(float decision, float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 
 			//エフェクト生成
@@ -2393,11 +2393,11 @@ void Player::AttackSlidRollTurn(float decision, float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -2501,11 +2501,11 @@ void Player::AttackTrack(float decision, float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 
 			//エフェクト生成
@@ -2718,11 +2718,11 @@ void Player::AttackTrack(float decision, float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -2814,11 +2814,11 @@ void Player::AttackTrackRoll(float decision, float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 
 			//エフェクト生成
@@ -3030,11 +3030,11 @@ void Player::AttackTrackRoll(float decision, float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -3122,11 +3122,11 @@ void Player::AttackJumpEx(float decision, float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 
 			//エフェクト生成
@@ -3250,11 +3250,11 @@ void Player::AttackJumpEx(float decision, float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -3272,10 +3272,11 @@ void Player::AttackJumpEx(float decision, float elapsed_time)
 
 
 
+
 //------------------------------------------------------
 //				前超必殺攻撃
 
-void Player::AttackSpecial_INV(float decision, float elapsed_time)
+void Player::AttackSpecial(float decision, float elapsed_time)
 {
 	//前進しないようにする
 	speed_X.Set(0.0f);
@@ -3287,7 +3288,7 @@ void Player::AttackSpecial_INV(float decision, float elapsed_time)
 	}
 
 	//イベントシーンを再生する
-	if (!special_event.CameraEventUpdate(pos, rightOrleft, elapsed_time, this))
+	if (!special_event.CameraEventUpdate(elapsed_time, this))
 	{
 		return;
 	}
@@ -3318,11 +3319,227 @@ void Player::AttackSpecial_INV(float decision, float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
+			}
+
+			//エフェクト生成
+			if (attack_list[now_at_list].effect_param.effect_kind != EffectKind::NONE)
+			{
+				if (attack_list[now_at_list].effect_param.rightORleft)
+				{
+					//プレイヤーの角度を依存させる場合
+					YRGetEffect().PlayEffect(
+						attack_list[now_at_list].effect_param.effect_kind, attack_list[now_at_list].handle,
+						DirectX::XMFLOAT3(pos.x + Getapply(attack_list[now_at_list].effect_param.distance.x), pos.y + attack_list[now_at_list].effect_param.distance.y, pos.z + attack_list[now_at_list].effect_param.distance.z),
+						attack_list[now_at_list].effect_param.scale.GetDXFLOAT3(), attack_list[now_at_list].effect_param.axis.GetDXFLOAT3(), attack_list[now_at_list].effect_param.angle * rightOrleft);
+				}
+				else
+				{
+					//依存させない場合
+					YRGetEffect().PlayEffect(
+						attack_list[now_at_list].effect_param.effect_kind, attack_list[now_at_list].handle,
+						DirectX::XMFLOAT3(pos.x + Getapply(attack_list[now_at_list].effect_param.distance.x), pos.y + attack_list[now_at_list].effect_param.distance.y, pos.z + attack_list[now_at_list].effect_param.distance.z),
+						attack_list[now_at_list].effect_param.scale.GetDXFLOAT3(), attack_list[now_at_list].effect_param.axis.GetDXFLOAT3(), attack_list[now_at_list].effect_param.angle);
+				}
+			}
+
+			//衝撃波エフェクト生成
+			YRGetEffect().PlayEffect(EffectKind::LASER_SHOCK,
+				DirectX::XMFLOAT3(pos.x + Getapply(attack_list[now_at_list].effect_param.distance.x), pos.y + attack_list[now_at_list].effect_param.distance.y, pos.z + attack_list[now_at_list].effect_param.distance.z),
+				attack_list[now_at_list].effect_param.scale.GetDXFLOAT3(), attack_list[now_at_list].effect_param.axis.GetDXFLOAT3(), attack_list[now_at_list].effect_param.angle * rightOrleft);
+		}
+		if (attack_list[now_at_list].speed_on)
+		{
+			//攻撃に速度を付与する場合
+			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos, attack_list[now_at_list].speed);
+		}
+		else
+		{
+			//付与しない場合
+			attack_list[now_at_list].SetAttack(&atk, rightOrleft, pos);
+		}
+		fream = non_target;
+
+		//攻撃発生中は無敵
+		//HitBoxTransition(HitBoxState::INVINCIBLE);
+
+		//持続時間を設定
+		timer = attack_list[now_at_list].attack_single[now_at_num].parameter[0].timer;
+
+		now_at_num = attack_list[now_at_list].now_attack_num;
+		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
+	}
+
+
+
+	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
+	if (!atk.empty())
+	{
+		for (auto& a : atk)
+		{
+			if (knock)
+			{
+				a.parameter.knockback = 0.0f;
+				a.knock_start = false;
+			}
+			if (a.knock_start)
+			{
+				PosKnockPlus(a.parameter.knockback);
+				a.parameter.knockback = 0.0f;
+				knock = true;
+				a.knock_start = false;
+			}
+		}
+	}
+
+	if (timer > 0.0f && timer < target_max)
+	{
+		//持続フレームを減らしていく
+		timer -= elapsed_time;
+		//if (hit_result != HitResult::GUARD)
+		//{
+		//	//攻撃中は前に移動させる
+		//	pos.x += elapsed_time * Getapply(attack_list[now_at_list].advance_speed);
+		//}
+		//else
+		//{
+		//	//無敵を消す
+		//	HitBoxTransition(HitBoxState::NOGUARD);
+		//}
+	}
+
+	//if (atk.empty())
+	//{
+	//	//もし攻撃がまだ出ていないならここでreturnして次の攻撃に移らないようにする
+	//	return;
+	//}
+	//エフェクト更新
+	YRGetEffect().SetLocation(attack_list[now_at_list].effect_param.effect_kind, attack_list[now_at_list].handle, DirectX::XMFLOAT3(pos.x + Getapply(attack_list[now_at_list].effect_param.distance.x), pos.y + attack_list[now_at_list].effect_param.distance.y, pos.z + attack_list[now_at_list].effect_param.distance.z));
+
+
+	//持続時間が全て終了したことを確認する
+	if (timer < 0.0f)
+	{
+		////攻撃が全て終了したことを確認する
+		//if (AttackEndCheck())
+		//{
+			//まだ攻撃が残っていれば次の攻撃に移る
+		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
+		{
+			fream = attack_list[now_at_list].attack_single[attack_list[now_at_list].now_attack_num].fream;
+			//持続フレームを初期化
+			timer = non_target;
+			if (attack_list[now_at_list].now_attack_num == attack_list[now_at_list].attack_max - 1)
+			{
+				//最終段の攻撃なら
+				//衝撃波エフェクト生成
+				YRGetEffect().PlayEffect(EffectKind::LASER_SHOCK,
+					DirectX::XMFLOAT3(pos.x + Getapply(attack_list[now_at_list].effect_param.distance.x), pos.y + attack_list[now_at_list].effect_param.distance.y, pos.z + attack_list[now_at_list].effect_param.distance.z),
+					attack_list[now_at_list].effect_param.scale.GetDXFLOAT3(), attack_list[now_at_list].effect_param.axis.GetDXFLOAT3(), attack_list[now_at_list].effect_param.angle * rightOrleft);
+			}
+		}
+		else
+		{
+			//ブルームを切る
+			lumi_material = Model::Material_Attribute::NONE;
+			//ない場合は後隙に移行する
+			//攻撃番号を初期化
+			attack_list[now_at_list].now_attack_num = 0;
+
+			//エフェクト消去
+			YRGetEffect().StopEffect(attack_list[now_at_list].effect_param.effect_kind, attack_list[now_at_list].handle);
+
+			//後隙を設定
+			later = attack_list[now_at_list].later;
+			//アニメーション速度を指定
+			anim_ccodinate = ac_attack[now_at_list].later;
+			HitBoxTransition(HitBoxState::NOGUARD);
+			//持続フレームを初期化
+			timer = non_target;
+			//無敵を消す
+			//HitBoxTransition(HitBoxState::NOGUARD);
+			//描画をセット
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
+			}
+			else
+			{
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
+			}
+			//行動終了フラグをオンに
+			finish = true;
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+//------------------------------------------------------
+//				前超必殺攻撃(前進して無敵)
+
+void Player::AttackSpecial_INV(float decision, float elapsed_time)
+{
+	//前進しないようにする
+	speed_X.Set(0.0f);
+
+	//後隙が設定された後はこの関数には入らない
+	if (later > -1 && later < target_max)
+	{
+		return;
+	}
+
+	//イベントシーンを再生する
+	if (!special_event.CameraEventUpdate(elapsed_time, this))
+	{
+		return;
+	}
+
+	//発生フレームになるまで回す
+	if (fream < target_max)
+	{
+		//speed_Y.Set(0.0f);
+		//攻撃発生の結果を保存する
+		hit_result = HitResult::NOT_OCCURRENCE;
+		fream -= elapsed_time;
+	}
+	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
+
+	int now_at_num = attack_list[now_at_list].now_attack_num;
+	//発生フレームになったら攻撃判定を生成する
+	if (fream < 0.0f)
+	{
+		//攻撃発生の結果を保存する
+		hit_result = HitResult::NONE;
+		//前進しないようにする
+		speed_X.Set(0.0f);
+
+		//int attack_num = attack_list[real].now_attack_num;
+		anim_ccodinate = ac_attack[now_at_list].timer;
+		if (attack_list[now_at_list].now_attack_num == 0)
+		{
+			//初回の攻撃のみアニメーションを変える
+			if (rightOrleft > 0)
+			{
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
+			}
+			else
+			{
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 
 			//エフェクト生成
@@ -3451,11 +3668,11 @@ void Player::AttackSpecial_INV(float decision, float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;
@@ -3464,10 +3681,10 @@ void Player::AttackSpecial_INV(float decision, float elapsed_time)
 }
 
 
-void Player::SpecialAttack(float elpsed_time)
-{
-	//オーバーライド
-}
+//void Player::SpecialAttack(float elpsed_time)
+//{
+//	//オーバーライド
+//}
 
 
 
@@ -3529,11 +3746,11 @@ void Player::AttackBurst(float decision, float elapsed_time)
 			//初回の攻撃のみアニメーションを変える
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::TIMER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::TIMER));
 			}
 
 			//エフェクト生成
@@ -3653,11 +3870,11 @@ void Player::AttackBurst(float decision, float elapsed_time)
 			//描画をセット
 			if (rightOrleft > 0)
 			{
-				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_R_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			else
 			{
-				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[scastI(attack_state)].anim_kind)], scastI(AnimAtk::LATER));
+				anim->NodeChange(model_motion.model_L_Attack[scastI(attack_list[now_at_list].anim_kind)], scastI(AnimAtk::LATER));
 			}
 			//行動終了フラグをオンに
 			finish = true;

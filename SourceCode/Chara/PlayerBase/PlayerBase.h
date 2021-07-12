@@ -199,7 +199,7 @@ public:
 
 	CameraEvent() :
 		camera_eye(0.0f, 0.0f, 0.0f), camera_focus(1.0f, 1.0f, 1.0f), camera_up(0.0f, 0.0f, 0.0f),
-		fov(0.0f), event_point(1.0f), wait_camera(false), handle(0), face_kind(FaceAnim::NORMAL), se_kind(SEKind::SE_NONE),
+		fov(0.0f), event_point(0.0f), wait_camera(false), handle(0), face_kind(FaceAnim::NORMAL), se_kind(SEKind::SE_NONE),
 		camera_req(Camera::Request::HOLD), camera_move(true), executed(false){};
 
 	CameraEvent(
@@ -244,7 +244,10 @@ public:
 	}
 
 	//イベント更新(最後のイベントが終わったらtrueを返す)
-	bool CameraEventUpdate(YR_Vector3 pos, float decision, float elapsed_time, Player* player);
+	bool CameraEventUpdate(float elapsed_time, Player* player);
+
+	//カメラ更新
+	void CameraUpdate(YR_Vector3 pos);
 
 	//現在のイベント番号を割り出す
 	void NowEventCheck();
@@ -399,6 +402,7 @@ enum class AT_Function_List : int
 	AttackSlidRollTurn,			//横移動しながら回転攻撃して戻る
 	AttackTrack,				//ホーミングダッシュ攻撃
 	AttackTrackRoll,			//回転ホーミングダッシュ攻撃
+	AttackSpecial,				//前超必殺攻撃
 	AttackSpecial_INV,			//前超必殺攻撃(攻撃中無敵で前進)
 	AttackBurst,				//バースト攻撃
 	AT_END						//最終サイズ
@@ -936,7 +940,7 @@ public:
 	virtual void TrackDash(float decision, float elapsed_time) = 0;
 	virtual void Steal(float elapsed_time) = 0;
 	virtual void Slow(float elapsed_time) = 0;*/
-	virtual void SpecialAttack(float elapsed_time) = 0;
+	//virtual void SpecialAttack(float elapsed_time) = 0;
 	//virtual void ExtendATK(float elapsed_time) = 0;
 
 
@@ -967,6 +971,7 @@ public:
 	virtual void AttackSlidRollTurn(float decision, float elapsed_time);			//横移動しながら回転攻撃して戻る
 	virtual void AttackTrack(float decision, float elapsed_time);					//ホーミングダッシュ攻撃
 	virtual void AttackTrackRoll(float decision, float elapsed_time);				//回転ホーミングダッシュ攻撃
+	virtual void AttackSpecial(float decision, float elapsed_time);					//前超必殺攻撃
 	virtual void AttackSpecial_INV(float decision, float elapsed_time);				//前超必殺攻撃(攻撃中無敵で前進)
 	virtual void AttackBurst(float decision, float elapsed_time);					//バースト攻撃
 

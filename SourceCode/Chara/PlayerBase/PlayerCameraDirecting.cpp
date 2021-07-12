@@ -11,7 +11,15 @@ void CameraDirecting::Init(int now_player)
 	now_event = 0;
 	timer = 0.0f;
 	this->now_player = now_player;
-	YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
+
+	if (!camera_event.empty())
+	{
+		for (int i = 0; i < camera_event.size(); i++)
+		{
+			camera_event[i].executed = false;
+		}
+	}
+	//YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
 }
 
 
@@ -226,7 +234,7 @@ void CameraDirecting::Write(PLSELECT chara_name)
 }
 
 
-bool CameraDirecting::CameraEventUpdate(YR_Vector3 pos, float decision, float elapsed_time, Player* player)	//引数：プレイヤーの位置、プレイヤーの向いている方向,フレーム,
+bool CameraDirecting::CameraEventUpdate(float elapsed_time, Player* player)	//引数：フレーム,プレイヤーのアドレス
 {
 	//-------------------------------------------------------------
 	//	イベント処理
@@ -238,7 +246,12 @@ bool CameraDirecting::CameraEventUpdate(YR_Vector3 pos, float decision, float el
 	//	・イベントはfor文で全て確認していく
 	//----------------------------------------------------------
 
-	this->decision = decision;
+	if (timer >= max_fream)
+	{
+		return true;
+	}
+
+	this->decision = player->rightOrleft;
 
 	//カメライベントを更新していく
 	if (camera_event.empty())
@@ -250,7 +263,7 @@ bool CameraDirecting::CameraEventUpdate(YR_Vector3 pos, float decision, float el
 	{
 		//イベントを回していく
 
-		if (timer < max_fream)
+		if (timer < max_fream && !test)
 		{
 			//タイマーを増やしていく
 			timer += elapsed_time;
@@ -262,7 +275,7 @@ bool CameraDirecting::CameraEventUpdate(YR_Vector3 pos, float decision, float el
 		for (int e = 0; e < camera_event.size(); e++)
 		{
 			//タイマーがイベントポイント以上になったら
-			if (camera_event[e].event_point <= timer && !test)
+			if (camera_event[e].event_point <= timer)
 			{
 				//まだ実行していないなら
 				if (!camera_event[e].executed)
@@ -270,7 +283,7 @@ bool CameraDirecting::CameraEventUpdate(YR_Vector3 pos, float decision, float el
 					//処理を行う
 
 					//現在のイベント番号を保存(あとで変更)
-					now_event = e;
+					//now_event = e;
 
 					//カメラのリクエストを指示
 					YRCamera.RequestCamera(camera_event[e].camera_req, now_player);
@@ -279,14 +292,14 @@ bool CameraDirecting::CameraEventUpdate(YR_Vector3 pos, float decision, float el
 					if (camera_event[e].camera_move)
 					{
 						//イベントステートからカメラを動かす
-						CameraStateUpdate(pos);
+						CameraStateUpdate(player->pos);
 					}
 
 					//SEを再生する
 					GetSound().SESinglePlay(camera_event[e].se_kind);
 
 					//エフェクトを生成
-					SetEffect(pos);
+					SetEffect(player->pos);
 
 					//表情を変更する
 					player->ChangeFace(camera_event[e].face_kind);
@@ -296,6 +309,20 @@ bool CameraDirecting::CameraEventUpdate(YR_Vector3 pos, float decision, float el
 
 		//イベントの実行確認を判別する
 		ExecuteEvent();
+
+		//カメラ更新
+		CameraUpdate(player->pos);
+
+		if (timer >= max_fream)
+		{
+			//タイマーが最大フレームを超えたら
+			YRCamera.RequestCamera(Camera::Request::RELEASE, now_player);
+			for (int i = 0; i < camera_event.size(); i++)
+			{
+				YRGetEffect().StopEffect(camera_event[i].effect_param.effect_kind, camera_event[i].handle);
+			}
+			return true;
+		}
 	}
 	return false;
 }
@@ -381,8 +408,93 @@ void CameraDirecting::CameraStateUpdate(YR_Vector3 pos)
 	//カメラを設定する
 	YRCamera.SetEye(eye.GetDXFLOAT3());
 	YRCamera.SetFocus(focus.GetDXFLOAT3());
-	YRCamera.SetFocus(up.GetDXFLOAT3());
+	//YRCamera.SetUp(up.GetDXFLOAT3());
 	YRCamera.SetFov(FovCalculation(camera_event[now_event].fov));
+	YRCamera.Active();
+}
+
+
+
+void CameraDirecting::CameraUpdate(YR_Vector3 pos)
+{
+	//カメラ更新
+
+	//現在のイベントから次のイベントまでにカメラを動かしていく
+	if (now_event == camera_event.size() - 1)
+	{
+		//現在のイベントが最後なら何もしない
+		return;
+	}
+
+	if (camera_event[now_event].wait_camera)
+	{
+		//カメラを動かさない場合は何もしない
+		CameraStateUpdate(pos);
+		return;
+	}
+
+	//Larp関数を使用して現在のカメラの位置を割り出す
+
+	//現在のカメラステート
+	DirectX::XMFLOAT3 now_eye;
+	now_eye.x = pos.x + Getapply(camera_event[now_event].camera_eye.x);
+	now_eye.y = pos.y + camera_event[now_event].camera_eye.y;
+	now_eye.z = pos.z + camera_event[now_event].camera_eye.z;
+	DirectX::XMFLOAT3 now_focus;
+	now_focus.x = pos.x + Getapply(camera_event[now_event].camera_focus.x);
+	now_focus.y = pos.y + camera_event[now_event].camera_focus.y;
+	now_focus.z = pos.z + camera_event[now_event].camera_focus.z;
+	DirectX::XMFLOAT3 now_up = camera_event[now_event].camera_up;
+	float now_fov = FovCalculation(camera_event[now_event].fov);
+
+	//次のカメラステート
+	DirectX::XMFLOAT3 next_eye;
+	next_eye.x = pos.x + Getapply(camera_event[now_event + 1].camera_eye.x);
+	next_eye.y = pos.y + camera_event[now_event + 1].camera_eye.y;
+	next_eye.z = pos.z + camera_event[now_event + 1].camera_eye.z;
+	DirectX::XMFLOAT3 next_focus;
+	next_focus.x = pos.x + Getapply(camera_event[now_event + 1].camera_focus.x);
+	next_focus.y = pos.y + camera_event[now_event + 1].camera_focus.y;
+	next_focus.z = pos.z + camera_event[now_event + 1].camera_focus.z;
+	DirectX::XMFLOAT3 next_up = camera_event[now_event + 1].camera_up;
+	float next_fov = FovCalculation(camera_event[now_event + 1].fov);
+
+	//それぞれベクターに変更
+	DirectX::XMVECTOR now_eye_vector = DirectX::XMLoadFloat3(&now_eye);
+	DirectX::XMVECTOR next_eye_vector = DirectX::XMLoadFloat3(&next_eye);
+	DirectX::XMVECTOR now_focus_vector = DirectX::XMLoadFloat3(&now_focus);
+	DirectX::XMVECTOR next_focus_vector = DirectX::XMLoadFloat3(&next_focus);
+	DirectX::XMVECTOR now_up_vector = DirectX::XMLoadFloat3(&now_up);
+	DirectX::XMVECTOR next_up_vector = DirectX::XMLoadFloat3(&next_up);
+	DirectX::XMVECTOR now_fov_vector = DirectX::XMLoadFloat(&now_fov);
+	DirectX::XMVECTOR next_vector = DirectX::XMLoadFloat(&next_fov);
+
+
+	//Larp関数に渡す補間制御係数を求める
+	float len = camera_event[now_event + 1].event_point - camera_event[now_event].event_point;
+
+	float t = (timer - camera_event[now_event].event_point) / len;
+
+	//Larp関数を使って現在の位置を求める
+	DirectX::XMVECTOR eye_larp = DirectX::XMVectorLerp(now_eye_vector, next_eye_vector, t);
+	DirectX::XMVECTOR focus_larp = DirectX::XMVectorLerp(now_focus_vector, next_focus_vector, t);
+	DirectX::XMVECTOR up_larp = DirectX::XMVectorLerp(now_up_vector, next_up_vector, t);
+	DirectX::XMVECTOR fov_larp = DirectX::XMVectorLerp(now_fov_vector, next_vector, t);
+
+	DirectX::XMFLOAT3 eye, focus, up;
+	float fov;
+
+	DirectX::XMStoreFloat3(&eye, eye_larp);
+	DirectX::XMStoreFloat3(&focus, focus_larp);
+	DirectX::XMStoreFloat3(&up, up_larp);
+	DirectX::XMStoreFloat(&fov, fov_larp);
+
+	YRCamera.SetEye(eye);
+	YRCamera.SetFocus(focus);
+	//YRCamera.SetUp(up);
+	YRCamera.SetFov(fov);
+	YRCamera.Active();
+
 }
 
 
@@ -430,7 +542,7 @@ void CameraDirecting::DrawTimeLine(std::string timeline_name, PLSELECT chara_nam
 			camera_event.back().camera_eye = YRCamera.GetEye();
 			camera_event.back().camera_focus = YRCamera.GetFocus();
 			camera_event.back().camera_up = YRCamera.GetUp();
-			camera_event.back().fov = YRCamera.GetFov();
+			camera_event.back().fov = YRCamera.GetFov() / 0.01745f;
 		}
 		else
 		{
@@ -516,9 +628,10 @@ void CameraDirecting::DrawTimeLine(std::string timeline_name, PLSELECT chara_nam
 		{
 			for (int i = 0; i < camera_event.size(); i++)
 			{
-				std::string tab_name = std::to_string(camera_event[i].event_point);
+				std::string tab_name = std::string(u8"イベント") + std::to_string(i);
 				if (ImGui::BeginTabItem(tab_name.c_str()))
 				{
+					ImGui::SliderFloat(u8"イベント発生フレーム", &camera_event[i].event_point, 0.0f, max_fream);
 					ImGui::SliderFloat(u8"位置X", &camera_event[i].camera_eye.x, -100.0f, 100.0f);
 					ImGui::SliderFloat(u8"位置Y", &camera_event[i].camera_eye.y, -100.0f, 100.0f);
 					ImGui::SliderFloat(u8"位置Z", &camera_event[i].camera_eye.z, -100.0f, 100.0f);
@@ -529,7 +642,6 @@ void CameraDirecting::DrawTimeLine(std::string timeline_name, PLSELECT chara_nam
 					ImGui::SliderFloat(u8"上Y", &camera_event[i].camera_up.y, -100.0f, 100.0f);
 					ImGui::SliderFloat(u8"上Z", &camera_event[i].camera_up.z, -100.0f, 100.0f);
 					ImGui::SliderFloat(u8"画角", &camera_event[i].fov, 0.0f, 100.0f);
-					ImGui::SliderFloat(u8"イベント発生フレーム", &camera_event[i].event_point, 0.0f, 5.0f);
 					ImGui::Checkbox(u8"待機するかどうか", &camera_event[i].wait_camera);
 
 					int effect_k_h = scastI(camera_event[i].effect_param.effect_kind);
@@ -559,26 +671,29 @@ void CameraDirecting::DrawTimeLine(std::string timeline_name, PLSELECT chara_nam
 
 					int face = scastI(camera_event[i].face_kind);
 					ImGui::SliderInt(u8"表情", &face, 0, scastI(FaceAnim::END) - 1);
+					ImGui::Text(GetName().face_name_list[face].c_str());
 					camera_event[i].face_kind = static_cast<FaceAnim>(face);
 
 					int se = scastI(camera_event[i].se_kind);
 					ImGui::SliderInt(u8"鳴らすSE", &se, 0, scastI(SEKind::END) - 1);
+					ImGui::Text(GetName().se_name_list[se].c_str());
 					camera_event[i].se_kind = static_cast<SEKind>(se);
 
 					int req = scastI(camera_event[i].camera_req);
 					ImGui::SliderInt(u8"カメラリクエスト", &req, 0, scastI(Camera::Request::Request_END) - 1);
+					ImGui::Text(GetName().request_name_list[req].c_str());
 					camera_event[i].camera_req = static_cast<Camera::Request>(req);
 
 					ImGui::Checkbox(u8"カメラをステータスで動かすか", &camera_event[i].camera_move);
 
-					if (camera_event[i].camera_eye.x == camera_event[i].camera_focus.x)
+					/*if (camera_event[i].camera_eye.x == camera_event[i].camera_focus.x)
 					{
 						camera_event[i].camera_focus.x += 0.1f;
 					}
 					if (camera_event[i].camera_eye.y == camera_event[i].camera_focus.y)
 					{
 						camera_event[i].camera_focus.y += 0.1f;
-					}
+					}*/
 					if (camera_event[i].camera_eye.z == camera_event[i].camera_focus.z)
 					{
 						camera_event[i].camera_focus.z += 0.1f;

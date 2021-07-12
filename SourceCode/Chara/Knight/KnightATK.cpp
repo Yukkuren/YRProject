@@ -1892,230 +1892,230 @@
 
 
 
-void Knight::SpecialAttack(float elapsed_time)
-{
-	if (later > -1 && later < target_max)
-	{
-		return;
-	}
-
-	if (fream < target_max)
-	{
-		//攻撃発生の結果を保存する
-		YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
-		if (now_player > 1)
-		{
-			YRCamera.camera_state = Camera::CAMERA_STATE::PLAYER2P;
-		}
-		else
-		{
-			YRCamera.camera_state = Camera::CAMERA_STATE::PLAYER1P;
-		}
-
-		hit_result = HitResult::NOT_OCCURRENCE;
-		fream -= elapsed_time;
-
-		//YR_Vector3	origin_focus;
-		//YR_Vector3	origin_eye;
-		YR_Vector3	focus;
-		YR_Vector3	eye;
-
-		//YRCamera.SetEye(eye.GetDXFLOAT3());
-		//YRCamera.SetFocus(focus.GetDXFLOAT3());
-
-
-		if (fream > 1.5f)
-		{
-			//カメラのステートが更新ではない場合は初期化にする
-			if (camera_state_knight != CAMERA_STATE_KNIGHT::SECOND)
-			{
-				camera_state_knight = CAMERA_STATE_KNIGHT::FIRST;
-			}
-			YRCamera.SetFov(50.0f * 0.01745f);
-		}
-		else if (fream > 1.0f)
-		{
-			//カメラのステートが更新ではない場合は初期化にする
-			if (camera_state_knight != CAMERA_STATE_KNIGHT::FOUR)
-			{
-				camera_state_knight = CAMERA_STATE_KNIGHT::THIRD;
-			}
-			ChangeFace(FaceAnim::YARUKI);
-			YRCamera.SetFov(50.0f * 0.01745f);
-		}
-		else if (fream > 0.2f)
-		{
-			//カメラのステートが更新ではない場合は初期化にする
-			if (camera_state_knight != CAMERA_STATE_KNIGHT::SIX)
-			{
-				camera_state_knight = CAMERA_STATE_KNIGHT::FIVE;
-			}
-			YRCamera.SetFov(50.0f * 0.01745f);
-		}
-		else
-		{
-			camera_state_knight = CAMERA_STATE_KNIGHT::SEVEN;
-		}
-
-		//演出でカメラを動かす
-		switch (camera_state_knight)
-		{
-		case Knight::CAMERA_STATE_KNIGHT::FIRST:
-			//原点を設定(初期化)
-			focus = YR_Vector3(pos.x, pos.y, pos.z - 2.0f);
-			eye = YR_Vector3(pos.x, pos.y, pos.z - 8.5f);
-			YRCamera.SetEye(eye.GetDXFLOAT3());
-			YRCamera.SetFocus(focus.GetDXFLOAT3());
-			camera_state_knight = CAMERA_STATE_KNIGHT::SECOND;
-			GetSound().SESinglePlay(SEKind::INTRO_WIND);
-			break;
-		case Knight::CAMERA_STATE_KNIGHT::SECOND:
-			//指定した位置までカメラを動かしていく(更新)
-			focus = YR_Vector3(pos.x, pos.y + 2.5f, pos.z - 2.0f);
-			eye = YR_Vector3(pos.x, pos.y + 5.5f, pos.z - 8.5f);
-			YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 0.05f);
-			break;
-		case Knight::CAMERA_STATE_KNIGHT::THIRD:
-			//原点を設定(初期化)
-			focus = YR_Vector3(pos.x, pos.y, pos.z);
-			eye = YR_Vector3(pos.x - Getapply(12.0f), pos.y - 2.0f, pos.z - 7.0f);
-			YRCamera.SetEye(eye.GetDXFLOAT3());
-			YRCamera.SetFocus(focus.GetDXFLOAT3());
-			camera_state_knight = CAMERA_STATE_KNIGHT::FOUR;
-			break;
-		case Knight::CAMERA_STATE_KNIGHT::FOUR:
-			//指定した位置までカメラを動かしていく(更新)
-			focus = YR_Vector3(pos.x, pos.y, pos.z);
-			eye = YR_Vector3(pos.x - Getapply(7.0f), pos.y - 2.0f, pos.z - 7.0f);
-			YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 0.05f);
-			break;
-		case Knight::CAMERA_STATE_KNIGHT::FIVE:
-			//原点を設定(初期化)
-			focus = YR_Vector3(pos.x + Getapply(2.0f), pos.y - 6.0f, pos.z);
-			eye = YR_Vector3(focus.x + Getapply(9.0f), focus.y + 2.0f, focus.z - 6.0f);
-			YRCamera.SetEye(eye.GetDXFLOAT3());
-			YRCamera.SetFocus(focus.GetDXFLOAT3());
-			camera_state_knight = CAMERA_STATE_KNIGHT::SIX;
-			GetSound().SESinglePlay(SEKind::SPECIAL_ATTACK2);
-			break;
-		case Knight::CAMERA_STATE_KNIGHT::SIX:
-			//指定した位置までカメラを動かしていく(更新)
-			eye = YR_Vector3(pos.x + Getapply(8.5f), pos.y + 2.8f, pos.z - 5.5f);
-			focus = YR_Vector3(pos.x - Getapply(5.5f), pos.y, pos.z + 3.0f);
-			YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 0.05f);
-			break;
-		case Knight::CAMERA_STATE_KNIGHT::SEVEN:
-			//カメラを徐々にメインに戻す
-			YRCamera.RequestCamera(Camera::Request::WEAKEN, now_player);
-			break;
-		}
-	}
-
-	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
-	if (fream < 0.0f)
-	{
-		//攻撃発生の結果を保存する
-		hit_result = HitResult::NONE;
-		//前進しないようにする
-		speed_X.Set(0.0f);
-		//int attack_num = attack_list[scastI(attack_state)].now_attack_num;
-		anim_ccodinate = ac_attack[now_at_list].timer;
-		attack_list[now_at_list].SetAttack(&atk, rightOrleft,pos);
-
-		//エフェクト生成
-		YRGetEffect().PlayEffect(EffectKind::SPECIAL_DRILL, atk.back().handle, atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -90.0f * rightOrleft);
-
-		atk.back().effect_param.effect_kind = EffectKind::SPECIAL_DRILL;
-
-		fream = non_target;
-		if (rightOrleft > 0)
-		{
-			anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
-		}
-		else
-		{
-			anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
-		}
-		YRCamera.RequestCamera(Camera::Request::RELEASE, now_player);
-		GetSound().SEStop(SEKind::INTRO_WIND);
-		GetSound().SEStop(SEKind::SPECIAL_ATTACK2);
-
-		YRGetEffect().StopEffect(EffectKind::WIND);
-
-		//SE再生
-		GetSound().SESinglePlay(SEKind::SPECIAL_ATTACK3);
-
-		//攻撃発生中は無敵
-		HitBoxTransition(HitBoxState::INVINCIBLE);
-
-		//持続時間を設定
-		timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
-	}
-
-	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
-	if (!atk.empty())
-	{
-		for (auto& a : atk)
-		{
-			if (knock)
-			{
-				a.parameter.knockback = 0.0f;
-			}
-			if (a.knock_start)
-			{
-				PosKnockPlus(a.parameter.knockback);
-				a.parameter.knockback = 0.0f;
-				knock = true;
-			}
-		}
-	}
-
-	if (timer > 0.0f && timer < target_max)
-	{
-		//持続フレームを減らしていく
-		timer -= elapsed_time;
-		if (hit_result != HitResult::GUARD)
-		{
-			//攻撃中は前に移動させる
-			pos.x += elapsed_time * Getapply(150.0f);
-		}
-		else
-		{
-			//無敵を消す
-			HitBoxTransition(HitBoxState::NOGUARD);
-		}
-	}
-
-	//持続時間が全て終了したことを確認する
-	if (timer < 0.0f)
-	{
-	/*if (AttackEndCheck())
-	{*/
-		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
-		{
-			fream = attack_list[now_at_list].attack_single[attack_list[now_at_list].now_attack_num].fream;
-		}
-		else
-		{
-			lumi_material = Model::Material_Attribute::NONE;
-			//ない場合は後隙に移行する
-			//攻撃番号を初期化
-			attack_list[now_at_list].now_attack_num = 0;
-			//後隙を設定
-			later = attack_list[now_at_list].later;
-			//アニメーション速度を指定
-			anim_ccodinate = ac_attack[now_at_list].later;
-			//無敵を消す
-			HitBoxTransition(HitBoxState::NOGUARD);
-			//描画をセット
-			if (rightOrleft > 0)
-			{
-				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::LATER));
-			}
-			else
-			{
-				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::LATER));
-			}
-		}
-	}
-}
+//void Knight::SpecialAttack(float elapsed_time)
+//{
+//	if (later > -1 && later < target_max)
+//	{
+//		return;
+//	}
+//
+//	if (fream < target_max)
+//	{
+//		//攻撃発生の結果を保存する
+//		YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
+//		if (now_player > 1)
+//		{
+//			YRCamera.camera_state = Camera::CAMERA_STATE::PLAYER2P;
+//		}
+//		else
+//		{
+//			YRCamera.camera_state = Camera::CAMERA_STATE::PLAYER1P;
+//		}
+//
+//		hit_result = HitResult::NOT_OCCURRENCE;
+//		fream -= elapsed_time;
+//
+//		//YR_Vector3	origin_focus;
+//		//YR_Vector3	origin_eye;
+//		YR_Vector3	focus;
+//		YR_Vector3	eye;
+//
+//		//YRCamera.SetEye(eye.GetDXFLOAT3());
+//		//YRCamera.SetFocus(focus.GetDXFLOAT3());
+//
+//
+//		if (fream > 1.5f)
+//		{
+//			//カメラのステートが更新ではない場合は初期化にする
+//			if (camera_state_knight != CAMERA_STATE_KNIGHT::SECOND)
+//			{
+//				camera_state_knight = CAMERA_STATE_KNIGHT::FIRST;
+//			}
+//			YRCamera.SetFov(50.0f * 0.01745f);
+//		}
+//		else if (fream > 1.0f)
+//		{
+//			//カメラのステートが更新ではない場合は初期化にする
+//			if (camera_state_knight != CAMERA_STATE_KNIGHT::FOUR)
+//			{
+//				camera_state_knight = CAMERA_STATE_KNIGHT::THIRD;
+//			}
+//			ChangeFace(FaceAnim::YARUKI);
+//			YRCamera.SetFov(50.0f * 0.01745f);
+//		}
+//		else if (fream > 0.2f)
+//		{
+//			//カメラのステートが更新ではない場合は初期化にする
+//			if (camera_state_knight != CAMERA_STATE_KNIGHT::SIX)
+//			{
+//				camera_state_knight = CAMERA_STATE_KNIGHT::FIVE;
+//			}
+//			YRCamera.SetFov(50.0f * 0.01745f);
+//		}
+//		else
+//		{
+//			camera_state_knight = CAMERA_STATE_KNIGHT::SEVEN;
+//		}
+//
+//		//演出でカメラを動かす
+//		switch (camera_state_knight)
+//		{
+//		case Knight::CAMERA_STATE_KNIGHT::FIRST:
+//			//原点を設定(初期化)
+//			focus = YR_Vector3(pos.x, pos.y, pos.z - 2.0f);
+//			eye = YR_Vector3(pos.x, pos.y, pos.z - 8.5f);
+//			YRCamera.SetEye(eye.GetDXFLOAT3());
+//			YRCamera.SetFocus(focus.GetDXFLOAT3());
+//			camera_state_knight = CAMERA_STATE_KNIGHT::SECOND;
+//			GetSound().SESinglePlay(SEKind::INTRO_WIND);
+//			break;
+//		case Knight::CAMERA_STATE_KNIGHT::SECOND:
+//			//指定した位置までカメラを動かしていく(更新)
+//			focus = YR_Vector3(pos.x, pos.y + 2.5f, pos.z - 2.0f);
+//			eye = YR_Vector3(pos.x, pos.y + 5.5f, pos.z - 8.5f);
+//			YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 0.05f);
+//			break;
+//		case Knight::CAMERA_STATE_KNIGHT::THIRD:
+//			//原点を設定(初期化)
+//			focus = YR_Vector3(pos.x, pos.y, pos.z);
+//			eye = YR_Vector3(pos.x - Getapply(12.0f), pos.y - 2.0f, pos.z - 7.0f);
+//			YRCamera.SetEye(eye.GetDXFLOAT3());
+//			YRCamera.SetFocus(focus.GetDXFLOAT3());
+//			camera_state_knight = CAMERA_STATE_KNIGHT::FOUR;
+//			break;
+//		case Knight::CAMERA_STATE_KNIGHT::FOUR:
+//			//指定した位置までカメラを動かしていく(更新)
+//			focus = YR_Vector3(pos.x, pos.y, pos.z);
+//			eye = YR_Vector3(pos.x - Getapply(7.0f), pos.y - 2.0f, pos.z - 7.0f);
+//			YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 0.05f);
+//			break;
+//		case Knight::CAMERA_STATE_KNIGHT::FIVE:
+//			//原点を設定(初期化)
+//			focus = YR_Vector3(pos.x + Getapply(2.0f), pos.y - 6.0f, pos.z);
+//			eye = YR_Vector3(focus.x + Getapply(9.0f), focus.y + 2.0f, focus.z - 6.0f);
+//			YRCamera.SetEye(eye.GetDXFLOAT3());
+//			YRCamera.SetFocus(focus.GetDXFLOAT3());
+//			camera_state_knight = CAMERA_STATE_KNIGHT::SIX;
+//			GetSound().SESinglePlay(SEKind::SPECIAL_ATTACK2);
+//			break;
+//		case Knight::CAMERA_STATE_KNIGHT::SIX:
+//			//指定した位置までカメラを動かしていく(更新)
+//			eye = YR_Vector3(pos.x + Getapply(8.5f), pos.y + 2.8f, pos.z - 5.5f);
+//			focus = YR_Vector3(pos.x - Getapply(5.5f), pos.y, pos.z + 3.0f);
+//			YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 0.05f);
+//			break;
+//		case Knight::CAMERA_STATE_KNIGHT::SEVEN:
+//			//カメラを徐々にメインに戻す
+//			YRCamera.RequestCamera(Camera::Request::WEAKEN, now_player);
+//			break;
+//		}
+//	}
+//
+//	int now_at_list = scastI(attack_list[scastI(attack_state)].real_attack);
+//	if (fream < 0.0f)
+//	{
+//		//攻撃発生の結果を保存する
+//		hit_result = HitResult::NONE;
+//		//前進しないようにする
+//		speed_X.Set(0.0f);
+//		//int attack_num = attack_list[scastI(attack_state)].now_attack_num;
+//		anim_ccodinate = ac_attack[now_at_list].timer;
+//		attack_list[now_at_list].SetAttack(&atk, rightOrleft,pos);
+//
+//		//エフェクト生成
+//		YRGetEffect().PlayEffect(EffectKind::SPECIAL_DRILL, atk.back().handle, atk.back().pos.GetDXFLOAT3(), DirectX::XMFLOAT3(3.0f, 3.0f, 3.0f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), -90.0f * rightOrleft);
+//
+//		atk.back().effect_param.effect_kind = EffectKind::SPECIAL_DRILL;
+//
+//		fream = non_target;
+//		if (rightOrleft > 0)
+//		{
+//			anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::TIMER));
+//		}
+//		else
+//		{
+//			anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::TIMER));
+//		}
+//		YRCamera.RequestCamera(Camera::Request::RELEASE, now_player);
+//		GetSound().SEStop(SEKind::INTRO_WIND);
+//		GetSound().SEStop(SEKind::SPECIAL_ATTACK2);
+//
+//		YRGetEffect().StopEffect(EffectKind::WIND);
+//
+//		//SE再生
+//		GetSound().SESinglePlay(SEKind::SPECIAL_ATTACK3);
+//
+//		//攻撃発生中は無敵
+//		HitBoxTransition(HitBoxState::INVINCIBLE);
+//
+//		//持続時間を設定
+//		timer = attack_list[now_at_list].attack_single[0].parameter[0].timer;
+//	}
+//
+//	bool knock = false;	//一度でもknock_startに入ったら残りの当たり判定のknockbackを全て0.0fにする
+//	if (!atk.empty())
+//	{
+//		for (auto& a : atk)
+//		{
+//			if (knock)
+//			{
+//				a.parameter.knockback = 0.0f;
+//			}
+//			if (a.knock_start)
+//			{
+//				PosKnockPlus(a.parameter.knockback);
+//				a.parameter.knockback = 0.0f;
+//				knock = true;
+//			}
+//		}
+//	}
+//
+//	if (timer > 0.0f && timer < target_max)
+//	{
+//		//持続フレームを減らしていく
+//		timer -= elapsed_time;
+//		if (hit_result != HitResult::GUARD)
+//		{
+//			//攻撃中は前に移動させる
+//			pos.x += elapsed_time * Getapply(150.0f);
+//		}
+//		else
+//		{
+//			//無敵を消す
+//			HitBoxTransition(HitBoxState::NOGUARD);
+//		}
+//	}
+//
+//	//持続時間が全て終了したことを確認する
+//	if (timer < 0.0f)
+//	{
+//	/*if (AttackEndCheck())
+//	{*/
+//		if (attack_list[now_at_list].now_attack_num < attack_list[now_at_list].attack_max)
+//		{
+//			fream = attack_list[now_at_list].attack_single[attack_list[now_at_list].now_attack_num].fream;
+//		}
+//		else
+//		{
+//			lumi_material = Model::Material_Attribute::NONE;
+//			//ない場合は後隙に移行する
+//			//攻撃番号を初期化
+//			attack_list[now_at_list].now_attack_num = 0;
+//			//後隙を設定
+//			later = attack_list[now_at_list].later;
+//			//アニメーション速度を指定
+//			anim_ccodinate = ac_attack[now_at_list].later;
+//			//無敵を消す
+//			HitBoxTransition(HitBoxState::NOGUARD);
+//			//描画をセット
+//			if (rightOrleft > 0)
+//			{
+//				anim->NodeChange(model_motion.model_R_Attack[now_at_list], scastI(AnimAtk::LATER));
+//			}
+//			else
+//			{
+//				anim->NodeChange(model_motion.model_L_Attack[now_at_list], scastI(AnimAtk::LATER));
+//			}
+//		}
+//	}
+//}

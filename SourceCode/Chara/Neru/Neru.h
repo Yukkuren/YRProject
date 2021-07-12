@@ -92,7 +92,7 @@ public:
 	void TrackDash(float decision, float elapsed_time);
 	void Steal(float elapsed_time);
 	void Slow(float elapsed_time);*/
-	void SpecialAttack(float elapsed_time);
+	//void SpecialAttack(float elapsed_time);
 
 	/*void Jaku_Lhurf(float elapsed_time);
 	void Thu_Lhurf(float elapsed_time);

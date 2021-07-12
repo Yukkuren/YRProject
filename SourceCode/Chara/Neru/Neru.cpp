@@ -785,11 +785,12 @@ void Neru::AttackDetailsSet(const AttackState& attack_state)
 	case AttackState::KYO_LHURF:
 		break;
 	case AttackState::SPECIAL_ATTACK:
-		YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
+		//YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
+		special_event.Init(now_player);
 		camera_state_neru = CAMERA_STATE_NERU::FIRST;
 		//ChangeFace(FaceAnim::KOUHUN);
 		//lumi_material= Model::Material_Attribute::SWORD;
-		GetSound().SESinglePlay(SEKind::SPECIAL_ATTACK);
+		//GetSound().SESinglePlay(SEKind::SPECIAL_ATTACK);
 		//YRGetEffect().PlayEffect(EffectKind::WIND, DirectX::XMFLOAT3(pos.x, pos.y - 5.0f, pos.z), DirectX::XMFLOAT3(2.0f, 2.0f, 2.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
 		//YRGetEffect().PlayEffect(EffectKind::WIND, DirectX::XMFLOAT3(pos.x, pos.y - 5.0f, pos.z), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 0.0f);
 		cut_in_timer = 0.0f;

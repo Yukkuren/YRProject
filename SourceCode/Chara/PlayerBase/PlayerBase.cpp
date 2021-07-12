@@ -97,7 +97,7 @@ void Player::Init(YR_Vector3 InitPos)
 
 	CharaInit();
 
-	special_event.Init();
+	//special_event.Init(now_player);
 
 	//ä÷êîÉ|ÉCÉìÉ^ìoò^
 	if (!attack_func.empty())attack_func.clear();
@@ -120,6 +120,7 @@ void Player::Init(YR_Vector3 InitPos)
 	attack_func[scastI(AT_Function_List::AttackSlidRollTurn)] = &Player::AttackSlidRollTurn;
 	attack_func[scastI(AT_Function_List::AttackTrack)] = &Player::AttackTrack;
 	attack_func[scastI(AT_Function_List::AttackTrackRoll)] = &Player::AttackTrackRoll;
+	attack_func[scastI(AT_Function_List::AttackSpecial)] = &Player::AttackSpecial;
 	attack_func[scastI(AT_Function_List::AttackSpecial_INV)] = &Player::AttackSpecial_INV;
 	attack_func[scastI(AT_Function_List::AttackBurst)] = &Player::AttackBurst;
 }
