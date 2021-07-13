@@ -1506,7 +1506,7 @@ void Player::DrawDEBUG(
 		ImGui::End();
 
 		std::string sp_st = std::to_string(now_player) + std::string(u8" P : ") + GetName().chara_name_list[scastI(this->chara_name)] + std::string(u8" : 超必殺イベント");
-		special_event.DrawTimeLine(sp_st,chara_name);
+		special_event.DrawTimeLine(sp_st, this, std::string("Special"));
 	}
 
 

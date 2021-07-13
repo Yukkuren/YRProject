@@ -74,6 +74,8 @@ void Neru::CharaInit()
 	sword_head = sword_tail;
 	sword_head.y += 0.88f;
 	sword_tail.y += 0.2f;*/
+
+	lip_text = RandTextSelect();
 }
 
 void Neru::Uninit()
@@ -273,7 +275,20 @@ void Neru::Draw(
 		if (scastI(YRCamera.camera_state) == now_player)
 		{
 			//カメラがキャラを見ている場合
-			anim->UpdateAnimation(game_speed * anim_ccodinate);
+			//演出テスト用
+			if (special_event.test)
+			{
+				anim->DebugUpdateAnimation(special_event.timer);
+			}
+			else if (intro_event.test)
+			{
+				anim->DebugUpdateAnimation(intro_event.timer * anim_ccodinate);
+			}
+			else
+			{
+				//通常のアニメーション更新
+				anim->UpdateAnimation(game_speed * anim_ccodinate);
+			}
 			anim->CalculateLocalTransform();
 			anim->CalculateWorldTransform(draw_pos, scale.GetDXFLOAT3(), angle.GetDXFLOAT3());
 			return_inverse = anim->Draw(shader, view, projection, light_direction, light_color, ambient_color, eye_offset, face_mouth_offset, lumi_material, material_color);
@@ -518,130 +533,130 @@ bool Neru::WinPerformance(float elapsed_time)
 	return false;
 }
 
-bool Neru::Intro(float elapsed_time)
-{
-	//イントロの行動をする
-	//カメラもこちらで動かす
-	YR_Vector3	focus;
-	YR_Vector3	eye;
-
-	switch (intro_state)
-	{
-	case Neru::INTRO_NERU::SET:
-		//原点を設定(初期化)
-		eye = YR_Vector3(pos.x - Getapply(52.0f), pos.y + 1.8f, pos.z + 70.0f);
-		focus = YR_Vector3(pos.x, pos.y + 1.8f, pos.z + 1.8f);
-		YRCamera.SetEye(eye.GetDXFLOAT3());
-		YRCamera.SetFocus(focus.GetDXFLOAT3());
-		intro_state = INTRO_NERU::WAIT;
-		lip_text = RandTextSelect();
-		GetSound().SESinglePlay(SEKind::INTRO_WIND);
-		break;
-	case Neru::INTRO_NERU::WAIT:
-		//指定した位置までカメラを動かしていく(更新)
-		eye = YR_Vector3(pos.x - Getapply(52.0f), pos.y +1.8f, pos.z + 50.0f);
-		focus = YR_Vector3(pos.x, pos.y + 1.8f, pos.z + 1.8f);
-		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 5.0f*elapsed_time);
-		if (intro_timer > 1.0f)
-		{
-			intro_state = INTRO_NERU::ZOOM_SET;
-		}
-		break;
-	case Neru::INTRO_NERU::ZOOM_SET:
-		//原点を設定(初期化)
-		eye = YR_Vector3(pos.x - Getapply(25.0f), pos.y + 5.0f, pos.z - 45.0f);
-		focus = YR_Vector3(pos.x, pos.y + 5.0f, pos.z);
-		YRCamera.SetEye(eye.GetDXFLOAT3());
-		YRCamera.SetFocus(focus.GetDXFLOAT3());
-		intro_state = INTRO_NERU::ZOOM;
-		ChangeFace(FaceAnim::NORMAL_LIP_SYNC);
-		break;
-	case Neru::INTRO_NERU::ZOOM:
-		//指定した位置までカメラを動かしていく(更新)
-		eye = YR_Vector3(pos.x, pos.y + 5.0f, pos.z - 50.0f);
-		focus = YR_Vector3(pos.x, pos.y + 5.0f, pos.z);
-		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 0.5f*elapsed_time);
-		text_on = true;
-
-		if (intro_timer > 3.0f)
-		{
-			intro_state = INTRO_NERU::PULL;
-			ChangeFace(FaceAnim::YARUKI);
-			text_on = false;
-		}
-		break;
-	case Neru::INTRO_NERU::PULL:
-		//指定した位置までカメラを動かしていく(更新)
-		eye = YR_Vector3(pos.x, pos.y + 2.5f, pos.z - 70.0f);
-		focus = YR_Vector3(pos.x, pos.y + 2.5f, pos.z);
-		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 5.0f * elapsed_time);
-		if (intro_timer > 4.0f)
-		{
-			intro_state = INTRO_NERU::PUSH;
-		}
-		break;
-	case Neru::INTRO_NERU::PUSH:
-		//指定した位置までカメラを動かしていく(更新)
-		eye = YR_Vector3(pos.x, pos.y + 2.5f, pos.z - 41.0f);
-		focus = YR_Vector3(pos.x, pos.y + 2.5f, pos.z);
-		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 5.0f * elapsed_time);
-		if (intro_timer > 4.5f)
-		{
-			intro_state = INTRO_NERU::PULL_2;
-		}
-		break;
-	case Neru::INTRO_NERU::PULL_2:
-		//指定した位置までカメラを動かしていく(更新)
-		eye = YR_Vector3(pos.x, pos.y + 30.0f, pos.z - 85.0f);
-		focus = YR_Vector3(pos.x, pos.y + 2.5f, pos.z);
-		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 5.0f * elapsed_time);
-		if (intro_timer > 4.9f)
-		{
-			intro_state = INTRO_NERU::PUSH_2;
-		}
-		break;
-	case Neru::INTRO_NERU::PUSH_2:
-		//指定した位置までカメラを動かしていく(更新)
-		eye = YR_Vector3(pos.x+Getapply(27.0f), pos.y + 5.4f, pos.z - 38.0f);
-		focus = YR_Vector3(pos.x, pos.y + 2.5f, pos.z);
-		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 5.0f * elapsed_time);
-		if (intro_timer > 5.3f)
-		{
-			intro_state = INTRO_NERU::FIN_SET;
-		}
-		break;
-	case Neru::INTRO_NERU::FIN_SET:
-		//原点を設定(初期化)
-		eye = YR_Vector3(pos.x - Getapply(30.0f), pos.y - 16.0f, pos.z - 23.0f);
-		focus = YR_Vector3(pos.x , pos.y, pos.z - 5.4f);
-		YRCamera.SetEye(eye.GetDXFLOAT3());
-		YRCamera.SetFocus(focus.GetDXFLOAT3());
-		intro_state = INTRO_NERU::FIN;
-		break;
-	case Neru::INTRO_NERU::FIN:
-		//指定した位置までカメラを動かしていく(更新)
-		eye = YR_Vector3(pos.x - Getapply(48.0f), pos.y - 16.0f, pos.z - 23.0f);
-		focus = YR_Vector3(pos.x - Getapply(5.0f), pos.y, pos.z - 5.4f);
-		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 8.0f * elapsed_time);
-		if (intro_timer > 6.0f)
-		{
-			intro_state = INTRO_NERU::FINISH;
-		}
-		break;
-	case Neru::INTRO_NERU::FINISH:
-		return true;
-		break;
-	default:
-		break;
-	}
-	intro_timer += elapsed_time;
-	/*if (intro_timer > 6.0f)
-	{
-		return true;
-	}*/
-
-	return false;
-}
+//bool Neru::Intro(float elapsed_time)
+//{
+//	//イントロの行動をする
+//	//カメラもこちらで動かす
+//	YR_Vector3	focus;
+//	YR_Vector3	eye;
+//
+//	switch (intro_state)
+//	{
+//	case Neru::INTRO_NERU::SET:
+//		//原点を設定(初期化)
+//		eye = YR_Vector3(pos.x - Getapply(52.0f), pos.y + 1.8f, pos.z + 70.0f);
+//		focus = YR_Vector3(pos.x, pos.y + 1.8f, pos.z + 1.8f);
+//		YRCamera.SetEye(eye.GetDXFLOAT3());
+//		YRCamera.SetFocus(focus.GetDXFLOAT3());
+//		intro_state = INTRO_NERU::WAIT;
+//		lip_text = RandTextSelect();
+//		GetSound().SESinglePlay(SEKind::INTRO_WIND);
+//		break;
+//	case Neru::INTRO_NERU::WAIT:
+//		//指定した位置までカメラを動かしていく(更新)
+//		eye = YR_Vector3(pos.x - Getapply(52.0f), pos.y +1.8f, pos.z + 50.0f);
+//		focus = YR_Vector3(pos.x, pos.y + 1.8f, pos.z + 1.8f);
+//		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 5.0f*elapsed_time);
+//		if (intro_timer > 1.0f)
+//		{
+//			intro_state = INTRO_NERU::ZOOM_SET;
+//		}
+//		break;
+//	case Neru::INTRO_NERU::ZOOM_SET:
+//		//原点を設定(初期化)
+//		eye = YR_Vector3(pos.x - Getapply(25.0f), pos.y + 5.0f, pos.z - 45.0f);
+//		focus = YR_Vector3(pos.x, pos.y + 5.0f, pos.z);
+//		YRCamera.SetEye(eye.GetDXFLOAT3());
+//		YRCamera.SetFocus(focus.GetDXFLOAT3());
+//		intro_state = INTRO_NERU::ZOOM;
+//		ChangeFace(FaceAnim::NORMAL_LIP_SYNC);
+//		break;
+//	case Neru::INTRO_NERU::ZOOM:
+//		//指定した位置までカメラを動かしていく(更新)
+//		eye = YR_Vector3(pos.x, pos.y + 5.0f, pos.z - 50.0f);
+//		focus = YR_Vector3(pos.x, pos.y + 5.0f, pos.z);
+//		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 0.5f*elapsed_time);
+//		text_on = true;
+//
+//		if (intro_timer > 3.0f)
+//		{
+//			intro_state = INTRO_NERU::PULL;
+//			ChangeFace(FaceAnim::YARUKI);
+//			text_on = false;
+//		}
+//		break;
+//	case Neru::INTRO_NERU::PULL:
+//		//指定した位置までカメラを動かしていく(更新)
+//		eye = YR_Vector3(pos.x, pos.y + 2.5f, pos.z - 70.0f);
+//		focus = YR_Vector3(pos.x, pos.y + 2.5f, pos.z);
+//		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 5.0f * elapsed_time);
+//		if (intro_timer > 4.0f)
+//		{
+//			intro_state = INTRO_NERU::PUSH;
+//		}
+//		break;
+//	case Neru::INTRO_NERU::PUSH:
+//		//指定した位置までカメラを動かしていく(更新)
+//		eye = YR_Vector3(pos.x, pos.y + 2.5f, pos.z - 41.0f);
+//		focus = YR_Vector3(pos.x, pos.y + 2.5f, pos.z);
+//		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 5.0f * elapsed_time);
+//		if (intro_timer > 4.5f)
+//		{
+//			intro_state = INTRO_NERU::PULL_2;
+//		}
+//		break;
+//	case Neru::INTRO_NERU::PULL_2:
+//		//指定した位置までカメラを動かしていく(更新)
+//		eye = YR_Vector3(pos.x, pos.y + 30.0f, pos.z - 85.0f);
+//		focus = YR_Vector3(pos.x, pos.y + 2.5f, pos.z);
+//		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 5.0f * elapsed_time);
+//		if (intro_timer > 4.9f)
+//		{
+//			intro_state = INTRO_NERU::PUSH_2;
+//		}
+//		break;
+//	case Neru::INTRO_NERU::PUSH_2:
+//		//指定した位置までカメラを動かしていく(更新)
+//		eye = YR_Vector3(pos.x+Getapply(27.0f), pos.y + 5.4f, pos.z - 38.0f);
+//		focus = YR_Vector3(pos.x, pos.y + 2.5f, pos.z);
+//		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 5.0f * elapsed_time);
+//		if (intro_timer > 5.3f)
+//		{
+//			intro_state = INTRO_NERU::FIN_SET;
+//		}
+//		break;
+//	case Neru::INTRO_NERU::FIN_SET:
+//		//原点を設定(初期化)
+//		eye = YR_Vector3(pos.x - Getapply(30.0f), pos.y - 16.0f, pos.z - 23.0f);
+//		focus = YR_Vector3(pos.x , pos.y, pos.z - 5.4f);
+//		YRCamera.SetEye(eye.GetDXFLOAT3());
+//		YRCamera.SetFocus(focus.GetDXFLOAT3());
+//		intro_state = INTRO_NERU::FIN;
+//		break;
+//	case Neru::INTRO_NERU::FIN:
+//		//指定した位置までカメラを動かしていく(更新)
+//		eye = YR_Vector3(pos.x - Getapply(48.0f), pos.y - 16.0f, pos.z - 23.0f);
+//		focus = YR_Vector3(pos.x - Getapply(5.0f), pos.y, pos.z - 5.4f);
+//		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 8.0f * elapsed_time);
+//		if (intro_timer > 6.0f)
+//		{
+//			intro_state = INTRO_NERU::FINISH;
+//		}
+//		break;
+//	case Neru::INTRO_NERU::FINISH:
+//		return true;
+//		break;
+//	default:
+//		break;
+//	}
+//	intro_timer += elapsed_time;
+//	/*if (intro_timer > 6.0f)
+//	{
+//		return true;
+//	}*/
+//
+//	return false;
+//}
 
 
 //イントロ後、ゲーム開始までの設定を行う
@@ -663,40 +678,40 @@ void Neru::ReadySet()
 
 
 //カメラ調整用デバッグ関数
-void Neru::IntroDEBUG()
-{
-#ifdef EXIST_IMGUI
-	if (Get_Use_ImGui())
-	{
-		ImGui::Begin(u8"イントロカメラ");
-		int state_in = scastI(intro_state);
-		ImGui::InputInt(u8"ステート", &state_in, 1, 10);
-		if (ImGui::TreeNode("Input"))
-		{
-			ImGui::InputFloat("eye.X", &eye_plus.x, 0.1f, 1.0f);
-			ImGui::InputFloat("eye.Y", &eye_plus.y, 0.1f, 1.0f);
-			ImGui::InputFloat("eye.Z", &eye_plus.z, 0.1f, 1.0f);
-			ImGui::InputFloat("focus.X", &focus_plus.x, 0.1f, 1.0f);
-			ImGui::InputFloat("focus.Y", &focus_plus.y, 0.1f, 1.0f);
-			ImGui::InputFloat("focus.Z", &focus_plus.z, 0.1f, 1.0f);
-			ImGui::TreePop();
-		}
-		if (ImGui::TreeNode("Slider"))
-		{
-			ImGui::SliderFloat("eye_X", &eye_plus.x, -350.1f, 350.1f);
-			ImGui::SliderFloat("eye_Y", &eye_plus.y, -350.1f, 350.1);
-			ImGui::SliderFloat("eye_Z", &eye_plus.z, -350.1f, 350.1);
-			ImGui::SliderFloat("focus_X", &focus_plus.x, -350.1f, 350.1);
-			ImGui::SliderFloat("focus_Y", &focus_plus.y, -350.1f, 350.1);
-			ImGui::SliderFloat("focus_Z", &focus_plus.z, -350.1f, 350.1);
-			ImGui::TreePop();
-		}
-		ImGui::Text("intro_timer = %.3f", intro_timer);
-		ImGui::End();
-	}
-#endif // USE_IMGUI
-
-}
+//void Neru::IntroDEBUG()
+//{
+//#ifdef EXIST_IMGUI
+//	if (Get_Use_ImGui())
+//	{
+//		ImGui::Begin(u8"イントロカメラ");
+//		int state_in = scastI(intro_state);
+//		ImGui::InputInt(u8"ステート", &state_in, 1, 10);
+//		if (ImGui::TreeNode("Input"))
+//		{
+//			ImGui::InputFloat("eye.X", &eye_plus.x, 0.1f, 1.0f);
+//			ImGui::InputFloat("eye.Y", &eye_plus.y, 0.1f, 1.0f);
+//			ImGui::InputFloat("eye.Z", &eye_plus.z, 0.1f, 1.0f);
+//			ImGui::InputFloat("focus.X", &focus_plus.x, 0.1f, 1.0f);
+//			ImGui::InputFloat("focus.Y", &focus_plus.y, 0.1f, 1.0f);
+//			ImGui::InputFloat("focus.Z", &focus_plus.z, 0.1f, 1.0f);
+//			ImGui::TreePop();
+//		}
+//		if (ImGui::TreeNode("Slider"))
+//		{
+//			ImGui::SliderFloat("eye_X", &eye_plus.x, -350.1f, 350.1f);
+//			ImGui::SliderFloat("eye_Y", &eye_plus.y, -350.1f, 350.1);
+//			ImGui::SliderFloat("eye_Z", &eye_plus.z, -350.1f, 350.1);
+//			ImGui::SliderFloat("focus_X", &focus_plus.x, -350.1f, 350.1);
+//			ImGui::SliderFloat("focus_Y", &focus_plus.y, -350.1f, 350.1);
+//			ImGui::SliderFloat("focus_Z", &focus_plus.z, -350.1f, 350.1);
+//			ImGui::TreePop();
+//		}
+//		ImGui::Text("intro_timer = %.3f", intro_timer);
+//		ImGui::End();
+//	}
+//#endif // USE_IMGUI
+//
+//}
 
 void Neru::WinDEBUG()
 {

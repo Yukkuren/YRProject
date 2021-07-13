@@ -186,6 +186,7 @@ public:
 
 	//表情
 	FaceAnim			face_kind;		//顔の種類
+	bool				text_on;		//テキストを表示して口パクさせるか
 
 	//サウンド関係
 	SEKind				se_kind;		//鳴らすSEの種類
@@ -200,14 +201,14 @@ public:
 	CameraEvent() :
 		camera_eye(0.0f, 0.0f, 0.0f), camera_focus(1.0f, 1.0f, 1.0f), camera_up(0.0f, 0.0f, 0.0f),
 		fov(0.0f), event_point(0.0f), wait_camera(false), handle(0), face_kind(FaceAnim::NORMAL), se_kind(SEKind::SE_NONE),
-		camera_req(Camera::Request::HOLD), camera_move(true), executed(false){};
+		camera_req(Camera::Request::HOLD), camera_move(true), executed(false),text_on(false){};
 
 	CameraEvent(
 		DirectX::XMFLOAT3 eye, DirectX::XMFLOAT3 focus, DirectX::XMFLOAT3 up,
 		float fov, float max_time) :
 		camera_eye(eye), camera_focus(focus), camera_up(up),
 		fov(fov), event_point(max_time), wait_camera(false), handle(0), face_kind(FaceAnim::NORMAL), se_kind(SEKind::SE_NONE),
-		camera_req(Camera::Request::HOLD), camera_move(true), executed(false){};
+		camera_req(Camera::Request::HOLD), camera_move(true), executed(false), text_on(false) {};
 };
 
 
@@ -271,13 +272,16 @@ public:
 	void Init(int now_player);
 
 	//イベント内容ロード
-	void Load(PLSELECT chara_name);
+	void Load(PLSELECT chara_name, std::string filename);
 
 	//イベント内容書き出し
-	void Write(PLSELECT chara_name);
+	void Write(PLSELECT chara_name, std::string filename);
 
 	//タイムラインを表示する
-	void DrawTimeLine(std::string timeline_name, PLSELECT chara_name);
+	void DrawTimeLine(std::string timeline_name, Player* player, std::string filename);
+
+	//プレイヤー側の設定を表示する
+	void DrawPlayerSetting(Player* player);
 };
 
 
@@ -815,7 +819,8 @@ public:
 	std::wstring lip_text;								//表示するテキスト
 	bool		text_on = false;						//trueならテキストを表示する
 
-	CameraDirecting special_event;
+	CameraDirecting special_event;						//前超必殺技のイベント
+	CameraDirecting intro_event;						//イントロのイベント
 
 public:
 	//基本処理関数
@@ -911,8 +916,8 @@ public:
 
 
 	virtual void WinAnimSet() = 0;
-	virtual bool Intro(float elapsed_time) = 0;
-	virtual void IntroDEBUG() = 0;
+	virtual bool Intro(float elapsed_time);
+	virtual void IntroDEBUG();
 	virtual bool WinPerformance(float elapsed_time) = 0;
 	virtual void WinDEBUG() = 0;
 	virtual void ReadySet() = 0;
@@ -999,6 +1004,8 @@ public:
 
 
 	virtual void ChangeFace(FaceAnim anim);						//表情を変える関数(enumで定義)
+
+	virtual void FaceAnimation(float elapsed_time);				//表情のアニメーション処理
 
 
 

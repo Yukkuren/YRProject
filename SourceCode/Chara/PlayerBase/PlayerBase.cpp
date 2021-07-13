@@ -123,6 +123,12 @@ void Player::Init(YR_Vector3 InitPos)
 	attack_func[scastI(AT_Function_List::AttackSpecial)] = &Player::AttackSpecial;
 	attack_func[scastI(AT_Function_List::AttackSpecial_INV)] = &Player::AttackSpecial_INV;
 	attack_func[scastI(AT_Function_List::AttackBurst)] = &Player::AttackBurst;
+
+	//イベント処理読み込み、初期化
+	special_event.Load(chara_name, std::string("Special"));
+	intro_event.Load(chara_name, std::string("Intro"));
+	intro_event.Init(now_player);
+	intro_event.test = true;
 }
 
 
@@ -2050,6 +2056,7 @@ void Player::Jump()
 				anim->NodeChange(model_motion.model_L_Act[scastI(ActState::JUMP)]);
 			}
 			anim->PlayAnimation(scastI(AnimAtk::FREAM), false);//アニメーションが終了したら切り替える
+			anim_ccodinate = ac_act[scastI(act_state)].fream;
 			jumpflag = true;
 
 			//現在攻撃判定が出ているなら全て消去する
@@ -4509,4 +4516,23 @@ void Player::DrawCutIn(
 		false,
 		SpriteMask::INDRAW
 	);
+}
+
+void Player::FaceAnimation(float elapsed_time)
+{
+	//継承して使用
+}
+
+
+bool Player::Intro(float elapsed_time)
+{
+	bool flag = intro_event.CameraEventUpdate(elapsed_time, this);
+	FaceAnimation(elapsed_time);
+	return flag;
+}
+
+
+void Player::IntroDEBUG()
+{
+	intro_event.DrawTimeLine(std::string(u8"イントロタイムライン"), this, std::string("Intro"));
 }

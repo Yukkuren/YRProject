@@ -23,13 +23,13 @@ void CameraDirecting::Init(int now_player)
 }
 
 
-void CameraDirecting::Load(PLSELECT chara_name)
+void CameraDirecting::Load(PLSELECT chara_name, std::string filename)
 {
 	//ファイルから読み込み
 	std::string f_level = std::string("./Data/CharaParameter/");
 	std::string chara_name_s = GetName().chara_name_list[scastI(chara_name)];
 
-	std::string AP_level = f_level + chara_name_s + std::string("/CameraDirecting.txt");
+	std::string AP_level = f_level + chara_name_s + std::string("/") + filename + std::string("CameraDirecting.txt");
 	std::ifstream ifs(AP_level);
 	std::string str;
 	int size = 0;
@@ -120,6 +120,10 @@ void CameraDirecting::Load(PLSELECT chara_name)
 
 			std::getline(ifs, str);
 			std::getline(ifs, str);
+			ifs >> camera_event[i].text_on;
+
+			std::getline(ifs, str);
+			std::getline(ifs, str);
 			ifs >> sk;
 			camera_event[i].se_kind = static_cast<SEKind>(sk);
 
@@ -144,13 +148,13 @@ void CameraDirecting::Load(PLSELECT chara_name)
 }
 
 
-void CameraDirecting::Write(PLSELECT chara_name)
+void CameraDirecting::Write(PLSELECT chara_name, std::string filename)
 {
 	//ファイルに書き出し
 	std::string f_level = std::string("./Data/CharaParameter/");
 	std::string chara_name_s = GetName().chara_name_list[scastI(chara_name)];
 
-	std::string AP_level = f_level + chara_name_s + std::string("/CameraDirecting.txt");
+	std::string AP_level = f_level + chara_name_s + std::string("/") + filename + std::string("CameraDirecting.txt");
 	std::ofstream outputfile(AP_level);
 
 	outputfile << "イベント合計" << std::endl;
@@ -217,6 +221,9 @@ void CameraDirecting::Write(PLSELECT chara_name)
 
 			outputfile << "表情" << std::endl;
 			outputfile << scastI(camera_event[i].face_kind) << std::endl;
+
+			outputfile << "テキスト" << std::endl;
+			outputfile << camera_event[i].text_on << std::endl;
 
 			outputfile << "サウンドの種類" << std::endl;
 			outputfile << scastI(camera_event[i].se_kind) << std::endl;
@@ -303,6 +310,9 @@ bool CameraDirecting::CameraEventUpdate(float elapsed_time, Player* player)	//引
 
 					//表情を変更する
 					player->ChangeFace(camera_event[e].face_kind);
+
+					//テキストを出す
+					player->text_on = camera_event[e].text_on;
 				}
 			}
 		}
@@ -508,7 +518,7 @@ void CameraDirecting::SetEffect(YR_Vector3 pos)
 		//プレイヤーの角度を依存させる場合
 		YRGetEffect().PlayEffect(
 			camera_event[now_event].effect_param.effect_kind, camera_event[now_event].handle,
-			DirectX::XMFLOAT3(pos.x + camera_event[now_event].effect_param.distance.x, pos.y + camera_event[now_event].effect_param.distance.y, pos.z + camera_event[now_event].effect_param.distance.z),
+			DirectX::XMFLOAT3(pos.x + Getapply(camera_event[now_event].effect_param.distance.x), pos.y + camera_event[now_event].effect_param.distance.y, pos.z + camera_event[now_event].effect_param.distance.z),
 			camera_event[now_event].effect_param.scale.GetDXFLOAT3(), camera_event[now_event].effect_param.axis.GetDXFLOAT3(), camera_event[now_event].effect_param.angle * decision);
 	}
 	else
@@ -516,7 +526,7 @@ void CameraDirecting::SetEffect(YR_Vector3 pos)
 		//依存させない場合
 		YRGetEffect().PlayEffect(
 			camera_event[now_event].effect_param.effect_kind, camera_event[now_event].handle,
-			DirectX::XMFLOAT3(pos.x + camera_event[now_event].effect_param.distance.x, pos.y + camera_event[now_event].effect_param.distance.y, pos.z + camera_event[now_event].effect_param.distance.z),
+			DirectX::XMFLOAT3(pos.x + Getapply(camera_event[now_event].effect_param.distance.x), pos.y + camera_event[now_event].effect_param.distance.y, pos.z + camera_event[now_event].effect_param.distance.z),
 			camera_event[now_event].effect_param.scale.GetDXFLOAT3(), camera_event[now_event].effect_param.axis.GetDXFLOAT3(), camera_event[now_event].effect_param.angle);
 	}
 }
@@ -524,7 +534,7 @@ void CameraDirecting::SetEffect(YR_Vector3 pos)
 
 
 
-void CameraDirecting::DrawTimeLine(std::string timeline_name, PLSELECT chara_name)
+void CameraDirecting::DrawTimeLine(std::string timeline_name, Player* player, std::string filename)
 {
 	//タイムラインの描画
 	ImGui::Begin(timeline_name.c_str());
@@ -532,6 +542,7 @@ void CameraDirecting::DrawTimeLine(std::string timeline_name, PLSELECT chara_nam
 	ImGui::SliderFloat(u8"最大フレーム", &max_fream, 0.0f, 5.0f);
 	ImGui::SliderFloat(u8"現在のタイマー", &timer, 0.0f, max_fream);
 	ImGui::Checkbox(u8"テストフラグ", &test);
+	DrawPlayerSetting(player);
 
 	if (ImGui::Button(u8"イベント追加"))
 	{
@@ -574,7 +585,7 @@ void CameraDirecting::DrawTimeLine(std::string timeline_name, PLSELECT chara_nam
 		ImGui::Text(u8"ロードしますか？");
 		if (ImGui::Button(u8"はい"))
 		{
-			Load(chara_name);
+			Load(player->chara_name, filename);
 			load_timer = 6.0f;
 			ImGui::CloseCurrentPopup();
 		}
@@ -606,7 +617,7 @@ void CameraDirecting::DrawTimeLine(std::string timeline_name, PLSELECT chara_nam
 			ImGui::Text(u8"セーブしますか？");
 			if (ImGui::Button(u8"はい"))
 			{
-				Write(chara_name);
+				Write(player->chara_name, filename);
 				save_timer = 6.0f;
 				ImGui::CloseCurrentPopup();
 			}
@@ -686,6 +697,8 @@ void CameraDirecting::DrawTimeLine(std::string timeline_name, PLSELECT chara_nam
 
 					ImGui::Checkbox(u8"カメラをステータスで動かすか", &camera_event[i].camera_move);
 
+					ImGui::Checkbox(u8"テキストを出す", &camera_event[i].text_on);
+
 					/*if (camera_event[i].camera_eye.x == camera_event[i].camera_focus.x)
 					{
 						camera_event[i].camera_focus.x += 0.1f;
@@ -707,4 +720,11 @@ void CameraDirecting::DrawTimeLine(std::string timeline_name, PLSELECT chara_nam
 	}
 
 	ImGui::End();
+}
+
+
+void CameraDirecting::DrawPlayerSetting(Player* player)
+{
+	//プレイヤー側の設定を表示する
+	ImGui::SliderFloat(u8"アニメーション更新速度", &player->anim_ccodinate, 0.0f, 3.0f);
 }

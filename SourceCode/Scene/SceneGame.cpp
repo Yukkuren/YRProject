@@ -1506,6 +1506,7 @@ void SceneGame::Draw(float elapsed_time)
 		//2Pのイントロ
 		//プレイヤー描画
 		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, lightColor, ambient_color, game_speed);
+		player2p->IntroDEBUG();
 		break;
 	case MAIN_LOOP::READY:
 	case MAIN_LOOP::MAIN:

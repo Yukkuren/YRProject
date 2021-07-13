@@ -39,6 +39,7 @@ public:
 	bool IsPlayAnimation() const { return m_current_animation >= 0; }
 	void PlayAnimation(int animation_index, bool loop = false);
 	void UpdateAnimation(float elapsed_time);
+	void DebugUpdateAnimation(float timer);
 
 	// çsóÒåvéZ
 	void CalculateLocalTransform();

@@ -106,7 +106,7 @@ public:
 
 	//継承
 
-	bool Intro(float elapsed_time);
+	//bool Intro(float elapsed_time);
 
 	void DrawDEBUGHitParam();
 
@@ -140,7 +140,7 @@ public:
 	YR_Vector3 eye_plus;				//カメラの座標にプラスする値
 	YR_Vector3 focus_plus;				//カメラの注視点にプラスする値
 
-	void IntroDEBUG();
+	//void IntroDEBUG();
 
 	//勝利演出用列挙
 	enum class WIN_PERFORMANCE_NERU : int
