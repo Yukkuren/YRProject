@@ -68,8 +68,8 @@ public:
 
 	void AttackDetailsSet(const AttackState &attack_state)override;
 
-	void WinAnimSet();
-	bool WinPerformance(float elapsed_time);
+	//void WinAnimSet();
+	//bool WinPerformance(float elapsed_time);
 
 
 	//----------------------------------//
@@ -119,31 +119,31 @@ public:
 
 
 	//イントロ用列挙
-	enum class INTRO_NERU : int
-	{
-		SET = 0,	//セットする
-		WAIT,		//後から見る
-		ZOOM_SET,	//セットする
-		ZOOM,		//口パクを見る
-		PULL,		//少し引く
-		PUSH,		//少し寄る
-		PULL_2,		//少し引く
-		PUSH_2,		//少し寄る
-		FIN_SET,	//セット
-		FIN,		//斜め後ろから見る
-		FINISH,
-	};
-	INTRO_NERU	intro_state;
+	//enum class INTRO_NERU : int
+	//{
+	//	SET = 0,	//セットする
+	//	WAIT,		//後から見る
+	//	ZOOM_SET,	//セットする
+	//	ZOOM,		//口パクを見る
+	//	PULL,		//少し引く
+	//	PUSH,		//少し寄る
+	//	PULL_2,		//少し引く
+	//	PUSH_2,		//少し寄る
+	//	FIN_SET,	//セット
+	//	FIN,		//斜め後ろから見る
+	//	FINISH,
+	//};
+	//INTRO_NERU	intro_state;
 
-	float			intro_timer;		//イントロで使用する
+	//float			intro_timer;		//イントロで使用する
 
-	YR_Vector3 eye_plus;				//カメラの座標にプラスする値
-	YR_Vector3 focus_plus;				//カメラの注視点にプラスする値
+	//YR_Vector3 eye_plus;				//カメラの座標にプラスする値
+	//YR_Vector3 focus_plus;				//カメラの注視点にプラスする値
 
 	//void IntroDEBUG();
 
 	//勝利演出用列挙
-	enum class WIN_PERFORMANCE_NERU : int
+	/*enum class WIN_PERFORMANCE_NERU : int
 	{
 		SET = 0,
 		ZOOM,
@@ -153,12 +153,12 @@ public:
 	};
 	WIN_PERFORMANCE_NERU	win_state;
 
-	float					win_timer;
+	float					win_timer;*/
 
-	void WinDEBUG();
+	//void WinDEBUG();
 
 	//特殊技カメラ処理用列挙
-	enum class CAMERA_STATE_NERU : int
+	/*enum class CAMERA_STATE_NERU : int
 	{
 		FIRST = 0,
 		SECOND,
@@ -174,7 +174,7 @@ public:
 		TWELVE,
 		THIRTEEN,
 		STATE_END,
-	}; CAMERA_STATE_NERU camera_state_neru;
+	}; CAMERA_STATE_NERU camera_state_neru;*/
 
 
 

@@ -229,6 +229,8 @@ public:
 	float						max_fream;		//演出の最大フレーム
 	float						timer;			//タイマー
 	bool						test;			//テストフラグ。trueならタイマーに加算しない
+	float						anim_ccodinate;	//アニメーション調整値
+	bool						anim_have;		//アニメーション調整値をイベント側で保持するか
 
 private:
 
@@ -239,7 +241,7 @@ private:
 public:
 
 	CameraDirecting() : timer(0.0f), now_event(0), save_timer(0.0f),
-		load_timer(0.0f), now_player(0), max_fream(1.0f), decision(1.0f), test(false)
+		load_timer(0.0f), now_player(0), max_fream(1.0f), decision(1.0f), test(false), anim_ccodinate(0.0f), anim_have(false)
 	{
 		camera_event.clear();
 	}
@@ -281,7 +283,7 @@ public:
 	void DrawTimeLine(std::string timeline_name, Player* player, std::string filename);
 
 	//プレイヤー側の設定を表示する
-	void DrawPlayerSetting(Player* player);
+	void DrawPlayerSetting();
 };
 
 
@@ -596,13 +598,14 @@ public:
 	Effekseer::Handle				handle;			//エフェクトのハンドル
 	AttackState						anim_kind;		//再生するアニメーション番号
 	AT_Function_List				function_num;	//関数ポインタの参照アドレス
+	SEKind							se_kind;		//鳴らすサウンドの種類
 
 public:
 	AttackList() : now_attack_num(0), attack_name(AttackState::NONE), later(0.0f),
 		attack_max(0), linkage_button(PAD::BUTTOM_END), linkage_command(Command::NOCOMMAND), ground_on(Ground_C::GROUND), squat_on(false),
 		need_power(0), linkage_stick(PAD::BUTTOM_END), aid_attack_name(AttackState::NONE), real_attack(attack_name),
 		speed_on(false), speed(0.0f, 0.0f, 0.0f), advance_speed(0.0f), combo(AttackState::NONE), conditions_hit(HitResult::HIT), timer(0.0f),
-		traject_on(true), effect_param(), handle(0), anim_kind(AttackState::NONE), function_num(AT_Function_List::AttackDefault) {};
+		traject_on(true), effect_param(), handle(0), anim_kind(AttackState::NONE), function_num(AT_Function_List::AttackDefault),se_kind(SEKind::SE_NONE) {};
 	//攻撃当たり判定を生成する
 	void SetAttack(std::vector<AttackBox> *atk, float rightOrleft, YR_Vector3 pl_pos)
 	{
@@ -821,6 +824,7 @@ public:
 
 	CameraDirecting special_event;						//前超必殺技のイベント
 	CameraDirecting intro_event;						//イントロのイベント
+	CameraDirecting win_event;							//勝利画面のイベント
 
 public:
 	//基本処理関数
@@ -915,12 +919,12 @@ public:
 
 
 
-	virtual void WinAnimSet() = 0;
+	virtual void WinAnimSet();
 	virtual bool Intro(float elapsed_time);
 	virtual void IntroDEBUG();
-	virtual bool WinPerformance(float elapsed_time) = 0;
-	virtual void WinDEBUG() = 0;
-	virtual void ReadySet() = 0;
+	virtual bool WinPerformance(float elapsed_time);
+	virtual void WinDEBUG();
+	virtual void ReadySet();
 	virtual void HitBoxReset();
 
 

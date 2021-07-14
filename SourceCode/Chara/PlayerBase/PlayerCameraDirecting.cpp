@@ -42,6 +42,14 @@ void CameraDirecting::Load(PLSELECT chara_name, std::string filename)
 	std::getline(ifs, str);
 	ifs >> max_fream;
 
+	std::getline(ifs, str);
+	std::getline(ifs, str);
+	ifs >> anim_ccodinate;
+
+	std::getline(ifs, str);
+	std::getline(ifs, str);
+	ifs >> anim_have;
+
 	if (!camera_event.empty())
 	{
 		//中身の読み込み
@@ -163,6 +171,12 @@ void CameraDirecting::Write(PLSELECT chara_name, std::string filename)
 	outputfile << "最大フレーム" << std::endl;
 	outputfile << max_fream << std::endl;
 
+	outputfile << "アニメーション調整値" << std::endl;
+	outputfile << anim_ccodinate << std::endl;
+
+	outputfile << "アニメ調整を行う" << std::endl;
+	outputfile << anim_have << std::endl;
+
 	if (!camera_event.empty())
 	{
 		//中身の書き出し
@@ -256,6 +270,11 @@ bool CameraDirecting::CameraEventUpdate(float elapsed_time, Player* player)	//引
 	if (timer >= max_fream)
 	{
 		return true;
+	}
+
+	if (anim_have)
+	{
+		player->anim_ccodinate = anim_ccodinate;
 	}
 
 	this->decision = player->rightOrleft;
@@ -433,6 +452,7 @@ void CameraDirecting::CameraUpdate(YR_Vector3 pos)
 	if (now_event == camera_event.size() - 1)
 	{
 		//現在のイベントが最後なら何もしない
+		CameraStateUpdate(pos);
 		return;
 	}
 
@@ -542,7 +562,7 @@ void CameraDirecting::DrawTimeLine(std::string timeline_name, Player* player, st
 	ImGui::SliderFloat(u8"最大フレーム", &max_fream, 0.0f, 5.0f);
 	ImGui::SliderFloat(u8"現在のタイマー", &timer, 0.0f, max_fream);
 	ImGui::Checkbox(u8"テストフラグ", &test);
-	DrawPlayerSetting(player);
+	DrawPlayerSetting();
 
 	if (ImGui::Button(u8"イベント追加"))
 	{
@@ -560,6 +580,7 @@ void CameraDirecting::DrawTimeLine(std::string timeline_name, Player* player, st
 			//既にイベントがある場合
 			CameraEvent f_event = camera_event.back();
 			camera_event.push_back(f_event);
+			camera_event.back().event_point = timer;
 		}
 	}
 
@@ -723,8 +744,10 @@ void CameraDirecting::DrawTimeLine(std::string timeline_name, Player* player, st
 }
 
 
-void CameraDirecting::DrawPlayerSetting(Player* player)
+void CameraDirecting::DrawPlayerSetting()
 {
 	//プレイヤー側の設定を表示する
-	ImGui::SliderFloat(u8"アニメーション更新速度", &player->anim_ccodinate, 0.0f, 3.0f);
+	ImGui::SliderFloat(u8"アニメーション更新速度", &anim_ccodinate, 0.0f, 3.0f);
+	ImGui::Checkbox(u8"アニメーション調整値を保持する", &anim_have);
+	//if (anim_have)player->anim_ccodinate = anim_ccodinate;
 }

@@ -149,7 +149,7 @@ bool Player::AttackLoad()
 		attack_list[list].attack_name = static_cast<AttackState>(list);
 		ifs >> attack_list[list].later;
 		ifs >> attack_list[list].attack_max;
-		int pad, com, stick, aid, real, next, result, ground, effect_k, anim_k, func_n;
+		int pad, com, stick, aid, real, next, result, ground, effect_k, anim_k, func_n,se_k;
 		EffectParameter e_param;
 		ifs >> pad;
 		ifs >> com;
@@ -179,8 +179,10 @@ bool Player::AttackLoad()
 		ifs >> attack_list[list].traject_on;
 		ifs >> anim_k;
 		ifs >> func_n;
+		ifs >> se_k;
 		attack_list[list].anim_kind = static_cast<AttackState>(anim_k);
 		attack_list[list].function_num = static_cast<AT_Function_List>(func_n);
+		attack_list[list].se_kind = static_cast<SEKind>(se_k);
 
 
 		ifs >> effect_k;
@@ -484,6 +486,7 @@ bool Player::AttackWrite()
 
 		outputfile << scastI(attack_list[list].anim_kind) << std::endl;
 		outputfile << scastI(attack_list[list].function_num) << std::endl;
+		outputfile << scastI(attack_list[list].se_kind) << std::endl;
 
 		//攻撃リストのエフェクト調整値
 		outputfile << scastI(attack_list[list].effect_param.effect_kind) << std::endl;
@@ -1123,6 +1126,11 @@ void Player::DrawDEBUG(
 									ImGui::SliderInt(u8"使用する関数", &function_n, 0, scastI(AT_Function_List::AT_END) - 1);
 									attack_list[list].function_num = static_cast<AT_Function_List>(function_n);
 									ImGui::Text(GetName().function_name_list[function_n].c_str());
+
+									int se_k = scastI(attack_list[list].se_kind);
+									ImGui::SliderInt(u8"鳴らすSE", &se_k, 0, scastI(SEKind::END) - 1);
+									attack_list[list].se_kind = static_cast<SEKind>(se_k);
+									ImGui::Text(GetName().se_name_list[se_k].c_str());
 
 									if (attack_list[list].linkage_stick != PAD::BUTTOM_END)
 									{

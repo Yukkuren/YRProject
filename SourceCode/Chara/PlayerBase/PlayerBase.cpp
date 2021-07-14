@@ -85,11 +85,14 @@ void Player::Init(YR_Vector3 InitPos)
 	if (now_player == 1)
 	{
 		anim->NodeChange(model_motion.intro_R);
+		rightOrleft = 1.0f;
 	}
 	else
 	{
 		anim->NodeChange(model_motion.intro_L);
+		rightOrleft = -1.0f;
 	}
+	anim->PlayAnimation(0, false);
 
 	cut_in_timer = 0.0f;
 
@@ -127,8 +130,9 @@ void Player::Init(YR_Vector3 InitPos)
 	//イベント処理読み込み、初期化
 	special_event.Load(chara_name, std::string("Special"));
 	intro_event.Load(chara_name, std::string("Intro"));
+	win_event.Load(chara_name, std::string("Win"));
 	intro_event.Init(now_player);
-	intro_event.test = true;
+	//intro_event.test = true;
 }
 
 
@@ -4534,5 +4538,55 @@ bool Player::Intro(float elapsed_time)
 
 void Player::IntroDEBUG()
 {
-	intro_event.DrawTimeLine(std::string(u8"イントロタイムライン"), this, std::string("Intro"));
+#ifdef EXIST_IMGUI
+	if (Get_Use_ImGui())
+	{
+		intro_event.DrawTimeLine(std::string(u8"イントロタイムライン"), this, std::string("Intro"));
+	}
+#endif // EXIST_IMGUI
+}
+
+void Player::ReadySet()
+{
+	YRCamera.RequestCamera(Camera::Request::RELEASE, now_player);
+}
+
+void Player::WinAnimSet()
+{
+	//勝利演出用のセット処理
+
+	pos = YR_Vector3(0.0f, 0.0f, 0.0f);
+	angle = YR_Vector3(0.0f, 0.0f, 0.0f);
+	hp = chara_state.max_hp;
+
+	if (now_player == 1)
+	{
+		anim->NodeChange(model_motion.win_R);
+		rightOrleft = 1.0f;
+	}
+	else
+	{
+		anim->NodeChange(model_motion.win_L);
+		rightOrleft = -1.0f;
+	}
+	anim->PlayAnimation(0, false);
+	win_event.Init(now_player);
+	//win_event.test = true;
+}
+
+bool Player::WinPerformance(float elapsed_time)
+{
+	bool flag = win_event.CameraEventUpdate(elapsed_time, this);
+	FaceAnimation(elapsed_time);
+	return flag;
+}
+
+void Player::WinDEBUG()
+{
+#ifdef EXIST_IMGUI
+	if (Get_Use_ImGui())
+	{
+		win_event.DrawTimeLine(std::string(u8"勝利タイムライン"), this, std::string("Win"));
+	}
+#endif // EXIST_IMGUI
 }

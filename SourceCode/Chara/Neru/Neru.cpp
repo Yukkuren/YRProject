@@ -38,19 +38,19 @@ void Neru::CharaInit()
 	scale = YR_Vector3( 0.08f,0.08f,0.08f );
 	angle = YR_Vector3(0.0f, 0.0f, 0.0f);
 
-	intro_state = INTRO_NERU::SET;
-	win_state = WIN_PERFORMANCE_NERU::SET;
+	//intro_state = INTRO_NERU::SET;
+	//win_state = WIN_PERFORMANCE_NERU::SET;
 
 
 	production_time = 0.0f;
-	anim_ccodinate = 2.0f;
+	anim_ccodinate = 1.0f;
 
-	camera_state_neru = CAMERA_STATE_NERU::FIRST;
+	/*camera_state_neru = CAMERA_STATE_NERU::FIRST;
 	intro_timer = 0.0f;
 	win_timer = 0.0f;
 
 	eye_plus = YR_Vector3(0.0f, 0.0f, -10.0f);
-	focus_plus = YR_Vector3(0.0f, 0.0f, 0.0f);
+	focus_plus = YR_Vector3(0.0f, 0.0f, 0.0f);*/
 
 	//traject.Init(max_traject_count);
 
@@ -278,11 +278,15 @@ void Neru::Draw(
 			//演出テスト用
 			if (special_event.test)
 			{
-				anim->DebugUpdateAnimation(special_event.timer);
+				anim->DebugUpdateAnimation(special_event.timer * anim_ccodinate);
 			}
 			else if (intro_event.test)
 			{
 				anim->DebugUpdateAnimation(intro_event.timer * anim_ccodinate);
+			}
+			else if (win_event.test)
+			{
+				anim->DebugUpdateAnimation(win_event.timer * anim_ccodinate);
 			}
 			else
 			{
@@ -443,95 +447,95 @@ void Neru::AttackUpdate(float elapsed_time)
 
 
 
-void Neru::WinAnimSet()
-{
-	//勝利演出用のセット処理
+//void Neru::WinAnimSet()
+//{
+//	//勝利演出用のセット処理
+//
+//	pos = YR_Vector3( 0.0f,0.0f,0.0f );
+//	angle = YR_Vector3( 0.0f,0.0f,0.0f );
+//	hp = chara_state.max_hp;
+//
+//	/*YR_Vector3 eye = YR_Vector3(pos.x, pos.y + 5.0f, pos.z - 80.0f);
+//	YR_Vector3 focus = YR_Vector3(pos.x, pos.y + 3.5f, pos.z);
+//	YRCamera.SetEye(eye.GetDXFLOAT3());
+//	YRCamera.SetFocus(focus.GetDXFLOAT3());*/
+//	if (now_player == 1)
+//	{
+//		anim->NodeChange(model_motion.win_R);
+//	}
+//	else
+//	{
+//		anim->NodeChange(model_motion.win_L);
+//	}
+//	//anim->PlayAnimation(0, false);
+//	//ChangeFace(FaceAnim::TOZI);
+//	//win_state = WIN_PERFORMANCE_NERU::SET;
+//	//anim_ccodinate = 1.1f;
+//}
 
-	pos = YR_Vector3( 0.0f,0.0f,0.0f );
-	angle = YR_Vector3( 0.0f,0.0f,0.0f );
-	hp = chara_state.max_hp;
-
-	YR_Vector3 eye = YR_Vector3(pos.x, pos.y + 5.0f, pos.z - 80.0f);
-	YR_Vector3 focus = YR_Vector3(pos.x, pos.y + 3.5f, pos.z);
-	YRCamera.SetEye(eye.GetDXFLOAT3());
-	YRCamera.SetFocus(focus.GetDXFLOAT3());
-	if (now_player == 1)
-	{
-		anim->NodeChange(model_motion.win_R);
-	}
-	else
-	{
-		anim->NodeChange(model_motion.win_L);
-	}
-	anim->PlayAnimation(0, false);
-	ChangeFace(FaceAnim::TOZI);
-	win_state = WIN_PERFORMANCE_NERU::SET;
-	anim_ccodinate = 1.1f;
-}
-
-bool Neru::WinPerformance(float elapsed_time)
-{
-	//勝利演出処理
-
-	YR_Vector3 focus;
-	YR_Vector3 eye;
-
-	float apply = 1.0f;
-	if (now_player == 1)
-	{
-		apply = 1.0f;
-	}
-	else
-	{
-		apply = -1.0f;
-	}
-	//勝利演出の行動をする
-	//カメラもこちらで動かす
-	switch (win_state)
-	{
-	case Neru::WIN_PERFORMANCE_NERU::SET:
-		//原点を設定(初期化)
-		eye = YR_Vector3(pos.x, pos.y + 5.0f, pos.z - 80.0f);
-		focus = YR_Vector3(pos.x, pos.y + 3.5f, pos.z);
-		YRCamera.SetEye(eye.GetDXFLOAT3());
-		YRCamera.SetFocus(focus.GetDXFLOAT3());
-		win_state = WIN_PERFORMANCE_NERU::ZOOM;
-		break;
-	case Neru::WIN_PERFORMANCE_NERU::ZOOM:
-		eye = YR_Vector3(pos.x, pos.y + 5.0f, pos.z - 50.0f);
-		focus = YR_Vector3(pos.x, pos.y + 3.5f, pos.z);
-		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 0.1f * elapsed_time);
-		if (win_timer > 1.5f)
-		{
-			ChangeFace(FaceAnim::YEAH);
-			win_state = WIN_PERFORMANCE_NERU::PULL;
-		}
-		break;
-	case Neru::WIN_PERFORMANCE_NERU::PULL:
-		eye = YR_Vector3(pos.x+(apply*-18.0f), pos.y + 5.0f, pos.z - 43.0f);
-		focus = YR_Vector3(pos.x, pos.y + 3.5f, pos.z);
-		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 8.0f * elapsed_time);
-		if (win_timer > 1.8f)
-		{
-			win_state = WIN_PERFORMANCE_NERU::STOP;
-		}
-		break;
-	case Neru::WIN_PERFORMANCE_NERU::STOP:
-		if (win_timer > 3.0f)
-		{
-			win_state = WIN_PERFORMANCE_NERU::FINISH;
-		}
-		break;
-	case Neru::WIN_PERFORMANCE_NERU::FINISH:
-		return true;
-		break;
-	default:
-		break;
-	}
-	win_timer += elapsed_time;
-
-	return false;
-}
+//bool Neru::WinPerformance(float elapsed_time)
+//{
+//	//勝利演出処理
+//
+//	YR_Vector3 focus;
+//	YR_Vector3 eye;
+//
+//	float apply = 1.0f;
+//	if (now_player == 1)
+//	{
+//		apply = 1.0f;
+//	}
+//	else
+//	{
+//		apply = -1.0f;
+//	}
+//	//勝利演出の行動をする
+//	//カメラもこちらで動かす
+//	switch (win_state)
+//	{
+//	case Neru::WIN_PERFORMANCE_NERU::SET:
+//		//原点を設定(初期化)
+//		eye = YR_Vector3(pos.x, pos.y + 5.0f, pos.z - 80.0f);
+//		focus = YR_Vector3(pos.x, pos.y + 3.5f, pos.z);
+//		YRCamera.SetEye(eye.GetDXFLOAT3());
+//		YRCamera.SetFocus(focus.GetDXFLOAT3());
+//		win_state = WIN_PERFORMANCE_NERU::ZOOM;
+//		break;
+//	case Neru::WIN_PERFORMANCE_NERU::ZOOM:
+//		eye = YR_Vector3(pos.x, pos.y + 5.0f, pos.z - 50.0f);
+//		focus = YR_Vector3(pos.x, pos.y + 3.5f, pos.z);
+//		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 0.1f * elapsed_time);
+//		if (win_timer > 1.5f)
+//		{
+//			ChangeFace(FaceAnim::YEAH);
+//			win_state = WIN_PERFORMANCE_NERU::PULL;
+//		}
+//		break;
+//	case Neru::WIN_PERFORMANCE_NERU::PULL:
+//		eye = YR_Vector3(pos.x+(apply*-18.0f), pos.y + 5.0f, pos.z - 43.0f);
+//		focus = YR_Vector3(pos.x, pos.y + 3.5f, pos.z);
+//		YRCamera.SpecifiedLerp(eye.GetDXFLOAT3(), focus.GetDXFLOAT3(), 8.0f * elapsed_time);
+//		if (win_timer > 1.8f)
+//		{
+//			win_state = WIN_PERFORMANCE_NERU::STOP;
+//		}
+//		break;
+//	case Neru::WIN_PERFORMANCE_NERU::STOP:
+//		if (win_timer > 3.0f)
+//		{
+//			win_state = WIN_PERFORMANCE_NERU::FINISH;
+//		}
+//		break;
+//	case Neru::WIN_PERFORMANCE_NERU::FINISH:
+//		return true;
+//		break;
+//	default:
+//		break;
+//	}
+//	win_timer += elapsed_time;
+//
+//	return false;
+//}
 
 //bool Neru::Intro(float elapsed_time)
 //{
@@ -662,6 +666,7 @@ bool Neru::WinPerformance(float elapsed_time)
 //イントロ後、ゲーム開始までの設定を行う
 void Neru::ReadySet()
 {
+	Player::ReadySet();
 	text_on = false;
 	if (rightOrleft > 0)
 	{
@@ -713,40 +718,40 @@ void Neru::ReadySet()
 //
 //}
 
-void Neru::WinDEBUG()
-{
-#ifdef EXIST_IMGUI
-	if (Get_Use_ImGui())
-	{
-		ImGui::Begin(u8"勝利カメラ");
-		int state_in = scastI(win_state);
-		ImGui::InputInt(u8"ステート", &state_in, 1, 10);
-		if (ImGui::TreeNode("Input"))
-		{
-			ImGui::InputFloat("eye.X", &eye_plus.x, 0.1f, 1.0f);
-			ImGui::InputFloat("eye.Y", &eye_plus.y, 0.1f, 1.0f);
-			ImGui::InputFloat("eye.Z", &eye_plus.z, 0.1f, 1.0f);
-			ImGui::InputFloat("focus.X", &focus_plus.x, 0.1f, 1.0f);
-			ImGui::InputFloat("focus.Y", &focus_plus.y, 0.1f, 1.0f);
-			ImGui::InputFloat("focus.Z", &focus_plus.z, 0.1f, 1.0f);
-			ImGui::TreePop();
-		}
-		if (ImGui::TreeNode("Slider"))
-		{
-			ImGui::SliderFloat("eye_X", &eye_plus.x, -350.1f, 350.1f);
-			ImGui::SliderFloat("eye_Y", &eye_plus.y, -350.1f, 350.1);
-			ImGui::SliderFloat("eye_Z", &eye_plus.z, -350.1f, 350.1);
-			ImGui::SliderFloat("focus_X", &focus_plus.x, -350.1f, 350.1);
-			ImGui::SliderFloat("focus_Y", &focus_plus.y, -350.1f, 350.1);
-			ImGui::SliderFloat("focus_Z", &focus_plus.z, -350.1f, 350.1);
-			ImGui::TreePop();
-		}
-		ImGui::Text("intro_timer = %.3f", win_timer);
-		ImGui::End();
-	}
-#endif // USE_IMGUI
-
-}
+//void Neru::WinDEBUG()
+//{
+//#ifdef EXIST_IMGUI
+//	if (Get_Use_ImGui())
+//	{
+//		ImGui::Begin(u8"勝利カメラ");
+//		int state_in = scastI(win_state);
+//		ImGui::InputInt(u8"ステート", &state_in, 1, 10);
+//		if (ImGui::TreeNode("Input"))
+//		{
+//			ImGui::InputFloat("eye.X", &eye_plus.x, 0.1f, 1.0f);
+//			ImGui::InputFloat("eye.Y", &eye_plus.y, 0.1f, 1.0f);
+//			ImGui::InputFloat("eye.Z", &eye_plus.z, 0.1f, 1.0f);
+//			ImGui::InputFloat("focus.X", &focus_plus.x, 0.1f, 1.0f);
+//			ImGui::InputFloat("focus.Y", &focus_plus.y, 0.1f, 1.0f);
+//			ImGui::InputFloat("focus.Z", &focus_plus.z, 0.1f, 1.0f);
+//			ImGui::TreePop();
+//		}
+//		if (ImGui::TreeNode("Slider"))
+//		{
+//			ImGui::SliderFloat("eye_X", &eye_plus.x, -350.1f, 350.1f);
+//			ImGui::SliderFloat("eye_Y", &eye_plus.y, -350.1f, 350.1);
+//			ImGui::SliderFloat("eye_Z", &eye_plus.z, -350.1f, 350.1);
+//			ImGui::SliderFloat("focus_X", &focus_plus.x, -350.1f, 350.1);
+//			ImGui::SliderFloat("focus_Y", &focus_plus.y, -350.1f, 350.1);
+//			ImGui::SliderFloat("focus_Z", &focus_plus.z, -350.1f, 350.1);
+//			ImGui::TreePop();
+//		}
+//		ImGui::Text("intro_timer = %.3f", win_timer);
+//		ImGui::End();
+//	}
+//#endif // USE_IMGUI
+//
+//}
 
 
 
@@ -802,7 +807,7 @@ void Neru::AttackDetailsSet(const AttackState& attack_state)
 	case AttackState::SPECIAL_ATTACK:
 		//YRCamera.RequestCamera(Camera::Request::HOLD, now_player);
 		special_event.Init(now_player);
-		camera_state_neru = CAMERA_STATE_NERU::FIRST;
+		//camera_state_neru = CAMERA_STATE_NERU::FIRST;
 		//ChangeFace(FaceAnim::KOUHUN);
 		//lumi_material= Model::Material_Attribute::SWORD;
 		//GetSound().SESinglePlay(SEKind::SPECIAL_ATTACK);
@@ -837,13 +842,13 @@ std::wstring Neru::RandTextSelect()
 	switch (rnd)
 	{
 	case Neru::TextList::NORMAL://通常
-		return std::wstring(L"さぁ、始めようか！");
+		return std::wstring(L"早く終わらせて寝たいなぁ・・・");
 		break;
 	case Neru::TextList::WARLIKE://好戦的
-		return std::wstring(L"一気に行くよ！");
+		return std::wstring(L"ちょっと本気出すね");
 		break;
 	case Neru::TextList::CRIOSITY://好奇心
-		return std::wstring(L"私と戦いたいの？");
+		return std::wstring(L"頑張って行ってみよー");
 		break;
 	case Neru::TextList::TEXT_END:
 		break;

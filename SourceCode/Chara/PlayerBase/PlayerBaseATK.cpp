@@ -49,6 +49,9 @@ void Player::AttackDefault(float decision, float elapsed_time)
 	//発生フレームになったら攻撃判定を生成する
 	if (fream < 0.0f)
 	{
+		//SEを鳴らす
+		GetSound().SESinglePlay(attack_list[now_at_list].se_kind);
+
 		//攻撃発生の結果を保存する
 		hit_result = HitResult::NONE;
 		//前進しないようにする
@@ -266,8 +269,8 @@ void Player::AttackProjectileDefault(float decision, float elapsed_time)
 
 		//projectile_atk.back().effect_kind = EffectKind::DRILL;
 
-		//SE再生
-		GetSound().SESinglePlay(SEKind::PROJECTILE);
+		//SEを鳴らす
+		GetSound().SESinglePlay(attack_list[now_at_list].se_kind);
 
 		//発生フレームを初期化
 		fream = non_target;
@@ -912,6 +915,9 @@ void Player::AttackJump(float decision, float elapsed_time)
 		//持続時間を設定
 		timer = attack_list[now_at_list].attack_single[now_at_num].parameter[0].timer;
 
+		//SEを鳴らす
+		GetSound().SESinglePlay(attack_list[now_at_list].se_kind);
+
 		now_at_num = attack_list[now_at_list].now_attack_num;
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
@@ -1101,6 +1107,10 @@ void Player::AttackAirUp(float decision, float elapsed_time)
 		//持続時間を設定
 		timer = attack_list[now_at_list].attack_single[now_at_num].parameter[0].timer;
 
+
+		//SEを鳴らす
+		GetSound().SESinglePlay(attack_list[now_at_list].se_kind);
+
 		now_at_num = attack_list[now_at_list].now_attack_num;
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
@@ -1274,6 +1284,9 @@ void Player::AttackSteal(float decision, float elapsed_time)
 
 		//持続時間を設定
 		timer = attack_list[now_at_list].attack_single[now_at_num].parameter[0].timer;
+
+		//SEを鳴らす
+		GetSound().SESinglePlay(attack_list[now_at_list].se_kind);
 
 		now_at_num = attack_list[now_at_list].now_attack_num;
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
@@ -1561,6 +1574,9 @@ void Player::AttackSlow(float decision, float elapsed_time)
 		//持続時間を設定
 		timer = attack_list[now_at_list].attack_single[now_at_num].parameter[0].timer;
 
+		//SEを鳴らす
+		GetSound().SESinglePlay(attack_list[now_at_list].se_kind);
+
 		now_at_num = attack_list[now_at_list].now_attack_num;
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
@@ -1734,6 +1750,9 @@ void Player::AttackSlid(float decision, float elapsed_time)
 
 		//持続時間を設定
 		timer = attack_list[now_at_list].attack_single[now_at_num].parameter[0].timer;
+
+		//SEを鳴らす
+		GetSound().SESinglePlay(attack_list[now_at_list].se_kind);
 
 		now_at_num = attack_list[now_at_list].now_attack_num;
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
@@ -1923,6 +1942,10 @@ void Player::AttackSlidRoll(float decision, float elapsed_time)
 		//持続時間を設定
 		timer = attack_list[now_at_list].attack_single[now_at_num].parameter[0].timer;
 
+		//SEを鳴らす
+		GetSound().SESinglePlay(attack_list[now_at_list].se_kind);
+
+
 		now_at_num = attack_list[now_at_list].now_attack_num;
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
@@ -2108,6 +2131,9 @@ void Player::AttackAirSlidRoll(float decision, float elapsed_time)
 
 		//持続時間を設定
 		timer = attack_list[now_at_list].attack_single[now_at_num].parameter[0].timer;
+
+		//SEを鳴らす
+		GetSound().SESinglePlay(attack_list[now_at_list].se_kind);
 
 		now_at_num = attack_list[now_at_list].now_attack_num;
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
@@ -2297,6 +2323,9 @@ void Player::AttackSlidRollTurn(float decision, float elapsed_time)
 
 		//持続時間を設定
 		timer = attack_list[now_at_list].attack_single[now_at_num].parameter[0].timer;
+
+		//SEを鳴らす
+		GetSound().SESinglePlay(attack_list[now_at_list].se_kind);
 
 		now_at_num = attack_list[now_at_list].now_attack_num;
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
@@ -2545,6 +2574,9 @@ void Player::AttackTrack(float decision, float elapsed_time)
 		timer = attack_list[now_at_list].attack_single[now_at_num].parameter[0].timer;
 
 		now_at_num = attack_list[now_at_list].now_attack_num;
+
+		//SEを鳴らす
+		GetSound().SESinglePlay(attack_list[now_at_list].se_kind);
 
 		//アーマーを付与
 		HitBoxTransition(HitBoxState::PROJECTILE_ARMOR);
@@ -2859,6 +2891,9 @@ void Player::AttackTrackRoll(float decision, float elapsed_time)
 
 		now_at_num = attack_list[now_at_list].now_attack_num;
 
+		//SEを鳴らす
+		GetSound().SESinglePlay(attack_list[now_at_list].se_kind);
+
 		//飛び道具アーマーを付与
 		HitBoxTransition(HitBoxState::PROJECTILE_ARMOR);
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
@@ -3171,6 +3206,9 @@ void Player::AttackJumpEx(float decision, float elapsed_time)
 		jumpflag = true;
 		if (!ground)max_jump_flag = false;
 
+		//SEを鳴らす
+		GetSound().SESinglePlay(attack_list[now_at_list].se_kind);
+
 		now_at_num = attack_list[now_at_list].now_attack_num;
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
@@ -3369,6 +3407,9 @@ void Player::AttackSpecial(float decision, float elapsed_time)
 
 		//持続時間を設定
 		timer = attack_list[now_at_list].attack_single[now_at_num].parameter[0].timer;
+
+		//SEを鳴らす
+		GetSound().SESinglePlay(attack_list[now_at_list].se_kind);
 
 		now_at_num = attack_list[now_at_list].now_attack_num;
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
@@ -3581,6 +3622,9 @@ void Player::AttackSpecial_INV(float decision, float elapsed_time)
 		//持続時間を設定
 		timer = attack_list[now_at_list].attack_single[now_at_num].parameter[0].timer;
 
+		//SEを鳴らす
+		GetSound().SESinglePlay(attack_list[now_at_list].se_kind);
+
 		now_at_num = attack_list[now_at_list].now_attack_num;
 		//anim->NodeChange(model_motion.model_R[now_at_list], scastI(AnimAtk::TIMER));
 	}
@@ -3788,6 +3832,9 @@ void Player::AttackBurst(float decision, float elapsed_time)
 
 		//持続時間を設定
 		timer = attack_list[now_at_list].attack_single[now_at_num].parameter[0].timer;
+
+		//SEを鳴らす
+		GetSound().SESinglePlay(attack_list[now_at_list].se_kind);
 
 		now_at_num = attack_list[now_at_list].now_attack_num;
 

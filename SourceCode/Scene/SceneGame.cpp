@@ -346,10 +346,10 @@ void SceneGame::LoadData()
 	{
 		draw_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/DRAW.png", 960.0f, 384.0f);
 	}
-	if (HPbar_img == nullptr)
+	/*if (HPbar_img == nullptr)
 	{
 		HPbar_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/HPbar.png", 850.0f, 150.0f);
-	}
+	}*/
 	if (KO_img == nullptr)
 	{
 		KO_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/KO.png", 640.0f, 384.0f);
@@ -549,7 +549,7 @@ void SceneGame::UnInit()
 	win1P_img.reset();
 	win2P_img.reset();
 	draw_img.reset();
-	HPbar_img.reset();
+	//HPbar_img.reset();
 	KO_img.reset();
 	font_img.reset();
 	call_img.reset();
@@ -812,7 +812,7 @@ void SceneGame::Update(float elapsed_time)
 			//途中ボタンが押されたときはスキップ
 			for (int i = 0; i < any_button.size(); i++)
 			{
-				if (player1p->pad->x_input[scastI(any_button[i])] == 1 || player2p->pad->x_input[scastI(any_button[i])] == 1)
+				if (player1p->pad->x_input[scastI(any_button[i])] == 1/* || player2p->pad->x_input[scastI(any_button[i])] == 1*/)
 				{
 					fado_start = true;
 					GetSound().SEStop(SEKind::INTRO_WIND);
@@ -1572,6 +1572,7 @@ void SceneGame::Draw(float elapsed_time)
 	{
 		//プレイヤー描画
 		player2p->Draw(ParallelToonShader.get(), ToonShader.get(), V, P, lightColor, ambient_color, game_speed);
+		player2p->WinDEBUG();
 	}
 		break;
 	case MAIN_LOOP::GAME_FIN:
@@ -1686,7 +1687,7 @@ void SceneGame::HPBar_Draw(
 	//ステージとUIの描画を行う
 
 	stage.Draw(view, projection, light_direction, light_color, ambient_color, elapsed_time);
-
+	const float fedoImage_x = 800.0f;
 	switch (main_loop)
 	{
 	case SceneGame::MAIN_LOOP::INTRO1P:
@@ -1709,21 +1710,21 @@ void SceneGame::HPBar_Draw(
 
 		//UI描画
 		//体力バー表示
-		PL.ratio1P = player1p->hp / PL.HP_MAX1P * 800.0f;
-		PL.ratio2P = player2p->hp / PL.HP_MAX2P * 800.0f;
-		PL.correction_value = 800.0f - PL.ratio1P;
+		PL.ratio1P = player1p->hp / PL.HP_MAX1P * fedoImage_x;
+		PL.ratio2P = player2p->hp / PL.HP_MAX2P * fedoImage_x;
+		PL.correction_value = fedoImage_x - PL.ratio1P;
 
 		DirectX::XMFLOAT4 hp1p_color = HPColorSet(player1p->hp, PL.HP_MAX1P);
 		DirectX::XMFLOAT4 hp2p_color = HPColorSet(player2p->hp, PL.HP_MAX2P);
 
 		if (player1p->combo_count == 1 && pl1_before_hp != player1p->hp)
 		{
-			PL.Damage_ratio1P = 800.0f - pl1_before_hp / PL.HP_MAX1P * 800.0f;
+			PL.Damage_ratio1P = fedoImage_x - pl1_before_hp / PL.HP_MAX1P * fedoImage_x;
 		}
 
 		if (player2p->combo_count == 1 && pl2_before_hp != player2p->hp)
 		{
-			PL.Damage_ratio2P = pl2_before_hp / PL.HP_MAX2P * 800.0f;
+			PL.Damage_ratio2P = pl2_before_hp / PL.HP_MAX2P * fedoImage_x;
 		}
 
 		if (player1p->combo_count == 0)
@@ -1754,11 +1755,11 @@ void SceneGame::HPBar_Draw(
 		HPbar_mask->DrawRotaGraph(spriteShader.get(), 1400.0f, 150.0f, 0.0f, 1.0f, true, SpriteMask::WRITE);
 
 		//1PのHP
-		HPDamagebar_img->DrawRectGraph(spriteShader.get(), 100.0f + PL.Damage_ratio1P, 100.0f, 800.0f - PL.ratio1P, 0.0f, (100.0f + PL.correction_value)-(100.0f + PL.Damage_ratio1P), 100.0f, false, SpriteMask::INDRAW);
+		HPDamagebar_img->DrawRectGraph(spriteShader.get(), 100.0f + PL.Damage_ratio1P, 100.0f, fedoImage_x - PL.ratio1P, 0.0f, (100.0f + PL.correction_value)-(100.0f + PL.Damage_ratio1P), 100.0f, false, SpriteMask::INDRAW);
 		//HP_img->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f,SpriteMask::INDRAW);
-		HPbar_base->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f, false, SpriteMask::INDRAW, hp1p_color);
-		HPbar_fedo->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f, false, SpriteMask::INDRAW, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
-		HPbar_design->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f, false, SpriteMask::INDRAW);
+		HPbar_base->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, fedoImage_x - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f, false, SpriteMask::INDRAW, hp1p_color);
+		HPbar_fedo->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, fedoImage_x - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f, false, SpriteMask::INDRAW, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
+		HPbar_design->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, fedoImage_x - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f, false, SpriteMask::INDRAW);
 
 
 		//2PのHP
