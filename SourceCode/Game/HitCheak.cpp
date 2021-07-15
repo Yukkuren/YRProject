@@ -1011,14 +1011,15 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 								}
 								else
 								{
-									continue;
+									result = HitResultAttack::P2_OFFSET;
+									//continue;
 								}
 								break;
 							case AttackKind::NO_TO_OFF_ALL:
 							case AttackKind::DOWN_NO_TO_OFF:
 								//‘S‚Ä‚Æ‘ŠŽE‚µ‚È‚¢UŒ‚
 								//‘ŠŽE‚µ‚È‚¢ƒ_ƒEƒ“UŒ‚
-								continue;
+								result = HitResultAttack::P2_OFFSET;
 								break;
 							case AttackKind::LOCK:
 								//ƒƒbƒN‹Z
@@ -1091,14 +1092,16 @@ void Hitcheak::HitCheakAttack(std::vector<AttackBox> &attack1p,std::vector<Attac
 								}
 								else
 								{
-									continue;
+									result = HitResultAttack::P1_OFFSET;
+									//continue;
 								}
 								break;
 							case AttackKind::NO_TO_OFF_ALL:
 							case AttackKind::DOWN_NO_TO_OFF:
 								//‘S‚Ä‚Æ‘ŠŽE‚µ‚È‚¢UŒ‚
 								//‘ŠŽE‚µ‚È‚¢ƒ_ƒEƒ“UŒ‚
-								continue;
+								result = HitResultAttack::P1_OFFSET;
+								//continue;
 								break;
 							case AttackKind::LOCK:
 								//ƒƒbƒN‹Z

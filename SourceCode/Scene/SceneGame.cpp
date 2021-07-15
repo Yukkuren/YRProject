@@ -199,6 +199,7 @@ void SceneGame::Init()
 
 void SceneGame::LoadData()
 {
+	srand((unsigned int)time(NULL));
 	//モデル等のロード
 	//この関数はSceneLoadで別スレッドとして動かす
 	if (geo == nullptr)

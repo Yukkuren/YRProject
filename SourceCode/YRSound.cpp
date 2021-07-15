@@ -64,7 +64,7 @@ void YRSound::Init()
 
 	//BGMì«Ç›çûÇ›
 	BGMLoad("./Data/Sound/BGM/Title.wav", BGMKind::TITLE, XAUDIO2_LOOP_INFINITE, 0.5f);
-	BGMLoad("./Data/Sound/BGM/Chara_Select.wav", BGMKind::CHARA_SELECT, XAUDIO2_LOOP_INFINITE, 0.8f);
+	BGMLoad("./Data/Sound/BGM/Chara_Select.wav", BGMKind::CHARA_SELECT, XAUDIO2_LOOP_INFINITE, 0.3f);
 	BGMLoad("./Data/Sound/BGM/Load_Intro.wav", BGMKind::LOAD, 0, 0.5f);
 	BGMLoad("./Data/Sound/BGM/Stage_castle.wav", BGMKind::GAME, XAUDIO2_LOOP_INFINITE, 0.5f);
 	BGMLoad("./Data/Sound/BGM/knight_win.wav", BGMKind::KNIGHT_WIN, 0.0f, 0.5f);

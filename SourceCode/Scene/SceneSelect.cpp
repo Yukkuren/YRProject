@@ -118,6 +118,8 @@ void SceneSelect::Init()
 	ready_Multiply = 4000.0f;
 
 	line_breadth = 20.0f;
+
+	return_timer = 0.0f;
 }
 
 void SceneSelect::LoadData()
@@ -193,6 +195,11 @@ void SceneSelect::LoadData()
 		Box_sprite = std::make_unique<Sprite>(L"./Data/Image/UI/GameLoad/Box.png", 640.0f, 640.0f);
 	}
 
+	if (choice_img == nullptr)
+	{
+		choice_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameTitle/Select.png", 1920.0f, 1920.0f, 1, 3, 1920.0f, 640.0f);
+	}
+
 	//コンスタントバッファ作成
 	FRAMEWORK.CreateConstantBuffer(constantBuffer.GetAddressOf(), sizeof(Title_CBuffer));
 
@@ -228,6 +235,8 @@ void SceneSelect::LoadData()
 	{
 		select_texture = std::make_unique<Texture>(L"./Data/Shader/noise.png");
 	}
+
+	GetSound().fade_volume = 1.0f;
 
 	load_state = 3;
 }
@@ -287,6 +296,9 @@ void SceneSelect::UnInit()
 
 	Box_sprite.reset();
 	Box_sprite = nullptr;
+
+	choice_img.reset();
+	choice_img = nullptr;
 }
 
 void SceneSelect::Update(float elapsed_time)
@@ -376,6 +388,55 @@ void SceneSelect::Update(float elapsed_time)
 
 		ReadyStep(elapsed_time);
 
+		SEKind sk = SEKind::SELECT_CANCEL;
+
+		if (!p1Enter && !p2Enter)
+		{
+			if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::B)] > 0)
+			{
+				return_timer += elapsed_time;
+				GetSound().SEPlay(sk);
+			}
+			else if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::B)] > 0)
+			{
+				return_timer += elapsed_time;
+				GetSound().SEPlay(sk);
+			}
+			else
+			{
+				return_timer = 0.0f;
+			}
+		}
+		if (!p1Enter && p2Enter)
+		{
+			if (FRAMEWORK.scenegame.pad1->x_input[scastI(PAD::B)] > 0)
+			{
+				return_timer += elapsed_time;
+				GetSound().SEPlay(sk);
+			}
+			else
+			{
+				return_timer = 0.0f;
+			}
+		}
+		if (p1Enter && !p2Enter)
+		{
+			if (FRAMEWORK.scenegame.pad2->x_input[scastI(PAD::B)] > 0)
+			{
+				return_timer += elapsed_time;
+				GetSound().SEPlay(sk);
+			}
+			else
+			{
+				return_timer = 0.0f;
+			}
+		}
+
+		if (return_timer > 1.0f)
+		{
+			fado_start = true;
+		}
+
 		//両方のプレイヤーが決定したら
 		if (p1Enter && p2Enter)
 		{
@@ -395,12 +456,24 @@ void SceneSelect::Update(float elapsed_time)
 		{
 			if (FadoOut(elapsed_time))
 			{
-				//フェードアウトが終わったらロード画面へ
-				GetSound().BGMStop(BGMKind::CHARA_SELECT);
-				FRAMEWORK.SetScene(SCENE_TABLE::SCENE_LOAD);
-				//FRAMEWORK.SetScene(SCENE_TITLE);
-				UnInit();
-				return;
+				if (return_timer >= 1.0f)
+				{
+					//フェードアウトが終わったらタイトル画面へ
+					GetSound().BGMStop(BGMKind::CHARA_SELECT);
+					FRAMEWORK.SetScene(SCENE_TABLE::SCENE_TITLE);
+					//FRAMEWORK.SetScene(SCENE_TITLE);
+					UnInit();
+					return;
+				}
+				else
+				{
+					//フェードアウトが終わったらロード画面へ
+					GetSound().BGMStop(BGMKind::CHARA_SELECT);
+					FRAMEWORK.SetScene(SCENE_TABLE::SCENE_LOAD);
+					//FRAMEWORK.SetScene(SCENE_TITLE);
+					UnInit();
+					return;
+				}
 			}
 		}
 		else
@@ -455,6 +528,7 @@ void SceneSelect::Draw(float elapsedTime)
 	if(Get_Use_ImGui())
 	{
 		ImGui::Text("time : %f", timer);
+		ImGui::Text("return_timer : %f", return_timer);
 		ImGui::Text("select");
 		ImGui::SliderFloat(u8"画像のサイズ", &Rato, 0.0f, 10.0f);
 		ImGui::SliderFloat(u8"キャラケースの大きさ", &case_rato, 0.0f, 10.0f);
@@ -532,6 +606,28 @@ void SceneSelect::Draw(float elapsedTime)
 			0.0f,
 			Rato
 		);*/
+		if (FRAMEWORK.scenetitle.vs_mode == SceneTitle::VS_MODE::CPU)
+		{
+			choice_img->DrawRotaDivGraph(
+				spriteShader.get(),
+				static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.5f,
+				static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.1f,
+				0.0f,
+				0.3f,
+				1
+			);
+		}
+		else
+		{
+			choice_img->DrawRotaDivGraph(
+				spriteShader.get(),
+				static_cast<float>(FRAMEWORK.SCREEN_WIDTH) * 0.5f,
+				static_cast<float>(FRAMEWORK.SCREEN_HEIGHT) * 0.1f,
+				0.0f,
+				0.3f,
+				2
+			);
+		}
 
 
 		for (int i = 0; i < select_p.size(); i++)

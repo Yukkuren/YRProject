@@ -756,6 +756,8 @@ public:
 	int					load_state = 0;
 	bool				load_fin = false;
 
+	float				return_timer = 0.0f;
+
 	//シェーダー
 	std::unique_ptr<YRShader> spriteShader = nullptr;
 	std::unique_ptr<YRShader> selectShader = nullptr;
@@ -773,6 +775,7 @@ public:
 
 	//Gbuffer用スプライト
 	std::unique_ptr<Sprite>	sprite = nullptr;
+	std::unique_ptr<Sprite> choice_img = nullptr;
 
 	//画像描画関係
 	YR_Vector3			p1;					//プレイヤー1のカーソルの位置

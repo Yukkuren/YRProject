@@ -412,6 +412,7 @@ void SceneTitle::Update(float elapsed_time)
 		switch (state)
 		{
 		case SceneTitle::STATE::HOME:
+			GetSound().FadeIn(elapsed_time);
 			for (int i = 0; i < any_button.size(); i++)
 			{
 				if (g1.x_input[scastI(any_button[i])] == 1 || g2.x_input[scastI(any_button[i])] == 1)
@@ -422,7 +423,7 @@ void SceneTitle::Update(float elapsed_time)
 			}
 			break;
 		case SceneTitle::STATE::SELECT:
-
+			GetSound().FadeIn(elapsed_time);
 			if (vs_mode == VS_MODE::CPU)
 			{
 				if (g1.x_input[scastI(PAD::STICK_R)] == 1 || g2.x_input[scastI(PAD::STICK_R)] == 1)
