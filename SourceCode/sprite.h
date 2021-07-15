@@ -221,6 +221,32 @@ public:
 			mask);
 	}
 
+	//画像描画位置指定回転描画(中心は真ん中)
+	void DrawRectRotaGraph(YRShader* shader,
+		float x, float y, float srcX, float srcY,
+		float width, float height, float size, float angle, bool reverse = false, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1,1,1,1 })
+	{
+		float ssx = srcX;
+		float ssw = width;
+		if (reverse)
+		{
+			ssx = srcX;
+			ssw = -width;
+		}
+		render(
+			shader,
+			x - (width / 2*size),
+			y - (height /2 * size),
+			width * size,
+			height * size,
+			ssx,
+			srcY,
+			ssw,
+			height,
+			angle,
+			color.x,color.y,color.z, color.w, mask);
+	}
+
 	//画像回転描画&描画位置指定(コンテキスト、描画位置x,y、回転角度、画像拡大率)
 	void DrawRotaSetGraph(YRShader* shader, float x, float y, float sx, float sw, float angle, float size, bool reverse = false, SpriteMask mask = SpriteMask::NONE, DirectX::XMFLOAT4 color = { 1,1,1,1 })
 	{
@@ -264,6 +290,7 @@ public:
 			color.w,
 			mask);
 	}
+
 
 	//画像回転描画(画像描画サイズ決定型)(コンテキスト、描画位置x,y、回転角度、画像サイズ、反転するかどうか)
 	void DrawRotaGraph(

@@ -270,6 +270,8 @@ private:
 public:
 
 	YR_Vector2	sprite_debug_pos = { 0.0f,0.0f };
+	YR_Vector2	sprite_debug_pos2 = { 0.0f,0.0f };
+	YR_Vector2	sprite_debug_pos3 = { 0.0f,0.0f };
 	float	sprite_debug_scale = 0.0f;
 
 	//2PÇÃçsìÆêßå‰óÒãì
@@ -372,6 +374,8 @@ public:
 	std::unique_ptr<Sprite> effect_img = nullptr;
 	std::unique_ptr<Sprite> pause_img = nullptr;
 	std::unique_ptr<Sprite> Danger_img = nullptr;
+	std::unique_ptr<Sprite> icon_front_img = nullptr;
+	std::unique_ptr<Sprite> icon_back_img = nullptr;
 	std::array<int, 3>		p1combo;
 	std::array<int, 3>		p2combo;
 	std::shared_ptr<Texture> p1_icon_img = nullptr;
@@ -556,7 +560,7 @@ public:
 	std::thread* t = NULL;
 	int					load_state = 0;
 	bool				load_fin = false;
-	std::vector<float> testevent;
+	//std::vector<float> testevent;
 
 	GamePad1			g1;
 	GamePad2			g2;

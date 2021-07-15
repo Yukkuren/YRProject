@@ -816,6 +816,8 @@ public:
 	std::unique_ptr<Sprite> cutMask = nullptr;		//カットインのマスク画像
 	std::unique_ptr<Sprite> cutIn = nullptr;		//カットイン画像
 
+	std::unique_ptr<Sprite> illust = nullptr;		//立ち絵画像(アイコンに使用)
+
 	float		production_time = 0.0f;	//カメラ演出に使う変数
 
 public:
@@ -832,6 +834,7 @@ public:
 	virtual void CharaInit() = 0;
 
 	virtual void LoadData(PLCOLOR color_number) = 0;
+	virtual void Load_Illust();
 	virtual void Uninit() = 0;
 	virtual void Update(float decision,float elapsed_time);
 	virtual void Draw(
@@ -857,6 +860,15 @@ public:
 	virtual void DrawCutIn(
 		YRShader* shader,
 		float elapsed_time
+	);
+
+	virtual void DrawIllust(
+		YRShader* shader,		//シェーダー
+		YR_Vector2 pos,			//画像の描画位置
+		YR_Vector2 lup,			//画像の描画範囲の左上
+		YR_Vector2 size,		//画像の描画範囲の大きさ
+		float scale			//画像の描画サイズ
+		//DirectX::XMFLOAT4 color	//色
 	);
 
 	virtual void TextDraw();			//テキストを描画する

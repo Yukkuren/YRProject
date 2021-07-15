@@ -61,7 +61,7 @@ void SceneTitle::Init()
 	vs_mode = VS_MODE::CPU;
 	state = STATE::HOME;
 
-	testevent.clear();
+	//testevent.clear();
 
 	//タイトルのBGMを再生する
 	GetSound().BGMPlay(BGMKind::TITLE);

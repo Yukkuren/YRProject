@@ -390,6 +390,15 @@ void SceneGame::LoadData()
 	{
 		Danger_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/DANGER.png", 1280.0f, 360.0f);
 	}
+	if (icon_front_img == nullptr)
+	{
+		icon_front_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/Icon_case_front.png", 512.0f, 512.0f);
+	}
+	if (icon_back_img == nullptr)
+	{
+		icon_back_img = std::make_unique<Sprite>(L"./Data/Image/UI/GameScene/Icon_case_back.png", 512.0f, 512.0f);
+	}
+
 	if (p1_icon_img == nullptr)
 	{
 		p1_icon_img = std::make_shared<Texture>(L"./Data/Image/UI/GameScene/icon1.png");
@@ -568,6 +577,8 @@ void SceneGame::UnInit()
 	HPbar_design.reset();
 	desastal_case.reset();
 	desastal_img.reset();
+	icon_front_img.reset();
+	icon_back_img.reset();
 
 	test = nullptr;
 	geo = nullptr;
@@ -594,6 +605,8 @@ void SceneGame::UnInit()
 	HPbar_design = nullptr;
 	desastal_case = nullptr;
 	desastal_img = nullptr;
+	icon_front_img = nullptr;
+	icon_back_img = nullptr;
 
 	//シェーダー解放
 	spriteShader.reset();
@@ -1188,7 +1201,7 @@ void SceneGame::Update(float elapsed_time)
 			break;
 		case MAIN_LOOP::FINISH:
 			//フェードインしたら勝敗に合わせてステートを変える
-			if (fado_alpha < 0.4f)
+			if (fado_alpha < 0.8f)
 			{
 				switch (judge)
 				{
@@ -1366,8 +1379,12 @@ void SceneGame::Draw(float elapsed_time)
 		ImGui::Text("%f", dis);
 
 		//スプライトデバッグ
-		ImGui::SliderFloat(u8"デバッグスプライト位置X", &sprite_debug_pos.x, -1000.0f, 2000.0f);
+		ImGui::SliderFloat(u8"デバッグスプライト位置Xq", &sprite_debug_pos.x, -1000.0f, 2000.0f);
 		ImGui::SliderFloat(u8"デバッグスプライト位置Y", &sprite_debug_pos.y, -1000.0f, 2000.0f);
+		ImGui::SliderFloat(u8"デバッグスプライト2位置X", &sprite_debug_pos2.x, -1000.0f, 2000.0f);
+		ImGui::SliderFloat(u8"デバッグスプライト2位置Y", &sprite_debug_pos2.y, -1000.0f, 2000.0f);
+		ImGui::SliderFloat(u8"デバッグスプライト3位置X", &sprite_debug_pos3.x, -1000.0f, 2000.0f);
+		ImGui::SliderFloat(u8"デバッグスプライト3位置Y", &sprite_debug_pos3.y, -1000.0f, 2000.0f);
 		ImGui::SliderFloat(u8"デバッグスプライト大きさ", &sprite_debug_scale, 0.0f, 10.0f);
 
 
@@ -1687,16 +1704,43 @@ void SceneGame::HPBar_Draw(
 	//ステージとUIの描画を行う
 
 	stage.Draw(view, projection, light_direction, light_color, ambient_color, elapsed_time);
-	const float fedoImage_x = 800.0f;
+
+	//HPバー
+	const float HP_base_left = 225.0f;					//1P側のHP_barの左端
+	const float HP_base_right = 861.5f;					//1P側のHP_barの右端
+	const float HP_base_left2 =							//2P側のHP_barの左端
+		(float(FRAMEWORK.SCREEN_WIDTH) * 0.5f) + ((float(FRAMEWORK.SCREEN_WIDTH) * 0.5f) - HP_base_right);
+	const float HP_base_up = 100.0f;					//1P側のHP_barの上端
+	const float fedoImage_x = HP_base_right - HP_base_left;	//HP_barの横長さ(左側の数字を変更する)
+	const float HP_base_height = 80.0f;					//HP_barの縦長さ
+
+	//アイコン
+	const float icon_front_x = 110.0f;		//1P側のアイコンケースのX座標
+	const float icon_front_y = 120.0f;		//アイコンケースのY座標
+	const float icon_front_s = 0.4f;		//アイコンケースの大きさ
+	const float icon_front_x2 =				//2P側のアイコンケースのX座標
+		float(FRAMEWORK.SCREEN_WIDTH) - icon_front_x;
+
+	const YR_Vector2 illust_pos =						//1Pイラストの描画位置
+	{ icon_front_x - 4.0f,106.0f };
+	const YR_Vector2 illust_pos2 =						//2Pイラストの描画位置
+	{ icon_front_x2 - 4.0f,106.0f };
+	const YR_Vector2 illust_src = { 117.0f,10.0f };		//イラストの描画指定位置
+	const YR_Vector2 illust_wh = { 435.0f,510.0f };		//イラストの描画範囲
+	const float illust_s = 0.4f;						//イラストの描画サイズ
+
 	switch (main_loop)
 	{
 	case SceneGame::MAIN_LOOP::INTRO1P:
 	case SceneGame::MAIN_LOOP::INTRO2P:
+		//sprite_debug_pos.x = icon_front_x2;
+		//sprite_debug_pos.y = icon_front_y;
 		break;
 	case SceneGame::MAIN_LOOP::READY:
 	case SceneGame::MAIN_LOOP::MAIN:
 	case SceneGame::MAIN_LOOP::FINISH:
 	case SceneGame::MAIN_LOOP::DRAW:
+	{
 		//必殺技などの時は周りを暗くする
 		switch (YRCamera.GetRequest())
 		{
@@ -1707,8 +1751,22 @@ void SceneGame::HPBar_Draw(
 			break;
 		}
 
-
 		//UI描画
+
+
+		//アイコン描画
+
+
+		//1Pアイコン
+		icon_back_img->DrawRotaGraph(spriteShader.get(), icon_front_x, icon_front_y, 0.0f, icon_front_s, false, SpriteMask::NONE, DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
+		player1p->DrawIllust(spriteShader.get(), illust_pos, illust_src, illust_wh, illust_s);
+		icon_front_img->DrawRotaGraph(spriteShader.get(), icon_front_x, icon_front_y, 0.0f, icon_front_s);
+
+		//2Pアイコン
+		icon_back_img->DrawRotaGraph(spriteShader.get(), icon_front_x2, icon_front_y, 0.0f, icon_front_s, false, SpriteMask::NONE, DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f));
+		player2p->DrawIllust(spriteShader.get(), illust_pos2, illust_src, illust_wh, illust_s);
+		icon_front_img->DrawRotaGraph(spriteShader.get(), icon_front_x2, icon_front_y, 0.0f, icon_front_s);
+
 		//体力バー表示
 		PL.ratio1P = player1p->hp / PL.HP_MAX1P * fedoImage_x;
 		PL.ratio2P = player2p->hp / PL.HP_MAX2P * fedoImage_x;
@@ -1745,29 +1803,26 @@ void SceneGame::HPBar_Draw(
 
 		sampler_wrap->Set(0);
 
-		//HPbar_img->DrawExtendGraph(spriteShader.get(), 75.0f, 75.0f, 925.0f, 225.0f);
-		//HPbar_img->DrawExtendGraph(spriteShader.get(), 975.0f, 75.0f, 1825.0f, 225.0f);
 
-		HPbar_case->DrawRotaGraph(spriteShader.get(), 500.0f, 150.0f, 0.0f, 1.0f);
-		HPbar_mask->DrawRotaGraph(spriteShader.get(), 500.0f, 150.0f, 0.0f, 1.0f, false, SpriteMask::WRITE);
+		//HPbar_case->DrawRotaGraph(spriteShader.get(), 500.0f, 150.0f, 0.0f, 1.0f);
+		HPbar_case->DrawExtendGraph(spriteShader.get(), 190.0f, 70.0f, 900.0f, 215.0f);
+		HPbar_mask->DrawExtendGraph(spriteShader.get(), 190.0f, 70.0f, 900.0f, 215.0f, SpriteMask::WRITE);
 
-		HPbar_case->DrawRotaGraph(spriteShader.get(), 1400.0f, 150.0f, 0.0f, 1.0f, true);
-		HPbar_mask->DrawRotaGraph(spriteShader.get(), 1400.0f, 150.0f, 0.0f, 1.0f, true, SpriteMask::WRITE);
+		//HPbar_case->DrawRotaGraph(spriteShader.get(), 1400.0f, 150.0f, 0.0f, 1.0f, true);
+		HPbar_case->DrawExtendGraph(spriteShader.get(), 1730.0f, 70.0f, 1020.0f, 215.0f);
+		HPbar_mask->DrawExtendGraph(spriteShader.get(), 1730.0f, 70.0f, 1020.0f, 215.0f, SpriteMask::WRITE);
 
 		//1PのHP
-		HPDamagebar_img->DrawRectGraph(spriteShader.get(), 100.0f + PL.Damage_ratio1P, 100.0f, fedoImage_x - PL.ratio1P, 0.0f, (100.0f + PL.correction_value)-(100.0f + PL.Damage_ratio1P), 100.0f, false, SpriteMask::INDRAW);
-		//HP_img->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, 800.0f - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f,SpriteMask::INDRAW);
-		HPbar_base->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, fedoImage_x - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f, false, SpriteMask::INDRAW, hp1p_color);
-		HPbar_fedo->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, fedoImage_x - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f, false, SpriteMask::INDRAW, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
-		HPbar_design->DrawRectGraph(spriteShader.get(), 100.0f + PL.correction_value, 100.0f, fedoImage_x - PL.ratio1P, 0.0f, PL.ratio1P, 100.0f, false, SpriteMask::INDRAW);
-
+		HPDamagebar_img->DrawRectGraph(spriteShader.get(), HP_base_left + PL.Damage_ratio1P, HP_base_up, fedoImage_x - PL.ratio1P, 0.0f, (HP_base_left + PL.correction_value) - (HP_base_left + PL.Damage_ratio1P), HP_base_height, false, SpriteMask::INDRAW);
+		HPbar_base->DrawRectGraph(spriteShader.get(), HP_base_left + PL.correction_value, HP_base_up, fedoImage_x - PL.ratio1P, 0.0f, PL.ratio1P, HP_base_height, false, SpriteMask::INDRAW, hp1p_color);
+		HPbar_fedo->DrawRectGraph(spriteShader.get(), HP_base_left + PL.correction_value, HP_base_up, fedoImage_x - PL.ratio1P, 0.0f, PL.ratio1P, HP_base_height, false, SpriteMask::INDRAW, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
+		HPbar_design->DrawRectGraph(spriteShader.get(), HP_base_left + PL.correction_value, HP_base_up, fedoImage_x - PL.ratio1P, 0.0f, PL.ratio1P, HP_base_height, false, SpriteMask::INDRAW);
 
 		//2PのHP
-		HPDamagebar_img->DrawRectGraph(spriteShader.get(), 1000.0f, 100.0f, 0.0f, 0.0f, PL.Damage_ratio2P, 100.0f, false, SpriteMask::INDRAW);
-		//HP_img->DrawRectGraph(spriteShader.get(), 1000.0f, 100.0f, 0.0f, 0.0f, PL.ratio2P, 100.0f);
-		HPbar_base->DrawRectGraph(spriteShader.get(), 1000.0f, 100.0f, 0.0f, 0.0f, PL.ratio2P, 100.0f, true, SpriteMask::INDRAW, hp2p_color);
-		HPbar_fedo->DrawRectGraph(spriteShader.get(), 1000.0f, 100.0f, 0.0f, 0.0f, PL.ratio2P, 100.0f, true, SpriteMask::INDRAW, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
-		HPbar_design->DrawRectGraph(spriteShader.get(), 1000.0f, 100.0f, 0.0f, 0.0f, PL.ratio2P, 100.0f, true, SpriteMask::INDRAW);
+		HPDamagebar_img->DrawRectGraph(spriteShader.get(), HP_base_left2, HP_base_up, 0.0f, 0.0f, PL.Damage_ratio2P, HP_base_height, false, SpriteMask::INDRAW);
+		HPbar_base->DrawRectGraph(spriteShader.get(), HP_base_left2, HP_base_up, 0.0f, 0.0f, PL.ratio2P, HP_base_height, true, SpriteMask::INDRAW, hp2p_color);
+		HPbar_fedo->DrawRectGraph(spriteShader.get(), HP_base_left2, HP_base_up, 0.0f, 0.0f, PL.ratio2P, HP_base_height, true, SpriteMask::INDRAW, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.5f));
+		HPbar_design->DrawRectGraph(spriteShader.get(), HP_base_left2, HP_base_up, 0.0f, 0.0f, PL.ratio2P, HP_base_height, true, SpriteMask::INDRAW);
 
 		sampler_clamp->Set(0);
 
@@ -1783,6 +1838,7 @@ void SceneGame::HPBar_Draw(
 
 		////エフェクト描画
 		//YRGetEffect().Draw();
+	}
 		break;
 	case SceneGame::MAIN_LOOP::GAME_FIN:
 		break;

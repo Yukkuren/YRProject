@@ -7,6 +7,22 @@
 #include "../../Game//World.h"
 #include "../../Effect.h"
 #include "../../YRSound.h"
+#include "Player_name_list.h"
+#include <codecvt>
+#include <array>
+
+using convert_t = std::codecvt_utf8<wchar_t>;
+std::wstring_convert<convert_t, wchar_t> strconverterPlayer;
+
+std::string to_stringPlayer(std::wstring wstr)
+{
+	return strconverterPlayer.to_bytes(wstr);
+}
+
+std::wstring to_wstringPlayer(std::string str)
+{
+	return strconverterPlayer.from_bytes(str);
+}
 
 //-----------------------------------------------------------------
 //			Playerクラス
@@ -133,7 +149,32 @@ void Player::Init(YR_Vector3 InitPos)
 	win_event.Load(chara_name, std::string("Win"));
 	intro_event.Init(now_player);
 	//intro_event.test = true;
+
+	//イラストを読み込み
+	Load_Illust();
 }
+
+
+
+
+
+void Player::Load_Illust()
+{
+	//プレイヤーのイラストを読み込む
+	std::string file_level_f = std::string("./Data/Image/Character/");
+	std::string file_end = std::string("_illust.png");
+
+	std::string file_name = file_level_f + GetName().chara_name_list[scastI(chara_name)] + std::string("/") + GetName().chara_name_list[scastI(chara_name)] + file_end;
+	std::wstring w_filename = to_wstringPlayer(file_name);
+
+	illust = std::make_unique<Sprite>(w_filename.c_str(), 750.0f, 820.0f);
+
+}
+
+
+
+
+
 
 
 
@@ -4521,6 +4562,33 @@ void Player::DrawCutIn(
 		SpriteMask::INDRAW
 	);
 }
+
+
+void Player::DrawIllust(
+	YRShader* shader,		//シェーダー
+	YR_Vector2 pos,			//画像の描画位置
+	YR_Vector2 lup,			//画像の描画範囲の左上
+	YR_Vector2 size,		//画像の描画範囲の大きさ
+	float scale			//画像の描画サイズ
+	//DirectX::XMFLOAT4 color	//色
+)
+{
+	DirectX::XMFLOAT4 color = { 1.0f,1.0f,1.0f,1.0f };
+	if (hp <= chara_state.max_hp * HP_Danger_point && hp != 0.0f)
+	{
+		//特定のタイミングで
+		if (draw_count % 80 < 8)
+		{
+			//赤色にする
+			color = { 1.0f,0.3f,0.3f,1.0f };
+		}
+	}
+	//イラストの表示
+	illust->DrawRectRotaGraph(shader, pos.x, pos.y, lup.x, lup.y, size.x, size.y, scale, 0.0f, false, SpriteMask::NONE, color);
+}
+
+
+
 
 void Player::FaceAnimation(float elapsed_time)
 {
